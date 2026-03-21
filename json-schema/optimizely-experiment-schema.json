@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.optimizely.com/schemas/optimizely/experiment.json",
+  "title": "Optimizely Experiment",
+  "description": "Schema representing an A/B test experiment in Optimizely, including variations, metrics, audience targeting, and traffic allocation configuration.",
+  "type": "object",
+  "required": ["project_id", "name"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique identifier for the experiment"
+    },
+    "project_id": {
+      "type": "integer",
+      "description": "The project this experiment belongs to"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the experiment",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the experiment purpose and hypothesis",
+      "maxLength": 2000
+    },
+    "status": {
+      "type": "string",
+      "description": "Current lifecycle status of the experiment",
+      "enum": ["active", "paused", "not_started", "archived"]
+    },
+    "type": {
+      "type": "string",
+      "description": "Type of experiment design",
+      "enum": ["a/b", "multiarmed_bandit", "multivariate"]
+    },
+    "holdback": {
+      "type": "integer",
+      "description": "Percentage of traffic held back from the experiment, expressed in basis points (0-10000)",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "variations": {
+      "type": "array",
+      "description": "List of variations presented to visitors in the experiment",
+      "items": {
+        "$ref": "#/$defs/Variation"
+      },
+      "minItems": 2
+    },
+    "metrics": {
+      "type": "array",
+      "description": "List of metrics used to measure experiment results",
+      "items": {
+        "$ref": "#/$defs/Metric"
+      }
+    },
+    "audience_conditions": {
+      "type": "string",
+      "description": "JSON-encoded audience targeting conditions that determine which visitors see the experiment"
+    },
+    "page_ids": {
+      "type": "array",
+      "description": "List of page IDs where the experiment runs",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the experiment was created"
+    },
+    "last_modified": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the experiment was last modified"
+    }
+  },
+  "$defs": {
+    "Variation": {
+      "type": "object",
+      "description": "A variation within an experiment that represents a distinct experience shown to visitors",
+      "required": ["name"],
+      "properties": {
+        "variation_id": {
+          "type": "integer",
+          "description": "Unique identifier for the variation"
+        },
+        "key": {
+          "type": "string",
+          "description": "Unique key for the variation within the experiment"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable name of the variation",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "weight": {
+          "type": "integer",
+          "description": "Traffic allocation weight in basis points (0-10000)",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "actions": {
+          "type": "array",
+          "description": "Changes applied when this variation is shown",
+          "items": {
+            "$ref": "#/$defs/Action"
+          }
+        }
+      }
+    },
+    "Action": {
+      "type": "object",
+      "description": "A set of changes applied to a page in a variation",
+      "properties": {
+        "page_id": {
+          "type": "integer",
+          "description": "The page this action applies to"
+        },
+        "changes": {
+          "type": "array",
+          "description": "Individual changes applied on the page",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Type of change (e.g., custom_code, attribute, insert_html)"
+              },
+              "value": {
+                "type": "string",
+                "description": "The change value or code"
+              },
+              "selector": {
+                "type": "string",
+                "description": "CSS selector targeting the element to modify"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Metric": {
+      "type": "object",
+      "description": "A metric definition for measuring experiment outcomes",
+      "required": ["event_id", "aggregator"],
+      "properties": {
+        "event_id": {
+          "type": "integer",
+          "description": "The event ID this metric tracks"
+        },
+        "aggregator": {
+          "type": "string",
+          "description": "How to aggregate the metric values",
+          "enum": ["unique", "count", "sum"]
+        },
+        "field": {
+          "type": "string",
+          "description": "The field to aggregate on for sum aggregation"
+        },
+        "scope": {
+          "type": "string",
+          "description": "The scope at which to measure the metric",
+          "enum": ["visitor", "session", "event"]
+        },
+        "winning_direction": {
+          "type": "string",
+          "description": "Which direction indicates improvement",
+          "enum": ["increasing", "decreasing"]
+        }
+      }
+    }
+  }
+}

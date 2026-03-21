@@ -1,0 +1,536 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Data Platform REST API
+  description: >-
+    The Optimizely Data Platform (ODP) REST API enables developers to
+    integrate customer data with the Optimizely Data Platform. It provides
+    endpoints for managing customer profiles, sending events, managing
+    objects, and querying schema information. The API supports real-time
+    data ingestion and retrieval using both public and private API keys,
+    allowing developers to build personalized experiences powered by
+    comprehensive customer intelligence.
+  version: '3.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+externalDocs:
+  description: Optimizely Data Platform API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-data-platform/reference/introduction
+servers:
+  - url: https://api.zaius.com/v3
+    description: Optimizely Data Platform API v3 Server
+tags:
+  - name: Events
+    description: >-
+      Send customer events to ODP for tracking actions, behaviors,
+      and interactions across channels.
+  - name: Profiles
+    description: >-
+      Create, update, and retrieve customer profiles with unified
+      identity resolution.
+  - name: Objects
+    description: >-
+      Create, update, and manage objects such as products, orders,
+      and custom entities in ODP.
+  - name: Schema
+    description: >-
+      Manage the ODP schema including domain objects and their fields.
+  - name: Segments
+    description: >-
+      Query customer segments and audience definitions.
+security:
+  - publicApiKey: []
+paths:
+  /events:
+    post:
+      operationId: sendEvents
+      summary: Send events
+      description: >-
+        Sends one or more events to ODP for processing. Events represent
+        customer actions such as purchases, page views, email opens, and
+        custom interactions. Each event includes a type, action, and
+        associated identifiers and fields.
+      tags:
+        - Events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/EventInput'
+      responses:
+        '202':
+          description: Events accepted for processing
+        '400':
+          description: Invalid event data
+        '401':
+          description: Authentication credentials are missing or invalid
+  /profiles:
+    post:
+      operationId: upsertProfile
+      summary: Create or update a profile
+      description: >-
+        Creates a new customer profile or updates an existing one in ODP.
+        Profiles are identified by one or more identifier fields such as
+        email, customer_id, or vuid.
+      tags:
+        - Profiles
+      security:
+        - privateApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileInput'
+      responses:
+        '200':
+          description: Profile successfully created or updated
+        '400':
+          description: Invalid profile data
+        '401':
+          description: Authentication credentials are missing or invalid
+  /profiles/{identifier_field}/{identifier_value}:
+    get:
+      operationId: getProfile
+      summary: Get a profile
+      description: >-
+        Retrieves a customer profile by a specific identifier field and
+        value, such as email address or customer ID.
+      tags:
+        - Profiles
+      security:
+        - privateApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/identifierField'
+        - $ref: '#/components/parameters/identifierValue'
+        - name: fields
+          in: query
+          required: false
+          description: Comma-separated list of profile fields to return
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Profile not found
+  /objects/{object_type}:
+    post:
+      operationId: upsertObjects
+      summary: Create or update objects
+      description: >-
+        Creates or updates one or more objects of the specified type in
+        ODP. Objects represent entities such as products, orders, or
+        custom domain entities.
+      tags:
+        - Objects
+      parameters:
+        - $ref: '#/components/parameters/objectType'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ObjectInput'
+      responses:
+        '202':
+          description: Objects accepted for processing
+        '400':
+          description: Invalid object data
+        '401':
+          description: Authentication credentials are missing or invalid
+  /objects/{object_type}/{object_id}:
+    get:
+      operationId: getObject
+      summary: Get an object
+      description: >-
+        Retrieves a specific object by its type and identifier.
+      tags:
+        - Objects
+      parameters:
+        - $ref: '#/components/parameters/objectType'
+        - $ref: '#/components/parameters/objectId'
+      responses:
+        '200':
+          description: Successfully retrieved the object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OdpObject'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Object not found
+  /schema/objects:
+    get:
+      operationId: listSchemaObjects
+      summary: List schema objects
+      description: >-
+        Returns a list of all domain object types defined in the ODP
+        schema, including their fields and configurations.
+      tags:
+        - Schema
+      security:
+        - privateApiKey: []
+      responses:
+        '200':
+          description: Successfully retrieved schema objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SchemaObject'
+        '401':
+          description: Authentication credentials are missing or invalid
+  /schema/objects/{object_type}:
+    get:
+      operationId: getSchemaObject
+      summary: Get a schema object
+      description: >-
+        Retrieves the schema definition for a specific domain object type.
+      tags:
+        - Schema
+      security:
+        - privateApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/objectType'
+      responses:
+        '200':
+          description: Successfully retrieved the schema object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchemaObject'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Schema object not found
+    post:
+      operationId: createSchemaObject
+      summary: Create a schema object
+      description: >-
+        Creates a new domain object type in the ODP schema.
+      tags:
+        - Schema
+      security:
+        - privateApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/objectType'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchemaObjectInput'
+      responses:
+        '201':
+          description: Schema object successfully created
+        '400':
+          description: Invalid schema object definition
+        '401':
+          description: Authentication credentials are missing or invalid
+  /schema/objects/{object_type}/fields:
+    post:
+      operationId: createSchemaField
+      summary: Create a schema field
+      description: >-
+        Adds a new field to an existing domain object type in the ODP schema.
+      tags:
+        - Schema
+      security:
+        - privateApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/objectType'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchemaFieldInput'
+      responses:
+        '201':
+          description: Schema field successfully created
+        '400':
+          description: Invalid field definition
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Schema object not found
+  /segments:
+    get:
+      operationId: listSegments
+      summary: List segments
+      description: >-
+        Returns a list of customer segments defined in ODP.
+      tags:
+        - Segments
+      security:
+        - privateApiKey: []
+      responses:
+        '200':
+          description: Successfully retrieved segments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Segment'
+        '401':
+          description: Authentication credentials are missing or invalid
+components:
+  securitySchemes:
+    publicApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: >-
+        Public API Key (Tracker ID) for sending data to ODP. May be
+        exposed publicly on the internet.
+    privateApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: >-
+        Private API Key for querying data from ODP. Must be kept
+        confidential and used only in backend services.
+  parameters:
+    identifierField:
+      name: identifier_field
+      in: path
+      required: true
+      description: The identifier field name (e.g., email, customer_id, vuid)
+      schema:
+        type: string
+    identifierValue:
+      name: identifier_value
+      in: path
+      required: true
+      description: The value of the identifier field
+      schema:
+        type: string
+    objectType:
+      name: object_type
+      in: path
+      required: true
+      description: The type of object (e.g., products, orders)
+      schema:
+        type: string
+    objectId:
+      name: object_id
+      in: path
+      required: true
+      description: The unique identifier for the object
+      schema:
+        type: string
+  schemas:
+    EventInput:
+      type: object
+      description: An event to send to ODP
+      required:
+        - type
+        - action
+      properties:
+        type:
+          type: string
+          description: Event type category (e.g., order, product, email, navigation)
+        action:
+          type: string
+          description: Specific action within the event type (e.g., purchase, view, open)
+        identifiers:
+          type: object
+          description: Customer identifiers associated with the event
+          additionalProperties:
+            type: string
+        data:
+          type: object
+          description: Additional event data fields
+          additionalProperties: true
+    Profile:
+      type: object
+      description: A customer profile in ODP
+      properties:
+        email:
+          type: string
+          format: email
+          description: Customer email address
+        customer_id:
+          type: string
+          description: Customer identifier
+        vuid:
+          type: string
+          description: Visitor unique identifier
+        first_name:
+          type: string
+          description: Customer first name
+        last_name:
+          type: string
+          description: Customer last name
+        city:
+          type: string
+          description: Customer city
+        state:
+          type: string
+          description: Customer state or province
+        country:
+          type: string
+          description: Customer country
+        zip_code:
+          type: string
+          description: Customer postal code
+        insights:
+          type: object
+          description: Computed customer insights and scores
+          additionalProperties: true
+        segments:
+          type: array
+          description: Segments the customer belongs to
+          items:
+            type: string
+    ProfileInput:
+      type: object
+      description: Input for creating or updating a customer profile
+      properties:
+        identifiers:
+          type: object
+          description: Customer identifiers for matching
+          additionalProperties:
+            type: string
+        attributes:
+          type: object
+          description: Profile attributes to set or update
+          additionalProperties: true
+    ObjectInput:
+      type: object
+      description: Input for creating or updating an object in ODP
+      properties:
+        object_id:
+          type: string
+          description: Unique identifier for the object
+        fields:
+          type: object
+          description: Object field values
+          additionalProperties: true
+    OdpObject:
+      type: object
+      description: An object in ODP (product, order, etc.)
+      properties:
+        object_id:
+          type: string
+          description: Unique identifier for the object
+        type:
+          type: string
+          description: Object type
+        fields:
+          type: object
+          description: Object field values
+          additionalProperties: true
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the object was created
+        updated:
+          type: string
+          format: date-time
+          description: Timestamp when the object was last updated
+    SchemaObject:
+      type: object
+      description: A domain object type definition in the ODP schema
+      properties:
+        name:
+          type: string
+          description: Name of the object type
+        display_name:
+          type: string
+          description: Human-readable display name
+        description:
+          type: string
+          description: Description of the object type
+        fields:
+          type: array
+          description: Fields defined on the object type
+          items:
+            $ref: '#/components/schemas/SchemaField'
+    SchemaObjectInput:
+      type: object
+      description: Input for creating a domain object type
+      required:
+        - display_name
+      properties:
+        display_name:
+          type: string
+          description: Human-readable display name
+        description:
+          type: string
+          description: Description of the object type
+    SchemaField:
+      type: object
+      description: A field definition within a domain object type
+      properties:
+        name:
+          type: string
+          description: Field name
+        display_name:
+          type: string
+          description: Human-readable display name
+        type:
+          type: string
+          description: Data type of the field
+          enum:
+            - string
+            - number
+            - boolean
+            - timestamp
+        description:
+          type: string
+          description: Description of the field
+    SchemaFieldInput:
+      type: object
+      description: Input for creating a schema field
+      required:
+        - name
+        - display_name
+        - type
+      properties:
+        name:
+          type: string
+          description: Field name
+        display_name:
+          type: string
+          description: Human-readable display name
+        type:
+          type: string
+          description: Data type of the field
+          enum:
+            - string
+            - number
+            - boolean
+            - timestamp
+        description:
+          type: string
+          description: Description of the field
+    Segment:
+      type: object
+      description: A customer segment definition
+      properties:
+        name:
+          type: string
+          description: Name of the segment
+        description:
+          type: string
+          description: Description of the segment criteria
+        customer_count:
+          type: integer
+          description: Number of customers in the segment

@@ -1,0 +1,779 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Commerce Service API
+  description: >-
+    The Optimizely Commerce Service API provides RESTful access to
+    Optimizely's e-commerce platform capabilities. It enables developers
+    to manage product catalogs, catalog entries, catalog nodes, orders,
+    customers, and inventory programmatically. The API supports integration
+    with external commerce systems and enables building custom storefronts
+    and order management workflows on top of the Optimizely Commerce platform.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+externalDocs:
+  description: Optimizely Commerce Service API Documentation
+  url: https://docs.developers.optimizely.com/commerce-connect/v1.3.0-service-api-developer-guide/docs/optimizely-service-api
+servers:
+  - url: '{siteUrl}/episerverapi'
+    description: Optimizely Commerce Service API endpoint
+    variables:
+      siteUrl:
+        default: https://www.example.com
+        description: The base URL of the Optimizely Commerce site
+tags:
+  - name: Catalogs
+    description: >-
+      Manage product catalogs that organize commerce content.
+  - name: Catalog Entries
+    description: >-
+      Manage catalog entries including products, variants, packages,
+      and bundles.
+  - name: Catalog Nodes
+    description: >-
+      Manage catalog nodes (categories) for organizing entries.
+  - name: Catalog Entry Relations
+    description: >-
+      Manage relationships between catalog entries and nodes.
+  - name: Orders
+    description: >-
+      Manage purchase orders, cart operations, and order workflows.
+  - name: Customers
+    description: >-
+      Manage customer accounts and contact information.
+security:
+  - bearerAuth: []
+paths:
+  /commerce/catalogs:
+    get:
+      operationId: listCatalogs
+      summary: List catalogs
+      description: >-
+        Returns a list of all product catalogs in the commerce system.
+      tags:
+        - Catalogs
+      responses:
+        '200':
+          description: Successfully retrieved catalogs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Catalog'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createCatalog
+      summary: Create a catalog
+      description: >-
+        Creates a new product catalog.
+      tags:
+        - Catalogs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogInput'
+      responses:
+        '201':
+          description: Catalog successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Catalog'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /commerce/catalogs/{catalogName}:
+    get:
+      operationId: getCatalog
+      summary: Get a catalog
+      description: >-
+        Retrieves the details of a specific catalog by its name.
+      tags:
+        - Catalogs
+      parameters:
+        - $ref: '#/components/parameters/catalogName'
+      responses:
+        '200':
+          description: Successfully retrieved the catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Catalog'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog not found
+    put:
+      operationId: updateCatalog
+      summary: Update a catalog
+      description: >-
+        Updates the specified catalog with the provided fields.
+      tags:
+        - Catalogs
+      parameters:
+        - $ref: '#/components/parameters/catalogName'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogInput'
+      responses:
+        '200':
+          description: Catalog successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Catalog'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog not found
+    delete:
+      operationId: deleteCatalog
+      summary: Delete a catalog
+      description: >-
+        Permanently deletes the specified catalog and its contents.
+      tags:
+        - Catalogs
+      parameters:
+        - $ref: '#/components/parameters/catalogName'
+      responses:
+        '204':
+          description: Catalog successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog not found
+  /commerce/entries/{entryCode}:
+    get:
+      operationId: getCatalogEntry
+      summary: Get a catalog entry
+      description: >-
+        Retrieves a specific catalog entry (product, variant, package,
+        or bundle) by its code.
+      tags:
+        - Catalog Entries
+      parameters:
+        - $ref: '#/components/parameters/entryCode'
+      responses:
+        '200':
+          description: Successfully retrieved the catalog entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogEntry'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog entry not found
+    put:
+      operationId: updateCatalogEntry
+      summary: Update a catalog entry
+      description: >-
+        Updates the specified catalog entry with the provided fields.
+      tags:
+        - Catalog Entries
+      parameters:
+        - $ref: '#/components/parameters/entryCode'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogEntryInput'
+      responses:
+        '200':
+          description: Catalog entry successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogEntry'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog entry not found
+    delete:
+      operationId: deleteCatalogEntry
+      summary: Delete a catalog entry
+      description: >-
+        Permanently deletes the specified catalog entry.
+      tags:
+        - Catalog Entries
+      parameters:
+        - $ref: '#/components/parameters/entryCode'
+      responses:
+        '204':
+          description: Catalog entry successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog entry not found
+  /commerce/entries/{entryCode}/commondraft/{language}:
+    put:
+      operationId: updateCatalogEntryDraft
+      summary: Update catalog entry common draft
+      description: >-
+        Updates the common draft version of a catalog entry for the
+        specified language.
+      tags:
+        - Catalog Entries
+      parameters:
+        - $ref: '#/components/parameters/entryCode'
+        - $ref: '#/components/parameters/language'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogEntryInput'
+      responses:
+        '200':
+          description: Draft successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogEntry'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog entry not found
+  /commerce/nodes/{nodeCode}:
+    get:
+      operationId: getCatalogNode
+      summary: Get a catalog node
+      description: >-
+        Retrieves a specific catalog node (category) by its code.
+      tags:
+        - Catalog Nodes
+      parameters:
+        - $ref: '#/components/parameters/nodeCode'
+      responses:
+        '200':
+          description: Successfully retrieved the catalog node
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogNode'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog node not found
+    put:
+      operationId: updateCatalogNode
+      summary: Update a catalog node
+      description: >-
+        Updates the specified catalog node with the provided fields.
+      tags:
+        - Catalog Nodes
+      parameters:
+        - $ref: '#/components/parameters/nodeCode'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogNodeInput'
+      responses:
+        '200':
+          description: Catalog node successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogNode'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog node not found
+    delete:
+      operationId: deleteCatalogNode
+      summary: Delete a catalog node
+      description: >-
+        Permanently deletes the specified catalog node.
+      tags:
+        - Catalog Nodes
+      parameters:
+        - $ref: '#/components/parameters/nodeCode'
+      responses:
+        '204':
+          description: Catalog node successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog node not found
+  /commerce/entries/{entryCode}/noderelations:
+    get:
+      operationId: getEntryNodeRelations
+      summary: Get entry node relations
+      description: >-
+        Retrieves the node relations for a specific catalog entry.
+      tags:
+        - Catalog Entry Relations
+      parameters:
+        - $ref: '#/components/parameters/entryCode'
+      responses:
+        '200':
+          description: Successfully retrieved entry node relations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NodeRelation'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog entry not found
+    put:
+      operationId: updateEntryNodeRelations
+      summary: Update entry node relations
+      description: >-
+        Updates the node relations for a specific catalog entry.
+      tags:
+        - Catalog Entry Relations
+      parameters:
+        - $ref: '#/components/parameters/entryCode'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/NodeRelationInput'
+      responses:
+        '200':
+          description: Node relations successfully updated
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog entry not found
+  /commerce/orders/{customerId}/all:
+    get:
+      operationId: listCustomerOrders
+      summary: List customer orders
+      description: >-
+        Returns all orders for a specific customer.
+      tags:
+        - Orders
+      parameters:
+        - $ref: '#/components/parameters/customerId'
+      responses:
+        '200':
+          description: Successfully retrieved customer orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Customer not found
+  /commerce/orders/{orderGroupId}:
+    get:
+      operationId: getOrder
+      summary: Get an order
+      description: >-
+        Retrieves a specific order by its order group identifier.
+      tags:
+        - Orders
+      parameters:
+        - $ref: '#/components/parameters/orderGroupId'
+      responses:
+        '200':
+          description: Successfully retrieved the order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Order not found
+  /commerce/orders/search/{start}/{maxCount}:
+    get:
+      operationId: searchOrders
+      summary: Search orders
+      description: >-
+        Searches for orders with pagination support.
+      tags:
+        - Orders
+      parameters:
+        - name: start
+          in: path
+          required: true
+          description: Starting index for results
+          schema:
+            type: integer
+            minimum: 0
+        - name: maxCount
+          in: path
+          required: true
+          description: Maximum number of results to return
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Successfully retrieved search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          description: Authentication credentials are missing or invalid
+  /commerce/customers/{customerId}:
+    get:
+      operationId: getCustomer
+      summary: Get a customer
+      description: >-
+        Retrieves the details of a specific customer account.
+      tags:
+        - Customers
+      parameters:
+        - $ref: '#/components/parameters/customerId'
+      responses:
+        '200':
+          description: Successfully retrieved the customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Customer not found
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: >-
+        Bearer token for authenticated Commerce Service API access.
+  parameters:
+    catalogName:
+      name: catalogName
+      in: path
+      required: true
+      description: The name of the catalog
+      schema:
+        type: string
+    entryCode:
+      name: entryCode
+      in: path
+      required: true
+      description: The unique code of the catalog entry
+      schema:
+        type: string
+    nodeCode:
+      name: nodeCode
+      in: path
+      required: true
+      description: The unique code of the catalog node
+      schema:
+        type: string
+    language:
+      name: language
+      in: path
+      required: true
+      description: The language code for the content version
+      schema:
+        type: string
+    customerId:
+      name: customerId
+      in: path
+      required: true
+      description: The unique identifier for the customer
+      schema:
+        type: string
+    orderGroupId:
+      name: orderGroupId
+      in: path
+      required: true
+      description: The unique identifier for the order group
+      schema:
+        type: integer
+        format: int64
+  schemas:
+    Catalog:
+      type: object
+      description: A product catalog
+      properties:
+        name:
+          type: string
+          description: Name of the catalog
+        default_currency:
+          type: string
+          description: Default currency code
+        default_language:
+          type: string
+          description: Default language code
+        is_active:
+          type: boolean
+          description: Whether the catalog is active
+        start_date:
+          type: string
+          format: date-time
+          description: Catalog availability start date
+        end_date:
+          type: string
+          format: date-time
+          description: Catalog availability end date
+    CatalogInput:
+      type: object
+      description: Input for creating or updating a catalog
+      properties:
+        name:
+          type: string
+          description: Name of the catalog
+        default_currency:
+          type: string
+          description: Default currency code
+        default_language:
+          type: string
+          description: Default language code
+        is_active:
+          type: boolean
+          description: Whether the catalog is active
+    CatalogEntry:
+      type: object
+      description: A catalog entry (product, variant, package, or bundle)
+      properties:
+        code:
+          type: string
+          description: Unique code for the catalog entry
+        name:
+          type: string
+          description: Display name of the entry
+        entry_type:
+          type: string
+          description: Type of catalog entry
+          enum:
+            - Product
+            - Variation
+            - Package
+            - Bundle
+        start_date:
+          type: string
+          format: date-time
+          description: Availability start date
+        end_date:
+          type: string
+          format: date-time
+          description: Availability end date
+        is_active:
+          type: boolean
+          description: Whether the entry is active
+        properties:
+          type: object
+          description: Dynamic properties specific to the entry type
+          additionalProperties: true
+        prices:
+          type: array
+          description: Price information for the entry
+          items:
+            type: object
+            properties:
+              currency:
+                type: string
+                description: Currency code
+              amount:
+                type: number
+                description: Price amount
+              market_id:
+                type: string
+                description: Market identifier
+    CatalogEntryInput:
+      type: object
+      description: Input for creating or updating a catalog entry
+      properties:
+        code:
+          type: string
+          description: Unique code for the catalog entry
+        name:
+          type: string
+          description: Display name of the entry
+        entry_type:
+          type: string
+          description: Type of catalog entry
+          enum:
+            - Product
+            - Variation
+            - Package
+            - Bundle
+        is_active:
+          type: boolean
+          description: Whether the entry is active
+        properties:
+          type: object
+          description: Dynamic properties specific to the entry type
+          additionalProperties: true
+    CatalogNode:
+      type: object
+      description: A catalog node (category)
+      properties:
+        code:
+          type: string
+          description: Unique code for the node
+        name:
+          type: string
+          description: Display name of the node
+        parent_node_code:
+          type: string
+          description: Code of the parent node
+        catalog_name:
+          type: string
+          description: Name of the catalog this node belongs to
+        start_date:
+          type: string
+          format: date-time
+          description: Availability start date
+        end_date:
+          type: string
+          format: date-time
+          description: Availability end date
+        is_active:
+          type: boolean
+          description: Whether the node is active
+        sort_order:
+          type: integer
+          description: Sort order for display
+    CatalogNodeInput:
+      type: object
+      description: Input for creating or updating a catalog node
+      properties:
+        code:
+          type: string
+          description: Unique code for the node
+        name:
+          type: string
+          description: Display name of the node
+        parent_node_code:
+          type: string
+          description: Code of the parent node
+        is_active:
+          type: boolean
+          description: Whether the node is active
+        sort_order:
+          type: integer
+          description: Sort order for display
+    NodeRelation:
+      type: object
+      description: Relationship between a catalog entry and a node
+      properties:
+        node_code:
+          type: string
+          description: Code of the related node
+        catalog_name:
+          type: string
+          description: Name of the catalog
+        sort_order:
+          type: integer
+          description: Sort order within the node
+    NodeRelationInput:
+      type: object
+      description: Input for creating or updating a node relation
+      properties:
+        node_code:
+          type: string
+          description: Code of the related node
+        sort_order:
+          type: integer
+          description: Sort order within the node
+    Order:
+      type: object
+      description: A purchase order
+      properties:
+        order_group_id:
+          type: integer
+          format: int64
+          description: Unique order group identifier
+        customer_id:
+          type: string
+          description: Customer identifier
+        customer_name:
+          type: string
+          description: Customer name
+        status:
+          type: string
+          description: Current order status
+        total:
+          type: number
+          description: Order total amount
+        currency:
+          type: string
+          description: Currency code
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the order was created
+        modified:
+          type: string
+          format: date-time
+          description: Timestamp when the order was last modified
+        order_forms:
+          type: array
+          description: Order forms containing line items
+          items:
+            type: object
+            properties:
+              line_items:
+                type: array
+                description: Line items in the order form
+                items:
+                  type: object
+                  properties:
+                    catalog_entry_id:
+                      type: string
+                      description: Catalog entry code
+                    display_name:
+                      type: string
+                      description: Display name of the item
+                    quantity:
+                      type: number
+                      description: Quantity ordered
+                    placed_price:
+                      type: number
+                      description: Price at time of purchase
+    Customer:
+      type: object
+      description: A customer account
+      properties:
+        customer_id:
+          type: string
+          description: Unique customer identifier
+        first_name:
+          type: string
+          description: Customer first name
+        last_name:
+          type: string
+          description: Customer last name
+        email:
+          type: string
+          format: email
+          description: Customer email address
+        registration_date:
+          type: string
+          format: date-time
+          description: Timestamp when the customer registered

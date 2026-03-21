@@ -1,0 +1,1533 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Web Experimentation REST API
+  description: >-
+    The Optimizely Web Experimentation REST API provides programmatic access
+    to Optimizely's A/B testing and web experimentation platform. Developers
+    can manage experiments, projects, audiences, pages, events, campaigns,
+    and other resources through RESTful endpoints. The API uses OAuth2 Bearer
+    token authentication and provides access to data and services like Stats
+    Engine and customer profiles, enabling integration of experimentation
+    workflows into custom applications.
+  version: '2.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+externalDocs:
+  description: Optimizely Web Experimentation API Documentation
+  url: https://docs.developers.optimizely.com/web-experimentation/docs/rest-api-introduction
+servers:
+  - url: https://api.optimizely.com/v2
+    description: Optimizely REST API v2 Production Server
+tags:
+  - name: Projects
+    description: >-
+      Manage Optimizely projects, which serve as containers for experiments,
+      audiences, and other resources.
+  - name: Experiments
+    description: >-
+      Create, read, update, and manage A/B test experiments including
+      variations, traffic allocation, and experiment status.
+  - name: Campaigns
+    description: >-
+      Manage campaigns that group multiple experiments under a single
+      objective with shared traffic allocation.
+  - name: Pages
+    description: >-
+      Manage page definitions that specify which URLs or conditions
+      trigger experiments.
+  - name: Events
+    description: >-
+      Manage custom events used as goals and metrics for tracking
+      experiment results.
+  - name: Audiences
+    description: >-
+      Create and manage audience segments that control which visitors
+      are included in experiments.
+  - name: Attributes
+    description: >-
+      Manage custom attributes used for audience targeting and
+      segmentation of experiment results.
+  - name: Extensions
+    description: >-
+      Manage reusable extensions that encapsulate experiment logic
+      and visual changes.
+security:
+  - bearerAuth: []
+paths:
+  /projects:
+    get:
+      operationId: listProjects
+      summary: List projects
+      description: >-
+        Returns a list of all projects accessible to the authenticated user.
+        Projects are the top-level containers for experiments, audiences,
+        pages, and events.
+      tags:
+        - Projects
+      parameters:
+        - $ref: '#/components/parameters/perPage'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createProject
+      summary: Create a project
+      description: >-
+        Creates a new Optimizely project with the specified configuration
+        including name, platform, and settings.
+      tags:
+        - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInput'
+      responses:
+        '201':
+          description: Project successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /projects/{project_id}:
+    get:
+      operationId: getProject
+      summary: Get a project
+      description: >-
+        Retrieves the details of a specific project by its unique identifier.
+      tags:
+        - Projects
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      responses:
+        '200':
+          description: Successfully retrieved the project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Project not found
+    patch:
+      operationId: updateProject
+      summary: Update a project
+      description: >-
+        Updates the specified project with the provided fields. Only the
+        fields included in the request body are updated.
+      tags:
+        - Projects
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInput'
+      responses:
+        '200':
+          description: Project successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Project not found
+    delete:
+      operationId: deleteProject
+      summary: Delete a project
+      description: >-
+        Permanently deletes the specified project and all associated resources
+        including experiments, audiences, and events.
+      tags:
+        - Projects
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      responses:
+        '204':
+          description: Project successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Project not found
+  /experiments:
+    get:
+      operationId: listExperiments
+      summary: List experiments
+      description: >-
+        Returns a list of experiments for the specified project. Supports
+        filtering and pagination.
+      tags:
+        - Experiments
+      parameters:
+        - $ref: '#/components/parameters/projectIdQuery'
+        - $ref: '#/components/parameters/perPage'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of experiments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Experiment'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createExperiment
+      summary: Create an experiment
+      description: >-
+        Creates a new A/B test experiment within the specified project,
+        including variations, traffic allocation, and targeting conditions.
+      tags:
+        - Experiments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentInput'
+      responses:
+        '201':
+          description: Experiment successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /experiments/{experiment_id}:
+    get:
+      operationId: getExperiment
+      summary: Get an experiment
+      description: >-
+        Retrieves the full details of a specific experiment by its identifier,
+        including variations, metrics, and status.
+      tags:
+        - Experiments
+      parameters:
+        - $ref: '#/components/parameters/experimentId'
+      responses:
+        '200':
+          description: Successfully retrieved the experiment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Experiment not found
+    patch:
+      operationId: updateExperiment
+      summary: Update an experiment
+      description: >-
+        Updates the specified experiment with the provided fields. Only the
+        fields included in the request body are updated.
+      tags:
+        - Experiments
+      parameters:
+        - $ref: '#/components/parameters/experimentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentInput'
+      responses:
+        '200':
+          description: Experiment successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Experiment not found
+    delete:
+      operationId: deleteExperiment
+      summary: Delete an experiment
+      description: >-
+        Archives or permanently deletes the specified experiment.
+      tags:
+        - Experiments
+      parameters:
+        - $ref: '#/components/parameters/experimentId'
+      responses:
+        '204':
+          description: Experiment successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Experiment not found
+  /experiments/{experiment_id}/results:
+    get:
+      operationId: getExperimentResults
+      summary: Get experiment results
+      description: >-
+        Retrieves the statistical results for a specific experiment,
+        including conversion rates, confidence intervals, and statistical
+        significance computed by Stats Engine.
+      tags:
+        - Experiments
+      parameters:
+        - $ref: '#/components/parameters/experimentId'
+      responses:
+        '200':
+          description: Successfully retrieved experiment results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentResults'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Experiment not found
+  /campaigns:
+    get:
+      operationId: listCampaigns
+      summary: List campaigns
+      description: >-
+        Returns a list of campaigns for the specified project. Campaigns
+        group multiple experiments under a single objective.
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '#/components/parameters/projectIdQuery'
+        - $ref: '#/components/parameters/perPage'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Campaign'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createCampaign
+      summary: Create a campaign
+      description: >-
+        Creates a new campaign within the specified project.
+      tags:
+        - Campaigns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignInput'
+      responses:
+        '201':
+          description: Campaign successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Campaign'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /campaigns/{campaign_id}:
+    get:
+      operationId: getCampaign
+      summary: Get a campaign
+      description: >-
+        Retrieves the full details of a specific campaign by its identifier.
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '#/components/parameters/campaignId'
+      responses:
+        '200':
+          description: Successfully retrieved the campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Campaign'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Campaign not found
+    patch:
+      operationId: updateCampaign
+      summary: Update a campaign
+      description: >-
+        Updates the specified campaign with the provided fields.
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '#/components/parameters/campaignId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignInput'
+      responses:
+        '200':
+          description: Campaign successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Campaign'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Campaign not found
+    delete:
+      operationId: deleteCampaign
+      summary: Delete a campaign
+      description: >-
+        Archives or permanently deletes the specified campaign.
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '#/components/parameters/campaignId'
+      responses:
+        '204':
+          description: Campaign successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Campaign not found
+  /campaigns/{campaign_id}/results:
+    get:
+      operationId: getCampaignResults
+      summary: Get campaign results
+      description: >-
+        Retrieves the statistical results for a specific campaign.
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '#/components/parameters/campaignId'
+      responses:
+        '200':
+          description: Successfully retrieved campaign results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentResults'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Campaign not found
+  /pages:
+    get:
+      operationId: listPages
+      summary: List pages
+      description: >-
+        Returns a list of pages for the specified project. Pages define
+        URL targeting conditions for experiments.
+      tags:
+        - Pages
+      parameters:
+        - $ref: '#/components/parameters/projectIdQuery'
+        - $ref: '#/components/parameters/perPage'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of pages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Page'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createPage
+      summary: Create a page
+      description: >-
+        Creates a new page definition within the specified project.
+      tags:
+        - Pages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageInput'
+      responses:
+        '201':
+          description: Page successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /pages/{page_id}:
+    get:
+      operationId: getPage
+      summary: Get a page
+      description: >-
+        Retrieves the full details of a specific page by its identifier.
+      tags:
+        - Pages
+      parameters:
+        - $ref: '#/components/parameters/pageId'
+      responses:
+        '200':
+          description: Successfully retrieved the page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Page not found
+    patch:
+      operationId: updatePage
+      summary: Update a page
+      description: >-
+        Updates the specified page with the provided fields.
+      tags:
+        - Pages
+      parameters:
+        - $ref: '#/components/parameters/pageId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageInput'
+      responses:
+        '200':
+          description: Page successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Page not found
+    delete:
+      operationId: deletePage
+      summary: Delete a page
+      description: >-
+        Permanently deletes the specified page.
+      tags:
+        - Pages
+      parameters:
+        - $ref: '#/components/parameters/pageId'
+      responses:
+        '204':
+          description: Page successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Page not found
+  /events:
+    get:
+      operationId: listEvents
+      summary: List events
+      description: >-
+        Returns a list of custom events for the specified project. Events
+        are used as goals and metrics in experiments.
+      tags:
+        - Events
+      parameters:
+        - $ref: '#/components/parameters/projectIdQuery'
+        - $ref: '#/components/parameters/perPage'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createEvent
+      summary: Create an event
+      description: >-
+        Creates a new custom event within the specified project.
+      tags:
+        - Events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventInput'
+      responses:
+        '201':
+          description: Event successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /events/{event_id}:
+    get:
+      operationId: getEvent
+      summary: Get an event
+      description: >-
+        Retrieves the full details of a specific event by its identifier.
+      tags:
+        - Events
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '200':
+          description: Successfully retrieved the event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Event not found
+    patch:
+      operationId: updateEvent
+      summary: Update an event
+      description: >-
+        Updates the specified event with the provided fields.
+      tags:
+        - Events
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventInput'
+      responses:
+        '200':
+          description: Event successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Event not found
+    delete:
+      operationId: deleteEvent
+      summary: Delete an event
+      description: >-
+        Permanently deletes the specified event.
+      tags:
+        - Events
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '204':
+          description: Event successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Event not found
+  /audiences:
+    get:
+      operationId: listAudiences
+      summary: List audiences
+      description: >-
+        Returns a list of audiences for the specified project. Audiences
+        define visitor segments that control experiment targeting.
+      tags:
+        - Audiences
+      parameters:
+        - $ref: '#/components/parameters/projectIdQuery'
+        - $ref: '#/components/parameters/perPage'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of audiences
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Audience'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createAudience
+      summary: Create an audience
+      description: >-
+        Creates a new audience within the specified project with the
+        given targeting conditions.
+      tags:
+        - Audiences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AudienceInput'
+      responses:
+        '201':
+          description: Audience successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Audience'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /audiences/{audience_id}:
+    get:
+      operationId: getAudience
+      summary: Get an audience
+      description: >-
+        Retrieves the full details of a specific audience by its identifier.
+      tags:
+        - Audiences
+      parameters:
+        - $ref: '#/components/parameters/audienceId'
+      responses:
+        '200':
+          description: Successfully retrieved the audience
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Audience'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Audience not found
+    patch:
+      operationId: updateAudience
+      summary: Update an audience
+      description: >-
+        Updates the specified audience with the provided fields.
+      tags:
+        - Audiences
+      parameters:
+        - $ref: '#/components/parameters/audienceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AudienceInput'
+      responses:
+        '200':
+          description: Audience successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Audience'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Audience not found
+  /attributes:
+    get:
+      operationId: listAttributes
+      summary: List attributes
+      description: >-
+        Returns a list of custom attributes for the specified project.
+        Attributes are used for audience targeting and result segmentation.
+      tags:
+        - Attributes
+      parameters:
+        - $ref: '#/components/parameters/projectIdQuery'
+        - $ref: '#/components/parameters/perPage'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of attributes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attribute'
+        '401':
+          description: Authentication credentials are missing or invalid
+  /extensions:
+    get:
+      operationId: listExtensions
+      summary: List extensions
+      description: >-
+        Returns a list of extensions for the specified project. Extensions
+        are reusable templates for experiment changes.
+      tags:
+        - Extensions
+      parameters:
+        - $ref: '#/components/parameters/projectIdQuery'
+        - $ref: '#/components/parameters/perPage'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of extensions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Extension'
+        '401':
+          description: Authentication credentials are missing or invalid
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: >-
+        OAuth 2.0 Bearer token or personal access token generated from
+        the Optimizely application settings.
+  parameters:
+    projectId:
+      name: project_id
+      in: path
+      required: true
+      description: The unique identifier for the project
+      schema:
+        type: integer
+        format: int64
+    projectIdQuery:
+      name: project_id
+      in: query
+      required: true
+      description: The unique identifier for the project to filter by
+      schema:
+        type: integer
+        format: int64
+    experimentId:
+      name: experiment_id
+      in: path
+      required: true
+      description: The unique identifier for the experiment
+      schema:
+        type: integer
+        format: int64
+    campaignId:
+      name: campaign_id
+      in: path
+      required: true
+      description: The unique identifier for the campaign
+      schema:
+        type: integer
+        format: int64
+    pageId:
+      name: page_id
+      in: path
+      required: true
+      description: The unique identifier for the page
+      schema:
+        type: integer
+        format: int64
+    eventId:
+      name: event_id
+      in: path
+      required: true
+      description: The unique identifier for the event
+      schema:
+        type: integer
+        format: int64
+    audienceId:
+      name: audience_id
+      in: path
+      required: true
+      description: The unique identifier for the audience
+      schema:
+        type: integer
+        format: int64
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    page:
+      name: page
+      in: query
+      required: false
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+  schemas:
+    Project:
+      type: object
+      description: An Optimizely project that contains experiments, audiences, and other resources
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the project
+        name:
+          type: string
+          description: Human-readable name of the project
+        account_id:
+          type: integer
+          format: int64
+          description: The account this project belongs to
+        platform:
+          type: string
+          description: The platform type for this project
+          enum:
+            - web
+            - custom
+        status:
+          type: string
+          description: Current status of the project
+          enum:
+            - active
+            - archived
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the project was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the project was last modified
+        web_snippet:
+          type: object
+          description: Configuration for the JavaScript snippet
+          properties:
+            enable_force_variation:
+              type: boolean
+              description: Whether force variation is enabled
+            exclude_disabled_experiments:
+              type: boolean
+              description: Whether to exclude disabled experiments from the snippet
+            code_revision:
+              type: integer
+              description: Current revision of the snippet code
+            js_file_size:
+              type: integer
+              description: Size of the JavaScript file in bytes
+    ProjectInput:
+      type: object
+      description: Input for creating or updating a project
+      properties:
+        name:
+          type: string
+          description: Human-readable name of the project
+        platform:
+          type: string
+          description: The platform type for this project
+          enum:
+            - web
+            - custom
+        status:
+          type: string
+          description: Current status of the project
+          enum:
+            - active
+            - archived
+    Experiment:
+      type: object
+      description: An A/B test experiment with variations and targeting
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the experiment
+        project_id:
+          type: integer
+          format: int64
+          description: The project this experiment belongs to
+        name:
+          type: string
+          description: Human-readable name of the experiment
+        description:
+          type: string
+          description: Description of the experiment purpose
+        status:
+          type: string
+          description: Current status of the experiment
+          enum:
+            - active
+            - paused
+            - not_started
+            - archived
+        type:
+          type: string
+          description: The type of experiment
+          enum:
+            - a/b
+            - multiarmed_bandit
+            - multivariate
+        holdback:
+          type: integer
+          description: Percentage of traffic held back from the experiment
+          minimum: 0
+          maximum: 10000
+        variations:
+          type: array
+          description: List of variations in the experiment
+          items:
+            $ref: '#/components/schemas/Variation'
+        metrics:
+          type: array
+          description: List of metrics tracked by the experiment
+          items:
+            $ref: '#/components/schemas/Metric'
+        audience_conditions:
+          type: string
+          description: JSON-encoded audience targeting conditions
+        page_ids:
+          type: array
+          description: List of page IDs the experiment runs on
+          items:
+            type: integer
+            format: int64
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the experiment was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the experiment was last modified
+    ExperimentInput:
+      type: object
+      description: Input for creating or updating an experiment
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this experiment belongs to
+        name:
+          type: string
+          description: Human-readable name of the experiment
+        description:
+          type: string
+          description: Description of the experiment purpose
+        status:
+          type: string
+          description: Current status of the experiment
+          enum:
+            - active
+            - paused
+            - not_started
+            - archived
+        type:
+          type: string
+          description: The type of experiment
+          enum:
+            - a/b
+            - multiarmed_bandit
+            - multivariate
+        holdback:
+          type: integer
+          description: Percentage of traffic held back from the experiment
+          minimum: 0
+          maximum: 10000
+        variations:
+          type: array
+          description: List of variations in the experiment
+          items:
+            $ref: '#/components/schemas/VariationInput'
+        metrics:
+          type: array
+          description: List of metrics tracked by the experiment
+          items:
+            $ref: '#/components/schemas/Metric'
+        audience_conditions:
+          type: string
+          description: JSON-encoded audience targeting conditions
+        page_ids:
+          type: array
+          description: List of page IDs the experiment runs on
+          items:
+            type: integer
+            format: int64
+    Variation:
+      type: object
+      description: A variation within an experiment
+      properties:
+        variation_id:
+          type: integer
+          format: int64
+          description: Unique identifier for the variation
+        name:
+          type: string
+          description: Name of the variation
+        weight:
+          type: integer
+          description: Traffic allocation weight for the variation
+          minimum: 0
+          maximum: 10000
+        actions:
+          type: array
+          description: List of actions (changes) applied in this variation
+          items:
+            type: object
+            properties:
+              page_id:
+                type: integer
+                format: int64
+                description: The page this action applies to
+              changes:
+                type: array
+                description: List of changes applied on the page
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: The type of change
+                    value:
+                      type: string
+                      description: The change value
+    VariationInput:
+      type: object
+      description: Input for creating or updating a variation
+      properties:
+        name:
+          type: string
+          description: Name of the variation
+        weight:
+          type: integer
+          description: Traffic allocation weight for the variation
+          minimum: 0
+          maximum: 10000
+    Metric:
+      type: object
+      description: A metric used to measure experiment results
+      properties:
+        event_id:
+          type: integer
+          format: int64
+          description: The event ID this metric tracks
+        aggregator:
+          type: string
+          description: How to aggregate the metric
+          enum:
+            - unique
+            - count
+            - sum
+        field:
+          type: string
+          description: The field to aggregate on
+        scope:
+          type: string
+          description: The scope of the metric
+          enum:
+            - visitor
+            - session
+            - event
+        winning_direction:
+          type: string
+          description: The direction that indicates improvement
+          enum:
+            - increasing
+            - decreasing
+    ExperimentResults:
+      type: object
+      description: Statistical results for an experiment
+      properties:
+        experiment_id:
+          type: integer
+          format: int64
+          description: The experiment these results belong to
+        start_time:
+          type: string
+          format: date-time
+          description: Start time of the results period
+        end_time:
+          type: string
+          format: date-time
+          description: End time of the results period
+        reach:
+          type: object
+          description: Reach statistics for the experiment
+          properties:
+            variations:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: Number of visitors in this variation
+                  variation_id:
+                    type: string
+                    description: The variation identifier
+        metrics:
+          type: array
+          description: Results for each metric
+          items:
+            type: object
+            properties:
+              event_id:
+                type: integer
+                format: int64
+                description: The event ID for this metric
+              results:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    is_baseline:
+                      type: boolean
+                      description: Whether this is the baseline variation
+                    value:
+                      type: number
+                      description: The metric value
+                    lift:
+                      type: object
+                      description: Lift compared to baseline
+                      properties:
+                        value:
+                          type: number
+                          description: Lift percentage
+                        is_significant:
+                          type: boolean
+                          description: Whether the lift is statistically significant
+                        significance:
+                          type: number
+                          description: Statistical significance level
+    Campaign:
+      type: object
+      description: A campaign that groups experiments under a shared objective
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the campaign
+        project_id:
+          type: integer
+          format: int64
+          description: The project this campaign belongs to
+        name:
+          type: string
+          description: Human-readable name of the campaign
+        status:
+          type: string
+          description: Current status of the campaign
+          enum:
+            - active
+            - paused
+            - not_started
+            - archived
+        experiment_ids:
+          type: array
+          description: List of experiment IDs in this campaign
+          items:
+            type: integer
+            format: int64
+        page_ids:
+          type: array
+          description: List of page IDs the campaign targets
+          items:
+            type: integer
+            format: int64
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the campaign was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the campaign was last modified
+    CampaignInput:
+      type: object
+      description: Input for creating or updating a campaign
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this campaign belongs to
+        name:
+          type: string
+          description: Human-readable name of the campaign
+        status:
+          type: string
+          description: Current status of the campaign
+          enum:
+            - active
+            - paused
+            - not_started
+            - archived
+    Page:
+      type: object
+      description: A page definition that specifies URL targeting conditions
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the page
+        project_id:
+          type: integer
+          format: int64
+          description: The project this page belongs to
+        name:
+          type: string
+          description: Human-readable name of the page
+        edit_url:
+          type: string
+          format: uri
+          description: URL used in the visual editor for this page
+        conditions:
+          type: string
+          description: JSON-encoded URL targeting conditions
+        activation_type:
+          type: string
+          description: How the page is activated
+          enum:
+            - immediate
+            - polling
+            - callback
+            - manual
+            - dom_changed
+            - url_changed
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the page was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the page was last modified
+    PageInput:
+      type: object
+      description: Input for creating or updating a page
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this page belongs to
+        name:
+          type: string
+          description: Human-readable name of the page
+        edit_url:
+          type: string
+          format: uri
+          description: URL used in the visual editor for this page
+        conditions:
+          type: string
+          description: JSON-encoded URL targeting conditions
+        activation_type:
+          type: string
+          description: How the page is activated
+          enum:
+            - immediate
+            - polling
+            - callback
+            - manual
+            - dom_changed
+            - url_changed
+    Event:
+      type: object
+      description: A custom event used as a goal or metric
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the event
+        project_id:
+          type: integer
+          format: int64
+          description: The project this event belongs to
+        name:
+          type: string
+          description: Human-readable name of the event
+        key:
+          type: string
+          description: Unique key for the event within the project
+        event_type:
+          type: string
+          description: Type of the event
+          enum:
+            - custom
+            - click
+            - pageview
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the event was created
+        is_editable:
+          type: boolean
+          description: Whether the event can be edited
+    EventInput:
+      type: object
+      description: Input for creating or updating an event
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this event belongs to
+        name:
+          type: string
+          description: Human-readable name of the event
+        key:
+          type: string
+          description: Unique key for the event within the project
+        event_type:
+          type: string
+          description: Type of the event
+          enum:
+            - custom
+            - click
+            - pageview
+    Audience:
+      type: object
+      description: An audience segment for experiment targeting
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the audience
+        project_id:
+          type: integer
+          format: int64
+          description: The project this audience belongs to
+        name:
+          type: string
+          description: Human-readable name of the audience
+        description:
+          type: string
+          description: Description of the audience criteria
+        conditions:
+          type: string
+          description: JSON-encoded audience conditions
+        is_classic:
+          type: boolean
+          description: Whether this is a classic audience
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the audience was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the audience was last modified
+    AudienceInput:
+      type: object
+      description: Input for creating or updating an audience
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this audience belongs to
+        name:
+          type: string
+          description: Human-readable name of the audience
+        description:
+          type: string
+          description: Description of the audience criteria
+        conditions:
+          type: string
+          description: JSON-encoded audience conditions
+    Attribute:
+      type: object
+      description: A custom attribute for audience targeting and segmentation
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the attribute
+        project_id:
+          type: integer
+          format: int64
+          description: The project this attribute belongs to
+        name:
+          type: string
+          description: Human-readable name of the attribute
+        key:
+          type: string
+          description: Unique key for the attribute within the project
+        condition_type:
+          type: string
+          description: The type of condition this attribute supports
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the attribute was last modified
+    Extension:
+      type: object
+      description: A reusable extension that encapsulates experiment logic
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the extension
+        project_id:
+          type: integer
+          format: int64
+          description: The project this extension belongs to
+        name:
+          type: string
+          description: Human-readable name of the extension
+        description:
+          type: string
+          description: Description of the extension
+        edit_url:
+          type: string
+          format: uri
+          description: URL used in the visual editor
+        implementation:
+          type: object
+          description: The implementation details for the extension
+          properties:
+            apply_js:
+              type: string
+              description: JavaScript code to apply the extension
+            undo_js:
+              type: string
+              description: JavaScript code to undo the extension
+            html:
+              type: string
+              description: HTML content of the extension
+            css:
+              type: string
+              description: CSS styles of the extension

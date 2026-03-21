@@ -1,0 +1,475 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Content Delivery API
+  description: >-
+    The Optimizely Content Delivery API is a flexible REST API for building
+    headless CMS solutions with Optimizely CMS. It provides a pluggable and
+    configurable web API for querying content, enabling developers to deliver
+    content to any frontend framework or channel. The API supports content
+    retrieval, filtering, expansion of content references, and querying of
+    sites and content types for building decoupled architectures using
+    frameworks like React, Vue, or Angular.
+  version: '3.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+externalDocs:
+  description: Optimizely Content Delivery API Documentation
+  url: https://docs.developers.optimizely.com/content-management-system/v1.5.0-content-delivery-api/docs/content-delivery-api
+servers:
+  - url: '{siteUrl}/api/episerver/v3.0'
+    description: Optimizely CMS Content Delivery API endpoint
+    variables:
+      siteUrl:
+        default: https://www.example.com
+        description: The base URL of the Optimizely CMS site
+tags:
+  - name: Content
+    description: >-
+      Retrieve published content items including pages, blocks, media,
+      and other content types.
+  - name: Sites
+    description: >-
+      Retrieve site definitions including language settings and
+      configuration.
+  - name: Content Types
+    description: >-
+      Retrieve available content type definitions.
+security:
+  - bearerAuth: []
+  - anonymous: []
+paths:
+  /content:
+    get:
+      operationId: listContent
+      summary: List content items
+      description: >-
+        Returns a list of content items based on the provided query
+        parameters. Supports filtering by content type, language, and
+        other criteria.
+      tags:
+        - Content
+      parameters:
+        - $ref: '#/components/parameters/language'
+        - $ref: '#/components/parameters/expand'
+        - $ref: '#/components/parameters/select'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderby'
+        - $ref: '#/components/parameters/top'
+        - $ref: '#/components/parameters/skip'
+      responses:
+        '200':
+          description: Successfully retrieved content items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    description: List of content items
+                    items:
+                      $ref: '#/components/schemas/ContentItem'
+                  totalMatching:
+                    type: integer
+                    description: Total number of matching content items
+        '401':
+          description: Authentication credentials are missing or invalid
+  /content/{contentId}:
+    get:
+      operationId: getContent
+      summary: Get a content item
+      description: >-
+        Retrieves a specific content item by its identifier. Returns the
+        latest published version of the content along with its properties
+        and referenced content.
+      tags:
+        - Content
+      parameters:
+        - $ref: '#/components/parameters/contentId'
+        - $ref: '#/components/parameters/language'
+        - $ref: '#/components/parameters/expand'
+        - $ref: '#/components/parameters/select'
+      responses:
+        '200':
+          description: Successfully retrieved the content item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content item not found
+  /content/{contentId}/children:
+    get:
+      operationId: getContentChildren
+      summary: Get content children
+      description: >-
+        Retrieves the child content items of a specific content item.
+        Useful for navigating content hierarchies such as page trees.
+      tags:
+        - Content
+      parameters:
+        - $ref: '#/components/parameters/contentId'
+        - $ref: '#/components/parameters/language'
+        - $ref: '#/components/parameters/expand'
+        - $ref: '#/components/parameters/top'
+        - $ref: '#/components/parameters/skip'
+      responses:
+        '200':
+          description: Successfully retrieved child content items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    description: List of child content items
+                    items:
+                      $ref: '#/components/schemas/ContentItem'
+                  totalMatching:
+                    type: integer
+                    description: Total number of child content items
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Parent content item not found
+  /content/{contentId}/ancestors:
+    get:
+      operationId: getContentAncestors
+      summary: Get content ancestors
+      description: >-
+        Retrieves the ancestor content items of a specific content item,
+        representing the path from the root to the content item.
+      tags:
+        - Content
+      parameters:
+        - $ref: '#/components/parameters/contentId'
+        - $ref: '#/components/parameters/language'
+        - $ref: '#/components/parameters/expand'
+      responses:
+        '200':
+          description: Successfully retrieved ancestor content items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContentItem'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content item not found
+  /site:
+    get:
+      operationId: listSites
+      summary: List sites
+      description: >-
+        Returns a list of site definitions configured in the Optimizely
+        CMS instance, including language settings and site URLs.
+      tags:
+        - Sites
+      parameters:
+        - $ref: '#/components/parameters/language'
+      responses:
+        '200':
+          description: Successfully retrieved site definitions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Site'
+        '401':
+          description: Authentication credentials are missing or invalid
+  /contenttypes:
+    get:
+      operationId: listContentTypes
+      summary: List content types
+      description: >-
+        Returns a list of available content type definitions in the
+        Optimizely CMS instance.
+      tags:
+        - Content Types
+      responses:
+        '200':
+          description: Successfully retrieved content types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContentType'
+        '401':
+          description: Authentication credentials are missing or invalid
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: >-
+        OAuth 2.0 or OpenID Connect Bearer token for authenticated access.
+    anonymous:
+      type: http
+      scheme: bearer
+      description: >-
+        Anonymous access for publicly available content.
+  parameters:
+    contentId:
+      name: contentId
+      in: path
+      required: true
+      description: The unique identifier or content reference for the content item
+      schema:
+        type: string
+    language:
+      name: language
+      in: query
+      required: false
+      description: The language code for content retrieval
+      schema:
+        type: string
+        example: en
+    expand:
+      name: expand
+      in: query
+      required: false
+      description: Comma-separated list of content references to expand inline
+      schema:
+        type: string
+    select:
+      name: select
+      in: query
+      required: false
+      description: Comma-separated list of properties to include in the response
+      schema:
+        type: string
+    filter:
+      name: filter
+      in: query
+      required: false
+      description: OData-style filter expression for content items
+      schema:
+        type: string
+    orderby:
+      name: orderby
+      in: query
+      required: false
+      description: OData-style ordering expression
+      schema:
+        type: string
+    top:
+      name: top
+      in: query
+      required: false
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        minimum: 1
+    skip:
+      name: skip
+      in: query
+      required: false
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        minimum: 0
+  schemas:
+    ContentItem:
+      type: object
+      description: A content item such as a page, block, or media file
+      properties:
+        contentLink:
+          type: object
+          description: Reference to this content item
+          properties:
+            id:
+              type: integer
+              description: Numeric content ID
+            workId:
+              type: integer
+              description: Work ID for versioning
+            guidValue:
+              type: string
+              format: uuid
+              description: GUID for the content item
+            providerName:
+              type: string
+              description: Content provider name
+            url:
+              type: string
+              format: uri
+              description: URL to access this content via the API
+        name:
+          type: string
+          description: Display name of the content item
+        language:
+          type: object
+          description: Language information for this content item
+          properties:
+            link:
+              type: string
+              format: uri
+              description: Language-specific URL
+            displayName:
+              type: string
+              description: Display name of the language
+            name:
+              type: string
+              description: Language code
+        existingLanguages:
+          type: array
+          description: List of available language versions
+          items:
+            type: object
+            properties:
+              link:
+                type: string
+                format: uri
+                description: URL for the language version
+              displayName:
+                type: string
+                description: Display name of the language
+              name:
+                type: string
+                description: Language code
+        masterLanguage:
+          type: object
+          description: The master language of this content item
+          properties:
+            link:
+              type: string
+              format: uri
+              description: URL for the master language version
+            displayName:
+              type: string
+              description: Display name of the master language
+            name:
+              type: string
+              description: Master language code
+        contentType:
+          type: array
+          description: Content type hierarchy
+          items:
+            type: string
+        parentLink:
+          type: object
+          description: Reference to the parent content item
+          properties:
+            id:
+              type: integer
+              description: Parent content ID
+            url:
+              type: string
+              format: uri
+              description: URL to access the parent content
+        routeSegment:
+          type: string
+          description: URL segment for routing
+        url:
+          type: string
+          format: uri
+          description: Public URL of the content
+        changed:
+          type: string
+          format: date-time
+          description: Timestamp when the content was last changed
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the content was created
+        startPublish:
+          type: string
+          format: date-time
+          description: Timestamp when the content was published
+        status:
+          type: string
+          description: Publication status of the content
+    Site:
+      type: object
+      description: A site definition in the Optimizely CMS instance
+      properties:
+        name:
+          type: string
+          description: Name of the site
+        contentRoots:
+          type: object
+          description: Root content references for the site
+          additionalProperties:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Content ID
+              url:
+                type: string
+                format: uri
+                description: URL to the content
+        languages:
+          type: array
+          description: Languages configured for the site
+          items:
+            type: object
+            properties:
+              displayName:
+                type: string
+                description: Display name of the language
+              name:
+                type: string
+                description: Language code
+              isMasterLanguage:
+                type: boolean
+                description: Whether this is the master language
+              urlSegment:
+                type: string
+                description: URL segment for the language
+              url:
+                type: string
+                format: uri
+                description: Language-specific site URL
+        hosts:
+          type: array
+          description: Host names configured for the site
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Host name
+              type:
+                type: string
+                description: Host type
+    ContentType:
+      type: object
+      description: A content type definition
+      properties:
+        name:
+          type: string
+          description: Name of the content type
+        displayName:
+          type: string
+          description: Display name of the content type
+        description:
+          type: string
+          description: Description of the content type
+        base:
+          type: string
+          description: Base content type
+        properties:
+          type: object
+          description: Properties defined on the content type
+          additionalProperties:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Property data type
+              displayName:
+                type: string
+                description: Display name of the property
+              sortOrder:
+                type: integer
+                description: Sort order for the property

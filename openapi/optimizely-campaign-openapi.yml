@@ -1,0 +1,655 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST API
+  description: >-
+    The Optimizely Campaign REST API provides programmatic access to
+    Optimizely's email and omnichannel campaign management capabilities.
+    Developers can use the API to manage campaigns, recipients, mailing
+    lists, smart campaigns, transactional mails, and messaging workflows.
+    The API is hosted at api.campaign.episerver.net and supports automation
+    of marketing campaign operations, enabling integration with external
+    systems and custom marketing workflows. The base URL includes the
+    client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+servers:
+  - url: https://api.campaign.episerver.net/rest
+    description: Optimizely Campaign Production Server
+tags:
+  - name: Recipients
+    description: >-
+      Manage recipients and recipient lists for email campaigns.
+  - name: Smart Campaigns
+    description: >-
+      Manage smart campaigns that automate multi-step marketing workflows.
+  - name: Transactional Mail
+    description: >-
+      Send transactional emails triggered by recipient actions or events.
+  - name: Mailing Lists
+    description: >-
+      Manage mailing lists used for campaign distribution.
+  - name: Unsubscribes
+    description: >-
+      Manage unsubscribe lists for opt-out recipients.
+  - name: Assets
+    description: >-
+      Manage campaign assets such as images and media files.
+security:
+  - basicAuth: []
+paths:
+  /{clientId}/recipients/{recipientListId}:
+    get:
+      operationId: listRecipients
+      summary: List recipients
+      description: >-
+        Returns a list of recipients from the specified recipient list.
+      tags:
+        - Recipients
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+        - $ref: '#/components/parameters/recipientListId'
+      responses:
+        '200':
+          description: Successfully retrieved recipients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recipient'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Recipient list not found
+    post:
+      operationId: addRecipient
+      summary: Add a recipient
+      description: >-
+        Adds a new recipient to the specified recipient list.
+      tags:
+        - Recipients
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+        - $ref: '#/components/parameters/recipientListId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipientInput'
+      responses:
+        '201':
+          description: Recipient successfully added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipient'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Recipient list not found
+  /{clientId}/recipients/{recipientListId}/{recipientId}:
+    get:
+      operationId: getRecipient
+      summary: Get a recipient
+      description: >-
+        Retrieves the details of a specific recipient from a recipient list.
+      tags:
+        - Recipients
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+        - $ref: '#/components/parameters/recipientListId'
+        - $ref: '#/components/parameters/recipientId'
+      responses:
+        '200':
+          description: Successfully retrieved the recipient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipient'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Recipient not found
+    put:
+      operationId: updateRecipient
+      summary: Update a recipient
+      description: >-
+        Updates the specified recipient with the provided fields.
+      tags:
+        - Recipients
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+        - $ref: '#/components/parameters/recipientListId'
+        - $ref: '#/components/parameters/recipientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipientInput'
+      responses:
+        '200':
+          description: Recipient successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipient'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Recipient not found
+    delete:
+      operationId: deleteRecipient
+      summary: Delete a recipient
+      description: >-
+        Removes a recipient from the specified recipient list.
+      tags:
+        - Recipients
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+        - $ref: '#/components/parameters/recipientListId'
+        - $ref: '#/components/parameters/recipientId'
+      responses:
+        '204':
+          description: Recipient successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Recipient not found
+  /{clientId}/smartcampaigns:
+    get:
+      operationId: listSmartCampaigns
+      summary: List smart campaigns
+      description: >-
+        Returns a list of smart campaigns for the specified client.
+      tags:
+        - Smart Campaigns
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+      responses:
+        '200':
+          description: Successfully retrieved smart campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SmartCampaign'
+        '401':
+          description: Authentication credentials are missing or invalid
+  /{clientId}/smartcampaigns/{campaignId}:
+    get:
+      operationId: getSmartCampaign
+      summary: Get a smart campaign
+      description: >-
+        Retrieves the details of a specific smart campaign.
+      tags:
+        - Smart Campaigns
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+        - $ref: '#/components/parameters/campaignId'
+      responses:
+        '200':
+          description: Successfully retrieved the smart campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartCampaign'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Smart campaign not found
+  /{clientId}/smartcampaigns/{campaignId}/start:
+    post:
+      operationId: startSmartCampaign
+      summary: Start a smart campaign
+      description: >-
+        Starts the specified smart campaign, beginning the automated
+        workflow execution.
+      tags:
+        - Smart Campaigns
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+        - $ref: '#/components/parameters/campaignId'
+      responses:
+        '200':
+          description: Smart campaign successfully started
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Smart campaign not found
+  /{clientId}/smartcampaigns/{campaignId}/pause:
+    post:
+      operationId: pauseSmartCampaign
+      summary: Pause a smart campaign
+      description: >-
+        Pauses the specified smart campaign.
+      tags:
+        - Smart Campaigns
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+        - $ref: '#/components/parameters/campaignId'
+      responses:
+        '200':
+          description: Smart campaign successfully paused
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Smart campaign not found
+  /{clientId}/transactionalmail:
+    post:
+      operationId: sendTransactionalMail
+      summary: Send a transactional mail
+      description: >-
+        Sends a transactional email to a specific recipient. Transactional
+        mails are triggered by recipient actions or events such as order
+        confirmations, password resets, or account notifications.
+      tags:
+        - Transactional Mail
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionalMailInput'
+      responses:
+        '200':
+          description: Transactional mail successfully sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionalMailResponse'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /{clientId}/mailinglists:
+    get:
+      operationId: listMailingLists
+      summary: List mailing lists
+      description: >-
+        Returns a list of mailing lists for the specified client.
+      tags:
+        - Mailing Lists
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+      responses:
+        '200':
+          description: Successfully retrieved mailing lists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MailingList'
+        '401':
+          description: Authentication credentials are missing or invalid
+  /{clientId}/mailinglists/{mailingListId}:
+    get:
+      operationId: getMailingList
+      summary: Get a mailing list
+      description: >-
+        Retrieves the details of a specific mailing list.
+      tags:
+        - Mailing Lists
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+        - $ref: '#/components/parameters/mailingListId'
+      responses:
+        '200':
+          description: Successfully retrieved the mailing list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailingList'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Mailing list not found
+  /{clientId}/unsubscribes:
+    get:
+      operationId: listUnsubscribes
+      summary: List unsubscribes
+      description: >-
+        Returns a list of recipients who have unsubscribed from communications.
+      tags:
+        - Unsubscribes
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+      responses:
+        '200':
+          description: Successfully retrieved unsubscribes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unsubscribe'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: addUnsubscribe
+      summary: Add an unsubscribe
+      description: >-
+        Adds a recipient to the unsubscribe list.
+      tags:
+        - Unsubscribes
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnsubscribeInput'
+      responses:
+        '201':
+          description: Unsubscribe successfully added
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /{clientId}/assets:
+    get:
+      operationId: listAssets
+      summary: List assets
+      description: >-
+        Returns a list of campaign assets such as images and media files.
+      tags:
+        - Assets
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+      responses:
+        '200':
+          description: Successfully retrieved assets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asset'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: uploadAsset
+      summary: Upload an asset
+      description: >-
+        Uploads a new asset for use in campaigns.
+      tags:
+        - Assets
+      parameters:
+        - $ref: '#/components/parameters/clientId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The asset file to upload
+                name:
+                  type: string
+                  description: Name of the asset
+      responses:
+        '201':
+          description: Asset successfully uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: >-
+        HTTP Basic authentication using the Optimizely Campaign API
+        credentials.
+  parameters:
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
+    recipientListId:
+      name: recipientListId
+      in: path
+      required: true
+      description: The unique identifier for the recipient list
+      schema:
+        type: integer
+        format: int64
+    recipientId:
+      name: recipientId
+      in: path
+      required: true
+      description: The unique identifier for the recipient
+      schema:
+        type: integer
+        format: int64
+    campaignId:
+      name: campaignId
+      in: path
+      required: true
+      description: The unique identifier for the campaign
+      schema:
+        type: integer
+        format: int64
+    mailingListId:
+      name: mailingListId
+      in: path
+      required: true
+      description: The unique identifier for the mailing list
+      schema:
+        type: integer
+        format: int64
+  schemas:
+    Recipient:
+      type: object
+      description: A recipient in a mailing list
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the recipient
+        email:
+          type: string
+          format: email
+          description: Email address of the recipient
+        first_name:
+          type: string
+          description: First name of the recipient
+        last_name:
+          type: string
+          description: Last name of the recipient
+        status:
+          type: string
+          description: Subscription status of the recipient
+          enum:
+            - active
+            - unsubscribed
+            - bounced
+        custom_fields:
+          type: object
+          description: Custom fields associated with the recipient
+          additionalProperties:
+            type: string
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the recipient was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the recipient was last modified
+    RecipientInput:
+      type: object
+      description: Input for creating or updating a recipient
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address of the recipient
+        first_name:
+          type: string
+          description: First name of the recipient
+        last_name:
+          type: string
+          description: Last name of the recipient
+        custom_fields:
+          type: object
+          description: Custom fields associated with the recipient
+          additionalProperties:
+            type: string
+    SmartCampaign:
+      type: object
+      description: A smart campaign that automates multi-step marketing workflows
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the smart campaign
+        name:
+          type: string
+          description: Human-readable name of the smart campaign
+        status:
+          type: string
+          description: Current status of the smart campaign
+          enum:
+            - active
+            - paused
+            - draft
+            - completed
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the campaign was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the campaign was last modified
+    TransactionalMailInput:
+      type: object
+      description: Input for sending a transactional email
+      required:
+        - recipient_email
+        - mailing_id
+      properties:
+        recipient_email:
+          type: string
+          format: email
+          description: Email address of the recipient
+        mailing_id:
+          type: integer
+          format: int64
+          description: Identifier for the transactional mailing template
+        personalization:
+          type: object
+          description: Key-value pairs for personalizing the email content
+          additionalProperties:
+            type: string
+    TransactionalMailResponse:
+      type: object
+      description: Response from sending a transactional mail
+      properties:
+        status:
+          type: string
+          description: Status of the send operation
+          enum:
+            - success
+            - failed
+        message_id:
+          type: string
+          description: Unique identifier for the sent message
+    MailingList:
+      type: object
+      description: A mailing list used for campaign distribution
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the mailing list
+        name:
+          type: string
+          description: Human-readable name of the mailing list
+        recipient_count:
+          type: integer
+          description: Number of recipients in the mailing list
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the mailing list was created
+    Unsubscribe:
+      type: object
+      description: An unsubscribed recipient
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address of the unsubscribed recipient
+        unsubscribed_at:
+          type: string
+          format: date-time
+          description: Timestamp when the recipient unsubscribed
+        reason:
+          type: string
+          description: Reason for the unsubscription
+    UnsubscribeInput:
+      type: object
+      description: Input for adding an unsubscribe
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address to unsubscribe
+    Asset:
+      type: object
+      description: A campaign asset such as an image or media file
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the asset
+        name:
+          type: string
+          description: Name of the asset
+        url:
+          type: string
+          format: uri
+          description: URL to access the asset
+        content_type:
+          type: string
+          description: MIME type of the asset
+        file_size:
+          type: integer
+          description: Size of the asset file in bytes
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the asset was created

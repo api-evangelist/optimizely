@@ -1,0 +1,115 @@
+asyncapi: 2.6.0
+info:
+  title: Optimizely Feature Experimentation Webhooks
+  description: >-
+    Optimizely Feature Experimentation provides webhook notifications when
+    configuration changes occur, such as datafile updates. Webhooks notify
+    external servers of changes, eliminating the need to constantly poll
+    for updates. Each webhook request includes a signature header
+    (X-Hub-Signature) for verifying the request originated from Optimizely.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+servers:
+  webhookReceiver:
+    url: '{callbackUrl}'
+    protocol: https
+    description: >-
+      The HTTPS endpoint on your server that receives webhook
+      POST requests from Optimizely Feature Experimentation.
+    variables:
+      callbackUrl:
+        description: The callback URL registered for receiving webhooks
+channels:
+  /webhook:
+    description: >-
+      Receives webhook notifications from Optimizely Feature Experimentation
+      when project configuration changes occur, particularly datafile updates.
+    publish:
+      operationId: receiveDatafileUpdate
+      summary: Receive a datafile update notification
+      description: >-
+        Optimizely sends an HTTP POST request to the registered callback
+        URL when the datafile for a project environment is updated. The
+        payload includes the project ID, revision number, and URLs to
+        download the updated datafile. A hash signature is included in
+        the X-Hub-Signature header for payload verification.
+      message:
+        oneOf:
+          - $ref: '#/components/messages/DatafileUpdated'
+components:
+  securitySchemes:
+    webhookSignature:
+      type: httpApiKey
+      in: header
+      name: X-Hub-Signature
+      description: >-
+        HMAC-SHA256 hash signature of the webhook payload, generated
+        using the secret token created when the webhook was registered.
+        Used to verify the request originated from Optimizely.
+  messages:
+    DatafileUpdated:
+      name: DatafileUpdated
+      title: Datafile Updated
+      summary: Notification that a project datafile has been updated
+      description: >-
+        Sent when the configuration datafile for a project environment
+        is updated. This can occur when experiments are started, paused,
+        or modified, when feature flags are toggled, or when audience
+        conditions are changed.
+      contentType: application/json
+      headers:
+        type: object
+        properties:
+          X-Hub-Signature:
+            type: string
+            description: HMAC-SHA256 signature for payload verification
+      payload:
+        $ref: '#/components/schemas/DatafileUpdatePayload'
+  schemas:
+    DatafileUpdatePayload:
+      type: object
+      description: Payload sent when a project datafile is updated
+      required:
+        - project_id
+        - timestamp
+        - event
+        - data
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project ID associated with the datafile update
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp of when the update occurred
+        event:
+          type: string
+          description: The event type identifier
+          enum:
+            - project.datafile_updated
+        data:
+          type: object
+          description: Event data containing datafile details
+          required:
+            - revision
+            - origin_url
+            - cdn_url
+            - environment
+          properties:
+            revision:
+              type: integer
+              description: The revision number of the updated datafile
+            origin_url:
+              type: string
+              format: uri
+              description: Origin URL to download the updated datafile
+            cdn_url:
+              type: string
+              format: uri
+              description: CDN URL to download the updated datafile
+            environment:
+              type: string
+              description: The environment the datafile belongs to (e.g., Production)

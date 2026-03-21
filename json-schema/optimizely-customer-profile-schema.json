@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.optimizely.com/schemas/optimizely/customer-profile.json",
+  "title": "Optimizely Customer Profile",
+  "description": "Schema representing a customer profile in the Optimizely Data Platform (ODP), including identity resolution, attributes, computed insights, and segment membership.",
+  "type": "object",
+  "properties": {
+    "identifiers": {
+      "type": "object",
+      "description": "Customer identifiers used for identity resolution across channels",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Customer email address"
+        },
+        "customer_id": {
+          "type": "string",
+          "description": "External customer identifier from source systems"
+        },
+        "vuid": {
+          "type": "string",
+          "description": "Visitor unique identifier assigned by ODP tracking",
+          "pattern": "^[a-f0-9-]+$"
+        }
+      }
+    },
+    "attributes": {
+      "type": "object",
+      "description": "Customer profile attributes",
+      "properties": {
+        "first_name": {
+          "type": "string",
+          "description": "Customer first name",
+          "maxLength": 255
+        },
+        "last_name": {
+          "type": "string",
+          "description": "Customer last name",
+          "maxLength": 255
+        },
+        "city": {
+          "type": "string",
+          "description": "Customer city",
+          "maxLength": 255
+        },
+        "state": {
+          "type": "string",
+          "description": "Customer state or province"
+        },
+        "country": {
+          "type": "string",
+          "description": "Customer country",
+          "maxLength": 2,
+          "pattern": "^[A-Z]{2}$"
+        },
+        "zip_code": {
+          "type": "string",
+          "description": "Customer postal code",
+          "maxLength": 20
+        },
+        "phone": {
+          "type": "string",
+          "description": "Customer phone number"
+        },
+        "date_of_birth": {
+          "type": "string",
+          "format": "date",
+          "description": "Customer date of birth"
+        },
+        "gender": {
+          "type": "string",
+          "description": "Customer gender"
+        }
+      }
+    },
+    "insights": {
+      "type": "object",
+      "description": "Computed customer intelligence and behavioral insights",
+      "properties": {
+        "total_revenue": {
+          "type": "number",
+          "description": "Total lifetime revenue from this customer"
+        },
+        "order_count": {
+          "type": "integer",
+          "description": "Total number of orders placed",
+          "minimum": 0
+        },
+        "average_order_value": {
+          "type": "number",
+          "description": "Average order value across all purchases"
+        },
+        "first_order_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date of the customer's first order"
+        },
+        "last_order_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date of the customer's most recent order"
+        },
+        "engagement_score": {
+          "type": "number",
+          "description": "Computed engagement score based on activity"
+        }
+      }
+    },
+    "segments": {
+      "type": "array",
+      "description": "List of segment names the customer belongs to",
+      "items": {
+        "type": "string",
+        "description": "Segment identifier"
+      }
+    },
+    "events": {
+      "type": "array",
+      "description": "Recent events associated with this customer",
+      "items": {
+        "$ref": "#/$defs/CustomerEvent"
+      }
+    }
+  },
+  "$defs": {
+    "CustomerEvent": {
+      "type": "object",
+      "description": "An event associated with a customer in ODP",
+      "required": ["type", "action"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Event type category (e.g., order, product, email, navigation)"
+        },
+        "action": {
+          "type": "string",
+          "description": "Specific action within the event type (e.g., purchase, view, open)"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the event occurred"
+        },
+        "data": {
+          "type": "object",
+          "description": "Additional event data fields",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}

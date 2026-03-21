@@ -1,0 +1,1346 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Feature Experimentation REST API
+  description: >-
+    The Optimizely Feature Experimentation REST API enables developers to
+    programmatically manage feature flags, experiments, rollouts, and
+    environments within the Optimizely Feature Experimentation platform.
+    It provides endpoints for creating and configuring experiments, managing
+    feature variables, and controlling feature rollouts across different
+    environments. The API includes both the v2 management API for projects
+    and experiments, and the flags v1 API for flag-specific operations.
+  version: '2.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+externalDocs:
+  description: Optimizely Feature Experimentation API Documentation
+  url: https://docs.developers.optimizely.com/feature-experimentation/reference/feature-experimentation-api-overview
+servers:
+  - url: https://api.optimizely.com/v2
+    description: Optimizely REST API v2 Management Server
+  - url: https://api.optimizely.com/flags/v1
+    description: Optimizely Flags API v1 Server
+tags:
+  - name: Projects
+    description: >-
+      Manage Feature Experimentation projects that serve as containers
+      for flags, experiments, and environments.
+  - name: Environments
+    description: >-
+      Manage environments within a project for developing, staging, and
+      deploying flag configurations.
+  - name: Flags
+    description: >-
+      Create and manage feature flags with variables and variations for
+      controlled rollouts and experimentation.
+  - name: Rulesets
+    description: >-
+      Manage rulesets that define which variation a flag delivers to
+      visitors within a given environment.
+  - name: Experiments
+    description: >-
+      Create and manage A/B test experiments on top of feature flags.
+  - name: Audiences
+    description: >-
+      Create and manage audience segments for targeting experiments
+      and rollouts.
+  - name: Attributes
+    description: >-
+      Manage custom attributes used for audience targeting and segmentation.
+  - name: Features
+    description: >-
+      Manage features with variables used in feature flag configurations.
+security:
+  - bearerAuth: []
+paths:
+  /projects:
+    get:
+      operationId: listProjects
+      summary: List projects
+      description: >-
+        Returns a list of all Feature Experimentation projects accessible
+        to the authenticated user.
+      tags:
+        - Projects
+      parameters:
+        - $ref: '#/components/parameters/perPage'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createProject
+      summary: Create a project
+      description: >-
+        Creates a new Feature Experimentation project.
+      tags:
+        - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInput'
+      responses:
+        '201':
+          description: Project successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /projects/{project_id}:
+    get:
+      operationId: getProject
+      summary: Get a project
+      description: >-
+        Retrieves the details of a specific project by its unique identifier.
+      tags:
+        - Projects
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      responses:
+        '200':
+          description: Successfully retrieved the project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Project not found
+    patch:
+      operationId: updateProject
+      summary: Update a project
+      description: >-
+        Updates the specified project with the provided fields.
+      tags:
+        - Projects
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInput'
+      responses:
+        '200':
+          description: Project successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Project not found
+  /environments:
+    get:
+      operationId: listEnvironments
+      summary: List environments
+      description: >-
+        Returns a list of environments for the specified project.
+        Environments allow developing, staging, and deploying experiment
+        configurations independently.
+      tags:
+        - Environments
+      parameters:
+        - $ref: '#/components/parameters/projectIdQuery'
+      responses:
+        '200':
+          description: Successfully retrieved the list of environments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Environment'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createEnvironment
+      summary: Create an environment
+      description: >-
+        Creates a new environment within the specified project.
+      tags:
+        - Environments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvironmentInput'
+      responses:
+        '201':
+          description: Environment successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Environment'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /environments/{environment_id}:
+    get:
+      operationId: getEnvironment
+      summary: Get an environment
+      description: >-
+        Retrieves the details of a specific environment.
+      tags:
+        - Environments
+      parameters:
+        - $ref: '#/components/parameters/environmentId'
+      responses:
+        '200':
+          description: Successfully retrieved the environment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Environment'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Environment not found
+    patch:
+      operationId: updateEnvironment
+      summary: Update an environment
+      description: >-
+        Updates the specified environment with the provided fields.
+      tags:
+        - Environments
+      parameters:
+        - $ref: '#/components/parameters/environmentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvironmentInput'
+      responses:
+        '200':
+          description: Environment successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Environment'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Environment not found
+  /projects/{project_id}/flags:
+    get:
+      operationId: listFlags
+      summary: List flags
+      description: >-
+        Returns a list of feature flags for the specified project.
+      tags:
+        - Flags
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      responses:
+        '200':
+          description: Successfully retrieved the list of flags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flag'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createFlag
+      summary: Create a flag
+      description: >-
+        Creates a new feature flag within the specified project with
+        the given key, variables, and variations.
+      tags:
+        - Flags
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlagInput'
+      responses:
+        '201':
+          description: Flag successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flag'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /projects/{project_id}/flags/{flag_key}:
+    get:
+      operationId: getFlag
+      summary: Get a flag
+      description: >-
+        Retrieves the details of a specific feature flag by its key.
+      tags:
+        - Flags
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - $ref: '#/components/parameters/flagKey'
+      responses:
+        '200':
+          description: Successfully retrieved the flag
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flag'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag not found
+    patch:
+      operationId: updateFlag
+      summary: Update a flag
+      description: >-
+        Updates the specified feature flag with the provided fields.
+      tags:
+        - Flags
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - $ref: '#/components/parameters/flagKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlagInput'
+      responses:
+        '200':
+          description: Flag successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flag'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag not found
+    delete:
+      operationId: deleteFlag
+      summary: Delete a flag
+      description: >-
+        Permanently deletes the specified feature flag.
+      tags:
+        - Flags
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - $ref: '#/components/parameters/flagKey'
+      responses:
+        '204':
+          description: Flag successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag not found
+  /projects/{project_id}/flags/{flag_key}/environments/{environment_key}/ruleset:
+    get:
+      operationId: getRuleset
+      summary: Get a ruleset
+      description: >-
+        Retrieves the ruleset for a specific flag in a given environment.
+        A ruleset is the collection of rules that determine which variation
+        a flag delivers to visitors.
+      tags:
+        - Rulesets
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - $ref: '#/components/parameters/flagKey'
+        - $ref: '#/components/parameters/environmentKey'
+      responses:
+        '200':
+          description: Successfully retrieved the ruleset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ruleset'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag or environment not found
+    patch:
+      operationId: updateRuleset
+      summary: Update a ruleset
+      description: >-
+        Updates the ruleset for a specific flag in a given environment.
+      tags:
+        - Rulesets
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - $ref: '#/components/parameters/flagKey'
+        - $ref: '#/components/parameters/environmentKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RulesetInput'
+      responses:
+        '200':
+          description: Ruleset successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ruleset'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag or environment not found
+  /projects/{project_id}/flags/{flag_key}/environments/{environment_key}/ruleset/enabled:
+    post:
+      operationId: enableRuleset
+      summary: Enable a ruleset
+      description: >-
+        Enables the ruleset for a specific flag in a given environment,
+        making the flag active and delivering variations to visitors.
+      tags:
+        - Rulesets
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - $ref: '#/components/parameters/flagKey'
+        - $ref: '#/components/parameters/environmentKey'
+      responses:
+        '200':
+          description: Ruleset successfully enabled
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag or environment not found
+  /projects/{project_id}/flags/{flag_key}/environments/{environment_key}/ruleset/disabled:
+    post:
+      operationId: disableRuleset
+      summary: Disable a ruleset
+      description: >-
+        Disables the ruleset for a specific flag in a given environment,
+        stopping the flag from delivering variations to visitors.
+      tags:
+        - Rulesets
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - $ref: '#/components/parameters/flagKey'
+        - $ref: '#/components/parameters/environmentKey'
+      responses:
+        '200':
+          description: Ruleset successfully disabled
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag or environment not found
+  /experiments:
+    get:
+      operationId: listExperiments
+      summary: List experiments
+      description: >-
+        Returns a list of experiments for the specified project.
+      tags:
+        - Experiments
+      parameters:
+        - $ref: '#/components/parameters/projectIdQuery'
+        - $ref: '#/components/parameters/perPage'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of experiments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Experiment'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createExperiment
+      summary: Create an experiment
+      description: >-
+        Creates a new experiment within the specified project.
+      tags:
+        - Experiments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentInput'
+      responses:
+        '201':
+          description: Experiment successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /experiments/{experiment_id}:
+    get:
+      operationId: getExperiment
+      summary: Get an experiment
+      description: >-
+        Retrieves the full details of a specific experiment.
+      tags:
+        - Experiments
+      parameters:
+        - $ref: '#/components/parameters/experimentId'
+      responses:
+        '200':
+          description: Successfully retrieved the experiment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Experiment not found
+    patch:
+      operationId: updateExperiment
+      summary: Update an experiment
+      description: >-
+        Updates the specified experiment with the provided fields.
+      tags:
+        - Experiments
+      parameters:
+        - $ref: '#/components/parameters/experimentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentInput'
+      responses:
+        '200':
+          description: Experiment successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Experiment not found
+    delete:
+      operationId: deleteExperiment
+      summary: Delete an experiment
+      description: >-
+        Archives or permanently deletes the specified experiment.
+      tags:
+        - Experiments
+      parameters:
+        - $ref: '#/components/parameters/experimentId'
+      responses:
+        '204':
+          description: Experiment successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Experiment not found
+  /audiences:
+    get:
+      operationId: listAudiences
+      summary: List audiences
+      description: >-
+        Returns a list of audiences for the specified project.
+      tags:
+        - Audiences
+      parameters:
+        - $ref: '#/components/parameters/projectIdQuery'
+        - $ref: '#/components/parameters/perPage'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of audiences
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Audience'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createAudience
+      summary: Create an audience
+      description: >-
+        Creates a new audience within the specified project.
+      tags:
+        - Audiences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AudienceInput'
+      responses:
+        '201':
+          description: Audience successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Audience'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /audiences/{audience_id}:
+    get:
+      operationId: getAudience
+      summary: Get an audience
+      description: >-
+        Retrieves the full details of a specific audience.
+      tags:
+        - Audiences
+      parameters:
+        - $ref: '#/components/parameters/audienceId'
+      responses:
+        '200':
+          description: Successfully retrieved the audience
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Audience'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Audience not found
+    patch:
+      operationId: updateAudience
+      summary: Update an audience
+      description: >-
+        Updates the specified audience with the provided fields.
+      tags:
+        - Audiences
+      parameters:
+        - $ref: '#/components/parameters/audienceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AudienceInput'
+      responses:
+        '200':
+          description: Audience successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Audience'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Audience not found
+  /features:
+    get:
+      operationId: listFeatures
+      summary: List features
+      description: >-
+        Returns a list of features for the specified project. Features
+        define variables that can be remotely configured through flags.
+      tags:
+        - Features
+      parameters:
+        - $ref: '#/components/parameters/projectIdQuery'
+        - $ref: '#/components/parameters/perPage'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of features
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Feature'
+        '401':
+          description: Authentication credentials are missing or invalid
+  /features/{feature_id}:
+    get:
+      operationId: getFeature
+      summary: Get a feature
+      description: >-
+        Retrieves the details of a specific feature.
+      tags:
+        - Features
+      parameters:
+        - $ref: '#/components/parameters/featureId'
+      responses:
+        '200':
+          description: Successfully retrieved the feature
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feature'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Feature not found
+  /attributes:
+    get:
+      operationId: listAttributes
+      summary: List attributes
+      description: >-
+        Returns a list of custom attributes for the specified project.
+      tags:
+        - Attributes
+      parameters:
+        - $ref: '#/components/parameters/projectIdQuery'
+        - $ref: '#/components/parameters/perPage'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of attributes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attribute'
+        '401':
+          description: Authentication credentials are missing or invalid
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: >-
+        OAuth 2.0 Bearer token or personal access token for authentication.
+  parameters:
+    projectId:
+      name: project_id
+      in: path
+      required: true
+      description: The unique identifier for the project
+      schema:
+        type: integer
+        format: int64
+    projectIdQuery:
+      name: project_id
+      in: query
+      required: true
+      description: The unique identifier for the project to filter by
+      schema:
+        type: integer
+        format: int64
+    experimentId:
+      name: experiment_id
+      in: path
+      required: true
+      description: The unique identifier for the experiment
+      schema:
+        type: integer
+        format: int64
+    environmentId:
+      name: environment_id
+      in: path
+      required: true
+      description: The unique identifier for the environment
+      schema:
+        type: integer
+        format: int64
+    audienceId:
+      name: audience_id
+      in: path
+      required: true
+      description: The unique identifier for the audience
+      schema:
+        type: integer
+        format: int64
+    featureId:
+      name: feature_id
+      in: path
+      required: true
+      description: The unique identifier for the feature
+      schema:
+        type: integer
+        format: int64
+    flagKey:
+      name: flag_key
+      in: path
+      required: true
+      description: The unique key for the feature flag
+      schema:
+        type: string
+    environmentKey:
+      name: environment_key
+      in: path
+      required: true
+      description: The unique key for the environment
+      schema:
+        type: string
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    page:
+      name: page
+      in: query
+      required: false
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+  schemas:
+    Project:
+      type: object
+      description: A Feature Experimentation project
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the project
+        name:
+          type: string
+          description: Human-readable name of the project
+        account_id:
+          type: integer
+          format: int64
+          description: The account this project belongs to
+        platform:
+          type: string
+          description: The platform type for this project
+          enum:
+            - custom
+        status:
+          type: string
+          description: Current status of the project
+          enum:
+            - active
+            - archived
+        sdks:
+          type: array
+          description: List of SDKs configured for this project
+          items:
+            type: string
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the project was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the project was last modified
+    ProjectInput:
+      type: object
+      description: Input for creating or updating a project
+      properties:
+        name:
+          type: string
+          description: Human-readable name of the project
+        status:
+          type: string
+          description: Current status of the project
+          enum:
+            - active
+            - archived
+    Environment:
+      type: object
+      description: An environment within a project for managing flag configurations
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the environment
+        key:
+          type: string
+          description: Unique key for the environment
+        name:
+          type: string
+          description: Human-readable name of the environment
+        project_id:
+          type: integer
+          format: int64
+          description: The project this environment belongs to
+        is_primary:
+          type: boolean
+          description: Whether this is the primary (production) environment
+        sdk_key:
+          type: string
+          description: SDK key used to initialize SDKs in this environment
+        datafile_url:
+          type: string
+          format: uri
+          description: URL to the datafile for this environment
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the environment was created
+    EnvironmentInput:
+      type: object
+      description: Input for creating or updating an environment
+      properties:
+        key:
+          type: string
+          description: Unique key for the environment
+        name:
+          type: string
+          description: Human-readable name of the environment
+        is_primary:
+          type: boolean
+          description: Whether this is the primary environment
+    Flag:
+      type: object
+      description: A feature flag with variables and variations
+      properties:
+        key:
+          type: string
+          description: Unique key for the flag
+        name:
+          type: string
+          description: Human-readable name of the flag
+        description:
+          type: string
+          description: Description of the flag purpose
+        project_id:
+          type: integer
+          format: int64
+          description: The project this flag belongs to
+        variables:
+          type: array
+          description: List of variables associated with this flag
+          items:
+            $ref: '#/components/schemas/Variable'
+        variations:
+          type: array
+          description: List of variations for this flag
+          items:
+            $ref: '#/components/schemas/FlagVariation'
+        environments:
+          type: object
+          description: Map of environment keys to flag environment configurations
+          additionalProperties:
+            $ref: '#/components/schemas/FlagEnvironment'
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the flag was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the flag was last modified
+    FlagInput:
+      type: object
+      description: Input for creating or updating a flag
+      properties:
+        key:
+          type: string
+          description: Unique key for the flag
+        name:
+          type: string
+          description: Human-readable name of the flag
+        description:
+          type: string
+          description: Description of the flag purpose
+        variables:
+          type: array
+          description: List of variables associated with this flag
+          items:
+            $ref: '#/components/schemas/VariableInput'
+        variations:
+          type: array
+          description: List of variations for this flag
+          items:
+            $ref: '#/components/schemas/FlagVariationInput'
+    Variable:
+      type: object
+      description: A variable within a feature flag
+      properties:
+        key:
+          type: string
+          description: Unique key for the variable
+        type:
+          type: string
+          description: Data type of the variable
+          enum:
+            - string
+            - integer
+            - double
+            - boolean
+            - json
+        default_value:
+          type: string
+          description: Default value of the variable
+    VariableInput:
+      type: object
+      description: Input for creating or updating a variable
+      properties:
+        key:
+          type: string
+          description: Unique key for the variable
+        type:
+          type: string
+          description: Data type of the variable
+          enum:
+            - string
+            - integer
+            - double
+            - boolean
+            - json
+        default_value:
+          type: string
+          description: Default value of the variable
+    FlagVariation:
+      type: object
+      description: A variation of a feature flag with variable values
+      properties:
+        key:
+          type: string
+          description: Unique key for the variation
+        name:
+          type: string
+          description: Human-readable name of the variation
+        variables:
+          type: object
+          description: Map of variable keys to their values for this variation
+          additionalProperties:
+            type: string
+    FlagVariationInput:
+      type: object
+      description: Input for creating or updating a flag variation
+      properties:
+        key:
+          type: string
+          description: Unique key for the variation
+        name:
+          type: string
+          description: Human-readable name of the variation
+        variables:
+          type: object
+          description: Map of variable keys to their values
+          additionalProperties:
+            type: string
+    FlagEnvironment:
+      type: object
+      description: Flag configuration for a specific environment
+      properties:
+        enabled:
+          type: boolean
+          description: Whether the flag is enabled in this environment
+        ruleset:
+          $ref: '#/components/schemas/Ruleset'
+    Ruleset:
+      type: object
+      description: A collection of rules that determine flag variation delivery
+      properties:
+        rules:
+          type: array
+          description: Ordered list of rules in the ruleset
+          items:
+            $ref: '#/components/schemas/Rule'
+    RulesetInput:
+      type: object
+      description: Input for updating a ruleset
+      properties:
+        rules:
+          type: array
+          description: Ordered list of rules in the ruleset
+          items:
+            $ref: '#/components/schemas/RuleInput'
+    Rule:
+      type: object
+      description: A rule that determines which variation to deliver
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the rule
+        key:
+          type: string
+          description: Unique key for the rule
+        type:
+          type: string
+          description: Type of rule
+          enum:
+            - a/b_test
+            - targeted_delivery
+            - personalization
+        audience_conditions:
+          type: string
+          description: JSON-encoded audience conditions for this rule
+        percentage_included:
+          type: integer
+          description: Percentage of traffic included in this rule
+          minimum: 0
+          maximum: 10000
+        variations:
+          type: array
+          description: Variations and their traffic allocation
+          items:
+            type: object
+            properties:
+              variation_key:
+                type: string
+                description: Key of the variation
+              weight:
+                type: integer
+                description: Traffic weight for this variation
+                minimum: 0
+                maximum: 10000
+    RuleInput:
+      type: object
+      description: Input for creating or updating a rule
+      properties:
+        key:
+          type: string
+          description: Unique key for the rule
+        type:
+          type: string
+          description: Type of rule
+          enum:
+            - a/b_test
+            - targeted_delivery
+            - personalization
+        audience_conditions:
+          type: string
+          description: JSON-encoded audience conditions
+        percentage_included:
+          type: integer
+          description: Percentage of traffic included
+          minimum: 0
+          maximum: 10000
+        variations:
+          type: array
+          description: Variations and their traffic allocation
+          items:
+            type: object
+            properties:
+              variation_key:
+                type: string
+                description: Key of the variation
+              weight:
+                type: integer
+                description: Traffic weight
+                minimum: 0
+                maximum: 10000
+    Experiment:
+      type: object
+      description: A Feature Experimentation experiment
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the experiment
+        project_id:
+          type: integer
+          format: int64
+          description: The project this experiment belongs to
+        name:
+          type: string
+          description: Human-readable name of the experiment
+        description:
+          type: string
+          description: Description of the experiment
+        status:
+          type: string
+          description: Current status of the experiment
+          enum:
+            - active
+            - paused
+            - not_started
+            - archived
+        variations:
+          type: array
+          description: List of variations in the experiment
+          items:
+            type: object
+            properties:
+              variation_id:
+                type: integer
+                format: int64
+                description: Unique variation identifier
+              key:
+                type: string
+                description: Variation key
+              name:
+                type: string
+                description: Variation name
+              weight:
+                type: integer
+                description: Traffic weight
+        metrics:
+          type: array
+          description: List of metrics tracked by the experiment
+          items:
+            type: object
+            properties:
+              event_id:
+                type: integer
+                format: int64
+                description: Event identifier
+              aggregator:
+                type: string
+                description: Aggregation method
+              scope:
+                type: string
+                description: Metric scope
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the experiment was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the experiment was last modified
+    ExperimentInput:
+      type: object
+      description: Input for creating or updating an experiment
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this experiment belongs to
+        name:
+          type: string
+          description: Human-readable name of the experiment
+        description:
+          type: string
+          description: Description of the experiment
+        status:
+          type: string
+          description: Current status
+          enum:
+            - active
+            - paused
+            - not_started
+            - archived
+    Audience:
+      type: object
+      description: An audience segment for targeting
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the audience
+        project_id:
+          type: integer
+          format: int64
+          description: The project this audience belongs to
+        name:
+          type: string
+          description: Human-readable name of the audience
+        description:
+          type: string
+          description: Description of the audience criteria
+        conditions:
+          type: string
+          description: JSON-encoded audience conditions
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the audience was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the audience was last modified
+    AudienceInput:
+      type: object
+      description: Input for creating or updating an audience
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this audience belongs to
+        name:
+          type: string
+          description: Human-readable name of the audience
+        description:
+          type: string
+          description: Description of the audience
+        conditions:
+          type: string
+          description: JSON-encoded audience conditions
+    Feature:
+      type: object
+      description: A feature with configurable variables
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the feature
+        key:
+          type: string
+          description: Unique key for the feature
+        project_id:
+          type: integer
+          format: int64
+          description: The project this feature belongs to
+        variables:
+          type: array
+          description: List of variables associated with this feature
+          items:
+            $ref: '#/components/schemas/Variable'
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the feature was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the feature was last modified
+    Attribute:
+      type: object
+      description: A custom attribute for audience targeting
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the attribute
+        project_id:
+          type: integer
+          format: int64
+          description: The project this attribute belongs to
+        name:
+          type: string
+          description: Human-readable name of the attribute
+        key:
+          type: string
+          description: Unique key for the attribute
+        condition_type:
+          type: string
+          description: The type of condition this attribute supports
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the attribute was last modified

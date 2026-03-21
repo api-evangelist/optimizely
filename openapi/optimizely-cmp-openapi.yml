@@ -1,0 +1,696 @@
+openapi: 3.1.0
+info:
+  title: Optimizely CMP Open REST API
+  description: >-
+    The Optimizely Content Marketing Platform (CMP) Open REST API provides
+    programmatic access to Optimizely's content marketing and planning
+    tools. Developers can manage content workflows, campaigns, assets, tasks,
+    and editorial calendars through RESTful endpoints. The API is OAuth 2.0
+    compliant and enables integration of content marketing operations with
+    external systems, supporting automated content production and distribution
+    workflows.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+externalDocs:
+  description: Optimizely CMP Open API Documentation
+  url: https://docs.developers.optimizely.com/content-marketing-platform/docs/open-api-introduction
+servers:
+  - url: https://api.cmp.optimizely.com/v0
+    description: Optimizely CMP API Server
+tags:
+  - name: Assets
+    description: >-
+      Manage digital assets including images, videos, and raw files
+      in the CMP library.
+  - name: Tasks
+    description: >-
+      Manage content tasks, assignments, and workflow steps within
+      the content marketing platform.
+  - name: Campaigns
+    description: >-
+      Manage content campaigns and editorial calendar entries.
+  - name: Content
+    description: >-
+      Manage content items including articles and other content types
+      within the CMP content repository.
+  - name: Labels
+    description: >-
+      Manage labels used for categorizing and organizing content.
+security:
+  - oauth2: []
+paths:
+  /assets:
+    get:
+      operationId: listAssets
+      summary: List assets
+      description: >-
+        Returns a list of digital assets in the CMP library, including
+        images, videos, and raw files. Supports filtering and pagination.
+      tags:
+        - Assets
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: Successfully retrieved the list of assets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    description: List of assets
+                    items:
+                      $ref: '#/components/schemas/Asset'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createAsset
+      summary: Create an asset
+      description: >-
+        Creates a new digital asset in the CMP library by uploading a file.
+      tags:
+        - Assets
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The asset file to upload
+                title:
+                  type: string
+                  description: Title for the asset
+                description:
+                  type: string
+                  description: Description of the asset
+      responses:
+        '201':
+          description: Asset successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /assets/{assetId}:
+    get:
+      operationId: getAsset
+      summary: Get an asset
+      description: >-
+        Retrieves the details of a specific asset by its identifier.
+      tags:
+        - Assets
+      parameters:
+        - $ref: '#/components/parameters/assetId'
+      responses:
+        '200':
+          description: Successfully retrieved the asset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Asset not found
+    put:
+      operationId: updateAsset
+      summary: Update an asset
+      description: >-
+        Updates the specified asset with the provided metadata.
+      tags:
+        - Assets
+      parameters:
+        - $ref: '#/components/parameters/assetId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetInput'
+      responses:
+        '202':
+          description: Asset successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Asset not found
+    delete:
+      operationId: deleteAsset
+      summary: Delete an asset
+      description: >-
+        Permanently deletes the specified asset from the CMP library.
+      tags:
+        - Assets
+      parameters:
+        - $ref: '#/components/parameters/assetId'
+      responses:
+        '204':
+          description: Asset successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Asset not found
+  /tasks:
+    get:
+      operationId: listTasks
+      summary: List tasks
+      description: >-
+        Returns a list of content tasks and their current workflow status.
+      tags:
+        - Tasks
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: Successfully retrieved the list of tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    description: List of tasks
+                    items:
+                      $ref: '#/components/schemas/Task'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createTask
+      summary: Create a task
+      description: >-
+        Creates a new content task with the specified configuration.
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskInput'
+      responses:
+        '201':
+          description: Task successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /tasks/{taskId}:
+    get:
+      operationId: getTask
+      summary: Get a task
+      description: >-
+        Retrieves the details of a specific task by its identifier.
+      tags:
+        - Tasks
+      parameters:
+        - $ref: '#/components/parameters/taskId'
+      responses:
+        '200':
+          description: Successfully retrieved the task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Task not found
+    put:
+      operationId: updateTask
+      summary: Update a task
+      description: >-
+        Updates the specified task with the provided fields.
+      tags:
+        - Tasks
+      parameters:
+        - $ref: '#/components/parameters/taskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskInput'
+      responses:
+        '202':
+          description: Task successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Task not found
+  /campaigns:
+    get:
+      operationId: listCampaigns
+      summary: List campaigns
+      description: >-
+        Returns a list of content campaigns in the editorial calendar.
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: Successfully retrieved the list of campaigns
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    description: List of campaigns
+                    items:
+                      $ref: '#/components/schemas/CmpCampaign'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Authentication credentials are missing or invalid
+  /campaigns/{campaignId}:
+    get:
+      operationId: getCampaign
+      summary: Get a campaign
+      description: >-
+        Retrieves the details of a specific content campaign.
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '#/components/parameters/campaignId'
+      responses:
+        '200':
+          description: Successfully retrieved the campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CmpCampaign'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Campaign not found
+  /content:
+    get:
+      operationId: listContent
+      summary: List content
+      description: >-
+        Returns a list of content items in the CMP content repository.
+      tags:
+        - Content
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: Successfully retrieved the list of content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    description: List of content items
+                    items:
+                      $ref: '#/components/schemas/CmpContent'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Authentication credentials are missing or invalid
+  /content/{contentId}:
+    get:
+      operationId: getContent
+      summary: Get a content item
+      description: >-
+        Retrieves the details of a specific content item.
+      tags:
+        - Content
+      parameters:
+        - $ref: '#/components/parameters/contentId'
+      responses:
+        '200':
+          description: Successfully retrieved the content item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CmpContent'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content not found
+  /labels:
+    get:
+      operationId: listLabels
+      summary: List labels
+      description: >-
+        Returns a list of labels used for categorizing content in the CMP.
+      tags:
+        - Labels
+      responses:
+        '200':
+          description: Successfully retrieved the list of labels
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Label'
+        '401':
+          description: Authentication credentials are missing or invalid
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      description: >-
+        OAuth 2.0 authentication for the CMP API.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.cmp.optimizely.com/oauth/token
+          scopes: {}
+  parameters:
+    assetId:
+      name: assetId
+      in: path
+      required: true
+      description: The unique identifier for the asset
+      schema:
+        type: string
+    taskId:
+      name: taskId
+      in: path
+      required: true
+      description: The unique identifier for the task
+      schema:
+        type: string
+    campaignId:
+      name: campaignId
+      in: path
+      required: true
+      description: The unique identifier for the campaign
+      schema:
+        type: string
+    contentId:
+      name: contentId
+      in: path
+      required: true
+      description: The unique identifier for the content item
+      schema:
+        type: string
+    limit:
+      name: limit
+      in: query
+      required: false
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    offset:
+      name: offset
+      in: query
+      required: false
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+  schemas:
+    Asset:
+      type: object
+      description: A digital asset in the CMP library
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the asset
+        title:
+          type: string
+          description: Title of the asset
+        description:
+          type: string
+          description: Description of the asset
+        type:
+          type: string
+          description: Type of the asset
+          enum:
+            - image
+            - video
+            - raw_file
+        url:
+          type: string
+          format: uri
+          description: URL to access the asset
+        thumbnail_url:
+          type: string
+          format: uri
+          description: URL for the asset thumbnail
+        file_name:
+          type: string
+          description: Original file name
+        file_size:
+          type: integer
+          description: File size in bytes
+        mime_type:
+          type: string
+          description: MIME type of the asset
+        labels:
+          type: array
+          description: Labels associated with the asset
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the asset was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the asset was last updated
+    AssetInput:
+      type: object
+      description: Input for updating an asset
+      properties:
+        title:
+          type: string
+          description: Title of the asset
+        description:
+          type: string
+          description: Description of the asset
+        labels:
+          type: array
+          description: Labels to associate with the asset
+          items:
+            type: string
+    Task:
+      type: object
+      description: A content task in the CMP workflow
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the task
+        title:
+          type: string
+          description: Title of the task
+        description:
+          type: string
+          description: Description of the task
+        status:
+          type: string
+          description: Current workflow status of the task
+        assignee:
+          type: object
+          description: User assigned to the task
+          properties:
+            id:
+              type: string
+              description: User identifier
+            name:
+              type: string
+              description: User display name
+        due_date:
+          type: string
+          format: date
+          description: Due date for the task
+        campaign_id:
+          type: string
+          description: Associated campaign identifier
+        labels:
+          type: array
+          description: Labels associated with the task
+          items:
+            type: string
+        assets:
+          type: array
+          description: Assets attached to the task
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Asset identifier
+              type:
+                type: string
+                description: Asset type
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the task was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the task was last updated
+    TaskInput:
+      type: object
+      description: Input for creating or updating a task
+      properties:
+        title:
+          type: string
+          description: Title of the task
+        description:
+          type: string
+          description: Description of the task
+        assignee_id:
+          type: string
+          description: User identifier for the assignee
+        due_date:
+          type: string
+          format: date
+          description: Due date for the task
+        campaign_id:
+          type: string
+          description: Associated campaign identifier
+        labels:
+          type: array
+          description: Labels to associate with the task
+          items:
+            type: string
+    CmpCampaign:
+      type: object
+      description: A content campaign in the editorial calendar
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the campaign
+        title:
+          type: string
+          description: Title of the campaign
+        description:
+          type: string
+          description: Description of the campaign
+        start_date:
+          type: string
+          format: date
+          description: Campaign start date
+        end_date:
+          type: string
+          format: date
+          description: Campaign end date
+        status:
+          type: string
+          description: Current status of the campaign
+        labels:
+          type: array
+          description: Labels associated with the campaign
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the campaign was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the campaign was last updated
+    CmpContent:
+      type: object
+      description: A content item in the CMP content repository
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the content item
+        title:
+          type: string
+          description: Title of the content item
+        body:
+          type: string
+          description: Body content
+        content_type:
+          type: string
+          description: Type of content
+        status:
+          type: string
+          description: Publication status
+        task_id:
+          type: string
+          description: Associated task identifier
+        labels:
+          type: array
+          description: Labels associated with the content
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the content was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the content was last updated
+    Label:
+      type: object
+      description: A label used for categorizing content
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the label
+        name:
+          type: string
+          description: Display name of the label
+        color:
+          type: string
+          description: Color code for the label
+    Pagination:
+      type: object
+      description: Pagination metadata
+      properties:
+        total:
+          type: integer
+          description: Total number of items
+        limit:
+          type: integer
+          description: Maximum items per page
+        offset:
+          type: integer
+          description: Current offset

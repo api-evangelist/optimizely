@@ -1,0 +1,216 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "opti": "https://api.optimizely.com/ns/",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+
+    "Project": {
+      "@id": "opti:Project",
+      "@context": {
+        "name": "schema:name",
+        "description": "schema:description",
+        "platform": "opti:platform",
+        "status": "opti:status",
+        "accountId": "opti:accountId",
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "lastModified": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "Experiment": {
+      "@id": "opti:Experiment",
+      "@context": {
+        "name": "schema:name",
+        "description": "schema:description",
+        "status": "opti:status",
+        "experimentType": "opti:experimentType",
+        "holdback": "opti:holdback",
+        "project": {
+          "@id": "opti:project",
+          "@type": "@id"
+        },
+        "variations": {
+          "@id": "opti:variations",
+          "@container": "@set"
+        },
+        "metrics": {
+          "@id": "opti:metrics",
+          "@container": "@set"
+        },
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "lastModified": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "Variation": {
+      "@id": "opti:Variation",
+      "@context": {
+        "name": "schema:name",
+        "key": "opti:key",
+        "weight": "opti:weight"
+      }
+    },
+
+    "FeatureFlag": {
+      "@id": "opti:FeatureFlag",
+      "@context": {
+        "name": "schema:name",
+        "key": "opti:key",
+        "description": "schema:description",
+        "variables": {
+          "@id": "opti:variables",
+          "@container": "@set"
+        },
+        "variations": {
+          "@id": "opti:flagVariations",
+          "@container": "@set"
+        },
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "lastModified": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "Audience": {
+      "@id": "opti:Audience",
+      "@context": {
+        "name": "schema:name",
+        "description": "schema:description",
+        "conditions": "opti:conditions",
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "Campaign": {
+      "@id": "opti:Campaign",
+      "@context": {
+        "name": "schema:name",
+        "status": "opti:status",
+        "experiments": {
+          "@id": "opti:experiments",
+          "@container": "@set"
+        },
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "Page": {
+      "@id": "opti:Page",
+      "@context": {
+        "name": "schema:name",
+        "editUrl": {
+          "@id": "opti:editUrl",
+          "@type": "@id"
+        },
+        "activationType": "opti:activationType",
+        "conditions": "opti:conditions"
+      }
+    },
+
+    "Event": {
+      "@id": "opti:Event",
+      "@context": {
+        "name": "schema:name",
+        "key": "opti:key",
+        "eventType": "opti:eventType"
+      }
+    },
+
+    "CustomerProfile": {
+      "@id": "opti:CustomerProfile",
+      "@context": {
+        "email": "schema:email",
+        "firstName": "schema:givenName",
+        "lastName": "schema:familyName",
+        "city": "schema:addressLocality",
+        "state": "schema:addressRegion",
+        "country": "schema:addressCountry",
+        "zipCode": "schema:postalCode",
+        "segments": {
+          "@id": "opti:segments",
+          "@container": "@set"
+        }
+      }
+    },
+
+    "ContentItem": {
+      "@id": "opti:ContentItem",
+      "@context": {
+        "name": "schema:name",
+        "contentType": "opti:contentType",
+        "url": {
+          "@id": "schema:url",
+          "@type": "@id"
+        },
+        "language": "schema:inLanguage",
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "modified": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        },
+        "published": {
+          "@id": "schema:datePublished",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "CatalogEntry": {
+      "@id": "opti:CatalogEntry",
+      "@context": {
+        "name": "schema:name",
+        "code": "schema:sku",
+        "entryType": "opti:entryType",
+        "price": "schema:price",
+        "currency": "schema:priceCurrency",
+        "isActive": "schema:availability"
+      }
+    },
+
+    "Order": {
+      "@id": "opti:Order",
+      "@context": {
+        "orderId": "schema:orderNumber",
+        "customer": {
+          "@id": "schema:customer",
+          "@type": "@id"
+        },
+        "total": "schema:totalPrice",
+        "currency": "schema:priceCurrency",
+        "status": "schema:orderStatus",
+        "created": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        }
+      }
+    }
+  }
+}

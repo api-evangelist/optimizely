@@ -1,0 +1,288 @@
+asyncapi: 2.6.0
+info:
+  title: Optimizely CMP Webhooks
+  description: >-
+    The Optimizely Content Marketing Platform (CMP) provides webhook
+    notifications when content events occur, such as when assets are
+    published, tasks are completed or modified, and content items are
+    updated. Webhooks send HTTP POST payloads with JSON bodies to
+    configured callback URLs. An optional secret can be provided during
+    webhook registration for signature verification via the
+    Callback-Secret header.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+servers:
+  webhookReceiver:
+    url: '{callbackUrl}'
+    protocol: https
+    description: >-
+      The HTTPS endpoint on your server that receives webhook
+      POST requests from Optimizely CMP.
+    variables:
+      callbackUrl:
+        description: The callback URL registered for receiving webhooks
+channels:
+  /webhook/task-events:
+    description: >-
+      Receives webhook notifications related to task lifecycle events
+      in the CMP, including asset additions, step completions, and
+      assignee changes.
+    publish:
+      operationId: receiveTaskEvent
+      summary: Receive a task event notification
+      description: >-
+        Optimizely CMP sends an HTTP POST request when task-related
+        events occur, such as when an asset is added to a task, a
+        workflow step is completed, started, or skipped, or when a
+        task assignee or due date is changed.
+      message:
+        oneOf:
+          - $ref: '#/components/messages/TaskAssetAdded'
+          - $ref: '#/components/messages/TaskStepCompleted'
+          - $ref: '#/components/messages/TaskStepStarted'
+          - $ref: '#/components/messages/TaskAssigneeChanged'
+  /webhook/content-events:
+    description: >-
+      Receives webhook notifications related to content events
+      in the CMP, including content publication and updates.
+    publish:
+      operationId: receiveContentEvent
+      summary: Receive a content event notification
+      description: >-
+        Optimizely CMP sends an HTTP POST request when content-related
+        events occur in the content repository.
+      message:
+        oneOf:
+          - $ref: '#/components/messages/AssetAdded'
+          - $ref: '#/components/messages/ContentPublished'
+components:
+  securitySchemes:
+    callbackSecret:
+      type: httpApiKey
+      in: header
+      name: Callback-Secret
+      description: >-
+        Optional secret provided during webhook registration, sent with
+        each webhook request for verification.
+  messages:
+    TaskAssetAdded:
+      name: TaskAssetAdded
+      title: Task Asset Added
+      summary: An asset was added to a task
+      description: >-
+        Sent when a digital asset (image, video, article, or raw file)
+        is added to a content task in the CMP workflow.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TaskAssetEvent'
+    TaskStepCompleted:
+      name: TaskStepCompleted
+      title: Task Step Completed
+      summary: A workflow step was completed
+      description: >-
+        Sent when a substep in the content workflow is marked as complete.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TaskStepEvent'
+    TaskStepStarted:
+      name: TaskStepStarted
+      title: Task Step Started
+      summary: A workflow step was started
+      description: >-
+        Sent when a substep in the content workflow is started.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TaskStepEvent'
+    TaskAssigneeChanged:
+      name: TaskAssigneeChanged
+      title: Task Assignee Changed
+      summary: A task assignee was changed
+      description: >-
+        Sent when the assignee or due date of a task step is modified.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TaskAssigneeEvent'
+    AssetAdded:
+      name: AssetAdded
+      title: Asset Added to Library
+      summary: An asset was published to the CMP library
+      description: >-
+        Sent when an asset is approved and published to the CMP digital
+        asset library, making it available for use in campaigns and content.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/AssetEvent'
+    ContentPublished:
+      name: ContentPublished
+      title: Content Published
+      summary: Content was published
+      description: >-
+        Sent when a content item is published from the CMP content
+        repository, making it available for distribution.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ContentEvent'
+  schemas:
+    TaskAssetEvent:
+      type: object
+      description: Event payload for task asset events
+      properties:
+        event_name:
+          type: string
+          description: Name of the event
+          enum:
+            - task_asset_added
+        task_id:
+          type: string
+          description: Identifier of the task
+        asset:
+          type: object
+          description: The asset that was added
+          properties:
+            id:
+              type: string
+              description: Asset identifier
+            type:
+              type: string
+              description: Type of asset
+              enum:
+                - image
+                - video
+                - article
+                - raw_file
+            links:
+              type: object
+              description: Links related to the asset
+              properties:
+                self:
+                  type: string
+                  format: uri
+                  description: URL to the asset
+        timestamp:
+          type: string
+          format: date-time
+          description: When the event occurred
+    TaskStepEvent:
+      type: object
+      description: Event payload for task workflow step events
+      properties:
+        event_name:
+          type: string
+          description: Name of the event
+          enum:
+            - task_step_completed
+            - task_step_started
+            - task_step_skipped
+        task_id:
+          type: string
+          description: Identifier of the task
+        step:
+          type: object
+          description: The workflow step
+          properties:
+            id:
+              type: string
+              description: Step identifier
+            name:
+              type: string
+              description: Step name
+            status:
+              type: string
+              description: Step status
+              enum:
+                - started
+                - completed
+                - skipped
+        timestamp:
+          type: string
+          format: date-time
+          description: When the event occurred
+    TaskAssigneeEvent:
+      type: object
+      description: Event payload for task assignee changes
+      properties:
+        event_name:
+          type: string
+          description: Name of the event
+          enum:
+            - task_assignee_changed
+            - task_due_date_changed
+        task_id:
+          type: string
+          description: Identifier of the task
+        assignee:
+          type: object
+          description: The new assignee
+          properties:
+            id:
+              type: string
+              description: User identifier
+            name:
+              type: string
+              description: User display name
+        due_date:
+          type: string
+          format: date
+          description: Updated due date
+        timestamp:
+          type: string
+          format: date-time
+          description: When the event occurred
+    AssetEvent:
+      type: object
+      description: Event payload for asset library events
+      properties:
+        event_name:
+          type: string
+          description: Name of the event
+          enum:
+            - asset_added
+        asset:
+          type: object
+          description: The asset that was published
+          properties:
+            id:
+              type: string
+              description: Asset identifier
+            title:
+              type: string
+              description: Asset title
+            type:
+              type: string
+              description: Asset type
+            url:
+              type: string
+              format: uri
+              description: URL to access the asset
+        timestamp:
+          type: string
+          format: date-time
+          description: When the event occurred
+    ContentEvent:
+      type: object
+      description: Event payload for content publication events
+      properties:
+        event_name:
+          type: string
+          description: Name of the event
+          enum:
+            - content_published
+        content:
+          type: object
+          description: The published content
+          properties:
+            id:
+              type: string
+              description: Content identifier
+            title:
+              type: string
+              description: Content title
+            content_type:
+              type: string
+              description: Content type
+        timestamp:
+          type: string
+          format: date-time
+          description: When the event occurred

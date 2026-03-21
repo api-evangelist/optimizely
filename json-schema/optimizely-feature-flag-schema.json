@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.optimizely.com/schemas/optimizely/feature-flag.json",
+  "title": "Optimizely Feature Flag",
+  "description": "Schema representing a feature flag in Optimizely Feature Experimentation, including variables, variations, and environment-specific rulesets for controlled rollouts and experimentation.",
+  "type": "object",
+  "required": ["key", "name"],
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Unique key for the feature flag used in SDK code",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the feature flag",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the flag's purpose and behavior",
+      "maxLength": 2000
+    },
+    "project_id": {
+      "type": "integer",
+      "description": "The project this flag belongs to"
+    },
+    "variables": {
+      "type": "array",
+      "description": "Remote configuration variables that can be set per variation",
+      "items": {
+        "$ref": "#/$defs/Variable"
+      }
+    },
+    "variations": {
+      "type": "array",
+      "description": "Variations of the flag with different variable values",
+      "items": {
+        "$ref": "#/$defs/FlagVariation"
+      }
+    },
+    "environments": {
+      "type": "object",
+      "description": "Per-environment flag configurations with rulesets",
+      "additionalProperties": {
+        "$ref": "#/$defs/FlagEnvironment"
+      }
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the flag was created"
+    },
+    "last_modified": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the flag was last modified"
+    }
+  },
+  "$defs": {
+    "Variable": {
+      "type": "object",
+      "description": "A remotely configurable variable within a feature flag",
+      "required": ["key", "type"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Unique key for the variable",
+          "minLength": 1,
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "type": {
+          "type": "string",
+          "description": "Data type of the variable",
+          "enum": ["string", "integer", "double", "boolean", "json"]
+        },
+        "default_value": {
+          "type": "string",
+          "description": "Default value of the variable when no variation overrides it"
+        }
+      }
+    },
+    "FlagVariation": {
+      "type": "object",
+      "description": "A variation of a feature flag with specific variable values",
+      "required": ["key", "name"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Unique key for the variation",
+          "minLength": 1,
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable name of the variation"
+        },
+        "variables": {
+          "type": "object",
+          "description": "Variable key-value overrides for this variation",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "FlagEnvironment": {
+      "type": "object",
+      "description": "Flag configuration for a specific environment",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether the flag is enabled in this environment"
+        },
+        "ruleset": {
+          "$ref": "#/$defs/Ruleset"
+        }
+      }
+    },
+    "Ruleset": {
+      "type": "object",
+      "description": "A collection of rules determining flag behavior in an environment",
+      "properties": {
+        "rules": {
+          "type": "array",
+          "description": "Ordered list of rules evaluated top-to-bottom",
+          "items": {
+            "$ref": "#/$defs/Rule"
+          }
+        }
+      }
+    },
+    "Rule": {
+      "type": "object",
+      "description": "A rule that determines which variation to deliver to matching visitors",
+      "required": ["key", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the rule"
+        },
+        "key": {
+          "type": "string",
+          "description": "Unique key for the rule"
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of delivery rule",
+          "enum": ["a/b_test", "targeted_delivery", "personalization"]
+        },
+        "audience_conditions": {
+          "type": "string",
+          "description": "JSON-encoded audience targeting conditions"
+        },
+        "percentage_included": {
+          "type": "integer",
+          "description": "Percentage of matching traffic included in this rule",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "variations": {
+          "type": "array",
+          "description": "Variation allocation within the rule",
+          "items": {
+            "type": "object",
+            "properties": {
+              "variation_key": {
+                "type": "string",
+                "description": "Key of the variation"
+              },
+              "weight": {
+                "type": "integer",
+                "description": "Traffic weight allocation",
+                "minimum": 0,
+                "maximum": 10000
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
