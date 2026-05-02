@@ -6,17 +6,17 @@ Optimizely is a digital experience platform that provides A/B testing, feature f
 ## Scope
 
 - **Type:** Contract
-- **Position:** Consuming
+- **Position:** Consumer
 - **Access:** 3rd-Party
 
 ## Tags:
 
- - A/B Testing, Experimentation, Feature Flags, Content Management, E-Commerce, Customer Data, Marketing
+ - A/B Testing, Content Management, Customer Data, E-Commerce, Experimentation, Feature Flags, Marketing
 
 ## Timestamps
 
 - **Created:** 2025-03-04
-- **Modified:** 2026-03-20
+- **Modified:** 2026-04-28
 
 ## APIs
 
@@ -158,6 +158,6 @@ The Optimizely Commerce Service API provides RESTful access to Optimizely's e-co
 
 ## Maintainers
 
-**FN:** API Evangelist
+**FN:** Kin Lane
 
-**Email:** info@apievangelist.com
+**Email:** kin@apievangelist.com
