@@ -1,0 +1,197 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely Commerce Service API — Catalogs
+  description: 'Optimizely Commerce Service API — Catalogs. 5 operations. Lead operation: List catalogs. Self-contained Naftiko
+    capability covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Catalogs
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: commerce-service-catalogs
+    baseUri: ''
+    description: Optimizely Commerce Service API — Catalogs business capability. Self-contained, no shared references.
+    resources:
+    - name: commerce-catalogs
+      path: /commerce/catalogs
+      operations:
+      - name: listcatalogs
+        method: GET
+        description: List catalogs
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createcatalog
+        method: POST
+        description: Create a catalog
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: commerce-catalogs-catalogName
+      path: /commerce/catalogs/{catalogName}
+      operations:
+      - name: getcatalog
+        method: GET
+        description: Get a catalog
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatecatalog
+        method: PUT
+        description: Update a catalog
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletecatalog
+        method: DELETE
+        description: Delete a catalog
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.OPTIMIZELY_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: commerce-service-catalogs-rest
+    port: 8080
+    description: REST adapter for Optimizely Commerce Service API — Catalogs. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/commerce/catalogs
+      name: commerce-catalogs
+      description: REST surface for commerce-catalogs.
+      operations:
+      - method: GET
+        name: listcatalogs
+        description: List catalogs
+        call: commerce-service-catalogs.listcatalogs
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createcatalog
+        description: Create a catalog
+        call: commerce-service-catalogs.createcatalog
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/commerce/catalogs/{catalogname}
+      name: commerce-catalogs-catalogname
+      description: REST surface for commerce-catalogs-catalogName.
+      operations:
+      - method: GET
+        name: getcatalog
+        description: Get a catalog
+        call: commerce-service-catalogs.getcatalog
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatecatalog
+        description: Update a catalog
+        call: commerce-service-catalogs.updatecatalog
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletecatalog
+        description: Delete a catalog
+        call: commerce-service-catalogs.deletecatalog
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: commerce-service-catalogs-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely Commerce Service API — Catalogs. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: list-catalogs
+      description: List catalogs
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: commerce-service-catalogs.listcatalogs
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-catalog
+      description: Create a catalog
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: commerce-service-catalogs.createcatalog
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-catalog
+      description: Get a catalog
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: commerce-service-catalogs.getcatalog
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-catalog
+      description: Update a catalog
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: commerce-service-catalogs.updatecatalog
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-catalog
+      description: Delete a catalog
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: commerce-service-catalogs.deletecatalog
+      outputParameters:
+      - type: object
+        mapping: $.

@@ -1,0 +1,290 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely Content Management API — Content
+  description: 'Optimizely Content Management API — Content. 7 operations. Lead operation: Create a content item. Self-contained
+    Naftiko capability covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Content
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: content-management-content
+    baseUri: ''
+    description: Optimizely Content Management API — Content business capability. Self-contained, no shared references.
+    resources:
+    - name: root
+      path: /
+      operations:
+      - name: createcontent
+        method: POST
+        description: Create a content item
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: contentGuid
+      path: /{contentGuid}
+      operations:
+      - name: getcontentbyguid
+        method: GET
+        description: Get content by GUID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatecontentbyguid
+        method: PUT
+        description: Update content by GUID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: patchcontentbyguid
+        method: PATCH
+        description: Partially update content by GUID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletecontentbyguid
+        method: DELETE
+        description: Delete content by GUID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: permanent
+          in: query
+          type: boolean
+          description: Whether to permanently delete instead of moving to trash
+    - name: contentGuid-move
+      path: /{contentGuid}/move
+      operations:
+      - name: movecontent
+        method: POST
+        description: Move content
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: contentReference
+      path: /{contentReference}
+      operations:
+      - name: getcontentbyreference
+        method: GET
+        description: Get content by reference
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.OPTIMIZELY_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: content-management-content-rest
+    port: 8080
+    description: REST adapter for Optimizely Content Management API — Content. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1
+      name: root
+      description: REST surface for root.
+      operations:
+      - method: POST
+        name: createcontent
+        description: Create a content item
+        call: content-management-content.createcontent
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/{contentguid}
+      name: contentguid
+      description: REST surface for contentGuid.
+      operations:
+      - method: GET
+        name: getcontentbyguid
+        description: Get content by GUID
+        call: content-management-content.getcontentbyguid
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatecontentbyguid
+        description: Update content by GUID
+        call: content-management-content.updatecontentbyguid
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PATCH
+        name: patchcontentbyguid
+        description: Partially update content by GUID
+        call: content-management-content.patchcontentbyguid
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletecontentbyguid
+        description: Delete content by GUID
+        call: content-management-content.deletecontentbyguid
+        with:
+          permanent: rest.permanent
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/{contentguid}/move
+      name: contentguid-move
+      description: REST surface for contentGuid-move.
+      operations:
+      - method: POST
+        name: movecontent
+        description: Move content
+        call: content-management-content.movecontent
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/{contentreference}
+      name: contentreference
+      description: REST surface for contentReference.
+      operations:
+      - method: GET
+        name: getcontentbyreference
+        description: Get content by reference
+        call: content-management-content.getcontentbyreference
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: content-management-content-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely Content Management API — Content. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: create-content-item
+      description: Create a content item
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: content-management-content.createcontent
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-content-guid
+      description: Get content by GUID
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: content-management-content.getcontentbyguid
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-content-guid
+      description: Update content by GUID
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: content-management-content.updatecontentbyguid
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: partially-update-content-guid
+      description: Partially update content by GUID
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: content-management-content.patchcontentbyguid
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-content-guid
+      description: Delete content by GUID
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: content-management-content.deletecontentbyguid
+      with:
+        permanent: tools.permanent
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: move-content
+      description: Move content
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: content-management-content.movecontent
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-content-reference
+      description: Get content by reference
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: content-management-content.getcontentbyreference
+      outputParameters:
+      - type: object
+        mapping: $.

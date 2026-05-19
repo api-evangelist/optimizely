@@ -1,0 +1,166 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely Content Delivery API — Content
+  description: 'Optimizely Content Delivery API — Content. 4 operations. Lead operation: List content items. Self-contained
+    Naftiko capability covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Content
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: content-delivery-content
+    baseUri: ''
+    description: Optimizely Content Delivery API — Content business capability. Self-contained, no shared references.
+    resources:
+    - name: content
+      path: /content
+      operations:
+      - name: listcontent
+        method: GET
+        description: List content items
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: content-contentId
+      path: /content/{contentId}
+      operations:
+      - name: getcontent
+        method: GET
+        description: Get a content item
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: content-contentId-ancestors
+      path: /content/{contentId}/ancestors
+      operations:
+      - name: getcontentancestors
+        method: GET
+        description: Get content ancestors
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: content-contentId-children
+      path: /content/{contentId}/children
+      operations:
+      - name: getcontentchildren
+        method: GET
+        description: Get content children
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.OPTIMIZELY_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: content-delivery-content-rest
+    port: 8080
+    description: REST adapter for Optimizely Content Delivery API — Content. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/content
+      name: content
+      description: REST surface for content.
+      operations:
+      - method: GET
+        name: listcontent
+        description: List content items
+        call: content-delivery-content.listcontent
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/content/{contentid}
+      name: content-contentid
+      description: REST surface for content-contentId.
+      operations:
+      - method: GET
+        name: getcontent
+        description: Get a content item
+        call: content-delivery-content.getcontent
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/content/{contentid}/ancestors
+      name: content-contentid-ancestors
+      description: REST surface for content-contentId-ancestors.
+      operations:
+      - method: GET
+        name: getcontentancestors
+        description: Get content ancestors
+        call: content-delivery-content.getcontentancestors
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/content/{contentid}/children
+      name: content-contentid-children
+      description: REST surface for content-contentId-children.
+      operations:
+      - method: GET
+        name: getcontentchildren
+        description: Get content children
+        call: content-delivery-content.getcontentchildren
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: content-delivery-content-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely Content Delivery API — Content. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: list-content-items
+      description: List content items
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: content-delivery-content.listcontent
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-content-item
+      description: Get a content item
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: content-delivery-content.getcontent
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-content-ancestors
+      description: Get content ancestors
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: content-delivery-content.getcontentancestors
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-content-children
+      description: Get content children
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: content-delivery-content.getcontentchildren
+      outputParameters:
+      - type: object
+        mapping: $.

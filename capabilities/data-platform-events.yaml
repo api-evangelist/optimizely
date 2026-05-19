@@ -1,0 +1,82 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely Data Platform REST API — Events
+  description: 'Optimizely Data Platform REST API — Events. 1 operations. Lead operation: Send events. Self-contained Naftiko
+    capability covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Events
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: data-platform-events
+    baseUri: https://api.zaius.com/v3
+    description: Optimizely Data Platform REST API — Events business capability. Self-contained, no shared references.
+    resources:
+    - name: events
+      path: /events
+      operations:
+      - name: sendevents
+        method: POST
+        description: Send events
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: apikey
+      key: x-api-key
+      value: '{{env.OPTIMIZELY_API_KEY}}'
+      placement: header
+  exposes:
+  - type: rest
+    namespace: data-platform-events-rest
+    port: 8080
+    description: REST adapter for Optimizely Data Platform REST API — Events. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/events
+      name: events
+      description: REST surface for events.
+      operations:
+      - method: POST
+        name: sendevents
+        description: Send events
+        call: data-platform-events.sendevents
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: data-platform-events-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely Data Platform REST API — Events. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: send-events
+      description: Send events
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: data-platform-events.sendevents
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

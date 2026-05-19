@@ -1,0 +1,102 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely Feature Experimentation REST API — Features
+  description: 'Optimizely Feature Experimentation REST API — Features. 2 operations. Lead operation: List features. Self-contained
+    Naftiko capability covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Features
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: feature-experimentation-features
+    baseUri: https://api.optimizely.com/v2
+    description: Optimizely Feature Experimentation REST API — Features business capability. Self-contained, no shared references.
+    resources:
+    - name: features
+      path: /features
+      operations:
+      - name: listfeatures
+        method: GET
+        description: List features
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: features-feature_id
+      path: /features/{feature_id}
+      operations:
+      - name: getfeature
+        method: GET
+        description: Get a feature
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.OPTIMIZELY_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: feature-experimentation-features-rest
+    port: 8080
+    description: REST adapter for Optimizely Feature Experimentation REST API — Features. One Spectral-compliant resource
+      per consumed operation, prefixed with /v1.
+    resources:
+    - path: /v1/features
+      name: features
+      description: REST surface for features.
+      operations:
+      - method: GET
+        name: listfeatures
+        description: List features
+        call: feature-experimentation-features.listfeatures
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/features/{feature-id}
+      name: features-feature-id
+      description: REST surface for features-feature_id.
+      operations:
+      - method: GET
+        name: getfeature
+        description: Get a feature
+        call: feature-experimentation-features.getfeature
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: feature-experimentation-features-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely Feature Experimentation REST API — Features. One tool per consumed operation,
+      routed inline through this capability's consumes block.
+    tools:
+    - name: list-features
+      description: List features
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: feature-experimentation-features.listfeatures
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-feature
+      description: Get a feature
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: feature-experimentation-features.getfeature
+      outputParameters:
+      - type: object
+        mapping: $.

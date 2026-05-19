@@ -1,0 +1,172 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely CMP Open REST API — Tasks
+  description: 'Optimizely CMP Open REST API — Tasks. 4 operations. Lead operation: List tasks. Self-contained Naftiko capability
+    covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Tasks
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cmp-tasks
+    baseUri: https://api.cmp.optimizely.com/v0
+    description: Optimizely CMP Open REST API — Tasks business capability. Self-contained, no shared references.
+    resources:
+    - name: tasks
+      path: /tasks
+      operations:
+      - name: listtasks
+        method: GET
+        description: List tasks
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createtask
+        method: POST
+        description: Create a task
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: tasks-taskId
+      path: /tasks/{taskId}
+      operations:
+      - name: gettask
+        method: GET
+        description: Get a task
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatetask
+        method: PUT
+        description: Update a task
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.OPTIMIZELY_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cmp-tasks-rest
+    port: 8080
+    description: REST adapter for Optimizely CMP Open REST API — Tasks. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/tasks
+      name: tasks
+      description: REST surface for tasks.
+      operations:
+      - method: GET
+        name: listtasks
+        description: List tasks
+        call: cmp-tasks.listtasks
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createtask
+        description: Create a task
+        call: cmp-tasks.createtask
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/tasks/{taskid}
+      name: tasks-taskid
+      description: REST surface for tasks-taskId.
+      operations:
+      - method: GET
+        name: gettask
+        description: Get a task
+        call: cmp-tasks.gettask
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatetask
+        description: Update a task
+        call: cmp-tasks.updatetask
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cmp-tasks-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely CMP Open REST API — Tasks. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-tasks
+      description: List tasks
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cmp-tasks.listtasks
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-task
+      description: Create a task
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cmp-tasks.createtask
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-task
+      description: Get a task
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cmp-tasks.gettask
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-task
+      description: Update a task
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cmp-tasks.updatetask
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

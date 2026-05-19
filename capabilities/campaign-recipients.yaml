@@ -1,0 +1,198 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely Campaign REST API — Recipients
+  description: 'Optimizely Campaign REST API — Recipients. 5 operations. Lead operation: List recipients. Self-contained Naftiko
+    capability covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Recipients
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: campaign-recipients
+    baseUri: https://api.campaign.episerver.net/rest
+    description: Optimizely Campaign REST API — Recipients business capability. Self-contained, no shared references.
+    resources:
+    - name: clientId-recipients-recipientListId
+      path: /{clientId}/recipients/{recipientListId}
+      operations:
+      - name: listrecipients
+        method: GET
+        description: List recipients
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: addrecipient
+        method: POST
+        description: Add a recipient
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: clientId-recipients-recipientListId-recipientId
+      path: /{clientId}/recipients/{recipientListId}/{recipientId}
+      operations:
+      - name: getrecipient
+        method: GET
+        description: Get a recipient
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updaterecipient
+        method: PUT
+        description: Update a recipient
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleterecipient
+        method: DELETE
+        description: Delete a recipient
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: basic
+      username: '{{env.OPTIMIZELY_USER}}'
+      password: '{{env.OPTIMIZELY_PASS}}'
+  exposes:
+  - type: rest
+    namespace: campaign-recipients-rest
+    port: 8080
+    description: REST adapter for Optimizely Campaign REST API — Recipients. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/{clientid}/recipients/{recipientlistid}
+      name: clientid-recipients-recipientlistid
+      description: REST surface for clientId-recipients-recipientListId.
+      operations:
+      - method: GET
+        name: listrecipients
+        description: List recipients
+        call: campaign-recipients.listrecipients
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: addrecipient
+        description: Add a recipient
+        call: campaign-recipients.addrecipient
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/{clientid}/recipients/{recipientlistid}/{recipientid}
+      name: clientid-recipients-recipientlistid-recipientid
+      description: REST surface for clientId-recipients-recipientListId-recipientId.
+      operations:
+      - method: GET
+        name: getrecipient
+        description: Get a recipient
+        call: campaign-recipients.getrecipient
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updaterecipient
+        description: Update a recipient
+        call: campaign-recipients.updaterecipient
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleterecipient
+        description: Delete a recipient
+        call: campaign-recipients.deleterecipient
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: campaign-recipients-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely Campaign REST API — Recipients. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: list-recipients
+      description: List recipients
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: campaign-recipients.listrecipients
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: add-recipient
+      description: Add a recipient
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: campaign-recipients.addrecipient
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-recipient
+      description: Get a recipient
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: campaign-recipients.getrecipient
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-recipient
+      description: Update a recipient
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: campaign-recipients.updaterecipient
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-recipient
+      description: Delete a recipient
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: campaign-recipients.deleterecipient
+      outputParameters:
+      - type: object
+        mapping: $.

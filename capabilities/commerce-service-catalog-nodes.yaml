@@ -1,0 +1,130 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely Commerce Service API — Catalog Nodes
+  description: 'Optimizely Commerce Service API — Catalog Nodes. 3 operations. Lead operation: Get a catalog node. Self-contained
+    Naftiko capability covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Catalog Nodes
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: commerce-service-catalog-nodes
+    baseUri: ''
+    description: Optimizely Commerce Service API — Catalog Nodes business capability. Self-contained, no shared references.
+    resources:
+    - name: commerce-nodes-nodeCode
+      path: /commerce/nodes/{nodeCode}
+      operations:
+      - name: getcatalognode
+        method: GET
+        description: Get a catalog node
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatecatalognode
+        method: PUT
+        description: Update a catalog node
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletecatalognode
+        method: DELETE
+        description: Delete a catalog node
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.OPTIMIZELY_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: commerce-service-catalog-nodes-rest
+    port: 8080
+    description: REST adapter for Optimizely Commerce Service API — Catalog Nodes. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/commerce/nodes/{nodecode}
+      name: commerce-nodes-nodecode
+      description: REST surface for commerce-nodes-nodeCode.
+      operations:
+      - method: GET
+        name: getcatalognode
+        description: Get a catalog node
+        call: commerce-service-catalog-nodes.getcatalognode
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatecatalognode
+        description: Update a catalog node
+        call: commerce-service-catalog-nodes.updatecatalognode
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletecatalognode
+        description: Delete a catalog node
+        call: commerce-service-catalog-nodes.deletecatalognode
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: commerce-service-catalog-nodes-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely Commerce Service API — Catalog Nodes. One tool per consumed operation, routed
+      inline through this capability's consumes block.
+    tools:
+    - name: get-catalog-node
+      description: Get a catalog node
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: commerce-service-catalog-nodes.getcatalognode
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-catalog-node
+      description: Update a catalog node
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: commerce-service-catalog-nodes.updatecatalognode
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-catalog-node
+      description: Delete a catalog node
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: commerce-service-catalog-nodes.deletecatalognode
+      outputParameters:
+      - type: object
+        mapping: $.

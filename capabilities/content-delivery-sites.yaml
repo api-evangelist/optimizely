@@ -1,0 +1,70 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely Content Delivery API — Sites
+  description: 'Optimizely Content Delivery API — Sites. 1 operations. Lead operation: List sites. Self-contained Naftiko
+    capability covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Sites
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: content-delivery-sites
+    baseUri: ''
+    description: Optimizely Content Delivery API — Sites business capability. Self-contained, no shared references.
+    resources:
+    - name: site
+      path: /site
+      operations:
+      - name: listsites
+        method: GET
+        description: List sites
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.OPTIMIZELY_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: content-delivery-sites-rest
+    port: 8080
+    description: REST adapter for Optimizely Content Delivery API — Sites. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/site
+      name: site
+      description: REST surface for site.
+      operations:
+      - method: GET
+        name: listsites
+        description: List sites
+        call: content-delivery-sites.listsites
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: content-delivery-sites-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely Content Delivery API — Sites. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-sites
+      description: List sites
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: content-delivery-sites.listsites
+      outputParameters:
+      - type: object
+        mapping: $.

@@ -1,0 +1,229 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely Web Experimentation REST API — Experiments
+  description: 'Optimizely Web Experimentation REST API — Experiments. 6 operations. Lead operation: List experiments. Self-contained
+    Naftiko capability covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Experiments
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: web-experimentation-experiments
+    baseUri: https://api.optimizely.com/v2
+    description: Optimizely Web Experimentation REST API — Experiments business capability. Self-contained, no shared references.
+    resources:
+    - name: experiments
+      path: /experiments
+      operations:
+      - name: listexperiments
+        method: GET
+        description: List experiments
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createexperiment
+        method: POST
+        description: Create an experiment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: experiments-experiment_id
+      path: /experiments/{experiment_id}
+      operations:
+      - name: getexperiment
+        method: GET
+        description: Get an experiment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updateexperiment
+        method: PATCH
+        description: Update an experiment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleteexperiment
+        method: DELETE
+        description: Delete an experiment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: experiments-experiment_id-results
+      path: /experiments/{experiment_id}/results
+      operations:
+      - name: getexperimentresults
+        method: GET
+        description: Get experiment results
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.OPTIMIZELY_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: web-experimentation-experiments-rest
+    port: 8080
+    description: REST adapter for Optimizely Web Experimentation REST API — Experiments. One Spectral-compliant resource per
+      consumed operation, prefixed with /v1.
+    resources:
+    - path: /v1/experiments
+      name: experiments
+      description: REST surface for experiments.
+      operations:
+      - method: GET
+        name: listexperiments
+        description: List experiments
+        call: web-experimentation-experiments.listexperiments
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createexperiment
+        description: Create an experiment
+        call: web-experimentation-experiments.createexperiment
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/experiments/{experiment-id}
+      name: experiments-experiment-id
+      description: REST surface for experiments-experiment_id.
+      operations:
+      - method: GET
+        name: getexperiment
+        description: Get an experiment
+        call: web-experimentation-experiments.getexperiment
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PATCH
+        name: updateexperiment
+        description: Update an experiment
+        call: web-experimentation-experiments.updateexperiment
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteexperiment
+        description: Delete an experiment
+        call: web-experimentation-experiments.deleteexperiment
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/experiments/{experiment-id}/results
+      name: experiments-experiment-id-results
+      description: REST surface for experiments-experiment_id-results.
+      operations:
+      - method: GET
+        name: getexperimentresults
+        description: Get experiment results
+        call: web-experimentation-experiments.getexperimentresults
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: web-experimentation-experiments-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely Web Experimentation REST API — Experiments. One tool per consumed operation, routed
+      inline through this capability's consumes block.
+    tools:
+    - name: list-experiments
+      description: List experiments
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: web-experimentation-experiments.listexperiments
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-experiment
+      description: Create an experiment
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: web-experimentation-experiments.createexperiment
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-experiment
+      description: Get an experiment
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: web-experimentation-experiments.getexperiment
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-experiment
+      description: Update an experiment
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: web-experimentation-experiments.updateexperiment
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-experiment
+      description: Delete an experiment
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: web-experimentation-experiments.deleteexperiment
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-experiment-results
+      description: Get experiment results
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: web-experimentation-experiments.getexperimentresults
+      outputParameters:
+      - type: object
+        mapping: $.

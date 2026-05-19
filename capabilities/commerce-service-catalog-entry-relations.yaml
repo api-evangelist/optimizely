@@ -1,0 +1,106 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely Commerce Service API — Catalog Entry Relations
+  description: 'Optimizely Commerce Service API — Catalog Entry Relations. 2 operations. Lead operation: Get entry node relations.
+    Self-contained Naftiko capability covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Catalog Entry Relations
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: commerce-service-catalog-entry-relations
+    baseUri: ''
+    description: Optimizely Commerce Service API — Catalog Entry Relations business capability. Self-contained, no shared
+      references.
+    resources:
+    - name: commerce-entries-entryCode-noderelations
+      path: /commerce/entries/{entryCode}/noderelations
+      operations:
+      - name: getentrynoderelations
+        method: GET
+        description: Get entry node relations
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updateentrynoderelations
+        method: PUT
+        description: Update entry node relations
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.OPTIMIZELY_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: commerce-service-catalog-entry-relations-rest
+    port: 8080
+    description: REST adapter for Optimizely Commerce Service API — Catalog Entry Relations. One Spectral-compliant resource
+      per consumed operation, prefixed with /v1.
+    resources:
+    - path: /v1/commerce/entries/{entrycode}/noderelations
+      name: commerce-entries-entrycode-noderelations
+      description: REST surface for commerce-entries-entryCode-noderelations.
+      operations:
+      - method: GET
+        name: getentrynoderelations
+        description: Get entry node relations
+        call: commerce-service-catalog-entry-relations.getentrynoderelations
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateentrynoderelations
+        description: Update entry node relations
+        call: commerce-service-catalog-entry-relations.updateentrynoderelations
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: commerce-service-catalog-entry-relations-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely Commerce Service API — Catalog Entry Relations. One tool per consumed operation,
+      routed inline through this capability's consumes block.
+    tools:
+    - name: get-entry-node-relations
+      description: Get entry node relations
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: commerce-service-catalog-entry-relations.getentrynoderelations
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-entry-node-relations
+      description: Update entry node relations
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: commerce-service-catalog-entry-relations.updateentrynoderelations
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

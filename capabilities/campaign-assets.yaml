@@ -1,0 +1,106 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely Campaign REST API — Assets
+  description: 'Optimizely Campaign REST API — Assets. 2 operations. Lead operation: List assets. Self-contained Naftiko capability
+    covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Assets
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: campaign-assets
+    baseUri: https://api.campaign.episerver.net/rest
+    description: Optimizely Campaign REST API — Assets business capability. Self-contained, no shared references.
+    resources:
+    - name: clientId-assets
+      path: /{clientId}/assets
+      operations:
+      - name: listassets
+        method: GET
+        description: List assets
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: uploadasset
+        method: POST
+        description: Upload an asset
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: basic
+      username: '{{env.OPTIMIZELY_USER}}'
+      password: '{{env.OPTIMIZELY_PASS}}'
+  exposes:
+  - type: rest
+    namespace: campaign-assets-rest
+    port: 8080
+    description: REST adapter for Optimizely Campaign REST API — Assets. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/{clientid}/assets
+      name: clientid-assets
+      description: REST surface for clientId-assets.
+      operations:
+      - method: GET
+        name: listassets
+        description: List assets
+        call: campaign-assets.listassets
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: uploadasset
+        description: Upload an asset
+        call: campaign-assets.uploadasset
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: campaign-assets-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely Campaign REST API — Assets. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-assets
+      description: List assets
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: campaign-assets.listassets
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: upload-asset
+      description: Upload an asset
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: campaign-assets.uploadasset
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

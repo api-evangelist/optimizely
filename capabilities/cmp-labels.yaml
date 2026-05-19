@@ -1,0 +1,70 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely CMP Open REST API — Labels
+  description: 'Optimizely CMP Open REST API — Labels. 1 operations. Lead operation: List labels. Self-contained Naftiko capability
+    covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Labels
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cmp-labels
+    baseUri: https://api.cmp.optimizely.com/v0
+    description: Optimizely CMP Open REST API — Labels business capability. Self-contained, no shared references.
+    resources:
+    - name: labels
+      path: /labels
+      operations:
+      - name: listlabels
+        method: GET
+        description: List labels
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.OPTIMIZELY_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cmp-labels-rest
+    port: 8080
+    description: REST adapter for Optimizely CMP Open REST API — Labels. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/labels
+      name: labels
+      description: REST surface for labels.
+      operations:
+      - method: GET
+        name: listlabels
+        description: List labels
+        call: cmp-labels.listlabels
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cmp-labels-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely CMP Open REST API — Labels. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-labels
+      description: List labels
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cmp-labels.listlabels
+      outputParameters:
+      - type: object
+        mapping: $.

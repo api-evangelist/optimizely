@@ -1,0 +1,197 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely CMP Open REST API — Assets
+  description: 'Optimizely CMP Open REST API — Assets. 5 operations. Lead operation: List assets. Self-contained Naftiko capability
+    covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Assets
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cmp-assets
+    baseUri: https://api.cmp.optimizely.com/v0
+    description: Optimizely CMP Open REST API — Assets business capability. Self-contained, no shared references.
+    resources:
+    - name: assets
+      path: /assets
+      operations:
+      - name: listassets
+        method: GET
+        description: List assets
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createasset
+        method: POST
+        description: Create an asset
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: assets-assetId
+      path: /assets/{assetId}
+      operations:
+      - name: getasset
+        method: GET
+        description: Get an asset
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updateasset
+        method: PUT
+        description: Update an asset
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleteasset
+        method: DELETE
+        description: Delete an asset
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.OPTIMIZELY_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cmp-assets-rest
+    port: 8080
+    description: REST adapter for Optimizely CMP Open REST API — Assets. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/assets
+      name: assets
+      description: REST surface for assets.
+      operations:
+      - method: GET
+        name: listassets
+        description: List assets
+        call: cmp-assets.listassets
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createasset
+        description: Create an asset
+        call: cmp-assets.createasset
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/assets/{assetid}
+      name: assets-assetid
+      description: REST surface for assets-assetId.
+      operations:
+      - method: GET
+        name: getasset
+        description: Get an asset
+        call: cmp-assets.getasset
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateasset
+        description: Update an asset
+        call: cmp-assets.updateasset
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteasset
+        description: Delete an asset
+        call: cmp-assets.deleteasset
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cmp-assets-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely CMP Open REST API — Assets. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-assets
+      description: List assets
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cmp-assets.listassets
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-asset
+      description: Create an asset
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cmp-assets.createasset
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-asset
+      description: Get an asset
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cmp-assets.getasset
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-asset
+      description: Update an asset
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cmp-assets.updateasset
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-asset
+      description: Delete an asset
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: cmp-assets.deleteasset
+      outputParameters:
+      - type: object
+        mapping: $.

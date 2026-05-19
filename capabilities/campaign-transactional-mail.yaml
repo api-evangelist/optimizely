@@ -1,0 +1,81 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Optimizely Campaign REST API — Transactional Mail
+  description: 'Optimizely Campaign REST API — Transactional Mail. 1 operations. Lead operation: Send a transactional mail.
+    Self-contained Naftiko capability covering one Optimizely business surface.'
+  tags:
+  - Optimizely
+  - Transactional Mail
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    OPTIMIZELY_API_KEY: OPTIMIZELY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: campaign-transactional-mail
+    baseUri: https://api.campaign.episerver.net/rest
+    description: Optimizely Campaign REST API — Transactional Mail business capability. Self-contained, no shared references.
+    resources:
+    - name: clientId-transactionalmail
+      path: /{clientId}/transactionalmail
+      operations:
+      - name: sendtransactionalmail
+        method: POST
+        description: Send a transactional mail
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: basic
+      username: '{{env.OPTIMIZELY_USER}}'
+      password: '{{env.OPTIMIZELY_PASS}}'
+  exposes:
+  - type: rest
+    namespace: campaign-transactional-mail-rest
+    port: 8080
+    description: REST adapter for Optimizely Campaign REST API — Transactional Mail. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/{clientid}/transactionalmail
+      name: clientid-transactionalmail
+      description: REST surface for clientId-transactionalmail.
+      operations:
+      - method: POST
+        name: sendtransactionalmail
+        description: Send a transactional mail
+        call: campaign-transactional-mail.sendtransactionalmail
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: campaign-transactional-mail-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Optimizely Campaign REST API — Transactional Mail. One tool per consumed operation, routed
+      inline through this capability's consumes block.
+    tools:
+    - name: send-transactional-mail
+      description: Send a transactional mail
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: campaign-transactional-mail.sendtransactionalmail
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
