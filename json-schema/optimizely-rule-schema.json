@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/Rule",
+  "title": "Rule",
+  "type": "object",
+  "description": "A rule that determines which variation to deliver",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the rule"
+    },
+    "key": {
+      "type": "string",
+      "description": "Unique key for the rule"
+    },
+    "type": {
+      "type": "string",
+      "description": "Type of rule",
+      "enum": [
+        "a/b_test",
+        "targeted_delivery",
+        "personalization"
+      ]
+    },
+    "audience_conditions": {
+      "type": "string",
+      "description": "JSON-encoded audience conditions for this rule"
+    },
+    "percentage_included": {
+      "type": "integer",
+      "description": "Percentage of traffic included in this rule",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "variations": {
+      "type": "array",
+      "description": "Variations and their traffic allocation",
+      "items": {
+        "type": "object",
+        "properties": {
+          "variation_key": {
+            "type": "string",
+            "description": "Key of the variation"
+          },
+          "weight": {
+            "type": "integer",
+            "description": "Traffic weight for this variation",
+            "minimum": 0,
+            "maximum": 10000
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/CatalogEntry",
+  "title": "CatalogEntry",
+  "type": "object",
+  "description": "A catalog entry (product, variant, package, or bundle)",
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "Unique code for the catalog entry"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the entry"
+    },
+    "entry_type": {
+      "type": "string",
+      "description": "Type of catalog entry",
+      "enum": [
+        "Product",
+        "Variation",
+        "Package",
+        "Bundle"
+      ]
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Availability start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Availability end date"
+    },
+    "is_active": {
+      "type": "boolean",
+      "description": "Whether the entry is active"
+    },
+    "properties": {
+      "type": "object",
+      "description": "Dynamic properties specific to the entry type",
+      "additionalProperties": true
+    },
+    "prices": {
+      "type": "array",
+      "description": "Price information for the entry",
+      "items": {
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string",
+            "description": "Currency code"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Price amount"
+          },
+          "market_id": {
+            "type": "string",
+            "description": "Market identifier"
+          }
+        }
+      }
+    }
+  }
+}

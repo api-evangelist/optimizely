@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/RuleInput",
+  "title": "RuleInput",
+  "type": "object",
+  "description": "Input for creating or updating a rule",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Unique key for the rule"
+    },
+    "type": {
+      "type": "string",
+      "description": "Type of rule",
+      "enum": [
+        "a/b_test",
+        "targeted_delivery",
+        "personalization"
+      ]
+    },
+    "audience_conditions": {
+      "type": "string",
+      "description": "JSON-encoded audience conditions"
+    },
+    "percentage_included": {
+      "type": "integer",
+      "description": "Percentage of traffic included",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "variations": {
+      "type": "array",
+      "description": "Variations and their traffic allocation",
+      "items": {
+        "type": "object",
+        "properties": {
+          "variation_key": {
+            "type": "string",
+            "description": "Key of the variation"
+          },
+          "weight": {
+            "type": "integer",
+            "description": "Traffic weight",
+            "minimum": 0,
+            "maximum": 10000
+          }
+        }
+      }
+    }
+  }
+}

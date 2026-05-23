@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/Flag",
+  "title": "Flag",
+  "type": "object",
+  "description": "A feature flag with variables and variations",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Unique key for the flag"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the flag"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the flag purpose"
+    },
+    "project_id": {
+      "type": "integer",
+      "format": "int64",
+      "description": "The project this flag belongs to"
+    },
+    "variables": {
+      "type": "array",
+      "description": "List of variables associated with this flag",
+      "items": {
+        "$ref": "#/components/schemas/Variable"
+      }
+    },
+    "variations": {
+      "type": "array",
+      "description": "List of variations for this flag",
+      "items": {
+        "$ref": "#/components/schemas/FlagVariation"
+      }
+    },
+    "environments": {
+      "type": "object",
+      "description": "Map of environment keys to flag environment configurations",
+      "additionalProperties": {
+        "$ref": "#/components/schemas/FlagEnvironment"
+      }
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the flag was created"
+    },
+    "last_modified": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the flag was last modified"
+    }
+  }
+}

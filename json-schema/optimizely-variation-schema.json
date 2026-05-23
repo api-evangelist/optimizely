@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/Variation",
+  "title": "Variation",
+  "type": "object",
+  "description": "A variation within an experiment",
+  "properties": {
+    "variation_id": {
+      "type": "integer",
+      "format": "int64",
+      "description": "Unique identifier for the variation"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the variation"
+    },
+    "weight": {
+      "type": "integer",
+      "description": "Traffic allocation weight for the variation",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "actions": {
+      "type": "array",
+      "description": "List of actions (changes) applied in this variation",
+      "items": {
+        "type": "object",
+        "properties": {
+          "page_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The page this action applies to"
+          },
+          "changes": {
+            "type": "array",
+            "description": "List of changes applied on the page",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "The type of change"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "The change value"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

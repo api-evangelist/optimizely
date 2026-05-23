@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/ExperimentResults",
+  "title": "ExperimentResults",
+  "type": "object",
+  "description": "Statistical results for an experiment",
+  "properties": {
+    "experiment_id": {
+      "type": "integer",
+      "format": "int64",
+      "description": "The experiment these results belong to"
+    },
+    "start_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Start time of the results period"
+    },
+    "end_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "End time of the results period"
+    },
+    "reach": {
+      "type": "object",
+      "description": "Reach statistics for the experiment",
+      "properties": {
+        "variations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer",
+                "description": "Number of visitors in this variation"
+              },
+              "variation_id": {
+                "type": "string",
+                "description": "The variation identifier"
+              }
+            }
+          }
+        }
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "description": "Results for each metric",
+      "items": {
+        "type": "object",
+        "properties": {
+          "event_id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The event ID for this metric"
+          },
+          "results": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "is_baseline": {
+                  "type": "boolean",
+                  "description": "Whether this is the baseline variation"
+                },
+                "value": {
+                  "type": "number",
+                  "description": "The metric value"
+                },
+                "lift": {
+                  "type": "object",
+                  "description": "Lift compared to baseline",
+                  "properties": {
+                    "value": {
+                      "type": "number",
+                      "description": "Lift percentage"
+                    },
+                    "is_significant": {
+                      "type": "boolean",
+                      "description": "Whether the lift is statistically significant"
+                    },
+                    "significance": {
+                      "type": "number",
+                      "description": "Statistical significance level"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

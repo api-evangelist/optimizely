@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/ContentInput",
+  "title": "ContentInput",
+  "type": "object",
+  "description": "Input for creating or fully updating a content item",
+  "required": [
+    "name",
+    "contentType",
+    "parentLink"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Display name of the content item"
+    },
+    "contentType": {
+      "type": "array",
+      "description": "Content type hierarchy",
+      "items": {
+        "type": "string"
+      }
+    },
+    "parentLink": {
+      "type": "object",
+      "description": "Reference to the parent content item",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Parent content ID"
+        }
+      }
+    },
+    "language": {
+      "type": "object",
+      "description": "Language information",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Language code"
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "description": "Content status",
+      "enum": [
+        "CheckedOut",
+        "CheckedIn",
+        "Published"
+      ]
+    },
+    "startPublish": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Scheduled publish start time"
+    },
+    "properties": {
+      "type": "object",
+      "description": "Dynamic content properties specific to the content type",
+      "additionalProperties": true
+    }
+  }
+}

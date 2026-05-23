@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/GraphQLResponse",
+  "title": "GraphQLResponse",
+  "type": "object",
+  "description": "A GraphQL query response",
+  "properties": {
+    "data": {
+      "type": "object",
+      "description": "The query result data",
+      "additionalProperties": true
+    },
+    "errors": {
+      "type": "array",
+      "description": "List of errors if the query failed or partially failed",
+      "items": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "locations": {
+            "type": "array",
+            "description": "Locations in the query where the error occurred",
+            "items": {
+              "type": "object",
+              "properties": {
+                "line": {
+                  "type": "integer",
+                  "description": "Line number"
+                },
+                "column": {
+                  "type": "integer",
+                  "description": "Column number"
+                }
+              }
+            }
+          },
+          "path": {
+            "type": "array",
+            "description": "Path to the field that caused the error",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Additional metadata about the query execution",
+      "additionalProperties": true
+    }
+  }
+}
