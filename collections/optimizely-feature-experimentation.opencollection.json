@@ -1,0 +1,763 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Optimizely Feature Experimentation REST API",
+    "version": "2.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Projects",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List projects",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/projects",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of all Feature Experimentation projects accessible to the authenticated user."
+        },
+        {
+          "info": {
+            "name": "Create a project",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.optimizely.com/v2/projects",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new Feature Experimentation project."
+        },
+        {
+          "info": {
+            "name": "Get a project",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/projects/:project_id",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              }
+            ]
+          },
+          "docs": "Retrieves the details of a specific project by its unique identifier."
+        },
+        {
+          "info": {
+            "name": "Update a project",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.optimizely.com/v2/projects/:project_id",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified project with the provided fields."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Environments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List environments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/environments",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier for the project to filter by"
+              }
+            ]
+          },
+          "docs": "Returns a list of environments for the specified project. Environments allow developing, staging, and deploying experiment configurations independently."
+        },
+        {
+          "info": {
+            "name": "Create an environment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.optimizely.com/v2/environments",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new environment within the specified project."
+        },
+        {
+          "info": {
+            "name": "Get an environment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/environments/:environment_id",
+            "params": [
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the environment"
+              }
+            ]
+          },
+          "docs": "Retrieves the details of a specific environment."
+        },
+        {
+          "info": {
+            "name": "Update an environment",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.optimizely.com/v2/environments/:environment_id",
+            "params": [
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the environment"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified environment with the provided fields."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Flags",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List flags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/projects/:project_id/flags",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              }
+            ]
+          },
+          "docs": "Returns a list of feature flags for the specified project."
+        },
+        {
+          "info": {
+            "name": "Create a flag",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.optimizely.com/v2/projects/:project_id/flags",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new feature flag within the specified project with the given key, variables, and variations."
+        },
+        {
+          "info": {
+            "name": "Get a flag",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/projects/:project_id/flags/:flag_key",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              },
+              {
+                "name": "flag_key",
+                "value": "",
+                "type": "path",
+                "description": "The unique key for the feature flag"
+              }
+            ]
+          },
+          "docs": "Retrieves the details of a specific feature flag by its key."
+        },
+        {
+          "info": {
+            "name": "Update a flag",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.optimizely.com/v2/projects/:project_id/flags/:flag_key",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              },
+              {
+                "name": "flag_key",
+                "value": "",
+                "type": "path",
+                "description": "The unique key for the feature flag"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified feature flag with the provided fields."
+        },
+        {
+          "info": {
+            "name": "Delete a flag",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.optimizely.com/v2/projects/:project_id/flags/:flag_key",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              },
+              {
+                "name": "flag_key",
+                "value": "",
+                "type": "path",
+                "description": "The unique key for the feature flag"
+              }
+            ]
+          },
+          "docs": "Permanently deletes the specified feature flag."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Rulesets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a ruleset",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/projects/:project_id/flags/:flag_key/environments/:environment_key/ruleset",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              },
+              {
+                "name": "flag_key",
+                "value": "",
+                "type": "path",
+                "description": "The unique key for the feature flag"
+              },
+              {
+                "name": "environment_key",
+                "value": "",
+                "type": "path",
+                "description": "The unique key for the environment"
+              }
+            ]
+          },
+          "docs": "Retrieves the ruleset for a specific flag in a given environment. A ruleset is the collection of rules that determine which variation a flag delivers to visitors."
+        },
+        {
+          "info": {
+            "name": "Update a ruleset",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.optimizely.com/v2/projects/:project_id/flags/:flag_key/environments/:environment_key/ruleset",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              },
+              {
+                "name": "flag_key",
+                "value": "",
+                "type": "path",
+                "description": "The unique key for the feature flag"
+              },
+              {
+                "name": "environment_key",
+                "value": "",
+                "type": "path",
+                "description": "The unique key for the environment"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the ruleset for a specific flag in a given environment."
+        },
+        {
+          "info": {
+            "name": "Enable a ruleset",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.optimizely.com/v2/projects/:project_id/flags/:flag_key/environments/:environment_key/ruleset/enabled",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              },
+              {
+                "name": "flag_key",
+                "value": "",
+                "type": "path",
+                "description": "The unique key for the feature flag"
+              },
+              {
+                "name": "environment_key",
+                "value": "",
+                "type": "path",
+                "description": "The unique key for the environment"
+              }
+            ]
+          },
+          "docs": "Enables the ruleset for a specific flag in a given environment, making the flag active and delivering variations to visitors."
+        },
+        {
+          "info": {
+            "name": "Disable a ruleset",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.optimizely.com/v2/projects/:project_id/flags/:flag_key/environments/:environment_key/ruleset/disabled",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              },
+              {
+                "name": "flag_key",
+                "value": "",
+                "type": "path",
+                "description": "The unique key for the feature flag"
+              },
+              {
+                "name": "environment_key",
+                "value": "",
+                "type": "path",
+                "description": "The unique key for the environment"
+              }
+            ]
+          },
+          "docs": "Disables the ruleset for a specific flag in a given environment, stopping the flag from delivering variations to visitors."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Experiments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List experiments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/experiments",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier for the project to filter by"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of experiments for the specified project."
+        },
+        {
+          "info": {
+            "name": "Create an experiment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.optimizely.com/v2/experiments",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new experiment within the specified project."
+        },
+        {
+          "info": {
+            "name": "Get an experiment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/experiments/:experiment_id",
+            "params": [
+              {
+                "name": "experiment_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the experiment"
+              }
+            ]
+          },
+          "docs": "Retrieves the full details of a specific experiment."
+        },
+        {
+          "info": {
+            "name": "Update an experiment",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.optimizely.com/v2/experiments/:experiment_id",
+            "params": [
+              {
+                "name": "experiment_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the experiment"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified experiment with the provided fields."
+        },
+        {
+          "info": {
+            "name": "Delete an experiment",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.optimizely.com/v2/experiments/:experiment_id",
+            "params": [
+              {
+                "name": "experiment_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the experiment"
+              }
+            ]
+          },
+          "docs": "Archives or permanently deletes the specified experiment."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Audiences",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List audiences",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/audiences",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier for the project to filter by"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of audiences for the specified project."
+        },
+        {
+          "info": {
+            "name": "Create an audience",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.optimizely.com/v2/audiences",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new audience within the specified project."
+        },
+        {
+          "info": {
+            "name": "Get an audience",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/audiences/:audience_id",
+            "params": [
+              {
+                "name": "audience_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the audience"
+              }
+            ]
+          },
+          "docs": "Retrieves the full details of a specific audience."
+        },
+        {
+          "info": {
+            "name": "Update an audience",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.optimizely.com/v2/audiences/:audience_id",
+            "params": [
+              {
+                "name": "audience_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the audience"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified audience with the provided fields."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Features",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List features",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/features",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier for the project to filter by"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of features for the specified project. Features define variables that can be remotely configured through flags."
+        },
+        {
+          "info": {
+            "name": "Get a feature",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/features/:feature_id",
+            "params": [
+              {
+                "name": "feature_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the feature"
+              }
+            ]
+          },
+          "docs": "Retrieves the details of a specific feature."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Attributes",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List attributes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/attributes",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier for the project to filter by"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of custom attributes for the specified project."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

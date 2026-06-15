@@ -1,0 +1,296 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Optimizely Data Platform REST API",
+    "version": "3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Events",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Send events",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.zaius.com/v3/events",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Sends one or more events to ODP for processing. Events represent customer actions such as purchases, page views, email opens, and custom interactions. Each event includes a type, action, and associated identifiers and fields."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Profiles",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create or update a profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.zaius.com/v3/profiles",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Creates a new customer profile or updates an existing one in ODP. Profiles are identified by one or more identifier fields such as email, customer_id, or vuid."
+        },
+        {
+          "info": {
+            "name": "Get a profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.zaius.com/v3/profiles/:identifier_field/:identifier_value",
+            "params": [
+              {
+                "name": "identifier_field",
+                "value": "",
+                "type": "path",
+                "description": "The identifier field name (e.g., email, customer_id, vuid)"
+              },
+              {
+                "name": "identifier_value",
+                "value": "",
+                "type": "path",
+                "description": "The value of the identifier field"
+              },
+              {
+                "name": "fields",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated list of profile fields to return"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Retrieves a customer profile by a specific identifier field and value, such as email address or customer ID."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Objects",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create or update objects",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.zaius.com/v3/objects/:object_type",
+            "params": [
+              {
+                "name": "object_type",
+                "value": "",
+                "type": "path",
+                "description": "The type of object (e.g., products, orders)"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates or updates one or more objects of the specified type in ODP. Objects represent entities such as products, orders, or custom domain entities."
+        },
+        {
+          "info": {
+            "name": "Get an object",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.zaius.com/v3/objects/:object_type/:object_id",
+            "params": [
+              {
+                "name": "object_type",
+                "value": "",
+                "type": "path",
+                "description": "The type of object (e.g., products, orders)"
+              },
+              {
+                "name": "object_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the object"
+              }
+            ]
+          },
+          "docs": "Retrieves a specific object by its type and identifier."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Schema",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List schema objects",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.zaius.com/v3/schema/objects",
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Returns a list of all domain object types defined in the ODP schema, including their fields and configurations."
+        },
+        {
+          "info": {
+            "name": "Get a schema object",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.zaius.com/v3/schema/objects/:object_type",
+            "params": [
+              {
+                "name": "object_type",
+                "value": "",
+                "type": "path",
+                "description": "The type of object (e.g., products, orders)"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Retrieves the schema definition for a specific domain object type."
+        },
+        {
+          "info": {
+            "name": "Create a schema object",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.zaius.com/v3/schema/objects/:object_type",
+            "params": [
+              {
+                "name": "object_type",
+                "value": "",
+                "type": "path",
+                "description": "The type of object (e.g., products, orders)"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Creates a new domain object type in the ODP schema."
+        },
+        {
+          "info": {
+            "name": "Create a schema field",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.zaius.com/v3/schema/objects/:object_type/fields",
+            "params": [
+              {
+                "name": "object_type",
+                "value": "",
+                "type": "path",
+                "description": "The type of object (e.g., products, orders)"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Adds a new field to an existing domain object type in the ODP schema."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Segments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List segments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.zaius.com/v3/segments",
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Returns a list of customer segments defined in ODP."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

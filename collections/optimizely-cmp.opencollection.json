@@ -1,0 +1,359 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Optimizely CMP Open REST API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.cmp.optimizely.com/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Assets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List assets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.cmp.optimizely.com/v0/assets",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return"
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of items to skip for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of digital assets in the CMP library, including images, videos, and raw files. Supports filtering and pagination."
+        },
+        {
+          "info": {
+            "name": "Create an asset",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.cmp.optimizely.com/v0/assets",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "file",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "title",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "description",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Creates a new digital asset in the CMP library by uploading a file."
+        },
+        {
+          "info": {
+            "name": "Get an asset",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.cmp.optimizely.com/v0/assets/:assetId",
+            "params": [
+              {
+                "name": "assetId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the asset"
+              }
+            ]
+          },
+          "docs": "Retrieves the details of a specific asset by its identifier."
+        },
+        {
+          "info": {
+            "name": "Update an asset",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.cmp.optimizely.com/v0/assets/:assetId",
+            "params": [
+              {
+                "name": "assetId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the asset"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified asset with the provided metadata."
+        },
+        {
+          "info": {
+            "name": "Delete an asset",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.cmp.optimizely.com/v0/assets/:assetId",
+            "params": [
+              {
+                "name": "assetId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the asset"
+              }
+            ]
+          },
+          "docs": "Permanently deletes the specified asset from the CMP library."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Tasks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List tasks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.cmp.optimizely.com/v0/tasks",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return"
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of items to skip for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of content tasks and their current workflow status."
+        },
+        {
+          "info": {
+            "name": "Create a task",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.cmp.optimizely.com/v0/tasks",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new content task with the specified configuration."
+        },
+        {
+          "info": {
+            "name": "Get a task",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.cmp.optimizely.com/v0/tasks/:taskId",
+            "params": [
+              {
+                "name": "taskId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the task"
+              }
+            ]
+          },
+          "docs": "Retrieves the details of a specific task by its identifier."
+        },
+        {
+          "info": {
+            "name": "Update a task",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.cmp.optimizely.com/v0/tasks/:taskId",
+            "params": [
+              {
+                "name": "taskId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the task"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified task with the provided fields."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Campaigns",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List campaigns",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.cmp.optimizely.com/v0/campaigns",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return"
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of items to skip for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of content campaigns in the editorial calendar."
+        },
+        {
+          "info": {
+            "name": "Get a campaign",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.cmp.optimizely.com/v0/campaigns/:campaignId",
+            "params": [
+              {
+                "name": "campaignId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the campaign"
+              }
+            ]
+          },
+          "docs": "Retrieves the details of a specific content campaign."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Content",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List content",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.cmp.optimizely.com/v0/content",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return"
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of items to skip for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of content items in the CMP content repository."
+        },
+        {
+          "info": {
+            "name": "Get a content item",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.cmp.optimizely.com/v0/content/:contentId",
+            "params": [
+              {
+                "name": "contentId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the content item"
+              }
+            ]
+          },
+          "docs": "Retrieves the details of a specific content item."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Labels",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List labels",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.cmp.optimizely.com/v0/labels"
+          },
+          "docs": "Returns a list of labels used for categorizing content in the CMP."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

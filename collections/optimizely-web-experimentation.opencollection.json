@@ -1,0 +1,797 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Optimizely Web Experimentation REST API",
+    "version": "2.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Projects",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List projects",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/projects",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of all projects accessible to the authenticated user. Projects are the top-level containers for experiments, audiences, pages, and events."
+        },
+        {
+          "info": {
+            "name": "Create a project",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.optimizely.com/v2/projects",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new Optimizely project with the specified configuration including name, platform, and settings."
+        },
+        {
+          "info": {
+            "name": "Get a project",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/projects/:project_id",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              }
+            ]
+          },
+          "docs": "Retrieves the details of a specific project by its unique identifier."
+        },
+        {
+          "info": {
+            "name": "Update a project",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.optimizely.com/v2/projects/:project_id",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified project with the provided fields. Only the fields included in the request body are updated."
+        },
+        {
+          "info": {
+            "name": "Delete a project",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.optimizely.com/v2/projects/:project_id",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the project"
+              }
+            ]
+          },
+          "docs": "Permanently deletes the specified project and all associated resources including experiments, audiences, and events."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Experiments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List experiments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/experiments",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier for the project to filter by"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of experiments for the specified project. Supports filtering and pagination."
+        },
+        {
+          "info": {
+            "name": "Create an experiment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.optimizely.com/v2/experiments",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new A/B test experiment within the specified project, including variations, traffic allocation, and targeting conditions."
+        },
+        {
+          "info": {
+            "name": "Get an experiment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/experiments/:experiment_id",
+            "params": [
+              {
+                "name": "experiment_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the experiment"
+              }
+            ]
+          },
+          "docs": "Retrieves the full details of a specific experiment by its identifier, including variations, metrics, and status."
+        },
+        {
+          "info": {
+            "name": "Update an experiment",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.optimizely.com/v2/experiments/:experiment_id",
+            "params": [
+              {
+                "name": "experiment_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the experiment"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified experiment with the provided fields. Only the fields included in the request body are updated."
+        },
+        {
+          "info": {
+            "name": "Delete an experiment",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.optimizely.com/v2/experiments/:experiment_id",
+            "params": [
+              {
+                "name": "experiment_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the experiment"
+              }
+            ]
+          },
+          "docs": "Archives or permanently deletes the specified experiment."
+        },
+        {
+          "info": {
+            "name": "Get experiment results",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/experiments/:experiment_id/results",
+            "params": [
+              {
+                "name": "experiment_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the experiment"
+              }
+            ]
+          },
+          "docs": "Retrieves the statistical results for a specific experiment, including conversion rates, confidence intervals, and statistical significance computed by Stats Engine."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Campaigns",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List campaigns",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/campaigns",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier for the project to filter by"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of campaigns for the specified project. Campaigns group multiple experiments under a single objective."
+        },
+        {
+          "info": {
+            "name": "Create a campaign",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.optimizely.com/v2/campaigns",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new campaign within the specified project."
+        },
+        {
+          "info": {
+            "name": "Get a campaign",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/campaigns/:campaign_id",
+            "params": [
+              {
+                "name": "campaign_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the campaign"
+              }
+            ]
+          },
+          "docs": "Retrieves the full details of a specific campaign by its identifier."
+        },
+        {
+          "info": {
+            "name": "Update a campaign",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.optimizely.com/v2/campaigns/:campaign_id",
+            "params": [
+              {
+                "name": "campaign_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the campaign"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified campaign with the provided fields."
+        },
+        {
+          "info": {
+            "name": "Delete a campaign",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.optimizely.com/v2/campaigns/:campaign_id",
+            "params": [
+              {
+                "name": "campaign_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the campaign"
+              }
+            ]
+          },
+          "docs": "Archives or permanently deletes the specified campaign."
+        },
+        {
+          "info": {
+            "name": "Get campaign results",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/campaigns/:campaign_id/results",
+            "params": [
+              {
+                "name": "campaign_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the campaign"
+              }
+            ]
+          },
+          "docs": "Retrieves the statistical results for a specific campaign."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Pages",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List pages",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/pages",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier for the project to filter by"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of pages for the specified project. Pages define URL targeting conditions for experiments."
+        },
+        {
+          "info": {
+            "name": "Create a page",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.optimizely.com/v2/pages",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new page definition within the specified project."
+        },
+        {
+          "info": {
+            "name": "Get a page",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/pages/:page_id",
+            "params": [
+              {
+                "name": "page_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the page"
+              }
+            ]
+          },
+          "docs": "Retrieves the full details of a specific page by its identifier."
+        },
+        {
+          "info": {
+            "name": "Update a page",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.optimizely.com/v2/pages/:page_id",
+            "params": [
+              {
+                "name": "page_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the page"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified page with the provided fields."
+        },
+        {
+          "info": {
+            "name": "Delete a page",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.optimizely.com/v2/pages/:page_id",
+            "params": [
+              {
+                "name": "page_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the page"
+              }
+            ]
+          },
+          "docs": "Permanently deletes the specified page."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Events",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List events",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/events",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier for the project to filter by"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of custom events for the specified project. Events are used as goals and metrics in experiments."
+        },
+        {
+          "info": {
+            "name": "Create an event",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.optimizely.com/v2/events",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new custom event within the specified project."
+        },
+        {
+          "info": {
+            "name": "Get an event",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/events/:event_id",
+            "params": [
+              {
+                "name": "event_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the event"
+              }
+            ]
+          },
+          "docs": "Retrieves the full details of a specific event by its identifier."
+        },
+        {
+          "info": {
+            "name": "Update an event",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.optimizely.com/v2/events/:event_id",
+            "params": [
+              {
+                "name": "event_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the event"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified event with the provided fields."
+        },
+        {
+          "info": {
+            "name": "Delete an event",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.optimizely.com/v2/events/:event_id",
+            "params": [
+              {
+                "name": "event_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the event"
+              }
+            ]
+          },
+          "docs": "Permanently deletes the specified event."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Audiences",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List audiences",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/audiences",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier for the project to filter by"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of audiences for the specified project. Audiences define visitor segments that control experiment targeting."
+        },
+        {
+          "info": {
+            "name": "Create an audience",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.optimizely.com/v2/audiences",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new audience within the specified project with the given targeting conditions."
+        },
+        {
+          "info": {
+            "name": "Get an audience",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/audiences/:audience_id",
+            "params": [
+              {
+                "name": "audience_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the audience"
+              }
+            ]
+          },
+          "docs": "Retrieves the full details of a specific audience by its identifier."
+        },
+        {
+          "info": {
+            "name": "Update an audience",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.optimizely.com/v2/audiences/:audience_id",
+            "params": [
+              {
+                "name": "audience_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the audience"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the specified audience with the provided fields."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Attributes",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List attributes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/attributes",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier for the project to filter by"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of custom attributes for the specified project. Attributes are used for audience targeting and result segmentation."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Extensions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List extensions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.optimizely.com/v2/extensions",
+            "params": [
+              {
+                "name": "project_id",
+                "value": "",
+                "type": "query",
+                "description": "The unique identifier for the project to filter by"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of extensions for the specified project. Extensions are reusable templates for experiment changes."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

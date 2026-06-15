@@ -1,0 +1,171 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Optimizely Content Management API",
+    "version": "3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Content",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a content item",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{siteUrl}/api/episerver/v3.0/contentmanagement/",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new content item of the specified type under a parent content node. Can also be used to create a language branch for existing content. For media content, use a multipart/form-data request with a content part (JSON) and a file part (binary)."
+        },
+        {
+          "info": {
+            "name": "Get content by GUID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{siteUrl}/api/episerver/v3.0/contentmanagement/:contentGuid",
+            "params": [
+              {
+                "name": "contentGuid",
+                "value": "",
+                "type": "path",
+                "description": "The GUID of the content item"
+              }
+            ]
+          },
+          "docs": "Retrieves the primary draft or latest published version of a content item by its GUID."
+        },
+        {
+          "info": {
+            "name": "Update content by GUID",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{siteUrl}/api/episerver/v3.0/contentmanagement/:contentGuid",
+            "params": [
+              {
+                "name": "contentGuid",
+                "value": "",
+                "type": "path",
+                "description": "The GUID of the content item"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates a content item identified by its GUID. If the content does not exist, a new content item is created."
+        },
+        {
+          "info": {
+            "name": "Partially update content by GUID",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{siteUrl}/api/episerver/v3.0/contentmanagement/:contentGuid",
+            "params": [
+              {
+                "name": "contentGuid",
+                "value": "",
+                "type": "path",
+                "description": "The GUID of the content item"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Partially updates a content item identified by its GUID, sending only the fields that need updating."
+        },
+        {
+          "info": {
+            "name": "Delete content by GUID",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{siteUrl}/api/episerver/v3.0/contentmanagement/:contentGuid",
+            "params": [
+              {
+                "name": "contentGuid",
+                "value": "",
+                "type": "path",
+                "description": "The GUID of the content item"
+              },
+              {
+                "name": "permanent",
+                "value": "",
+                "type": "query",
+                "description": "Whether to permanently delete instead of moving to trash"
+              }
+            ]
+          },
+          "docs": "Moves the content item identified by its GUID to the trash bin or permanently deletes it."
+        },
+        {
+          "info": {
+            "name": "Move content",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{siteUrl}/api/episerver/v3.0/contentmanagement/:contentGuid/move",
+            "params": [
+              {
+                "name": "contentGuid",
+                "value": "",
+                "type": "path",
+                "description": "The GUID of the content item"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Moves a content item to become a child of the specified target content node."
+        },
+        {
+          "info": {
+            "name": "Get content by reference",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{siteUrl}/api/episerver/v3.0/contentmanagement/:contentReference",
+            "params": [
+              {
+                "name": "contentReference",
+                "value": "",
+                "type": "path",
+                "description": "The numeric content reference identifier"
+              }
+            ]
+          },
+          "docs": "Retrieves a content item by its numeric content reference."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

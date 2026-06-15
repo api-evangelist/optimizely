@@ -1,0 +1,236 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Optimizely Content Delivery API",
+    "version": "3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Content",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List content items",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{siteUrl}/api/episerver/v3.0/content",
+            "params": [
+              {
+                "name": "language",
+                "value": "",
+                "type": "query",
+                "description": "The language code for content retrieval"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated list of content references to expand inline"
+              },
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated list of properties to include in the response"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "OData-style filter expression for content items"
+              },
+              {
+                "name": "orderby",
+                "value": "",
+                "type": "query",
+                "description": "OData-style ordering expression"
+              },
+              {
+                "name": "top",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return"
+              },
+              {
+                "name": "skip",
+                "value": "",
+                "type": "query",
+                "description": "Number of items to skip for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of content items based on the provided query parameters. Supports filtering by content type, language, and other criteria."
+        },
+        {
+          "info": {
+            "name": "Get a content item",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{siteUrl}/api/episerver/v3.0/content/:contentId",
+            "params": [
+              {
+                "name": "contentId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier or content reference for the content item"
+              },
+              {
+                "name": "language",
+                "value": "",
+                "type": "query",
+                "description": "The language code for content retrieval"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated list of content references to expand inline"
+              },
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated list of properties to include in the response"
+              }
+            ]
+          },
+          "docs": "Retrieves a specific content item by its identifier. Returns the latest published version of the content along with its properties and referenced content."
+        },
+        {
+          "info": {
+            "name": "Get content children",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{siteUrl}/api/episerver/v3.0/content/:contentId/children",
+            "params": [
+              {
+                "name": "contentId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier or content reference for the content item"
+              },
+              {
+                "name": "language",
+                "value": "",
+                "type": "query",
+                "description": "The language code for content retrieval"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated list of content references to expand inline"
+              },
+              {
+                "name": "top",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return"
+              },
+              {
+                "name": "skip",
+                "value": "",
+                "type": "query",
+                "description": "Number of items to skip for pagination"
+              }
+            ]
+          },
+          "docs": "Retrieves the child content items of a specific content item. Useful for navigating content hierarchies such as page trees."
+        },
+        {
+          "info": {
+            "name": "Get content ancestors",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{siteUrl}/api/episerver/v3.0/content/:contentId/ancestors",
+            "params": [
+              {
+                "name": "contentId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier or content reference for the content item"
+              },
+              {
+                "name": "language",
+                "value": "",
+                "type": "query",
+                "description": "The language code for content retrieval"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated list of content references to expand inline"
+              }
+            ]
+          },
+          "docs": "Retrieves the ancestor content items of a specific content item, representing the path from the root to the content item."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Sites",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List sites",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{siteUrl}/api/episerver/v3.0/site",
+            "params": [
+              {
+                "name": "language",
+                "value": "",
+                "type": "query",
+                "description": "The language code for content retrieval"
+              }
+            ]
+          },
+          "docs": "Returns a list of site definitions configured in the Optimizely CMS instance, including language settings and site URLs."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Content Types",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List content types",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{siteUrl}/api/episerver/v3.0/contenttypes"
+          },
+          "docs": "Returns a list of available content type definitions in the Optimizely CMS instance."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
