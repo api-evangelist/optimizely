@@ -1,0 +1,67 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/optimizely-campaign-openapi.yml, openapi/optimizely-cmp-openapi.yml, openapi/optimizely-commerce-service-openapi.yml,
+  openapi/optimizely-content-delivery-openapi.yml, openapi/optimizely-content-management-openapi.yml,
+  openapi/optimizely-data-platform-openapi.yml, openapi/optimizely-feature-experimentation-openapi.yml,
+  openapi/optimizely-graph-openapi.yml, openapi/optimizely-web-experimentation-openapi.yml
+summary:
+  types:
+  - apiKey
+  - http
+  - oauth2
+  api_key_in:
+  - header
+  - query
+  oauth2_flows:
+  - clientCredentials
+schemes:
+- name: basicAuth
+  type: http
+  scheme: basic
+  description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+  sources:
+  - openapi/optimizely-campaign-openapi.yml
+  - openapi/optimizely-graph-openapi.yml
+- name: oauth2
+  type: oauth2
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.cmp.optimizely.com/oauth/token
+    scopes: 0
+  description: OAuth 2.0 authentication for the CMP API.
+  sources:
+  - openapi/optimizely-cmp-openapi.yml
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  description: Bearer token for authenticated Commerce Service API access.
+  sources:
+  - openapi/optimizely-commerce-service-openapi.yml
+  - openapi/optimizely-content-delivery-openapi.yml
+  - openapi/optimizely-content-management-openapi.yml
+  - openapi/optimizely-feature-experimentation-openapi.yml
+  - openapi/optimizely-web-experimentation-openapi.yml
+- name: publicApiKey
+  type: apiKey
+  in: header
+  parameter: x-api-key
+  description: Public API Key (Tracker ID) for sending data to ODP. May be exposed publicly
+    on the internet.
+  sources:
+  - openapi/optimizely-data-platform-openapi.yml
+- name: singleKeyAuth
+  type: apiKey
+  in: query
+  parameter: auth
+  description: Single key authentication provides read-only access to publicly available GraphQL
+    data. Use format epi-single followed by the token.
+  sources:
+  - openapi/optimizely-graph-openapi.yml
+- name: hmacAuth
+  type: apiKey
+  in: header
+  parameter: Authorization
+  description: HMAC authentication for secure server-to-server access using App Key and App
+    Secret.
+  sources:
+  - openapi/optimizely-graph-openapi.yml
