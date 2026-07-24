@@ -1,0 +1,61 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Segments API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Segments
+  description: Query customer segments and audience definitions.
+paths:
+  /segments:
+    get:
+      operationId: listSegments
+      summary: List segments
+      description: Returns a list of customer segments defined in ODP.
+      tags:
+      - Segments
+      security:
+      - privateApiKey: []
+      responses:
+        '200':
+          description: Successfully retrieved segments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Segment'
+        '401':
+          description: Authentication credentials are missing or invalid
+components:
+  schemas:
+    Segment:
+      type: object
+      description: A customer segment definition
+      properties:
+        name:
+          type: string
+          description: Name of the segment
+        description:
+          type: string
+          description: Description of the segment criteria
+        customer_count:
+          type: integer
+          description: Number of customers in the segment
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

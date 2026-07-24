@@ -1,0 +1,77 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Content Types API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Content Types
+  description: Retrieve available content type definitions.
+paths:
+  /contenttypes:
+    get:
+      operationId: listContentTypes
+      summary: List content types
+      description: Returns a list of available content type definitions in the Optimizely CMS instance.
+      tags:
+      - Content Types
+      responses:
+        '200':
+          description: Successfully retrieved content types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContentType'
+        '401':
+          description: Authentication credentials are missing or invalid
+components:
+  schemas:
+    ContentType:
+      type: object
+      description: A content type definition
+      properties:
+        name:
+          type: string
+          description: Name of the content type
+        displayName:
+          type: string
+          description: Display name of the content type
+        description:
+          type: string
+          description: Description of the content type
+        base:
+          type: string
+          description: Base content type
+        properties:
+          type: object
+          description: Properties defined on the content type
+          additionalProperties:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Property data type
+              displayName:
+                type: string
+                description: Display name of the property
+              sortOrder:
+                type: integer
+                description: Sort order for the property
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

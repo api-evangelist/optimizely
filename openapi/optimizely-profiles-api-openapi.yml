@@ -1,0 +1,148 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Profiles API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Profiles
+  description: Create, update, and retrieve customer profiles with unified identity resolution.
+paths:
+  /profiles:
+    post:
+      operationId: upsertProfile
+      summary: Create or update a profile
+      description: Creates a new customer profile or updates an existing one in ODP. Profiles are identified by one or more identifier fields such as email, customer_id, or vuid.
+      tags:
+      - Profiles
+      security:
+      - privateApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileInput'
+      responses:
+        '200':
+          description: Profile successfully created or updated
+        '400':
+          description: Invalid profile data
+        '401':
+          description: Authentication credentials are missing or invalid
+  /profiles/{identifier_field}/{identifier_value}:
+    get:
+      operationId: getProfile
+      summary: Get a profile
+      description: Retrieves a customer profile by a specific identifier field and value, such as email address or customer ID.
+      tags:
+      - Profiles
+      security:
+      - privateApiKey: []
+      parameters:
+      - $ref: '#/components/parameters/identifierField'
+      - $ref: '#/components/parameters/identifierValue'
+      - name: fields
+        in: query
+        required: false
+        description: Comma-separated list of profile fields to return
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successfully retrieved the profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Profile not found
+components:
+  schemas:
+    ProfileInput:
+      type: object
+      description: Input for creating or updating a customer profile
+      properties:
+        identifiers:
+          type: object
+          description: Customer identifiers for matching
+          additionalProperties:
+            type: string
+        attributes:
+          type: object
+          description: Profile attributes to set or update
+          additionalProperties: true
+    Profile:
+      type: object
+      description: A customer profile in ODP
+      properties:
+        email:
+          type: string
+          format: email
+          description: Customer email address
+        customer_id:
+          type: string
+          description: Customer identifier
+        vuid:
+          type: string
+          description: Visitor unique identifier
+        first_name:
+          type: string
+          description: Customer first name
+        last_name:
+          type: string
+          description: Customer last name
+        city:
+          type: string
+          description: Customer city
+        state:
+          type: string
+          description: Customer state or province
+        country:
+          type: string
+          description: Customer country
+        zip_code:
+          type: string
+          description: Customer postal code
+        insights:
+          type: object
+          description: Computed customer insights and scores
+          additionalProperties: true
+        segments:
+          type: array
+          description: Segments the customer belongs to
+          items:
+            type: string
+  parameters:
+    identifierField:
+      name: identifier_field
+      in: path
+      required: true
+      description: The identifier field name (e.g., email, customer_id, vuid)
+      schema:
+        type: string
+    identifierValue:
+      name: identifier_value
+      in: path
+      required: true
+      description: The value of the identifier field
+      schema:
+        type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

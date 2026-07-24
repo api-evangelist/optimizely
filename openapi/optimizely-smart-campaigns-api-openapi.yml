@@ -1,0 +1,146 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Smart Campaigns API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Smart Campaigns
+  description: Manage smart campaigns that automate multi-step marketing workflows.
+paths:
+  /{clientId}/smartcampaigns:
+    get:
+      operationId: listSmartCampaigns
+      summary: List smart campaigns
+      description: Returns a list of smart campaigns for the specified client.
+      tags:
+      - Smart Campaigns
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      responses:
+        '200':
+          description: Successfully retrieved smart campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SmartCampaign'
+        '401':
+          description: Authentication credentials are missing or invalid
+  /{clientId}/smartcampaigns/{campaignId}:
+    get:
+      operationId: getSmartCampaign
+      summary: Get a smart campaign
+      description: Retrieves the details of a specific smart campaign.
+      tags:
+      - Smart Campaigns
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      - $ref: '#/components/parameters/campaignId'
+      responses:
+        '200':
+          description: Successfully retrieved the smart campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartCampaign'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Smart campaign not found
+  /{clientId}/smartcampaigns/{campaignId}/start:
+    post:
+      operationId: startSmartCampaign
+      summary: Start a smart campaign
+      description: Starts the specified smart campaign, beginning the automated workflow execution.
+      tags:
+      - Smart Campaigns
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      - $ref: '#/components/parameters/campaignId'
+      responses:
+        '200':
+          description: Smart campaign successfully started
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Smart campaign not found
+  /{clientId}/smartcampaigns/{campaignId}/pause:
+    post:
+      operationId: pauseSmartCampaign
+      summary: Pause a smart campaign
+      description: Pauses the specified smart campaign.
+      tags:
+      - Smart Campaigns
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      - $ref: '#/components/parameters/campaignId'
+      responses:
+        '200':
+          description: Smart campaign successfully paused
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Smart campaign not found
+components:
+  schemas:
+    SmartCampaign:
+      type: object
+      description: A smart campaign that automates multi-step marketing workflows
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the smart campaign
+        name:
+          type: string
+          description: Human-readable name of the smart campaign
+        status:
+          type: string
+          description: Current status of the smart campaign
+          enum:
+          - active
+          - paused
+          - draft
+          - completed
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the campaign was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the campaign was last modified
+  parameters:
+    campaignId:
+      name: campaignId
+      in: path
+      required: true
+      description: The unique identifier for the campaign
+      schema:
+        type: integer
+        format: int64
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

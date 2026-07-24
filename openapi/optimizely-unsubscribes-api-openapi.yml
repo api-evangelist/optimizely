@@ -1,0 +1,102 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Unsubscribes API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Unsubscribes
+  description: Manage unsubscribe lists for opt-out recipients.
+paths:
+  /{clientId}/unsubscribes:
+    get:
+      operationId: listUnsubscribes
+      summary: List unsubscribes
+      description: Returns a list of recipients who have unsubscribed from communications.
+      tags:
+      - Unsubscribes
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      responses:
+        '200':
+          description: Successfully retrieved unsubscribes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unsubscribe'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: addUnsubscribe
+      summary: Add an unsubscribe
+      description: Adds a recipient to the unsubscribe list.
+      tags:
+      - Unsubscribes
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnsubscribeInput'
+      responses:
+        '201':
+          description: Unsubscribe successfully added
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+components:
+  schemas:
+    UnsubscribeInput:
+      type: object
+      description: Input for adding an unsubscribe
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address to unsubscribe
+    Unsubscribe:
+      type: object
+      description: An unsubscribed recipient
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address of the unsubscribed recipient
+        unsubscribed_at:
+          type: string
+          format: date-time
+          description: Timestamp when the recipient unsubscribed
+        reason:
+          type: string
+          description: Reason for the unsubscription
+  parameters:
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

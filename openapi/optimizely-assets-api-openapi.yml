@@ -1,0 +1,341 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Assets
+  description: Manage campaign assets such as images and media files.
+paths:
+  /{clientId}/assets:
+    get:
+      operationId: listAssets
+      summary: List assets
+      description: Returns a list of campaign assets such as images and media files.
+      tags:
+      - Assets
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      responses:
+        '200':
+          description: Successfully retrieved assets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asset'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: uploadAsset
+      summary: Upload an asset
+      description: Uploads a new asset for use in campaigns.
+      tags:
+      - Assets
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The asset file to upload
+                name:
+                  type: string
+                  description: Name of the asset
+      responses:
+        '201':
+          description: Asset successfully uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /assets:
+    get:
+      operationId: listAssets
+      summary: List assets
+      description: Returns a list of digital assets in the CMP library, including images, videos, and raw files. Supports filtering and pagination.
+      tags:
+      - Assets
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: Successfully retrieved the list of assets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    description: List of assets
+                    items:
+                      $ref: '#/components/schemas/Asset_2'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createAsset
+      summary: Create an asset
+      description: Creates a new digital asset in the CMP library by uploading a file.
+      tags:
+      - Assets
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The asset file to upload
+                title:
+                  type: string
+                  description: Title for the asset
+                description:
+                  type: string
+                  description: Description of the asset
+      responses:
+        '201':
+          description: Asset successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_2'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /assets/{assetId}:
+    get:
+      operationId: getAsset
+      summary: Get an asset
+      description: Retrieves the details of a specific asset by its identifier.
+      tags:
+      - Assets
+      parameters:
+      - $ref: '#/components/parameters/assetId'
+      responses:
+        '200':
+          description: Successfully retrieved the asset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_2'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Asset not found
+    put:
+      operationId: updateAsset
+      summary: Update an asset
+      description: Updates the specified asset with the provided metadata.
+      tags:
+      - Assets
+      parameters:
+      - $ref: '#/components/parameters/assetId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetInput'
+      responses:
+        '202':
+          description: Asset successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset_2'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Asset not found
+    delete:
+      operationId: deleteAsset
+      summary: Delete an asset
+      description: Permanently deletes the specified asset from the CMP library.
+      tags:
+      - Assets
+      parameters:
+      - $ref: '#/components/parameters/assetId'
+      responses:
+        '204':
+          description: Asset successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Asset not found
+components:
+  schemas:
+    AssetInput:
+      type: object
+      description: Input for updating an asset
+      properties:
+        title:
+          type: string
+          description: Title of the asset
+        description:
+          type: string
+          description: Description of the asset
+        labels:
+          type: array
+          description: Labels to associate with the asset
+          items:
+            type: string
+    Asset_2:
+      type: object
+      description: A digital asset in the CMP library
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the asset
+        title:
+          type: string
+          description: Title of the asset
+        description:
+          type: string
+          description: Description of the asset
+        type:
+          type: string
+          description: Type of the asset
+          enum:
+          - image
+          - video
+          - raw_file
+        url:
+          type: string
+          format: uri
+          description: URL to access the asset
+        thumbnail_url:
+          type: string
+          format: uri
+          description: URL for the asset thumbnail
+        file_name:
+          type: string
+          description: Original file name
+        file_size:
+          type: integer
+          description: File size in bytes
+        mime_type:
+          type: string
+          description: MIME type of the asset
+        labels:
+          type: array
+          description: Labels associated with the asset
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the asset was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the asset was last updated
+    Pagination:
+      type: object
+      description: Pagination metadata
+      properties:
+        total:
+          type: integer
+          description: Total number of items
+        limit:
+          type: integer
+          description: Maximum items per page
+        offset:
+          type: integer
+          description: Current offset
+    Asset:
+      type: object
+      description: A campaign asset such as an image or media file
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the asset
+        name:
+          type: string
+          description: Name of the asset
+        url:
+          type: string
+          format: uri
+          description: URL to access the asset
+        content_type:
+          type: string
+          description: MIME type of the asset
+        file_size:
+          type: integer
+          description: Size of the asset file in bytes
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the asset was created
+  parameters:
+    offset:
+      name: offset
+      in: query
+      required: false
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+    assetId:
+      name: assetId
+      in: path
+      required: true
+      description: The unique identifier for the asset
+      schema:
+        type: string
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
+    limit:
+      name: limit
+      in: query
+      required: false
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

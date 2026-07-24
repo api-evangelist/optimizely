@@ -1,0 +1,77 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Customers API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Customers
+  description: Manage customer accounts and contact information.
+paths:
+  /commerce/customers/{customerId}:
+    get:
+      operationId: getCustomer
+      summary: Get a customer
+      description: Retrieves the details of a specific customer account.
+      tags:
+      - Customers
+      parameters:
+      - $ref: '#/components/parameters/customerId'
+      responses:
+        '200':
+          description: Successfully retrieved the customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Customer not found
+components:
+  parameters:
+    customerId:
+      name: customerId
+      in: path
+      required: true
+      description: The unique identifier for the customer
+      schema:
+        type: string
+  schemas:
+    Customer:
+      type: object
+      description: A customer account
+      properties:
+        customer_id:
+          type: string
+          description: Unique customer identifier
+        first_name:
+          type: string
+          description: Customer first name
+        last_name:
+          type: string
+          description: Customer last name
+        email:
+          type: string
+          format: email
+          description: Customer email address
+        registration_date:
+          type: string
+          format: date-time
+          description: Timestamp when the customer registered
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

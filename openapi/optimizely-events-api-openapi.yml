@@ -1,0 +1,244 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Events API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Events
+  description: Send customer events to ODP for tracking actions, behaviors, and interactions across channels.
+paths:
+  /events:
+    post:
+      operationId: sendEvents
+      summary: Send events
+      description: Sends one or more events to ODP for processing. Events represent customer actions such as purchases, page views, email opens, and custom interactions. Each event includes a type, action, and associated identifiers and fields.
+      tags:
+      - Events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/EventInput'
+      responses:
+        '202':
+          description: Events accepted for processing
+        '400':
+          description: Invalid event data
+        '401':
+          description: Authentication credentials are missing or invalid
+    get:
+      operationId: listEvents
+      summary: List events
+      description: Returns a list of custom events for the specified project. Events are used as goals and metrics in experiments.
+      tags:
+      - Events
+      parameters:
+      - $ref: '#/components/parameters/projectIdQuery'
+      - $ref: '#/components/parameters/perPage'
+      - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Successfully retrieved the list of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '401':
+          description: Authentication credentials are missing or invalid
+  /events/{event_id}:
+    get:
+      operationId: getEvent
+      summary: Get an event
+      description: Retrieves the full details of a specific event by its identifier.
+      tags:
+      - Events
+      parameters:
+      - $ref: '#/components/parameters/eventId'
+      responses:
+        '200':
+          description: Successfully retrieved the event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Event not found
+    patch:
+      operationId: updateEvent
+      summary: Update an event
+      description: Updates the specified event with the provided fields.
+      tags:
+      - Events
+      parameters:
+      - $ref: '#/components/parameters/eventId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventInput_2'
+      responses:
+        '200':
+          description: Event successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Event not found
+    delete:
+      operationId: deleteEvent
+      summary: Delete an event
+      description: Permanently deletes the specified event.
+      tags:
+      - Events
+      parameters:
+      - $ref: '#/components/parameters/eventId'
+      responses:
+        '204':
+          description: Event successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Event not found
+components:
+  parameters:
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    eventId:
+      name: event_id
+      in: path
+      required: true
+      description: The unique identifier for the event
+      schema:
+        type: integer
+        format: int64
+    projectIdQuery:
+      name: project_id
+      in: query
+      required: true
+      description: The unique identifier for the project to filter by
+      schema:
+        type: integer
+        format: int64
+    page:
+      name: page
+      in: query
+      required: false
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+  schemas:
+    EventInput_2:
+      type: object
+      description: Input for creating or updating an event
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this event belongs to
+        name:
+          type: string
+          description: Human-readable name of the event
+        key:
+          type: string
+          description: Unique key for the event within the project
+        event_type:
+          type: string
+          description: Type of the event
+          enum:
+          - custom
+          - click
+          - pageview
+    EventInput:
+      type: object
+      description: An event to send to ODP
+      required:
+      - type
+      - action
+      properties:
+        type:
+          type: string
+          description: Event type category (e.g., order, product, email, navigation)
+        action:
+          type: string
+          description: Specific action within the event type (e.g., purchase, view, open)
+        identifiers:
+          type: object
+          description: Customer identifiers associated with the event
+          additionalProperties:
+            type: string
+        data:
+          type: object
+          description: Additional event data fields
+          additionalProperties: true
+    Event:
+      type: object
+      description: A custom event used as a goal or metric
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the event
+        project_id:
+          type: integer
+          format: int64
+          description: The project this event belongs to
+        name:
+          type: string
+          description: Human-readable name of the event
+        key:
+          type: string
+          description: Unique key for the event within the project
+        event_type:
+          type: string
+          description: Type of the event
+          enum:
+          - custom
+          - click
+          - pageview
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the event was created
+        is_editable:
+          type: boolean
+          description: Whether the event can be edited
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

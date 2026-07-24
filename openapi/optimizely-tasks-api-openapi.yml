@@ -1,0 +1,248 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Tasks API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Tasks
+  description: Manage content tasks, assignments, and workflow steps within the content marketing platform.
+paths:
+  /tasks:
+    get:
+      operationId: listTasks
+      summary: List tasks
+      description: Returns a list of content tasks and their current workflow status.
+      tags:
+      - Tasks
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: Successfully retrieved the list of tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    description: List of tasks
+                    items:
+                      $ref: '#/components/schemas/Task'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createTask
+      summary: Create a task
+      description: Creates a new content task with the specified configuration.
+      tags:
+      - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskInput'
+      responses:
+        '201':
+          description: Task successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /tasks/{taskId}:
+    get:
+      operationId: getTask
+      summary: Get a task
+      description: Retrieves the details of a specific task by its identifier.
+      tags:
+      - Tasks
+      parameters:
+      - $ref: '#/components/parameters/taskId'
+      responses:
+        '200':
+          description: Successfully retrieved the task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Task not found
+    put:
+      operationId: updateTask
+      summary: Update a task
+      description: Updates the specified task with the provided fields.
+      tags:
+      - Tasks
+      parameters:
+      - $ref: '#/components/parameters/taskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskInput'
+      responses:
+        '202':
+          description: Task successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Task not found
+components:
+  parameters:
+    offset:
+      name: offset
+      in: query
+      required: false
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+    taskId:
+      name: taskId
+      in: path
+      required: true
+      description: The unique identifier for the task
+      schema:
+        type: string
+    limit:
+      name: limit
+      in: query
+      required: false
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+  schemas:
+    Pagination:
+      type: object
+      description: Pagination metadata
+      properties:
+        total:
+          type: integer
+          description: Total number of items
+        limit:
+          type: integer
+          description: Maximum items per page
+        offset:
+          type: integer
+          description: Current offset
+    Task:
+      type: object
+      description: A content task in the CMP workflow
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the task
+        title:
+          type: string
+          description: Title of the task
+        description:
+          type: string
+          description: Description of the task
+        status:
+          type: string
+          description: Current workflow status of the task
+        assignee:
+          type: object
+          description: User assigned to the task
+          properties:
+            id:
+              type: string
+              description: User identifier
+            name:
+              type: string
+              description: User display name
+        due_date:
+          type: string
+          format: date
+          description: Due date for the task
+        campaign_id:
+          type: string
+          description: Associated campaign identifier
+        labels:
+          type: array
+          description: Labels associated with the task
+          items:
+            type: string
+        assets:
+          type: array
+          description: Assets attached to the task
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Asset identifier
+              type:
+                type: string
+                description: Asset type
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the task was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the task was last updated
+    TaskInput:
+      type: object
+      description: Input for creating or updating a task
+      properties:
+        title:
+          type: string
+          description: Title of the task
+        description:
+          type: string
+          description: Description of the task
+        assignee_id:
+          type: string
+          description: User identifier for the assignee
+        due_date:
+          type: string
+          format: date
+          description: Due date for the task
+        campaign_id:
+          type: string
+          description: Associated campaign identifier
+        labels:
+          type: array
+          description: Labels to associate with the task
+          items:
+            type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

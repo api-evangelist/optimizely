@@ -1,0 +1,59 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Labels API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Labels
+  description: Manage labels used for categorizing and organizing content.
+paths:
+  /labels:
+    get:
+      operationId: listLabels
+      summary: List labels
+      description: Returns a list of labels used for categorizing content in the CMP.
+      tags:
+      - Labels
+      responses:
+        '200':
+          description: Successfully retrieved the list of labels
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Label'
+        '401':
+          description: Authentication credentials are missing or invalid
+components:
+  schemas:
+    Label:
+      type: object
+      description: A label used for categorizing content
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the label
+        name:
+          type: string
+          description: Display name of the label
+        color:
+          type: string
+          description: Color code for the label
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

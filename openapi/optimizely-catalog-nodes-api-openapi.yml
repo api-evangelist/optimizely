@@ -1,0 +1,147 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Catalog Nodes API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Catalog Nodes
+  description: Manage catalog nodes (categories) for organizing entries.
+paths:
+  /commerce/nodes/{nodeCode}:
+    get:
+      operationId: getCatalogNode
+      summary: Get a catalog node
+      description: Retrieves a specific catalog node (category) by its code.
+      tags:
+      - Catalog Nodes
+      parameters:
+      - $ref: '#/components/parameters/nodeCode'
+      responses:
+        '200':
+          description: Successfully retrieved the catalog node
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogNode'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog node not found
+    put:
+      operationId: updateCatalogNode
+      summary: Update a catalog node
+      description: Updates the specified catalog node with the provided fields.
+      tags:
+      - Catalog Nodes
+      parameters:
+      - $ref: '#/components/parameters/nodeCode'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogNodeInput'
+      responses:
+        '200':
+          description: Catalog node successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogNode'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog node not found
+    delete:
+      operationId: deleteCatalogNode
+      summary: Delete a catalog node
+      description: Permanently deletes the specified catalog node.
+      tags:
+      - Catalog Nodes
+      parameters:
+      - $ref: '#/components/parameters/nodeCode'
+      responses:
+        '204':
+          description: Catalog node successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog node not found
+components:
+  schemas:
+    CatalogNode:
+      type: object
+      description: A catalog node (category)
+      properties:
+        code:
+          type: string
+          description: Unique code for the node
+        name:
+          type: string
+          description: Display name of the node
+        parent_node_code:
+          type: string
+          description: Code of the parent node
+        catalog_name:
+          type: string
+          description: Name of the catalog this node belongs to
+        start_date:
+          type: string
+          format: date-time
+          description: Availability start date
+        end_date:
+          type: string
+          format: date-time
+          description: Availability end date
+        is_active:
+          type: boolean
+          description: Whether the node is active
+        sort_order:
+          type: integer
+          description: Sort order for display
+    CatalogNodeInput:
+      type: object
+      description: Input for creating or updating a catalog node
+      properties:
+        code:
+          type: string
+          description: Unique code for the node
+        name:
+          type: string
+          description: Display name of the node
+        parent_node_code:
+          type: string
+          description: Code of the parent node
+        is_active:
+          type: boolean
+          description: Whether the node is active
+        sort_order:
+          type: integer
+          description: Sort order for display
+  parameters:
+    nodeCode:
+      name: nodeCode
+      in: path
+      required: true
+      description: The unique code of the catalog node
+      schema:
+        type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

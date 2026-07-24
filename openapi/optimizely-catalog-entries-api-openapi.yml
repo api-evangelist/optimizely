@@ -1,0 +1,207 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Catalog Entries API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Catalog Entries
+  description: Manage catalog entries including products, variants, packages, and bundles.
+paths:
+  /commerce/entries/{entryCode}:
+    get:
+      operationId: getCatalogEntry
+      summary: Get a catalog entry
+      description: Retrieves a specific catalog entry (product, variant, package, or bundle) by its code.
+      tags:
+      - Catalog Entries
+      parameters:
+      - $ref: '#/components/parameters/entryCode'
+      responses:
+        '200':
+          description: Successfully retrieved the catalog entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogEntry'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog entry not found
+    put:
+      operationId: updateCatalogEntry
+      summary: Update a catalog entry
+      description: Updates the specified catalog entry with the provided fields.
+      tags:
+      - Catalog Entries
+      parameters:
+      - $ref: '#/components/parameters/entryCode'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogEntryInput'
+      responses:
+        '200':
+          description: Catalog entry successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogEntry'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog entry not found
+    delete:
+      operationId: deleteCatalogEntry
+      summary: Delete a catalog entry
+      description: Permanently deletes the specified catalog entry.
+      tags:
+      - Catalog Entries
+      parameters:
+      - $ref: '#/components/parameters/entryCode'
+      responses:
+        '204':
+          description: Catalog entry successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog entry not found
+  /commerce/entries/{entryCode}/commondraft/{language}:
+    put:
+      operationId: updateCatalogEntryDraft
+      summary: Update catalog entry common draft
+      description: Updates the common draft version of a catalog entry for the specified language.
+      tags:
+      - Catalog Entries
+      parameters:
+      - $ref: '#/components/parameters/entryCode'
+      - $ref: '#/components/parameters/language'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogEntryInput'
+      responses:
+        '200':
+          description: Draft successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogEntry'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog entry not found
+components:
+  schemas:
+    CatalogEntryInput:
+      type: object
+      description: Input for creating or updating a catalog entry
+      properties:
+        code:
+          type: string
+          description: Unique code for the catalog entry
+        name:
+          type: string
+          description: Display name of the entry
+        entry_type:
+          type: string
+          description: Type of catalog entry
+          enum:
+          - Product
+          - Variation
+          - Package
+          - Bundle
+        is_active:
+          type: boolean
+          description: Whether the entry is active
+        properties:
+          type: object
+          description: Dynamic properties specific to the entry type
+          additionalProperties: true
+    CatalogEntry:
+      type: object
+      description: A catalog entry (product, variant, package, or bundle)
+      properties:
+        code:
+          type: string
+          description: Unique code for the catalog entry
+        name:
+          type: string
+          description: Display name of the entry
+        entry_type:
+          type: string
+          description: Type of catalog entry
+          enum:
+          - Product
+          - Variation
+          - Package
+          - Bundle
+        start_date:
+          type: string
+          format: date-time
+          description: Availability start date
+        end_date:
+          type: string
+          format: date-time
+          description: Availability end date
+        is_active:
+          type: boolean
+          description: Whether the entry is active
+        properties:
+          type: object
+          description: Dynamic properties specific to the entry type
+          additionalProperties: true
+        prices:
+          type: array
+          description: Price information for the entry
+          items:
+            type: object
+            properties:
+              currency:
+                type: string
+                description: Currency code
+              amount:
+                type: number
+                description: Price amount
+              market_id:
+                type: string
+                description: Market identifier
+  parameters:
+    language:
+      name: language
+      in: path
+      required: true
+      description: The language code for the content version
+      schema:
+        type: string
+    entryCode:
+      name: entryCode
+      in: path
+      required: true
+      description: The unique code of the catalog entry
+      schema:
+        type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

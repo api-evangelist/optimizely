@@ -1,0 +1,121 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Objects API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Objects
+  description: Create, update, and manage objects such as products, orders, and custom entities in ODP.
+paths:
+  /objects/{object_type}:
+    post:
+      operationId: upsertObjects
+      summary: Create or update objects
+      description: Creates or updates one or more objects of the specified type in ODP. Objects represent entities such as products, orders, or custom domain entities.
+      tags:
+      - Objects
+      parameters:
+      - $ref: '#/components/parameters/objectType'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ObjectInput'
+      responses:
+        '202':
+          description: Objects accepted for processing
+        '400':
+          description: Invalid object data
+        '401':
+          description: Authentication credentials are missing or invalid
+  /objects/{object_type}/{object_id}:
+    get:
+      operationId: getObject
+      summary: Get an object
+      description: Retrieves a specific object by its type and identifier.
+      tags:
+      - Objects
+      parameters:
+      - $ref: '#/components/parameters/objectType'
+      - $ref: '#/components/parameters/objectId'
+      responses:
+        '200':
+          description: Successfully retrieved the object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OdpObject'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Object not found
+components:
+  parameters:
+    objectType:
+      name: object_type
+      in: path
+      required: true
+      description: The type of object (e.g., products, orders)
+      schema:
+        type: string
+    objectId:
+      name: object_id
+      in: path
+      required: true
+      description: The unique identifier for the object
+      schema:
+        type: string
+  schemas:
+    OdpObject:
+      type: object
+      description: An object in ODP (product, order, etc.)
+      properties:
+        object_id:
+          type: string
+          description: Unique identifier for the object
+        type:
+          type: string
+          description: Object type
+        fields:
+          type: object
+          description: Object field values
+          additionalProperties: true
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the object was created
+        updated:
+          type: string
+          format: date-time
+          description: Timestamp when the object was last updated
+    ObjectInput:
+      type: object
+      description: Input for creating or updating an object in ODP
+      properties:
+        object_id:
+          type: string
+          description: Unique identifier for the object
+        fields:
+          type: object
+          description: Object field values
+          additionalProperties: true
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

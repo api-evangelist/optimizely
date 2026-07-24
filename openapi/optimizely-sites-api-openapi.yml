@@ -1,0 +1,111 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Sites API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Sites
+  description: Retrieve site definitions including language settings and configuration.
+paths:
+  /site:
+    get:
+      operationId: listSites
+      summary: List sites
+      description: Returns a list of site definitions configured in the Optimizely CMS instance, including language settings and site URLs.
+      tags:
+      - Sites
+      parameters:
+      - $ref: '#/components/parameters/language'
+      responses:
+        '200':
+          description: Successfully retrieved site definitions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Site'
+        '401':
+          description: Authentication credentials are missing or invalid
+components:
+  schemas:
+    Site:
+      type: object
+      description: A site definition in the Optimizely CMS instance
+      properties:
+        name:
+          type: string
+          description: Name of the site
+        contentRoots:
+          type: object
+          description: Root content references for the site
+          additionalProperties:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Content ID
+              url:
+                type: string
+                format: uri
+                description: URL to the content
+        languages:
+          type: array
+          description: Languages configured for the site
+          items:
+            type: object
+            properties:
+              displayName:
+                type: string
+                description: Display name of the language
+              name:
+                type: string
+                description: Language code
+              isMasterLanguage:
+                type: boolean
+                description: Whether this is the master language
+              urlSegment:
+                type: string
+                description: URL segment for the language
+              url:
+                type: string
+                format: uri
+                description: Language-specific site URL
+        hosts:
+          type: array
+          description: Host names configured for the site
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Host name
+              type:
+                type: string
+                description: Host type
+  parameters:
+    language:
+      name: language
+      in: query
+      required: false
+      description: The language code for content retrieval
+      schema:
+        type: string
+        example: en
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

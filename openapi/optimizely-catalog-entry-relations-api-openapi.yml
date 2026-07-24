@@ -1,0 +1,106 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Catalog Entry Relations API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Catalog Entry Relations
+  description: Manage relationships between catalog entries and nodes.
+paths:
+  /commerce/entries/{entryCode}/noderelations:
+    get:
+      operationId: getEntryNodeRelations
+      summary: Get entry node relations
+      description: Retrieves the node relations for a specific catalog entry.
+      tags:
+      - Catalog Entry Relations
+      parameters:
+      - $ref: '#/components/parameters/entryCode'
+      responses:
+        '200':
+          description: Successfully retrieved entry node relations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NodeRelation'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog entry not found
+    put:
+      operationId: updateEntryNodeRelations
+      summary: Update entry node relations
+      description: Updates the node relations for a specific catalog entry.
+      tags:
+      - Catalog Entry Relations
+      parameters:
+      - $ref: '#/components/parameters/entryCode'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/NodeRelationInput'
+      responses:
+        '200':
+          description: Node relations successfully updated
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog entry not found
+components:
+  schemas:
+    NodeRelationInput:
+      type: object
+      description: Input for creating or updating a node relation
+      properties:
+        node_code:
+          type: string
+          description: Code of the related node
+        sort_order:
+          type: integer
+          description: Sort order within the node
+    NodeRelation:
+      type: object
+      description: Relationship between a catalog entry and a node
+      properties:
+        node_code:
+          type: string
+          description: Code of the related node
+        catalog_name:
+          type: string
+          description: Name of the catalog
+        sort_order:
+          type: integer
+          description: Sort order within the node
+  parameters:
+    entryCode:
+      name: entryCode
+      in: path
+      required: true
+      description: The unique code of the catalog entry
+      schema:
+        type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

@@ -1,0 +1,179 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Catalogs API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Catalogs
+  description: Manage product catalogs that organize commerce content.
+paths:
+  /commerce/catalogs:
+    get:
+      operationId: listCatalogs
+      summary: List catalogs
+      description: Returns a list of all product catalogs in the commerce system.
+      tags:
+      - Catalogs
+      responses:
+        '200':
+          description: Successfully retrieved catalogs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Catalog'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createCatalog
+      summary: Create a catalog
+      description: Creates a new product catalog.
+      tags:
+      - Catalogs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogInput'
+      responses:
+        '201':
+          description: Catalog successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Catalog'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /commerce/catalogs/{catalogName}:
+    get:
+      operationId: getCatalog
+      summary: Get a catalog
+      description: Retrieves the details of a specific catalog by its name.
+      tags:
+      - Catalogs
+      parameters:
+      - $ref: '#/components/parameters/catalogName'
+      responses:
+        '200':
+          description: Successfully retrieved the catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Catalog'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog not found
+    put:
+      operationId: updateCatalog
+      summary: Update a catalog
+      description: Updates the specified catalog with the provided fields.
+      tags:
+      - Catalogs
+      parameters:
+      - $ref: '#/components/parameters/catalogName'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogInput'
+      responses:
+        '200':
+          description: Catalog successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Catalog'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog not found
+    delete:
+      operationId: deleteCatalog
+      summary: Delete a catalog
+      description: Permanently deletes the specified catalog and its contents.
+      tags:
+      - Catalogs
+      parameters:
+      - $ref: '#/components/parameters/catalogName'
+      responses:
+        '204':
+          description: Catalog successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Catalog not found
+components:
+  schemas:
+    Catalog:
+      type: object
+      description: A product catalog
+      properties:
+        name:
+          type: string
+          description: Name of the catalog
+        default_currency:
+          type: string
+          description: Default currency code
+        default_language:
+          type: string
+          description: Default language code
+        is_active:
+          type: boolean
+          description: Whether the catalog is active
+        start_date:
+          type: string
+          format: date-time
+          description: Catalog availability start date
+        end_date:
+          type: string
+          format: date-time
+          description: Catalog availability end date
+    CatalogInput:
+      type: object
+      description: Input for creating or updating a catalog
+      properties:
+        name:
+          type: string
+          description: Name of the catalog
+        default_currency:
+          type: string
+          description: Default currency code
+        default_language:
+          type: string
+          description: Default language code
+        is_active:
+          type: boolean
+          description: Whether the catalog is active
+  parameters:
+    catalogName:
+      name: catalogName
+      in: path
+      required: true
+      description: The name of the catalog
+      schema:
+        type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

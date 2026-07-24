@@ -1,0 +1,103 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Mailing Lists API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Mailing Lists
+  description: Manage mailing lists used for campaign distribution.
+paths:
+  /{clientId}/mailinglists:
+    get:
+      operationId: listMailingLists
+      summary: List mailing lists
+      description: Returns a list of mailing lists for the specified client.
+      tags:
+      - Mailing Lists
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      responses:
+        '200':
+          description: Successfully retrieved mailing lists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MailingList'
+        '401':
+          description: Authentication credentials are missing or invalid
+  /{clientId}/mailinglists/{mailingListId}:
+    get:
+      operationId: getMailingList
+      summary: Get a mailing list
+      description: Retrieves the details of a specific mailing list.
+      tags:
+      - Mailing Lists
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      - $ref: '#/components/parameters/mailingListId'
+      responses:
+        '200':
+          description: Successfully retrieved the mailing list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailingList'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Mailing list not found
+components:
+  parameters:
+    mailingListId:
+      name: mailingListId
+      in: path
+      required: true
+      description: The unique identifier for the mailing list
+      schema:
+        type: integer
+        format: int64
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
+  schemas:
+    MailingList:
+      type: object
+      description: A mailing list used for campaign distribution
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the mailing list
+        name:
+          type: string
+          description: Human-readable name of the mailing list
+        recipient_count:
+          type: integer
+          description: Number of recipients in the mailing list
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the mailing list was created
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

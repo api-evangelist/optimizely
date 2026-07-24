@@ -1,0 +1,342 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Flags API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Flags
+  description: Create and manage feature flags with variables and variations for controlled rollouts and experimentation.
+paths:
+  /projects/{project_id}/flags:
+    get:
+      operationId: listFlags
+      summary: List flags
+      description: Returns a list of feature flags for the specified project.
+      tags:
+      - Flags
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      responses:
+        '200':
+          description: Successfully retrieved the list of flags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flag'
+        '401':
+          description: Authentication credentials are missing or invalid
+    post:
+      operationId: createFlag
+      summary: Create a flag
+      description: Creates a new feature flag within the specified project with the given key, variables, and variations.
+      tags:
+      - Flags
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlagInput'
+      responses:
+        '201':
+          description: Flag successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flag'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /projects/{project_id}/flags/{flag_key}:
+    get:
+      operationId: getFlag
+      summary: Get a flag
+      description: Retrieves the details of a specific feature flag by its key.
+      tags:
+      - Flags
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      responses:
+        '200':
+          description: Successfully retrieved the flag
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flag'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag not found
+    patch:
+      operationId: updateFlag
+      summary: Update a flag
+      description: Updates the specified feature flag with the provided fields.
+      tags:
+      - Flags
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlagInput'
+      responses:
+        '200':
+          description: Flag successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flag'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag not found
+    delete:
+      operationId: deleteFlag
+      summary: Delete a flag
+      description: Permanently deletes the specified feature flag.
+      tags:
+      - Flags
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      responses:
+        '204':
+          description: Flag successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag not found
+components:
+  schemas:
+    Rule:
+      type: object
+      description: A rule that determines which variation to deliver
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the rule
+        key:
+          type: string
+          description: Unique key for the rule
+        type:
+          type: string
+          description: Type of rule
+          enum:
+          - a/b_test
+          - targeted_delivery
+          - personalization
+        audience_conditions:
+          type: string
+          description: JSON-encoded audience conditions for this rule
+        percentage_included:
+          type: integer
+          description: Percentage of traffic included in this rule
+          minimum: 0
+          maximum: 10000
+        variations:
+          type: array
+          description: Variations and their traffic allocation
+          items:
+            type: object
+            properties:
+              variation_key:
+                type: string
+                description: Key of the variation
+              weight:
+                type: integer
+                description: Traffic weight for this variation
+                minimum: 0
+                maximum: 10000
+    Variable:
+      type: object
+      description: A variable within a feature flag
+      properties:
+        key:
+          type: string
+          description: Unique key for the variable
+        type:
+          type: string
+          description: Data type of the variable
+          enum:
+          - string
+          - integer
+          - double
+          - boolean
+          - json
+        default_value:
+          type: string
+          description: Default value of the variable
+    FlagInput:
+      type: object
+      description: Input for creating or updating a flag
+      properties:
+        key:
+          type: string
+          description: Unique key for the flag
+        name:
+          type: string
+          description: Human-readable name of the flag
+        description:
+          type: string
+          description: Description of the flag purpose
+        variables:
+          type: array
+          description: List of variables associated with this flag
+          items:
+            $ref: '#/components/schemas/VariableInput'
+        variations:
+          type: array
+          description: List of variations for this flag
+          items:
+            $ref: '#/components/schemas/FlagVariationInput'
+    Flag:
+      type: object
+      description: A feature flag with variables and variations
+      properties:
+        key:
+          type: string
+          description: Unique key for the flag
+        name:
+          type: string
+          description: Human-readable name of the flag
+        description:
+          type: string
+          description: Description of the flag purpose
+        project_id:
+          type: integer
+          format: int64
+          description: The project this flag belongs to
+        variables:
+          type: array
+          description: List of variables associated with this flag
+          items:
+            $ref: '#/components/schemas/Variable'
+        variations:
+          type: array
+          description: List of variations for this flag
+          items:
+            $ref: '#/components/schemas/FlagVariation'
+        environments:
+          type: object
+          description: Map of environment keys to flag environment configurations
+          additionalProperties:
+            $ref: '#/components/schemas/FlagEnvironment'
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the flag was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the flag was last modified
+    VariableInput:
+      type: object
+      description: Input for creating or updating a variable
+      properties:
+        key:
+          type: string
+          description: Unique key for the variable
+        type:
+          type: string
+          description: Data type of the variable
+          enum:
+          - string
+          - integer
+          - double
+          - boolean
+          - json
+        default_value:
+          type: string
+          description: Default value of the variable
+    FlagVariation:
+      type: object
+      description: A variation of a feature flag with variable values
+      properties:
+        key:
+          type: string
+          description: Unique key for the variation
+        name:
+          type: string
+          description: Human-readable name of the variation
+        variables:
+          type: object
+          description: Map of variable keys to their values for this variation
+          additionalProperties:
+            type: string
+    Ruleset:
+      type: object
+      description: A collection of rules that determine flag variation delivery
+      properties:
+        rules:
+          type: array
+          description: Ordered list of rules in the ruleset
+          items:
+            $ref: '#/components/schemas/Rule'
+    FlagEnvironment:
+      type: object
+      description: Flag configuration for a specific environment
+      properties:
+        enabled:
+          type: boolean
+          description: Whether the flag is enabled in this environment
+        ruleset:
+          $ref: '#/components/schemas/Ruleset'
+    FlagVariationInput:
+      type: object
+      description: Input for creating or updating a flag variation
+      properties:
+        key:
+          type: string
+          description: Unique key for the variation
+        name:
+          type: string
+          description: Human-readable name of the variation
+        variables:
+          type: object
+          description: Map of variable keys to their values
+          additionalProperties:
+            type: string
+  parameters:
+    flagKey:
+      name: flag_key
+      in: path
+      required: true
+      description: The unique key for the feature flag
+      schema:
+        type: string
+    projectId:
+      name: project_id
+      in: path
+      required: true
+      description: The unique identifier for the project
+      schema:
+        type: integer
+        format: int64
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

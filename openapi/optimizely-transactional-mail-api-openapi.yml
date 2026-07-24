@@ -1,0 +1,95 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Transactional Mail API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Transactional Mail
+  description: Send transactional emails triggered by recipient actions or events.
+paths:
+  /{clientId}/transactionalmail:
+    post:
+      operationId: sendTransactionalMail
+      summary: Send a transactional mail
+      description: Sends a transactional email to a specific recipient. Transactional mails are triggered by recipient actions or events such as order confirmations, password resets, or account notifications.
+      tags:
+      - Transactional Mail
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionalMailInput'
+      responses:
+        '200':
+          description: Transactional mail successfully sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionalMailResponse'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+components:
+  schemas:
+    TransactionalMailResponse:
+      type: object
+      description: Response from sending a transactional mail
+      properties:
+        status:
+          type: string
+          description: Status of the send operation
+          enum:
+          - success
+          - failed
+        message_id:
+          type: string
+          description: Unique identifier for the sent message
+    TransactionalMailInput:
+      type: object
+      description: Input for sending a transactional email
+      required:
+      - recipient_email
+      - mailing_id
+      properties:
+        recipient_email:
+          type: string
+          format: email
+          description: Email address of the recipient
+        mailing_id:
+          type: integer
+          format: int64
+          description: Identifier for the transactional mailing template
+        personalization:
+          type: object
+          description: Key-value pairs for personalizing the email content
+          additionalProperties:
+            type: string
+  parameters:
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

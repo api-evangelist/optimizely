@@ -1,0 +1,230 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Recipients API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Recipients
+  description: Manage recipients and recipient lists for email campaigns.
+paths:
+  /{clientId}/recipients/{recipientListId}:
+    get:
+      operationId: listRecipients
+      summary: List recipients
+      description: Returns a list of recipients from the specified recipient list.
+      tags:
+      - Recipients
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      - $ref: '#/components/parameters/recipientListId'
+      responses:
+        '200':
+          description: Successfully retrieved recipients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recipient'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Recipient list not found
+    post:
+      operationId: addRecipient
+      summary: Add a recipient
+      description: Adds a new recipient to the specified recipient list.
+      tags:
+      - Recipients
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      - $ref: '#/components/parameters/recipientListId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipientInput'
+      responses:
+        '201':
+          description: Recipient successfully added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipient'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Recipient list not found
+  /{clientId}/recipients/{recipientListId}/{recipientId}:
+    get:
+      operationId: getRecipient
+      summary: Get a recipient
+      description: Retrieves the details of a specific recipient from a recipient list.
+      tags:
+      - Recipients
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      - $ref: '#/components/parameters/recipientListId'
+      - $ref: '#/components/parameters/recipientId'
+      responses:
+        '200':
+          description: Successfully retrieved the recipient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipient'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Recipient not found
+    put:
+      operationId: updateRecipient
+      summary: Update a recipient
+      description: Updates the specified recipient with the provided fields.
+      tags:
+      - Recipients
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      - $ref: '#/components/parameters/recipientListId'
+      - $ref: '#/components/parameters/recipientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipientInput'
+      responses:
+        '200':
+          description: Recipient successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipient'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Recipient not found
+    delete:
+      operationId: deleteRecipient
+      summary: Delete a recipient
+      description: Removes a recipient from the specified recipient list.
+      tags:
+      - Recipients
+      parameters:
+      - $ref: '#/components/parameters/clientId'
+      - $ref: '#/components/parameters/recipientListId'
+      - $ref: '#/components/parameters/recipientId'
+      responses:
+        '204':
+          description: Recipient successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Recipient not found
+components:
+  parameters:
+    recipientListId:
+      name: recipientListId
+      in: path
+      required: true
+      description: The unique identifier for the recipient list
+      schema:
+        type: integer
+        format: int64
+    recipientId:
+      name: recipientId
+      in: path
+      required: true
+      description: The unique identifier for the recipient
+      schema:
+        type: integer
+        format: int64
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
+  schemas:
+    RecipientInput:
+      type: object
+      description: Input for creating or updating a recipient
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address of the recipient
+        first_name:
+          type: string
+          description: First name of the recipient
+        last_name:
+          type: string
+          description: Last name of the recipient
+        custom_fields:
+          type: object
+          description: Custom fields associated with the recipient
+          additionalProperties:
+            type: string
+    Recipient:
+      type: object
+      description: A recipient in a mailing list
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the recipient
+        email:
+          type: string
+          format: email
+          description: Email address of the recipient
+        first_name:
+          type: string
+          description: First name of the recipient
+        last_name:
+          type: string
+          description: Last name of the recipient
+        status:
+          type: string
+          description: Subscription status of the recipient
+          enum:
+          - active
+          - unsubscribed
+          - bounced
+        custom_fields:
+          type: object
+          description: Custom fields associated with the recipient
+          additionalProperties:
+            type: string
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the recipient was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the recipient was last modified
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

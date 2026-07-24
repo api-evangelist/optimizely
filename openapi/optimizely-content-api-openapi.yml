@@ -1,0 +1,691 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Content API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Content
+  description: Manage content items including articles and other content types within the CMP content repository.
+paths:
+  /content:
+    get:
+      operationId: listContent
+      summary: List content
+      description: Returns a list of content items in the CMP content repository.
+      tags:
+      - Content
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: Successfully retrieved the list of content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    description: List of content items
+                    items:
+                      $ref: '#/components/schemas/CmpContent'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Authentication credentials are missing or invalid
+  /content/{contentId}:
+    get:
+      operationId: getContent
+      summary: Get a content item
+      description: Retrieves the details of a specific content item.
+      tags:
+      - Content
+      parameters:
+      - $ref: '#/components/parameters/contentId'
+      responses:
+        '200':
+          description: Successfully retrieved the content item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CmpContent'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content not found
+  /content/{contentId}/children:
+    get:
+      operationId: getContentChildren
+      summary: Get content children
+      description: Retrieves the child content items of a specific content item. Useful for navigating content hierarchies such as page trees.
+      tags:
+      - Content
+      parameters:
+      - $ref: '#/components/parameters/contentId_2'
+      - $ref: '#/components/parameters/language'
+      - $ref: '#/components/parameters/expand'
+      - $ref: '#/components/parameters/top'
+      - $ref: '#/components/parameters/skip'
+      responses:
+        '200':
+          description: Successfully retrieved child content items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    description: List of child content items
+                    items:
+                      $ref: '#/components/schemas/ContentItem'
+                  totalMatching:
+                    type: integer
+                    description: Total number of child content items
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Parent content item not found
+  /content/{contentId}/ancestors:
+    get:
+      operationId: getContentAncestors
+      summary: Get content ancestors
+      description: Retrieves the ancestor content items of a specific content item, representing the path from the root to the content item.
+      tags:
+      - Content
+      parameters:
+      - $ref: '#/components/parameters/contentId_2'
+      - $ref: '#/components/parameters/language'
+      - $ref: '#/components/parameters/expand'
+      responses:
+        '200':
+          description: Successfully retrieved ancestor content items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContentItem'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content item not found
+  /:
+    post:
+      operationId: createContent
+      summary: Create a content item
+      description: Creates a new content item of the specified type under a parent content node. Can also be used to create a language branch for existing content. For media content, use a multipart/form-data request with a content part (JSON) and a file part (binary).
+      tags:
+      - Content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentInput'
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: JSON-encoded content properties
+                file:
+                  type: string
+                  format: binary
+                  description: Media file binary data
+      responses:
+        '201':
+          description: Content item successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem_2'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /{contentGuid}:
+    get:
+      operationId: getContentByGuid
+      summary: Get content by GUID
+      description: Retrieves the primary draft or latest published version of a content item by its GUID.
+      tags:
+      - Content
+      parameters:
+      - $ref: '#/components/parameters/contentGuid'
+      responses:
+        '200':
+          description: Successfully retrieved the content item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem_2'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content item not found
+    put:
+      operationId: updateContentByGuid
+      summary: Update content by GUID
+      description: Updates a content item identified by its GUID. If the content does not exist, a new content item is created.
+      tags:
+      - Content
+      parameters:
+      - $ref: '#/components/parameters/contentGuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentInput'
+      responses:
+        '200':
+          description: Content item successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem_2'
+        '201':
+          description: Content item created (did not previously exist)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem_2'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+    patch:
+      operationId: patchContentByGuid
+      summary: Partially update content by GUID
+      description: Partially updates a content item identified by its GUID, sending only the fields that need updating.
+      tags:
+      - Content
+      parameters:
+      - $ref: '#/components/parameters/contentGuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentPatch'
+      responses:
+        '200':
+          description: Content item successfully patched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem_2'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content item not found
+    delete:
+      operationId: deleteContentByGuid
+      summary: Delete content by GUID
+      description: Moves the content item identified by its GUID to the trash bin or permanently deletes it.
+      tags:
+      - Content
+      parameters:
+      - $ref: '#/components/parameters/contentGuid'
+      - name: permanent
+        in: query
+        required: false
+        description: Whether to permanently delete instead of moving to trash
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '204':
+          description: Content item successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content item not found
+  /{contentGuid}/move:
+    post:
+      operationId: moveContent
+      summary: Move content
+      description: Moves a content item to become a child of the specified target content node.
+      tags:
+      - Content
+      parameters:
+      - $ref: '#/components/parameters/contentGuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - destination
+              properties:
+                destination:
+                  type: integer
+                  description: Content ID of the destination parent
+      responses:
+        '200':
+          description: Content item successfully moved
+        '400':
+          description: Invalid move destination
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content item or destination not found
+  /{contentReference}:
+    get:
+      operationId: getContentByReference
+      summary: Get content by reference
+      description: Retrieves a content item by its numeric content reference.
+      tags:
+      - Content
+      parameters:
+      - $ref: '#/components/parameters/contentReference'
+      responses:
+        '200':
+          description: Successfully retrieved the content item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem_2'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content item not found
+components:
+  schemas:
+    CmpContent:
+      type: object
+      description: A content item in the CMP content repository
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the content item
+        title:
+          type: string
+          description: Title of the content item
+        body:
+          type: string
+          description: Body content
+        content_type:
+          type: string
+          description: Type of content
+        status:
+          type: string
+          description: Publication status
+        task_id:
+          type: string
+          description: Associated task identifier
+        labels:
+          type: array
+          description: Labels associated with the content
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the content was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the content was last updated
+    Pagination:
+      type: object
+      description: Pagination metadata
+      properties:
+        total:
+          type: integer
+          description: Total number of items
+        limit:
+          type: integer
+          description: Maximum items per page
+        offset:
+          type: integer
+          description: Current offset
+    ContentItem_2:
+      type: object
+      description: A content item in the Optimizely CMS
+      properties:
+        contentLink:
+          type: object
+          description: Reference to this content item
+          properties:
+            id:
+              type: integer
+              description: Numeric content ID
+            workId:
+              type: integer
+              description: Work ID for versioning
+            guidValue:
+              type: string
+              format: uuid
+              description: GUID for the content item
+        name:
+          type: string
+          description: Display name of the content item
+        contentType:
+          type: array
+          description: Content type hierarchy
+          items:
+            type: string
+        parentLink:
+          type: object
+          description: Reference to the parent content item
+          properties:
+            id:
+              type: integer
+              description: Parent content ID
+            guidValue:
+              type: string
+              format: uuid
+              description: Parent GUID
+        language:
+          type: object
+          description: Language information
+          properties:
+            name:
+              type: string
+              description: Language code
+            displayName:
+              type: string
+              description: Language display name
+        status:
+          type: string
+          description: Content status
+          enum:
+          - CheckedOut
+          - CheckedIn
+          - Published
+          - PreviouslyPublished
+          - Rejected
+          - DelayedPublish
+        startPublish:
+          type: string
+          format: date-time
+          description: Scheduled publish start time
+        stopPublish:
+          type: string
+          format: date-time
+          description: Scheduled publish end time
+        saved:
+          type: string
+          format: date-time
+          description: Timestamp when the content was last saved
+        properties:
+          type: object
+          description: Dynamic content properties specific to the content type
+          additionalProperties: true
+    ContentItem:
+      type: object
+      description: A content item such as a page, block, or media file
+      properties:
+        contentLink:
+          type: object
+          description: Reference to this content item
+          properties:
+            id:
+              type: integer
+              description: Numeric content ID
+            workId:
+              type: integer
+              description: Work ID for versioning
+            guidValue:
+              type: string
+              format: uuid
+              description: GUID for the content item
+            providerName:
+              type: string
+              description: Content provider name
+            url:
+              type: string
+              format: uri
+              description: URL to access this content via the API
+        name:
+          type: string
+          description: Display name of the content item
+        language:
+          type: object
+          description: Language information for this content item
+          properties:
+            link:
+              type: string
+              format: uri
+              description: Language-specific URL
+            displayName:
+              type: string
+              description: Display name of the language
+            name:
+              type: string
+              description: Language code
+        existingLanguages:
+          type: array
+          description: List of available language versions
+          items:
+            type: object
+            properties:
+              link:
+                type: string
+                format: uri
+                description: URL for the language version
+              displayName:
+                type: string
+                description: Display name of the language
+              name:
+                type: string
+                description: Language code
+        masterLanguage:
+          type: object
+          description: The master language of this content item
+          properties:
+            link:
+              type: string
+              format: uri
+              description: URL for the master language version
+            displayName:
+              type: string
+              description: Display name of the master language
+            name:
+              type: string
+              description: Master language code
+        contentType:
+          type: array
+          description: Content type hierarchy
+          items:
+            type: string
+        parentLink:
+          type: object
+          description: Reference to the parent content item
+          properties:
+            id:
+              type: integer
+              description: Parent content ID
+            url:
+              type: string
+              format: uri
+              description: URL to access the parent content
+        routeSegment:
+          type: string
+          description: URL segment for routing
+        url:
+          type: string
+          format: uri
+          description: Public URL of the content
+        changed:
+          type: string
+          format: date-time
+          description: Timestamp when the content was last changed
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the content was created
+        startPublish:
+          type: string
+          format: date-time
+          description: Timestamp when the content was published
+        status:
+          type: string
+          description: Publication status of the content
+    ContentPatch:
+      type: object
+      description: Input for partially updating a content item
+      properties:
+        name:
+          type: string
+          description: Display name of the content item
+        status:
+          type: string
+          description: Content status
+          enum:
+          - CheckedOut
+          - CheckedIn
+          - Published
+        properties:
+          type: object
+          description: Dynamic content properties to update
+          additionalProperties: true
+    ContentInput:
+      type: object
+      description: Input for creating or fully updating a content item
+      required:
+      - name
+      - contentType
+      - parentLink
+      properties:
+        name:
+          type: string
+          description: Display name of the content item
+        contentType:
+          type: array
+          description: Content type hierarchy
+          items:
+            type: string
+        parentLink:
+          type: object
+          description: Reference to the parent content item
+          properties:
+            id:
+              type: integer
+              description: Parent content ID
+        language:
+          type: object
+          description: Language information
+          properties:
+            name:
+              type: string
+              description: Language code
+        status:
+          type: string
+          description: Content status
+          enum:
+          - CheckedOut
+          - CheckedIn
+          - Published
+        startPublish:
+          type: string
+          format: date-time
+          description: Scheduled publish start time
+        properties:
+          type: object
+          description: Dynamic content properties specific to the content type
+          additionalProperties: true
+  parameters:
+    contentReference:
+      name: contentReference
+      in: path
+      required: true
+      description: The numeric content reference identifier
+      schema:
+        type: integer
+    expand:
+      name: expand
+      in: query
+      required: false
+      description: Comma-separated list of content references to expand inline
+      schema:
+        type: string
+    offset:
+      name: offset
+      in: query
+      required: false
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+    contentGuid:
+      name: contentGuid
+      in: path
+      required: true
+      description: The GUID of the content item
+      schema:
+        type: string
+        format: uuid
+    skip:
+      name: skip
+      in: query
+      required: false
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        minimum: 0
+    limit:
+      name: limit
+      in: query
+      required: false
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    language:
+      name: language
+      in: query
+      required: false
+      description: The language code for content retrieval
+      schema:
+        type: string
+        example: en
+    top:
+      name: top
+      in: query
+      required: false
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        minimum: 1
+    contentId_2:
+      name: contentId
+      in: path
+      required: true
+      description: The unique identifier or content reference for the content item
+      schema:
+        type: string
+    contentId:
+      name: contentId
+      in: path
+      required: true
+      description: The unique identifier for the content item
+      schema:
+        type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api

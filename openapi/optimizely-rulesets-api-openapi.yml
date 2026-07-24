@@ -1,0 +1,231 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Campaign REST Assets Rulesets API
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  version: '1.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+servers:
+- url: https://api.campaign.episerver.net/rest
+  description: Optimizely Campaign Production Server
+security:
+- basicAuth: []
+tags:
+- name: Rulesets
+  description: Manage rulesets that define which variation a flag delivers to visitors within a given environment.
+paths:
+  /projects/{project_id}/flags/{flag_key}/environments/{environment_key}/ruleset:
+    get:
+      operationId: getRuleset
+      summary: Get a ruleset
+      description: Retrieves the ruleset for a specific flag in a given environment. A ruleset is the collection of rules that determine which variation a flag delivers to visitors.
+      tags:
+      - Rulesets
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      - $ref: '#/components/parameters/environmentKey'
+      responses:
+        '200':
+          description: Successfully retrieved the ruleset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ruleset'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag or environment not found
+    patch:
+      operationId: updateRuleset
+      summary: Update a ruleset
+      description: Updates the ruleset for a specific flag in a given environment.
+      tags:
+      - Rulesets
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      - $ref: '#/components/parameters/environmentKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RulesetInput'
+      responses:
+        '200':
+          description: Ruleset successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ruleset'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag or environment not found
+  /projects/{project_id}/flags/{flag_key}/environments/{environment_key}/ruleset/enabled:
+    post:
+      operationId: enableRuleset
+      summary: Enable a ruleset
+      description: Enables the ruleset for a specific flag in a given environment, making the flag active and delivering variations to visitors.
+      tags:
+      - Rulesets
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      - $ref: '#/components/parameters/environmentKey'
+      responses:
+        '200':
+          description: Ruleset successfully enabled
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag or environment not found
+  /projects/{project_id}/flags/{flag_key}/environments/{environment_key}/ruleset/disabled:
+    post:
+      operationId: disableRuleset
+      summary: Disable a ruleset
+      description: Disables the ruleset for a specific flag in a given environment, stopping the flag from delivering variations to visitors.
+      tags:
+      - Rulesets
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      - $ref: '#/components/parameters/environmentKey'
+      responses:
+        '200':
+          description: Ruleset successfully disabled
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Flag or environment not found
+components:
+  schemas:
+    Rule:
+      type: object
+      description: A rule that determines which variation to deliver
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the rule
+        key:
+          type: string
+          description: Unique key for the rule
+        type:
+          type: string
+          description: Type of rule
+          enum:
+          - a/b_test
+          - targeted_delivery
+          - personalization
+        audience_conditions:
+          type: string
+          description: JSON-encoded audience conditions for this rule
+        percentage_included:
+          type: integer
+          description: Percentage of traffic included in this rule
+          minimum: 0
+          maximum: 10000
+        variations:
+          type: array
+          description: Variations and their traffic allocation
+          items:
+            type: object
+            properties:
+              variation_key:
+                type: string
+                description: Key of the variation
+              weight:
+                type: integer
+                description: Traffic weight for this variation
+                minimum: 0
+                maximum: 10000
+    RulesetInput:
+      type: object
+      description: Input for updating a ruleset
+      properties:
+        rules:
+          type: array
+          description: Ordered list of rules in the ruleset
+          items:
+            $ref: '#/components/schemas/RuleInput'
+    RuleInput:
+      type: object
+      description: Input for creating or updating a rule
+      properties:
+        key:
+          type: string
+          description: Unique key for the rule
+        type:
+          type: string
+          description: Type of rule
+          enum:
+          - a/b_test
+          - targeted_delivery
+          - personalization
+        audience_conditions:
+          type: string
+          description: JSON-encoded audience conditions
+        percentage_included:
+          type: integer
+          description: Percentage of traffic included
+          minimum: 0
+          maximum: 10000
+        variations:
+          type: array
+          description: Variations and their traffic allocation
+          items:
+            type: object
+            properties:
+              variation_key:
+                type: string
+                description: Key of the variation
+              weight:
+                type: integer
+                description: Traffic weight
+                minimum: 0
+                maximum: 10000
+    Ruleset:
+      type: object
+      description: A collection of rules that determine flag variation delivery
+      properties:
+        rules:
+          type: array
+          description: Ordered list of rules in the ruleset
+          items:
+            $ref: '#/components/schemas/Rule'
+  parameters:
+    flagKey:
+      name: flag_key
+      in: path
+      required: true
+      description: The unique key for the feature flag
+      schema:
+        type: string
+    projectId:
+      name: project_id
+      in: path
+      required: true
+      description: The unique identifier for the project
+      schema:
+        type: integer
+        format: int64
+    environmentKey:
+      name: environment_key
+      in: path
+      required: true
+      description: The unique key for the environment
+      schema:
+        type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+externalDocs:
+  description: Optimizely Campaign REST API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
