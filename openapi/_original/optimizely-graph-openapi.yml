@@ -1,0 +1,186 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Graph API
+  description: >-
+    Optimizely Graph is a unified content query and delivery service that
+    provides access to content across Optimizely products through a GraphQL
+    API exposed over HTTP. Developers can send GraphQL queries via POST
+    requests to the content endpoint to retrieve, search, and filter content
+    from Optimizely CMS and other connected content sources. The API supports
+    single key authentication, basic authentication, and HMAC authentication
+    for different access levels.
+  version: '2.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+externalDocs:
+  description: Optimizely Graph API Documentation
+  url: https://docs.developers.optimizely.com/platform-optimizely/docs/getting-started-with-graphql-api
+servers:
+  - url: https://cg.optimizely.com
+    description: Optimizely Graph Production Server
+tags:
+  - name: GraphQL
+    description: >-
+      Execute GraphQL queries against the Optimizely content graph
+      to retrieve and search content.
+security:
+  - singleKeyAuth: []
+paths:
+  /content/v2:
+    post:
+      operationId: executeGraphQLQuery
+      summary: Execute a GraphQL query
+      description: >-
+        Sends a GraphQL query to the Optimizely Graph service for content
+        retrieval and search. The query is executed against the content
+        model indexed in Optimizely Graph, enabling flexible data retrieval
+        across all connected content sources.
+      tags:
+        - GraphQL
+      parameters:
+        - name: auth
+          in: query
+          required: false
+          description: Single key authentication token
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphQLRequest'
+      responses:
+        '200':
+          description: Successfully executed the GraphQL query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLResponse'
+        '400':
+          description: Invalid GraphQL query syntax
+        '401':
+          description: Authentication credentials are missing or invalid
+    get:
+      operationId: executeGraphQLQueryGet
+      summary: Execute a GraphQL query via GET
+      description: >-
+        Sends a GraphQL query via GET request using query parameters.
+        Useful for simple queries and caching scenarios.
+      tags:
+        - GraphQL
+      parameters:
+        - name: auth
+          in: query
+          required: false
+          description: Single key authentication token
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: true
+          description: The GraphQL query string
+          schema:
+            type: string
+        - name: variables
+          in: query
+          required: false
+          description: JSON-encoded query variables
+          schema:
+            type: string
+        - name: operationName
+          in: query
+          required: false
+          description: Name of the operation to execute
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully executed the GraphQL query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLResponse'
+        '400':
+          description: Invalid GraphQL query syntax
+        '401':
+          description: Authentication credentials are missing or invalid
+components:
+  securitySchemes:
+    singleKeyAuth:
+      type: apiKey
+      in: query
+      name: auth
+      description: >-
+        Single key authentication provides read-only access to publicly
+        available GraphQL data. Use format epi-single followed by the token.
+    basicAuth:
+      type: http
+      scheme: basic
+      description: >-
+        Basic authentication using App Key and App Secret for full
+        read-write access to Graph data.
+    hmacAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: >-
+        HMAC authentication for secure server-to-server access using
+        App Key and App Secret.
+  schemas:
+    GraphQLRequest:
+      type: object
+      description: A GraphQL query request
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: The GraphQL query string
+        variables:
+          type: object
+          description: Variables for the GraphQL query
+          additionalProperties: true
+        operationName:
+          type: string
+          description: Name of the operation to execute if the query contains multiple operations
+    GraphQLResponse:
+      type: object
+      description: A GraphQL query response
+      properties:
+        data:
+          type: object
+          description: The query result data
+          additionalProperties: true
+        errors:
+          type: array
+          description: List of errors if the query failed or partially failed
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error message
+              locations:
+                type: array
+                description: Locations in the query where the error occurred
+                items:
+                  type: object
+                  properties:
+                    line:
+                      type: integer
+                      description: Line number
+                    column:
+                      type: integer
+                      description: Column number
+              path:
+                type: array
+                description: Path to the field that caused the error
+                items:
+                  type: string
+        extensions:
+          type: object
+          description: Additional metadata about the query execution
+          additionalProperties: true

@@ -1,0 +1,395 @@
+openapi: 3.1.0
+info:
+  title: Optimizely Content Management API
+  description: >-
+    The Optimizely Content Management API provides REST endpoints for
+    performing content operations within Optimizely CMS. Developers can
+    create, read, update, and delete content items programmatically,
+    enabling automated content workflows and integration with external
+    systems. The API supports managing pages, blocks, media, and other
+    content types within the Optimizely CMS ecosystem, including content
+    versioning, language branches, and content movement operations.
+  version: '3.0'
+  contact:
+    name: Optimizely Support
+    url: https://support.optimizely.com
+  termsOfService: https://www.optimizely.com/legal/terms/
+externalDocs:
+  description: Optimizely Content Management API Documentation
+  url: https://docs.developers.optimizely.com/content-management-system/v1.6.0-content-management-api/docs/getting-started
+servers:
+  - url: '{siteUrl}/api/episerver/v3.0/contentmanagement'
+    description: Optimizely CMS Content Management API endpoint
+    variables:
+      siteUrl:
+        default: https://www.example.com
+        description: The base URL of the Optimizely CMS site
+tags:
+  - name: Content
+    description: >-
+      Create, read, update, delete, and move content items including
+      pages, blocks, and media.
+security:
+  - bearerAuth: []
+paths:
+  /:
+    post:
+      operationId: createContent
+      summary: Create a content item
+      description: >-
+        Creates a new content item of the specified type under a parent
+        content node. Can also be used to create a language branch for
+        existing content. For media content, use a multipart/form-data
+        request with a content part (JSON) and a file part (binary).
+      tags:
+        - Content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentInput'
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: JSON-encoded content properties
+                file:
+                  type: string
+                  format: binary
+                  description: Media file binary data
+      responses:
+        '201':
+          description: Content item successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+  /{contentGuid}:
+    get:
+      operationId: getContentByGuid
+      summary: Get content by GUID
+      description: >-
+        Retrieves the primary draft or latest published version of a
+        content item by its GUID.
+      tags:
+        - Content
+      parameters:
+        - $ref: '#/components/parameters/contentGuid'
+      responses:
+        '200':
+          description: Successfully retrieved the content item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content item not found
+    put:
+      operationId: updateContentByGuid
+      summary: Update content by GUID
+      description: >-
+        Updates a content item identified by its GUID. If the content does
+        not exist, a new content item is created.
+      tags:
+        - Content
+      parameters:
+        - $ref: '#/components/parameters/contentGuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentInput'
+      responses:
+        '200':
+          description: Content item successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem'
+        '201':
+          description: Content item created (did not previously exist)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+    patch:
+      operationId: patchContentByGuid
+      summary: Partially update content by GUID
+      description: >-
+        Partially updates a content item identified by its GUID, sending
+        only the fields that need updating.
+      tags:
+        - Content
+      parameters:
+        - $ref: '#/components/parameters/contentGuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentPatch'
+      responses:
+        '200':
+          description: Content item successfully patched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content item not found
+    delete:
+      operationId: deleteContentByGuid
+      summary: Delete content by GUID
+      description: >-
+        Moves the content item identified by its GUID to the trash bin
+        or permanently deletes it.
+      tags:
+        - Content
+      parameters:
+        - $ref: '#/components/parameters/contentGuid'
+        - name: permanent
+          in: query
+          required: false
+          description: Whether to permanently delete instead of moving to trash
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '204':
+          description: Content item successfully deleted
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content item not found
+  /{contentGuid}/move:
+    post:
+      operationId: moveContent
+      summary: Move content
+      description: >-
+        Moves a content item to become a child of the specified target
+        content node.
+      tags:
+        - Content
+      parameters:
+        - $ref: '#/components/parameters/contentGuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - destination
+              properties:
+                destination:
+                  type: integer
+                  description: Content ID of the destination parent
+      responses:
+        '200':
+          description: Content item successfully moved
+        '400':
+          description: Invalid move destination
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content item or destination not found
+  /{contentReference}:
+    get:
+      operationId: getContentByReference
+      summary: Get content by reference
+      description: >-
+        Retrieves a content item by its numeric content reference.
+      tags:
+        - Content
+      parameters:
+        - $ref: '#/components/parameters/contentReference'
+      responses:
+        '200':
+          description: Successfully retrieved the content item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem'
+        '401':
+          description: Authentication credentials are missing or invalid
+        '404':
+          description: Content item not found
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: >-
+        OpenID Connect Bearer token for authenticated content management
+        operations.
+  parameters:
+    contentGuid:
+      name: contentGuid
+      in: path
+      required: true
+      description: The GUID of the content item
+      schema:
+        type: string
+        format: uuid
+    contentReference:
+      name: contentReference
+      in: path
+      required: true
+      description: The numeric content reference identifier
+      schema:
+        type: integer
+  schemas:
+    ContentItem:
+      type: object
+      description: A content item in the Optimizely CMS
+      properties:
+        contentLink:
+          type: object
+          description: Reference to this content item
+          properties:
+            id:
+              type: integer
+              description: Numeric content ID
+            workId:
+              type: integer
+              description: Work ID for versioning
+            guidValue:
+              type: string
+              format: uuid
+              description: GUID for the content item
+        name:
+          type: string
+          description: Display name of the content item
+        contentType:
+          type: array
+          description: Content type hierarchy
+          items:
+            type: string
+        parentLink:
+          type: object
+          description: Reference to the parent content item
+          properties:
+            id:
+              type: integer
+              description: Parent content ID
+            guidValue:
+              type: string
+              format: uuid
+              description: Parent GUID
+        language:
+          type: object
+          description: Language information
+          properties:
+            name:
+              type: string
+              description: Language code
+            displayName:
+              type: string
+              description: Language display name
+        status:
+          type: string
+          description: Content status
+          enum:
+            - CheckedOut
+            - CheckedIn
+            - Published
+            - PreviouslyPublished
+            - Rejected
+            - DelayedPublish
+        startPublish:
+          type: string
+          format: date-time
+          description: Scheduled publish start time
+        stopPublish:
+          type: string
+          format: date-time
+          description: Scheduled publish end time
+        saved:
+          type: string
+          format: date-time
+          description: Timestamp when the content was last saved
+        properties:
+          type: object
+          description: Dynamic content properties specific to the content type
+          additionalProperties: true
+    ContentInput:
+      type: object
+      description: Input for creating or fully updating a content item
+      required:
+        - name
+        - contentType
+        - parentLink
+      properties:
+        name:
+          type: string
+          description: Display name of the content item
+        contentType:
+          type: array
+          description: Content type hierarchy
+          items:
+            type: string
+        parentLink:
+          type: object
+          description: Reference to the parent content item
+          properties:
+            id:
+              type: integer
+              description: Parent content ID
+        language:
+          type: object
+          description: Language information
+          properties:
+            name:
+              type: string
+              description: Language code
+        status:
+          type: string
+          description: Content status
+          enum:
+            - CheckedOut
+            - CheckedIn
+            - Published
+        startPublish:
+          type: string
+          format: date-time
+          description: Scheduled publish start time
+        properties:
+          type: object
+          description: Dynamic content properties specific to the content type
+          additionalProperties: true
+    ContentPatch:
+      type: object
+      description: Input for partially updating a content item
+      properties:
+        name:
+          type: string
+          description: Display name of the content item
+        status:
+          type: string
+          description: Content status
+          enum:
+            - CheckedOut
+            - CheckedIn
+            - Published
+        properties:
+          type: object
+          description: Dynamic content properties to update
+          additionalProperties: true
