@@ -1,0 +1,157 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  openapi/_original/ (28 provider-published OpenAPI documents harvested 2026-08-13) plus
+  docs.developers.optimizely.com authentication, rate-limit and error-handling pages
+description: >-
+  Cross-cutting request/response semantics across the Optimizely API estate. Optimizely is
+  not one API with one set of conventions — it is a decade of acquisitions (Episerver,
+  Insite/Configured Commerce, Zaius/ODP, optivo/Campaign, Idio/Content Recommendations)
+  each of which kept its own auth model, pagination style and error envelope. An agent
+  must resolve conventions PER PRODUCT, not per vendor.
+
+authentication:
+  summary: Five distinct models across the estate; no single credential works everywhere.
+  models:
+  - {product: 'Experimentation v2 + Flags v1', style: 'OAuth 2.0 authorization code, or bearer personal access token', header: 'Authorization: Bearer <token>', scopes: [all]}
+  - {product: 'Content Marketing Platform', style: 'OAuth 2.0 (authorization code + client credentials)', token_url: 'https://api.cmp.optimizely.com/oauth/token'}
+  - {product: 'Optimizely Data Platform (ODP)', style: 'API key', header: x-api-key}
+  - {product: 'Optimizely Graph', style: 'single-key (query param `auth`), HMAC (Authorization header), Basic, or Bearer'}
+  - {product: 'Configured Commerce', style: 'access_token as a QUERY PARAMETER', note: 'Tokens appear in URLs and therefore in logs and referrers — treat as sensitive.'}
+  - {product: Campaign, style: 'apiKey in the Authorization header'}
+  - {product: Content Recommendations, style: 'apiKey in the `key` query parameter'}
+  detail: authentication/optimizely-authentication.yml
+
+idempotency:
+  supported: false
+  evidence: >-
+    Zero occurrences of "idempoten" in any of the 28 harvested OpenAPI documents, and no
+    idempotency-key header or parameter is documented anywhere in the developer portal.
+  implication: >-
+    A failed write cannot be safely replayed. The correct retry pattern on every Optimizely
+    write API is read-then-write: list the collection, confirm the first attempt did not
+    land, and only then re-POST. No `type: Idempotency` pointer is emitted for this
+    provider, because emitting one would assert a contract Optimizely does not offer.
+  related: conditional_requests
+
+conditional_requests:
+  supported: true
+  header: If-Match
+  occurrences: 236
+  where: Configured Commerce Admin API V1 and Storefront API V1
+  style: optimistic-concurrency
+  note: >-
+    This is RFC 9110 conditional-request concurrency control (reject the write if the
+    resource changed), not an idempotency key (deduplicate a replayed write). It prevents
+    lost updates; it does not make a retry safe.
+
+pagination:
+  summary: Four different pagination styles across the estate.
+  styles:
+  - product: Experimentation REST API v2
+    style: page-number
+    params: [page, per_page]
+    response_fields: []
+    note: >-
+      No Link header and no pagination envelope is declared in the spec — the caller pages
+      until an empty array comes back.
+  - product: Feature Experimentation Flags v1
+    style: page-number + page-token hybrid
+    params: [page, per_page, page_token, page_window]
+    response_fields: [url, first_url, last_url, next_url, prev_url, total_count, page]
+    note: >-
+      Flags v1 uses RESTful JSON (restfuljson.org) link relations — collection responses
+      carry `*_url` link properties, and an absent link means the caller is not authorized
+      for that related resource rather than that it does not exist. That distinction
+      matters: a missing `next_url` is not proof the collection ended.
+  - product: Optimizely Data Platform v3
+    style: cursor
+    params: [limit, offset]
+    response_headers: [next-cursor]
+  - product: Configured Commerce
+    style: OData
+    params: [$top, $skip, $count, $filter, $orderby, $select, $expand, $apply]
+    note: 987 operations accept $select and $expand; 254 accept the full OData query set.
+  - product: Optimizely Graph
+    style: GraphQL connection
+    params: [limit, skip, cursor]
+    response_headers: [x-epi-continuation]
+
+field_selection:
+  supported: true
+  products: [Configured Commerce, Content Marketing Platform]
+  params: ['$select', '$expand', 'parameter.expand']
+  note: OData $select/$expand on 987 Configured Commerce operations; an `expand` parameter on CMP.
+
+filtering_and_sorting:
+  sort:
+    style: 'comma-separated field:direction'
+    example: 'sort=name:asc,created_time:desc'
+    products: [Feature Experimentation Flags v1]
+    enum_constrained: true
+  filter:
+    products: [Feature Experimentation Flags v1, Configured Commerce ($filter), Content Marketing Platform]
+
+request_tracing:
+  request_id_header: none
+  correlation: >-
+    Optimizely returns a `uuid` INSIDE the error body (both the RFC 9457 ProblemDetail and
+    the v2 Error envelope) as the support reference. There is no request-id response header
+    on a successful call, so a successful request cannot be correlated to an Optimizely-side
+    trace.
+
+versioning:
+  scheme: uri-path
+  examples:
+  - {api: 'Experimentation REST API', version: v2, base: 'https://api.optimizely.com/v2'}
+  - {api: 'Feature Experimentation Flags', version: v1, base: 'https://api.optimizely.com/flags/v1'}
+  - {api: 'Optimizely Data Platform', version: v3, base: 'https://api.us1.odp.optimizely.com/v3'}
+  - {api: 'Content Marketing Platform', version: v3, base: 'https://api.cmp.optimizely.com/v3'}
+  - {api: 'CMS Content Delivery', version: v3.0, base: '{cms-host}/api/episerver/v3.0'}
+  - {api: 'Configured Commerce Storefront', version: 'v1 and v2 in parallel', note: 'V1 (168 paths) and V2 (15 paths) are both current; V2 does not supersede V1.'}
+  media_type_versioning:
+    product: Campaign
+    media_type: application/vnd.optivo.broadmail.v1+json
+    note: The only place in the estate where the version travels in the media type.
+
+error_envelope:
+  formats: [rfc9457, optimizely-error-envelope, graphql-errors, vendor-media-type]
+  detail: errors/optimizely-problem-types.yml
+  warning: >-
+    Optimizely Graph can return HTTP 200 with a populated `errors[]` array and partial
+    `data`. Status-code-only error handling will silently accept failures on that surface.
+
+rate_limit_signaling:
+  response_headers: none
+  evidence: >-
+    No X-RateLimit-*, RateLimit-* or Retry-After header is declared in any of the 28
+    harvested specs, and only 2 operations across the whole estate document a 429 response.
+  published_limits: rate-limits/optimizely-rate-limits.yml
+  implication: >-
+    An agent cannot read remaining quota from a response. Client-side pacing against the
+    published per-second limits is the only option.
+
+regionality:
+  applies_to: [Optimizely Data Platform, Event API]
+  hosts:
+  - https://api.us1.odp.optimizely.com/v3
+  - https://api.eu1.odp.optimizely.com/v3
+  - https://api.au1.odp.optimizely.com/v3
+  - https://logx.optimizely.com/v1
+  - https://eu.logx.optimizely.com/v1
+  note: Credentials are region-scoped. Writing to the wrong region creates a separate record rather than failing.
+
+batching:
+  supported: true
+  products: [Optimizely Data Platform, Optimizely Agent]
+  detail: >-
+    ODP accepts up to 500 distinct objects per request and the provider's rate-limit page
+    requires bulk loads to be batched. Optimizely Agent exposes POST /v1/batch.
+
+cross_reference:
+  errors: errors/optimizely-problem-types.yml
+  lifecycle: lifecycle/optimizely-lifecycle.yml
+  authentication: authentication/optimizely-authentication.yml
+  scopes: scopes/optimizely-scopes.yml
+  rate_limits: rate-limits/optimizely-rate-limits.yml
+  conformance: conformance/optimizely-conformance.yml

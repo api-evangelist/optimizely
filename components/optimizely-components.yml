@@ -1,0 +1,80 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://docs.developers.optimizely.com/recommendations/docs/personalisation-sdk,
+  https://docs.developers.optimizely.com/web-experimentation/ snippet docs,
+  https://www.npmjs.com/package/@optimizely/ocp-cms-ui-extensions-sdk,
+  https://www.npmjs.com/package/@optimizely/react-sdk
+description: >-
+  Client-side and embeddable surfaces Optimizely ships, distinct from the server-side SDKs
+  catalogued in packages/. Three families: the Web Experimentation snippet (a CDN script
+  that mutates the page), the Content Recommendations widget SDK (declarative Mustache
+  templates driven by data-* attributes), and React/UI extension component libraries.
+families:
+- family: Web Experimentation snippet
+  kind: cdn-script
+  distribution: 'CDN <script> tag, per-project snippet URL on cdn.optimizely.com'
+  version: null
+  pinned: false
+  note: >-
+    The snippet URL is per-project and floats — Optimizely publishes the current snippet
+    build to the project's CDN path, so a consumer cannot pin a version. That is the
+    finding, not a gap in this record: the same URL returns different code over time by
+    design, which is how experiment changes reach the page without a redeploy.
+  capabilities: [variation delivery, visual editor changes, event tracking, audience evaluation]
+  operational_docs:
+  - {title: Snippet deactivation, url: 'https://docs.developers.optimizely.com/web-experimentation/docs/snippet-deactivation'}
+  - {title: Snippet integrity check with Cloudflare, url: 'https://docs.developers.optimizely.com/web-experimentation/docs/snippet-integrity-check-with-cloudflare'}
+  - {title: Snippet integrity check with Akamai, url: 'https://docs.developers.optimizely.com/web-experimentation/docs/snippet-integrity-check-with-akamai'}
+  - {title: Implement the snippet with a tag manager, url: 'https://docs.developers.optimizely.com/web-experimentation/docs/implement-the-snippet-with-a-tag-manager'}
+- family: Content Recommendations widgets
+  kind: declarative-web-widget
+  loader: ip.js
+  distribution: CDN script tag
+  version: null
+  pinned: false
+  docs: https://docs.developers.optimizely.com/recommendations/docs/personalisation-sdk
+  mechanism: >-
+    ip.js scans the page for <script type="text/x-mustache" class="idio-recommendations">
+    tags that are simultaneously the widget configuration and its Mustache template.
+  configuration: data-* attributes on the script tag
+  attributes:
+  - {name: data-api-key, required: true, description: The unique API key for this widget delivery.}
+  - {name: data-rpp, required: false, description: Results per page — number of content items to fetch; overrides the server-side setting.}
+  - {name: data-page, required: false, description: Page number of results to fetch. Defaults to 1.}
+  - {name: data-section, required: false, description: Section to draw recommendations from.}
+  - {name: data-fallback, required: false, description: Fallback section when the primary section returns nothing.}
+  note: >-
+    `idio` in the class name is the pre-acquisition brand — Idio became Optimizely Content
+    Recommendations. The backing API is the Content Recommendations API
+    (openapi/_original/optimizely-recommendations-public-api-spec-openapi.yaml).
+- family: React component library
+  kind: framework-components
+  package: '@optimizely/react-sdk'
+  version: 4.1.0
+  published: '2026-07-10'
+  registry: npm
+  components: [OptimizelyProvider, OptimizelyFeature, OptimizelyExperiment, OptimizelyVariation]
+  hooks: [useDecision, useOptimizelyClient]
+  note: >-
+    Component names are the documented React SDK surface; useOptimizelyClient is documented
+    for v4+ and ReactSDKClient for versions prior to v4.
+- family: CMS UI extensions
+  kind: embedded-ui-extension
+  packages:
+  - {name: '@optimizely/ocp-cms-ui-extensions-sdk', version: 1.0.0-beta.1, published: '2026-05-11', registry: npm}
+  - {name: '@optimizely/cms-extensibility-sdk', version: 1.0.1, published: '2026-06-16', registry: npm}
+  mechanism: >-
+    An OCP app declares injection points in app.yml and ships a frontend bundle plus a
+    backend proxy; the extension renders inside the CMS (SaaS) UI.
+  docs: https://github.com/optimizely/ocp-skills/blob/main/skills/ocp-app-development/references/cms-ui-extensions/overview.md
+  status: beta
+- family: Configured Commerce widgets
+  kind: content-widget
+  docs: https://docs.developers.optimizely.com/configured-commerce/docs/content-configuration
+  note: Page-builder widgets configured through the Configured Commerce content system and Mobile SDK.
+summary:
+  families: 5
+  npm_distributed: 3
+  cdn_distributed: 2
+  unpinned_cdn: 2

@@ -1,0 +1,196 @@
+generated: '2026-08-13'
+method: derived
+source: mcp/optimizely-mcp.yml + openapi/_original/ (harvested 2026-08-13)
+description: >-
+  Binds the Optimizely remote MCP surface to the REST operations that back it. Optimizely's
+  three MCP servers are OAuth-gated — tools/list returns 401 anonymously — so the live tool
+  names and inputSchemas could NOT be captured. What is documented is the capability groups
+  ("Query", "Manage", "Implement"), the tool-name prefixes (exp_, oa_, cms_, graph_), and
+  three individual tool names. Every row below is therefore mapped by documented capability
+  and semantics, not by a tool manifest, and carries confidence: low or medium accordingly.
+  Nothing here is asserted as a verified tool name except the three marked verified: true.
+caveat: >-
+  Tool names in crosswalk[] that are NOT marked verified are capability descriptors, not
+  claimed tool identifiers. Re-run this crosswalk with an authenticated tools/list to bind
+  real names and inherit real inputSchemas.
+
+surfaces:
+  openapi:
+    files:
+    - openapi/_original/optimizely-web-experimentation-optimizely-api-openapi.json
+    - openapi/_original/optimizely-feature-experimentation-optimizely-feature-experimentation-api-openapi.json
+    - openapi/_original/optimizely-feature-experimentation-optimizely-flags-scheduling-api-openapi.json
+    - openapi/_original/optimizely-feature-experimentation-permission-service-openapi.json
+    - openapi/_original/optimizely-platform-optimizely-optimizely-graph-api-openapi.json
+    gated: false
+  graphql:
+    endpoint: https://cg.optimizely.com/content/v2
+    note: >-
+      Optimizely Graph. Introspection requires a single-key or HMAC credential; the local
+      graphql/optimizely-graphql.md capture is documentation, not an introspected SDL.
+    gated: true
+  mcp:
+    servers:
+    - {name: optimizely-exp, url: 'https://exp.mcp.opal.optimizely.com/mcp', gated: true, tools_list_status: 401}
+    - {name: optimizely-analytics, url: 'https://analytics.mcp.opal.optimizely.com/mcp', gated: true, tools_list_status: 401}
+    - {name: optimizely-cms, url: 'https://cms.mcp.opal.optimizely.com/mcp', gated: true, tools_list_status: 401}
+
+crosswalk:
+- tool: exp_get_schemas
+  verified: true
+  server: optimizely-exp
+  category: metadata
+  rest: []
+  binding: mcp-native
+  confidence: high
+  note: >-
+    Documented by name. Returns entity schemas for Feature Experimentation; there is no
+    public REST operation that serves schema documents, so this is server-side metadata.
+- tool: exp_program_reporting_top_experiments
+  verified: true
+  server: optimizely-exp
+  category: reporting
+  rest: [get_experiment_report, get_experiment_results, list_reports, fetch_report]
+  binding: rest
+  confidence: medium
+  note: >-
+    Documented by name as returning reporting data for paused/concluded experiments; the
+    REST reporting operations listed are the plausible backing set across the v2 API and
+    the Flags v1 reports endpoints.
+- tool: oa_list_apps
+  verified: true
+  server: optimizely-analytics
+  category: account
+  rest: []
+  binding: mcp-native
+  confidence: high
+  note: >-
+    Optimizely Analytics has no published OpenAPI in the provider api-catalog, so this tool
+    has no mappable REST operation in this repo.
+- tool: 'exp_* — list projects'
+  server: optimizely-exp
+  category: query
+  rest: [list_projects, get_project]
+  binding: rest
+  confidence: medium
+  note: Capability group "Query — list projects" per the MCP overview doc.
+- tool: 'exp_* — list flags'
+  server: optimizely-exp
+  category: query
+  rest: [list_flags, fetch_flag]
+  binding: rest
+  confidence: medium
+- tool: 'exp_* — list experiments'
+  server: optimizely-exp
+  category: query
+  rest: [list_experiments, get_experiment, list_all_rules_in_project, fetch_rule_by_experiment_id]
+  binding: rest
+  confidence: medium
+  note: >-
+    Fans out: Web Experimentation experiments live on the v2 API (list_experiments), Feature
+    Experimentation rules live on Flags v1 (list_all_rules_in_project).
+- tool: 'exp_* — list environments'
+  server: optimizely-exp
+  category: query
+  rest: [list_environments, get_environment]
+  binding: rest
+  confidence: medium
+  note: list_environments exists in BOTH the v2 API and Flags v1 with different shapes.
+- tool: 'exp_* — create/update flag'
+  server: optimizely-exp
+  category: manage
+  rest: [create_flag, update_flags, archive_flags, unarchive_flags, delete_flag]
+  binding: rest
+  confidence: medium
+  note: Writes to live Optimizely data; the provider documents an agent confirmation step before commit.
+- tool: 'exp_* — configure flag variations and variables'
+  server: optimizely-exp
+  category: manage
+  rest: [create_variation, update_variations, create_variable_definition, update_variable_definitions, update_ruleset, enable_ruleset, disable_ruleset]
+  binding: rest
+  confidence: medium
+  note: >-
+    The provider states one MCP call replaces the multi-call orchestration of flag +
+    variables + variations + environments + rollout rules, so this is a composite.
+- tool: 'exp_* — create/update experiment'
+  server: optimizely-exp
+  category: manage
+  rest: [create_experiment, update_experiment, delete_experiment, create_campaign, update_campaign]
+  binding: rest
+  confidence: medium
+- tool: 'exp_* — create/update audience'
+  server: optimizely-exp
+  category: manage
+  rest: [create_audience, update_audience, list_audiences, get_audience]
+  binding: rest
+  confidence: medium
+- tool: 'exp_* — SDK documentation search'
+  server: optimizely-exp
+  category: implement
+  rest: []
+  binding: mcp-native
+  confidence: medium
+  note: Capability group "Implement — search Feature Experimentation SDK documentation". Docs retrieval, not an API call.
+- tool: 'cms_* — content management'
+  server: optimizely-cms
+  category: content
+  rest: []
+  binding: unmapped
+  confidence: low
+  note: >-
+    Backed by the CMS (SaaS) Content Management API, which is NOT in the provider
+    /.well-known/api-catalog; only the older CMS Content Delivery spec is published
+    (openapi/_original/optimizely-content-management-system-episervercontentapidocs-openapi.json).
+- tool: 'graph_* — Optimizely Graph query'
+  server: optimizely-cms
+  category: content-query
+  rest: [Get_Content, Post_Content]
+  binding: graphql
+  confidence: low
+  note: >-
+    Optimizely Graph is a GraphQL surface fronted by the Graph REST spec; the exact
+    operationIds are in openapi/_original/optimizely-platform-optimizely-swagger-openapi.json.
+
+mcp_only:
+- {tool: exp_get_schemas, reason: server-side entity schema catalog with no public REST equivalent}
+- {tool: 'exp_* — SDK documentation search', reason: documentation retrieval, not an API operation}
+- {tool: 'oa_*', reason: Optimizely Analytics publishes no OpenAPI in the provider api-catalog}
+- {tool: 'cms_*', reason: CMS (SaaS) Content Management API is not published in the provider api-catalog}
+
+rest_only:
+- capability: Billing and impressions usage
+  operations: [get_impressions_usage_request, get_impressions_usage_summary_request, get_plan]
+- capability: Data subject access requests (GDPR)
+  operations: [list_sar_requests_by_account, create_sar_request, get_sar_request, list_sar_requests_by_team, update_sar_request, update_sar_request_by_post]
+- capability: Webhooks
+  operations: [list_webhooks, create_webhook, get_webhook, update_webhook, delete_webhook]
+- capability: Data export credentials and CSV exports
+  operations: [get_enriched_events_export_credentials, get_gcp_e3_credentials, get_experiment_results_csv, get_campaign_results_csv, get_holdout_results_csv]
+- capability: Web Experimentation page and extension authoring
+  operations: [list_pages, create_page, update_page, delete_page, list_extensions, create_extension, update_extension, delete_extension, create_section, update_section, delete_section]
+- capability: Holdouts
+  operations: [list_holdouts, create_holdout, fetch_holdout, update_holdouts, delete_holdout, fetch_holdout_experiments, fetch_holdouts_by_rule_key]
+- capability: Scheduled flag changes and change approvals
+  operations: [list_scheduled_changes, create_scheduled_change, update_scheduled_change, delete_scheduled_change, get_environment_approval_settings]
+- capability: Permissions and team management
+  operations: [get_teams_accounts__account_id__teams_get, create_team_accounts__account_id__teams_post, get_team_info_accounts__account_id__teams__team_id__get, update_team_info_accounts__account_id__teams__team_id__patch, delete_team_accounts__account_id__teams__team_id__delete]
+- capability: Collaborators and invitations
+  operations: [list_collaborators, create_collaborators, list_invitations]
+- capability: Custom fields
+  operations: [list_custom_fields, create_custom_field, update_custom_field, archive_custom_field, unarchive_custom_field]
+- capability: Datafile delivery
+  operations: [get_datafile]
+- capability: Change history and search
+  operations: [list_change_history, get_search_results, entities]
+
+coverage:
+  tools_named: 3
+  tools_described: 13
+  tools_bound_to_rest: 9
+  mcp_only: 4
+  rest_operations_total: 177
+  rest_operations_with_a_tool: 33
+  note: >-
+    rest_operations_total counts the four Experimentation-family specs only (v2 API 108,
+    Flags v1 55, Flags Scheduling 5, Permission Service 9). Coverage is an estimate because
+    the MCP tool list is gated.

@@ -1,0 +1,107 @@
+generated: '2026-08-13'
+method: searched
+status: published
+source: https://support.optimizely.com/hc/en-us/articles/45321466744205-Install-Optimizely-Experimentation-MCP-server
+docs:
+- https://support.optimizely.com/hc/en-us/articles/45320607594893-Optimizely-Experimentation-MCP-server-overview
+- https://support.optimizely.com/hc/en-us/articles/45321466744205-Install-Optimizely-Experimentation-MCP-server
+- https://support.optimizely.com/hc/en-us/articles/45740238633869-Install-Optimizely-Analytics-MCP-server
+- https://docs.developers.optimizely.com/content-management-system/v1.0.0-CMS-SaaS/docs/configure-mcp-server
+announcement: https://www.optimizely.com/insights/blog/experimentation-mcp-server/
+
+deployment:
+  mode: remote
+  endpoint: https://exp.mcp.opal.optimizely.com/mcp
+  auth: oauth
+  verified: probed
+  note: >-
+    Three separate hosted remote MCP servers, all on the shared Opal MCP platform and all
+    behind one OAuth authorization server. Optimizely publishes NO first-party stdio/npx
+    MCP package — the documented install for every client is the remote URL. The npm
+    packages that show up in a search (@jaxon-digital/optimizely-dxp-mcp,
+    @simonecoelhosfo/optimizely-mcp-server, first3things/optimizely-cms-mcp,
+    hybriden/optimizely-mcp) are third-party community servers, not Optimizely's.
+
+servers:
+- name: optimizely-exp
+  product: Optimizely Web Experimentation + Feature Experimentation
+  url: https://exp.mcp.opal.optimizely.com/mcp
+  transport: http
+  tool_prefix: exp_
+  install: claude mcp add --transport http optimizely-exp https://exp.mcp.opal.optimizely.com/mcp
+  probe: {method: 'POST tools/list', http_status: 401, body: '{"detail":"Authentication required."}', date: '2026-08-13'}
+- name: optimizely-analytics
+  product: Optimizely Analytics
+  url: https://analytics.mcp.opal.optimizely.com/mcp
+  transport: http
+  tool_prefix: oa_
+  probe: {method: 'POST tools/list', http_status: 401, body: '{"detail":"Authentication required."}', date: '2026-08-13'}
+- name: optimizely-cms
+  product: Optimizely CMS (SaaS) + Optimizely Graph
+  url: https://cms.mcp.opal.optimizely.com/mcp
+  transport: http
+  tool_prefix: [cms_, graph_]
+  probe: {method: 'POST tools/list', http_status: 401, body: '{"detail":"Authentication required."}', date: '2026-08-13'}
+
+authentication:
+  type: oauth2
+  protected_resource_metadata: https://exp.mcp.opal.optimizely.com/.well-known/oauth-protected-resource
+  authorization_server: https://auth.mcp.opal.optimizely.com
+  authorization_endpoint: https://auth.mcp.opal.optimizely.com/oauth/authorize
+  token_endpoint: https://auth.mcp.opal.optimizely.com/oauth/token
+  registration_endpoint: https://auth.mcp.opal.optimizely.com/oauth/register
+  revocation_endpoint: https://auth.mcp.opal.optimizely.com/oauth/revoke
+  jwks_uri: https://auth.mcp.opal.optimizely.com/.well-known/jwks.json
+  grant_types: [authorization_code, refresh_token]
+  pkce: [S256]
+  dynamic_client_registration: true
+  scopes: [openid, profile, email, offline_access, 'mcp:tools']
+  identity: Opti ID (the same account used for the Optimizely UI)
+  permission_model: >-
+    The server inherits the signed-in user's Optimizely permissions — per the provider,
+    "people can only do through MCP what they can already do in the UI."
+  files:
+  - well-known/optimizely-mcp-oauth-protected-resource.json
+  - well-known/optimizely-mcp-oauth-authorization-server.json
+
+tools:
+  schema_availability: auth-gated
+  note: >-
+    tools/list returns HTTP 401 anonymously on all three servers, so the real tool set with
+    inputSchema could not be captured. Optimizely publishes no tool inventory in its docs
+    or in any of its 12 product llms.txt files (grepped 2026-08-13 — zero MCP mentions).
+    Only the tool-name prefixes and the individual tools below are documented by name.
+  documented:
+  - name: exp_get_schemas
+    server: optimizely-exp
+    description: Retrieves detailed schemas for Optimizely entities relevant to Feature Experimentation.
+    source: https://support.optimizely.com/hc/en-us/articles/45320607594893-Optimizely-Experimentation-MCP-server-overview
+  - name: exp_program_reporting_top_experiments
+    server: optimizely-exp
+    description: Returns reporting data, most relevant for paused and concluded experiments.
+    source: https://support.optimizely.com/hc/en-us/articles/45321606386189-Optimizely-Experimentation-MCP-server-example-prompts
+  - name: oa_list_apps
+    server: optimizely-analytics
+    description: Retrieves the apps you can access and returns names and IDs.
+    source: https://support.optimizely.com/hc/en-us/articles/45740235952141-Optimizely-Analytics-MCP-server-quickstart
+  capability_groups:
+  - group: Query
+    server: optimizely-exp
+    description: List projects, flags, experiments and environments.
+  - group: Manage
+    server: optimizely-exp
+    description: Create and update flags, experiments and audiences (writes to live Optimizely data).
+  - group: Implement
+    server: optimizely-exp
+    description: Search Feature Experimentation SDK documentation.
+
+clients_documented: [Claude Desktop, Claude Code, Cursor, VS Code (GitHub Copilot), Windsurf, ChatGPT]
+availability: >-
+  Included for all Optimizely Experimentation customers; no separate sign-up or waitlist.
+  CMS (SaaS) and Analytics servers require the matching product entitlement and an Opal instance.
+x-evidence:
+- {url: 'https://exp.mcp.opal.optimizely.com/mcp', method: POST, http_status: 401, date: '2026-08-13'}
+- {url: 'https://analytics.mcp.opal.optimizely.com/mcp', method: POST, http_status: 401, date: '2026-08-13'}
+- {url: 'https://cms.mcp.opal.optimizely.com/mcp', method: POST, http_status: 401, date: '2026-08-13'}
+- {url: 'https://exp.mcp.opal.optimizely.com/.well-known/oauth-protected-resource', method: GET, http_status: 200, date: '2026-08-13'}
+- {url: 'https://auth.mcp.opal.optimizely.com/.well-known/oauth-authorization-server', method: GET, http_status: 200, date: '2026-08-13'}

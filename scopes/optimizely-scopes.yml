@@ -1,37 +1,76 @@
-generated: '2026-07-11'
+generated: '2026-08-13'
 method: searched
-source: openapi/optimizely-cmp-openapi.yml
+source: >-
+  openapi/_original/optimizely-web-experimentation-optimizely-api-openapi.json,
+  openapi/_original/optimizely-feature-experimentation-optimizely-feature-experimentation-api-openapi.json,
+  openapi/_original/optimizely-content-marketing-platform-optimizely-cmp-open-api-documentation-openapi.json,
+  well-known/optimizely-mcp-oauth-authorization-server.json
 docs: https://docs.developers.optimizely.com/web-experimentation/docs/registration
+description: >-
+  OAuth 2.0 scopes across the Optimizely estate. The headline finding is that the
+  Experimentation REST API — the largest and most consequential surface, 163 operations
+  across v2 and Flags v1 — has exactly ONE scope, `all`, meaning "full access to your
+  account". There is no read-only, no per-project and no per-entity scope. Granularity
+  exists, but it lives in the Permission Service and in role assignment, not in the token.
 schemes:
-- name: oauth2
-  source: openapi/optimizely-cmp-openapi.yml
+- name: OAuth2
+  product: Web Experimentation + Feature Experimentation
+  source: openapi/_original/optimizely-web-experimentation-optimizely-api-openapi.json
   flows:
-  - flow: clientCredentials
-    tokenUrl: https://api.cmp.optimizely.com/oauth/token
-  description: OAuth 2.0 authentication for the CMP API.
+  - flow: authorizationCode
+    authorizationUrl: https://app.optimizely.com/oauth2/authorize
+    tokenUrl: https://app.optimizely.com/oauth2/token
+  description: >-
+    Write applications that authenticate with the REST API via OAuth 2.0, or authenticate
+    with a personal access token.
+- name: OAuth2
+  product: Content Marketing Platform
+  source: openapi/_original/optimizely-content-marketing-platform-optimizely-cmp-open-api-documentation-openapi.json
+  flows:
+  - {flow: authorizationCode, tokenUrl: 'https://api.cmp.optimizely.com/oauth/token'}
+  - {flow: clientCredentials, tokenUrl: 'https://api.cmp.optimizely.com/oauth/token'}
+- name: Opal MCP OAuth
+  product: MCP (Experimentation, Analytics, CMS/Graph)
+  source: well-known/optimizely-mcp-oauth-authorization-server.json
+  issuer: https://auth.mcp.opal.optimizely.com
+  flows:
+  - {flow: authorizationCode, authorizationUrl: 'https://auth.mcp.opal.optimizely.com/oauth/authorize', tokenUrl: 'https://auth.mcp.opal.optimizely.com/oauth/token'}
+  - {flow: refreshToken}
 scopes:
 - scope: all
   description: >-
-    The only supported scope for the Optimizely Web Experimentation REST API
-    OAuth 2.0 flow. The generated token has permissions that match the user
-    role of the authorizing user.
-  sources:
-  - https://docs.developers.optimizely.com/web-experimentation/docs/registration
-- scope: openid
+    Full access to your account. The only scope the Experimentation REST API OAuth 2.0 flow
+    supports — the issued token carries every permission the authorizing user holds in the
+    Optimizely UI.
+  flows: [authorizationCode]
+  products: [Web Experimentation, Feature Experimentation]
+  sources: [openapi/_original/optimizely-web-experimentation-optimizely-api-openapi.json, openapi/_original/optimizely-feature-experimentation-optimizely-feature-experimentation-api-openapi.json]
+- {scope: openid, description: 'OIDC subject identity for the MCP authorization server.', flows: [authorizationCode], products: [MCP], sources: ['well-known/optimizely-mcp-oauth-authorization-server.json']}
+- {scope: profile, description: 'OIDC profile claims.', flows: [authorizationCode], products: [MCP], sources: ['well-known/optimizely-mcp-oauth-authorization-server.json']}
+- {scope: email, description: 'OIDC email claim.', flows: [authorizationCode], products: [MCP], sources: ['well-known/optimizely-mcp-oauth-authorization-server.json']}
+- {scope: offline_access, description: 'Issues a refresh token so the MCP session survives beyond the access-token lifetime.', flows: [authorizationCode], products: [MCP], sources: ['well-known/optimizely-mcp-oauth-authorization-server.json']}
+- scope: mcp:tools
   description: >-
-    OpenID Connect scope used in the Optimizely CMP authorization code flow to
-    identify the user.
-  sources:
-  - https://docs.developers.optimizely.com/content-marketing-platform/docs/authentication-1
-- scope: profile
-  description: >-
-    OpenID Connect scope used in the Optimizely CMP authorization code flow to
-    access user profile information.
-  sources:
-  - https://docs.developers.optimizely.com/content-marketing-platform/docs/authentication-1
-- scope: offline_access
-  description: >-
-    OpenID Connect scope used in the Optimizely CMP authorization code flow to
-    obtain refresh tokens for long-lived access.
-  sources:
-  - https://docs.developers.optimizely.com/content-marketing-platform/docs/authentication-1
+    Permission to invoke MCP tools on the Optimizely Opal MCP servers. Declared as the only
+    entry in scopes_supported on every /.well-known/oauth-protected-resource — exp,
+    analytics and cms all gate on this one scope.
+  flows: [authorizationCode]
+  products: [MCP]
+  sources: [well-known/optimizely-mcp-oauth-protected-resource.json]
+granularity:
+  token_level: none
+  note: >-
+    Fine-grained authorization is enforced server-side, not by scope. The Permission Service
+    (openapi/_original/optimizely-feature-experimentation-permission-service-openapi.json,
+    added 2025-03-18) exposes per-entity permissions for users and teams —
+    get_user_permissions_for_project_entity_type, get_team_permissions_for_project_entity_type,
+    get_entity_permissions, change_permissions — and the MCP servers inherit the signed-in
+    user's UI permissions. An agent cannot narrow its own blast radius by requesting a
+    smaller scope; it can only be given a user account with fewer permissions.
+non_oauth_products:
+- {product: Optimizely Data Platform, model: 'x-api-key header, region-scoped', scopes: none}
+- {product: Configured Commerce, model: 'access_token query parameter', scopes: none}
+- {product: Campaign, model: Authorization apiKey header, scopes: none}
+- {product: Content Recommendations, model: key query parameter, scopes: none}
+- {product: Optimizely Graph, model: 'single-key / HMAC / Basic / Bearer', scopes: none}
+scope_count: 6

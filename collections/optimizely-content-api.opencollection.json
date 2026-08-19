@@ -1,0 +1,290 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Optimizely Campaign REST Assets Content API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Content",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List content",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.campaign.episerver.net/rest/content",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return"
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of items to skip for pagination"
+              }
+            ]
+          },
+          "docs": "Returns a list of content items in the CMP content repository."
+        },
+        {
+          "info": {
+            "name": "Get a content item",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.campaign.episerver.net/rest/content/:contentId",
+            "params": [
+              {
+                "name": "contentId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the content item"
+              }
+            ]
+          },
+          "docs": "Retrieves the details of a specific content item."
+        },
+        {
+          "info": {
+            "name": "Get content children",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.campaign.episerver.net/rest/content/:contentId/children",
+            "params": [
+              {
+                "name": "contentId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier or content reference for the content item"
+              },
+              {
+                "name": "language",
+                "value": "",
+                "type": "query",
+                "description": "The language code for content retrieval"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated list of content references to expand inline"
+              },
+              {
+                "name": "top",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return"
+              },
+              {
+                "name": "skip",
+                "value": "",
+                "type": "query",
+                "description": "Number of items to skip for pagination"
+              }
+            ]
+          },
+          "docs": "Retrieves the child content items of a specific content item. Useful for navigating content hierarchies such as page trees."
+        },
+        {
+          "info": {
+            "name": "Get content ancestors",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.campaign.episerver.net/rest/content/:contentId/ancestors",
+            "params": [
+              {
+                "name": "contentId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier or content reference for the content item"
+              },
+              {
+                "name": "language",
+                "value": "",
+                "type": "query",
+                "description": "The language code for content retrieval"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated list of content references to expand inline"
+              }
+            ]
+          },
+          "docs": "Retrieves the ancestor content items of a specific content item, representing the path from the root to the content item."
+        },
+        {
+          "info": {
+            "name": "Create a content item",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.campaign.episerver.net/rest/",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new content item of the specified type under a parent content node. Can also be used to create a language branch for existing content. For media content, use a multipart/form-data request with a content part (JSON) and a file part (binary)."
+        },
+        {
+          "info": {
+            "name": "Get content by GUID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.campaign.episerver.net/rest/:contentGuid",
+            "params": [
+              {
+                "name": "contentGuid",
+                "value": "",
+                "type": "path",
+                "description": "The GUID of the content item"
+              }
+            ]
+          },
+          "docs": "Retrieves the primary draft or latest published version of a content item by its GUID."
+        },
+        {
+          "info": {
+            "name": "Update content by GUID",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.campaign.episerver.net/rest/:contentGuid",
+            "params": [
+              {
+                "name": "contentGuid",
+                "value": "",
+                "type": "path",
+                "description": "The GUID of the content item"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates a content item identified by its GUID. If the content does not exist, a new content item is created."
+        },
+        {
+          "info": {
+            "name": "Partially update content by GUID",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.campaign.episerver.net/rest/:contentGuid",
+            "params": [
+              {
+                "name": "contentGuid",
+                "value": "",
+                "type": "path",
+                "description": "The GUID of the content item"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Partially updates a content item identified by its GUID, sending only the fields that need updating."
+        },
+        {
+          "info": {
+            "name": "Delete content by GUID",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.campaign.episerver.net/rest/:contentGuid",
+            "params": [
+              {
+                "name": "contentGuid",
+                "value": "",
+                "type": "path",
+                "description": "The GUID of the content item"
+              },
+              {
+                "name": "permanent",
+                "value": "",
+                "type": "query",
+                "description": "Whether to permanently delete instead of moving to trash"
+              }
+            ]
+          },
+          "docs": "Moves the content item identified by its GUID to the trash bin or permanently deletes it."
+        },
+        {
+          "info": {
+            "name": "Move content",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.campaign.episerver.net/rest/:contentGuid/move",
+            "params": [
+              {
+                "name": "contentGuid",
+                "value": "",
+                "type": "path",
+                "description": "The GUID of the content item"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Moves a content item to become a child of the specified target content node."
+        },
+        {
+          "info": {
+            "name": "Get content by reference",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.campaign.episerver.net/rest/:contentReference",
+            "params": [
+              {
+                "name": "contentReference",
+                "value": "",
+                "type": "path",
+                "description": "The numeric content reference identifier"
+              }
+            ]
+          },
+          "docs": "Retrieves a content item by its numeric content reference."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,131 @@
+generated: '2026-08-13'
+method: searched
+source: live probes of every Optimizely website, docs, API and MCP host
+description: >-
+  RFC 8615 well-known probe across every host named in apis.yml (website, developer
+  portal, API base URLs) and every OpenAPI servers[] host, plus the three Optimizely
+  remote MCP hosts discovered in this pass. Optimizely serves a real RFC 9727
+  /.well-known/api-catalog linkset from its developer documentation host, and RFC 9728
+  OAuth protected-resource + RFC 8414 authorization-server metadata from its MCP hosts.
+  It does NOT serve security.txt on any host.
+notes:
+  - >-
+    docs.developers.optimizely.com is a ReadMe-hosted single-page app that answers HTTP
+    200 with the same ~1.1MB HTML shell for most unknown /.well-known/* paths. Those 200s
+    are recorded below as html-shell and treated as MISSES, not documents. Only
+    /.well-known/api-catalog returned a real application/linkset+json body.
+  - >-
+    No agent card was found on any host. /.well-known/agent-card.json and
+    /.well-known/agent.json were probed on every host below; every result was a 404 or an
+    HTML shell, so no a2a/ artifact was written.
+documents:
+- host: https://docs.developers.optimizely.com
+  path: /.well-known/api-catalog
+  status: 200
+  content_type: application/linkset+json
+  file: optimizely-api-catalog.json
+  document: true
+  note: >-
+    RFC 9727 API catalog. A two-level linkset — 14 product anchors, each pointing at its
+    own nested /.well-known/api-catalog, which in turn names the product's published
+    OpenAPI documents. This is what led to the 28 real OpenAPI specs now in
+    openapi/_original/.
+- host: https://exp.mcp.opal.optimizely.com
+  path: /.well-known/oauth-protected-resource
+  status: 200
+  content_type: application/json
+  file: optimizely-mcp-oauth-protected-resource.json
+  document: true
+  note: >-
+    RFC 9728. Declares resource https://exp.mcp.opal.optimizely.com, authorization server
+    https://auth.mcp.opal.optimizely.com, scopes_supported [mcp:tools]. The
+    analytics.mcp.opal.optimizely.com and cms.mcp.opal.optimizely.com hosts each return the
+    same shape for their own resource, pointing at the same authorization server.
+- host: https://auth.mcp.opal.optimizely.com
+  path: /.well-known/oauth-authorization-server
+  status: 200
+  content_type: application/json
+  file: optimizely-mcp-oauth-authorization-server.json
+  document: true
+  note: >-
+    RFC 8414. Authorization code + refresh token, PKCE S256, dynamic client registration
+    at /oauth/register, scopes openid profile email offline_access mcp:tools.
+- {host: 'https://www.optimizely.com', path: /.well-known/security.txt, status: 404, document: false}
+- {host: 'https://www.optimizely.com', path: /.well-known/openid-configuration, status: 404, document: false}
+- {host: 'https://www.optimizely.com', path: /.well-known/oauth-authorization-server, status: 404, document: false}
+- {host: 'https://www.optimizely.com', path: /.well-known/api-catalog, status: 404, document: false}
+- {host: 'https://www.optimizely.com', path: /.well-known/ai-plugin.json, status: 404, document: false}
+- {host: 'https://www.optimizely.com', path: /.well-known/agent-card.json, status: 404, document: false}
+- {host: 'https://www.optimizely.com', path: /.well-known/agent.json, status: 404, document: false}
+- {host: 'https://api.optimizely.com', path: /.well-known/security.txt, status: 404, document: false}
+- {host: 'https://api.optimizely.com', path: /.well-known/openid-configuration, status: 404, document: false}
+- {host: 'https://api.optimizely.com', path: /.well-known/oauth-authorization-server, status: 404, document: false}
+- {host: 'https://api.optimizely.com', path: /.well-known/api-catalog, status: 404, document: false}
+- {host: 'https://api.optimizely.com', path: /.well-known/ai-plugin.json, status: 404, document: false}
+- {host: 'https://api.optimizely.com', path: /.well-known/agent-card.json, status: 404, document: false}
+- {host: 'https://api.optimizely.com', path: /.well-known/agent.json, status: 404, document: false}
+- host: https://docs.developers.optimizely.com
+  path: /.well-known/security.txt
+  status: 200
+  document: false
+  note: html-shell (ReadMe SPA catch-all) — not a security.txt
+- {host: 'https://docs.developers.optimizely.com', path: /.well-known/openid-configuration, status: 404, document: false}
+- {host: 'https://docs.developers.optimizely.com', path: /.well-known/oauth-authorization-server, status: 404, document: false}
+- host: https://docs.developers.optimizely.com
+  path: /.well-known/ai-plugin.json
+  status: 200
+  document: false
+  note: html-shell (ReadMe SPA catch-all)
+- host: https://docs.developers.optimizely.com
+  path: /.well-known/agent-card.json
+  status: 200
+  document: false
+  note: html-shell (ReadMe SPA catch-all) — NOT an agent card
+- host: https://docs.developers.optimizely.com
+  path: /.well-known/agent.json
+  status: 200
+  document: false
+  note: html-shell (ReadMe SPA catch-all) — NOT an agent card
+- {host: 'https://api.campaign.episerver.net', path: /.well-known/security.txt, status: 403, document: false}
+- {host: 'https://api.campaign.episerver.net', path: /.well-known/openid-configuration, status: 403, document: false}
+- {host: 'https://api.campaign.episerver.net', path: /.well-known/oauth-authorization-server, status: 403, document: false}
+- {host: 'https://api.campaign.episerver.net', path: /.well-known/api-catalog, status: 403, document: false}
+- {host: 'https://api.campaign.episerver.net', path: /.well-known/agent-card.json, status: 403, document: false}
+- {host: 'https://api.campaign.episerver.net', path: /.well-known/agent.json, status: 403, document: false}
+- {host: 'https://exp.mcp.opal.optimizely.com', path: /.well-known/openid-configuration, status: 404, document: false}
+- {host: 'https://exp.mcp.opal.optimizely.com', path: /.well-known/agent-card.json, status: 404, document: false}
+- {host: 'https://exp.mcp.opal.optimizely.com', path: /.well-known/agent.json, status: 404, document: false}
+- {host: 'https://exp.mcp.opal.optimizely.com', path: /.well-known/security.txt, status: 404, document: false}
+- host: https://analytics.mcp.opal.optimizely.com
+  path: /.well-known/oauth-protected-resource
+  status: 200
+  document: true
+  note: same shape as the exp host; resource https://analytics.mcp.opal.optimizely.com
+- host: https://analytics.mcp.opal.optimizely.com
+  path: /.well-known/oauth-authorization-server
+  status: 200
+  document: true
+  note: identical to auth.mcp.opal.optimizely.com metadata
+- {host: 'https://analytics.mcp.opal.optimizely.com', path: /.well-known/agent-card.json, status: 404, document: false}
+- {host: 'https://analytics.mcp.opal.optimizely.com', path: /.well-known/agent.json, status: 404, document: false}
+- {host: 'https://analytics.mcp.opal.optimizely.com', path: /.well-known/security.txt, status: 404, document: false}
+- host: https://cms.mcp.opal.optimizely.com
+  path: /.well-known/oauth-protected-resource
+  status: 200
+  document: true
+  note: same shape as the exp host; resource https://cms.mcp.opal.optimizely.com
+- host: https://cms.mcp.opal.optimizely.com
+  path: /.well-known/oauth-authorization-server
+  status: 200
+  document: true
+  note: identical to auth.mcp.opal.optimizely.com metadata
+- {host: 'https://cms.mcp.opal.optimizely.com', path: /.well-known/agent-card.json, status: 404, document: false}
+- {host: 'https://cms.mcp.opal.optimizely.com', path: /.well-known/agent.json, status: 404, document: false}
+- {host: 'https://cms.mcp.opal.optimizely.com', path: /.well-known/security.txt, status: 404, document: false}
+summary:
+  paths_probed: 47
+  real_documents: 7
+  security_txt: false
+  agent_card: false
+  api_catalog: true
+  oauth_metadata: true

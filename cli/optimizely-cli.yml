@@ -1,0 +1,74 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://github.com/optimizely/ocp-skills/tree/main/skills/ocp-app-development/references/cli-commands
+  and https://www.npmjs.com/package/@optimizely/ocp-cli-v2
+description: >-
+  Optimizely ships two first-party CLIs, and neither one drives the Experimentation REST
+  API. The OCP CLI (`ocp`) is the build/deploy toolchain for Optimizely Connect Platform
+  apps; the CMS CLI (`@optimizely/cms-cli`) generates and pushes content types for CMS
+  (SaaS). There is NO CLI for creating flags, running experiments, or reading results —
+  that surface is REST + MCP only.
+clis:
+- name: ocp
+  product: Optimizely Connect Platform
+  package: '@optimizely/ocp-cli-v2'
+  version: 2.0.11
+  published: '2026-07-28'
+  install: npm install -g @optimizely/ocp-cli-v2
+  registry_url: https://www.npmjs.com/package/@optimizely/ocp-cli-v2
+  credentials: '~/.ocp/credentials.json containing {"apiKey": "<your-key>"}'
+  superseded:
+    package: '@optimizely/ocp-cli'
+    version: 1.4.3
+    published: '2026-04-03'
+    note: >-
+      Optimizely's own skill file is explicit that @optimizely/ocp-cli is "the outdated v1"
+      and that the -v2 package is the current one. Both are still published; the v1 package
+      name is the one a naive search finds first.
+  command_groups:
+  - group: app
+    commands: [ocp app init, ocp app register, ocp app prepare, ocp app validate, ocp app logs, ocp app get-log-level, ocp app set-log-level]
+    purpose: Scaffold, register, build, validate and observe an app.
+  - group: add
+    commands: [ocp add function, ocp add job, ocp add source, ocp add destination]
+    purpose: Scaffold a component into an existing app.
+  - group: directory
+    commands: [ocp directory publish, ocp directory unpublish, ocp directory list, ocp directory install, ocp directory uninstall]
+    purpose: Manage the app's presence in the OCP App Directory and per-account installations.
+  - group: jobs
+    commands: [ocp jobs list, ocp jobs trigger, ocp jobs terminate, ocp jobs runtime]
+    purpose: Operate deployed jobs.
+  - group: dev
+    commands: [ocp dev]
+    purpose: >-
+      Local dev server (ocp-local-env). Builds and runs the app, watches for changes, opens
+      http://localhost:3000 with a browser UI to exercise functions, jobs, lifecycle,
+      settings forms, data sync sources/destinations and Opal tools before deploying.
+      Flags --port, --no-open, --path, --config.
+  key_flows:
+  - 'Scaffold and register: ocp app init -> ocp app register -> ocp add function|job|source|destination'
+  - 'Test locally: ocp dev (browser UI at localhost:3000, rebuilds on save)'
+  - 'Ship: ocp app validate -> ocp app prepare -> ocp directory publish -> ocp directory install'
+  - 'Operate: ocp app logs, ocp app set-log-level, ocp jobs trigger, ocp jobs terminate'
+  versioning_note: >-
+    Publishing a new version auto-upgrades existing installations within the same major
+    version; a major bump (1.x to 2.0) requires a manual per-account upgrade via the CLI.
+- name: cms-cli
+  product: Content Management System (SaaS)
+  package: '@optimizely/cms-cli'
+  version: 2.2.0
+  published: '2026-07-23'
+  install: npm install -D @optimizely/cms-cli
+  registry_url: https://www.npmjs.com/package/@optimizely/cms-cli
+  repository: https://github.com/episerver/content-js-sdk
+  purpose: Content-type definition and push tooling for the CMS SaaS content model.
+not_available:
+- surface: Experimentation (Web + Feature)
+  note: >-
+    No first-party CLI. Flags, experiments, audiences and results are reachable only via the
+    REST APIs (api.optimizely.com/v2, api.optimizely.com/flags/v1) or the remote MCP server.
+- surface: Optimizely Data Platform
+  note: No first-party CLI; @zaiusinc/node-sdk is a library, not a command-line tool.
+third_party:
+- {name: '@remkoj/optimizely-cms-cli', version: 5.4.0, official: false, note: Community CMS CLI, not published by Optimizely.}

@@ -4,29 +4,100 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Optimizely
 providerId: optimizely
 created: '2026-05-04'
-modified: '2026-05-04'
+generated: '2026-08-13'
+method: searched
+modified: '2026-08-13'
 reconciled: true
 tags:
   - Rate Limiting
   - Experimentation
-description: Optimizely Web/Feature Experimentation REST API rate limits per project.
+  - Customer Data
+description: >-
+  Published API rate limits across the Optimizely estate. Optimizely documents limits in
+  prose on two product docs pages (ODP and CMP) and nowhere else — and it returns NO
+  rate-limit response headers anywhere: not one of the 28 harvested OpenAPI documents
+  declares X-RateLimit-*, RateLimit-* or Retry-After, and only 2 of 1,606 documented
+  error responses declare a 429 at all. An agent therefore cannot read remaining quota
+  from an Optimizely response and must pace client-side against the numbers below.
 sources:
-  - https://www.optimizely.com/plans/
-  - https://docs.developers.optimizely.com/web-experimentation/reference/web-experimentation-api
+  - https://docs.developers.optimizely.com/optimizely-data-platform/reference/rate-limits
+  - https://docs.developers.optimizely.com/content-marketing-platform/docs/rate-limits-1
+  - https://docs.developers.optimizely.com/platform-optimizely/docs/error-handling-and-rate-limits
 headers: {}
+headers_note: >-
+  No rate-limit signalling headers are published or declared in any spec. Verified by
+  grepping all 28 documents in openapi/_original/ on 2026-08-13.
 responseCodes:
   throttled: 429
 limits:
-  - name: REST API (default)
-    scope: project
-    metric: requests_per_minute
-    limit: 100
-    timeFrame: minute
-  - name: Datafile fetch
-    scope: project
-    metric: requests_per_minute
-    limit: high (CDN-backed)
-  - name: Event ingest
-    scope: project
-    metric: events_per_second
-    limit: scales
+  - name: ODP — Events API
+    api: Optimizely Data Platform v3
+    scope: account
+    metric: requests_per_second
+    value: null
+    unlimited: true
+    note: Documented as "No limit". Bulk loads must still be batched (500 objects per request).
+    source: https://docs.developers.optimizely.com/optimizely-data-platform/reference/rate-limits
+  - name: ODP — Objects API
+    api: Optimizely Data Platform v3
+    scope: account
+    metric: requests_per_second
+    value: null
+    unlimited: true
+    source: https://docs.developers.optimizely.com/optimizely-data-platform/reference/rate-limits
+  - name: ODP — Lists API
+    api: Optimizely Data Platform v3
+    scope: account
+    metric: requests_per_second
+    value: 10
+    source: https://docs.developers.optimizely.com/optimizely-data-platform/reference/rate-limits
+  - name: ODP — Profiles API
+    api: Optimizely Data Platform v3
+    scope: account
+    metric: requests_per_second
+    value: 10
+    note: >-
+      Combined with 500-object batching this is the documented ceiling of 5,000 customer
+      updates per second.
+    source: https://docs.developers.optimizely.com/optimizely-data-platform/reference/rate-limits
+  - name: ODP — Recommendations API
+    api: Optimizely Data Platform v3
+    scope: account
+    metric: requests_per_second
+    value: 100
+    source: https://docs.developers.optimizely.com/optimizely-data-platform/reference/rate-limits
+  - name: ODP — On-Site GraphQL
+    api: Optimizely Data Platform v3
+    scope: account
+    metric: requests_per_second
+    value: 500
+    source: https://docs.developers.optimizely.com/optimizely-data-platform/reference/rate-limits
+  - name: CMP Open REST API
+    api: Content Marketing Platform v3
+    scope: organization
+    metric: requests_per_second
+    value: 10
+    source: https://docs.developers.optimizely.com/content-marketing-platform/docs/rate-limits-1
+  - name: CMP monthly request quota
+    api: Content Marketing Platform v3
+    scope: organization
+    metric: requests_per_month
+    value: 200000
+    note: Optimizely Support can raise or reset the monthly quota.
+    source: https://docs.developers.optimizely.com/content-marketing-platform/docs/rate-limits-1
+undocumented:
+  - api: Experimentation REST API v2 (api.optimizely.com/v2)
+    note: >-
+      No rate-limit page is published for the Web/Feature Experimentation REST API on the
+      developer portal as of 2026-08-13. A previous API Evangelist sweep recorded "100
+      requests/minute per project" sourced from optimizely.com/plans/; that number could NOT
+      be re-verified against any current provider page in this pass and is therefore recorded
+      here as unverified rather than as a published limit.
+  - api: Feature Experimentation Flags v1 (api.optimizely.com/flags/v1)
+  - api: Optimizely Campaign REST API
+  - api: Configured Commerce Admin / Storefront
+  - api: Optimizely Graph
+    note: >-
+      The Graph docs page "Error handling and rate limits" describes that rate limits exist
+      and restrict query volume or complexity, but publishes no numbers.
+limit_count: 8

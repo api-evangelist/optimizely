@@ -1,0 +1,118 @@
+generated: '2026-08-13'
+method: derived
+source: openapi/_original/ (28 provider-published OpenAPI documents harvested 2026-08-13)
+description: >-
+  Optimizely does not have one error contract — it has three, and an agent must know which
+  API it is calling to parse a failure. Feature Experimentation Flags v1 returns RFC 9457
+  (RFC 7807) `application/problem+json` with a documented ProblemDetail schema. The
+  Experimentation REST API v2 returns a proprietary `application/json` envelope
+  (code/message/messages/uuid). Optimizely Graph returns the GraphQL `errors[]` array with
+  partial data and an HTTP 200 in some cases. Campaign returns a vendor media type
+  (`application/vnd.optivo.broadmail.v1+json`).
+formats:
+- id: rfc9457
+  spec: openapi/_original/optimizely-feature-experimentation-optimizely-feature-experimentation-api-openapi.json
+  media_type: application/problem+json
+  schema: ProblemDetail
+  fields: [type, title, status, detail, uuid]
+  required: [type, title, status, detail]
+  note: >-
+    `type` contains `about:blank` when unspecified — Optimizely does not mint per-problem
+    type URIs, so `title` + `status` are the only discriminators. `uuid` is an error
+    reference for Optimizely support and is the value to quote in a ticket.
+- id: optimizely-error-envelope
+  spec: openapi/_original/optimizely-web-experimentation-optimizely-api-openapi.json
+  media_type: application/json
+  schema: Error
+  fields: [code, message, messages, uuid]
+  note: >-
+    The v2 API's own envelope. `code` is a string slug (e.g. `not_found`), `messages` is a
+    map of field-level validation errors, `uuid` is the support reference. This is the same
+    body the api.optimizely.com edge returns for an unrouted path — a live GET of
+    https://api.optimizely.com/.well-known/security.txt returned
+    {"code":"not_found","message":"Nothing matches the given URI","uuid":"..."} with HTTP 404.
+- id: graphql-errors
+  spec: https://docs.developers.optimizely.com/platform-optimizely/docs/error-handling-and-rate-limits
+  media_type: application/json
+  fields: ['errors[].message', 'errors[].locations', 'errors[].path', 'errors[].extensions.code']
+  note: >-
+    Optimizely Graph returns partial `data` alongside `errors[]`. Syntax and validation
+    errors are HTTP 400 with extensions.code such as GRAPHQL_VALIDATION_FAILED. A 200 with
+    a non-empty `errors[]` is a failure — do not treat HTTP 200 as success on this surface.
+- id: vendor-media-type
+  spec: openapi/_original/optimizely-campaign-optimizely-campaign-rest-api-openapi.json
+  media_type: application/vnd.optivo.broadmail.v1+json
+  note: >-
+    Optimizely Campaign (formerly Episerver Campaign / optivo broadmail) uses a versioned
+    vendor media type on 187 responses, including errors.
+problems:
+- status: 400
+  format: rfc9457
+  title: Malformed requests and invalid parameter names and types
+  response: BadRequestResponse
+  example: {status: 400, title: 'Key example_entity already exists"', detail: Another entity already exists with this same key, uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2}
+  remediation: Fix the request body or query parameters; on a duplicate key, read the existing entity instead of retrying the create.
+  source_spec: openapi/_original/optimizely-feature-experimentation-optimizely-feature-experimentation-api-openapi.json
+- status: 401
+  format: rfc9457
+  title: Invalid credentials
+  response: UnauthorizedResponse
+  remediation: Refresh the OAuth token or reissue the personal access token; do not retry with the same credential.
+- status: 403
+  format: rfc9457
+  title: Forbidden
+  response: ForbiddenResponse
+  example: {status: 403, title: Forbidden, detail: Permission denied}
+  remediation: >-
+    The token is valid but the user lacks the entity permission. The v2 auth docs are
+    explicit that a 403 also means the user revoked application access or the token expired —
+    re-run the authorization flow rather than assuming a permission problem.
+- status: 404
+  format: rfc9457
+  title: Not found. No content
+  response: NotFoundResponse
+  remediation: Verify project_id, flag_key and environment_key; keys are environment-scoped.
+- status: 409
+  format: rfc9457
+  title: Conflicting resource state with requested action
+  response: ConflictResponse
+  remediation: Re-read the entity and reapply the change; this API has no idempotency key, so do not blind-retry.
+- status: 422
+  format: rfc9457
+  title: Missing required properties or unknown values for query parameters
+  response: UnprocessableEntityResponse
+  remediation: Supply required properties; unknown enum values are rejected rather than ignored.
+- status: 400
+  format: optimizely-error-envelope
+  title: Invalid request body content
+  source_spec: openapi/_original/optimizely-web-experimentation-optimizely-api-openapi.json
+  remediation: Read `messages` for the per-field validation detail.
+- status: 429
+  format: varies
+  title: Too Many Requests
+  note: >-
+    Only 2 of the 1,596 documented 4xx/5xx responses across all 28 specs declare a 429, and
+    no spec declares X-RateLimit-* or Retry-After response headers. Published limits live in
+    prose (see rate-limits/optimizely-rate-limits.yml), not in the contracts.
+- status: 500
+  format: varies
+  title: Internal Server Error
+  remediation: Retry with backoff; quote the `uuid` from the error body to Optimizely support.
+status_code_census:
+  '400': 388
+  '401': 322
+  '403': 343
+  '404': 364
+  '405': 7
+  '406': 6
+  '409': 72
+  '410': 3
+  '422': 80
+  '429': 2
+  '500': 19
+  total: 1606
+  note: Counted across every operation in all 28 harvested OpenAPI documents.
+cross_reference:
+  conventions: conventions/optimizely-conventions.yml
+  authentication: authentication/optimizely-authentication.yml
+  rate_limits: rate-limits/optimizely-rate-limits.yml

@@ -1,0 +1,77 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://docs.developers.optimizely.com/configured-commerce/docs/b2b-commerce-cloud-infrastructure-deployment,
+  https://github.com/optimizely/ocp-skills/blob/main/skills/ocp-local-testing/SKILL.md,
+  https://docs.developers.optimizely.com/feature-experimentation/ and
+  https://docs.developers.optimizely.com/performance-edge/ testing pages
+description: >-
+  Optimizely does NOT publish a test/live key-prefix split, magic test values, test clocks
+  or fixture triggers — there is no Stripe-style sandbox anywhere in the estate. What it
+  does provide is environment separation inside the product (per-project environments with
+  their own datafiles and rulesets), a provisioned Sandbox hosting environment for
+  Configured Commerce, and a genuine local dev server for Optimizely Connect Platform apps.
+  Nothing below is invented; where a facility does not exist it is recorded as absent.
+test_live_separation:
+  key_prefixes: none
+  note: >-
+    Optimizely personal access tokens and ODP API keys carry no test/live prefix. There is
+    no way to tell from a credential whether it targets production data. This is a real gap
+    for agent safety: an agent holding a token cannot infer blast radius from the token
+    itself.
+environments:
+  model: named environments per project
+  api:
+    experimentation_v2: [list_environments, create_environment, get_environment, update_environment, delete_environment, get_datafile]
+    flags_v1: [list_environments]
+  detail: >-
+    Feature Experimentation projects carry named environments (commonly `development` and
+    `production`), each with its own datafile, SDK key and per-environment ruleset. A flag
+    key exists independently in every environment, so enabling a ruleset is an
+    environment-scoped action. This is the primary safe-testing mechanism — run against a
+    non-production environment key.
+  caution: >-
+    `environment_key` is a path parameter, not a mode flag. There is no server-side guard
+    that prevents an agent from writing to `production`.
+configured_commerce:
+  provisioned_environments:
+  - {name: Sandbox, purpose: Customer UAT testing, provisioned_by: Optimizely}
+  - {name: Production, purpose: Live commerce, provisioned_by: Optimizely}
+  host_patterns:
+  - {infrastructure: v1, pattern: 'project.insitesandbox.com', note: non-containerized, legacy}
+  - {infrastructure: v2-3, pattern: 'project.commerce.insitesandbox.com', note: containerized, current}
+  note: >-
+    Development and test environments beyond the single provisioned Sandbox are the
+    implementation team's responsibility; additional environments are a paid add-on. This is
+    also why the published Configured Commerce OpenAPI documents carry
+    servers[] = https://dogfood.commerce.insitesandbox.com — Optimizely's own sandbox tenant.
+  source: https://docs.developers.optimizely.com/configured-commerce/docs/b2b-commerce-cloud-infrastructure-deployment
+local_development:
+  tool: ocp dev (ocp-local-env)
+  product: Optimizely Connect Platform
+  url: http://localhost:3000
+  capability: >-
+    Builds and runs an OCP app locally, watches for changes and provides a browser UI to
+    exercise every component — functions, jobs, lifecycle hooks, settings forms, data sync
+    sources and destinations, and Opal tools — before deploying.
+  flags: ['--port <n>', '--no-open', '--path <dir>', '--config <file>']
+  source: https://github.com/optimizely/ocp-skills/blob/main/skills/ocp-local-testing/SKILL.md
+self_hosted:
+  tool: Optimizely Agent
+  repository: https://github.com/optimizely/agent
+  version: v4.5.0
+  note: >-
+    The open-source Agent microservice can be run locally against a real SDK key, which is
+    the closest thing to an offline test harness for Feature Experimentation decisioning.
+    Its contract is openapi/_original/optimizely-feature-experimentation-optimizely-agent-api-openapi.json.
+preview_and_qa:
+- {product: Web Experimentation, facility: preview/QA mode for previewing each variation before starting an experiment}
+- {product: Performance Edge, facility: 'test and troubleshoot + preview each variation', docs: 'https://docs.developers.optimizely.com/performance-edge/docs/qa-experiment'}
+- {product: Campaign, facility: 'test dispatch and test message template (testmessagetemplate operation) — send a test mailing before the real send'}
+- {product: 'CMS (SaaS)', facility: preview rendering for blocks}
+absent:
+- test card numbers or magic test identifiers
+- test clocks or time simulation
+- fixture or webhook-trigger tooling
+- a hosted public sandbox account for the Experimentation APIs
+- a mock server published alongside the OpenAPI

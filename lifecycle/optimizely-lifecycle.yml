@@ -1,0 +1,80 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://status.optimizely.com/, https://docs.developers.optimizely.com/ (per-product
+  changelogs and deprecation notices), openapi/_original/ deprecated operations
+description: >-
+  Versioning, deprecation and operational-transparency posture across the Optimizely API
+  estate. Optimizely runs a public Statuspage and marks deprecated operations in its
+  OpenAPI, but publishes no written API deprecation policy, no sunset window, and does not
+  emit RFC 8594 Deprecation/Sunset headers.
+
+versioning:
+  scheme: uri-path
+  detail: conventions/optimizely-conventions.yml
+  current:
+  - {api: 'Experimentation REST API', version: v2}
+  - {api: 'Feature Experimentation Flags', version: v1, spec_version: 0.3.7}
+  - {api: 'Optimizely Data Platform', version: v3}
+  - {api: 'Content Marketing Platform', version: 'v3 (spec V3)'}
+  - {api: 'Optimizely Graph', version: '3.24.0 (prod) / 3.23.1'}
+  - {api: 'Configured Commerce Storefront', version: 'v1 + v2 in parallel'}
+  - {api: 'CMS Content Delivery', version: v3.0}
+  - {api: Campaign, version: '1 (media type vnd.optivo.broadmail.v1+json)'}
+  - {api: 'Optimizely Agent', version: 0.12.0}
+
+status_page:
+  url: https://status.optimizely.com/
+  provider: Atlassian Statuspage
+  machine_readable: https://status.optimizely.com/api/v2/status.json
+  page_id: v5qcc909t7qh
+  name: Optimizely Service
+  probed: {url: 'https://status.optimizely.com/api/v2/status.json', http_status: 200, date: '2026-08-13'}
+  note: >-
+    Statuspage v2 API is fully available — /api/v2/status.json, /summary.json,
+    /components.json, /incidents.json — so an agent can read Optimizely's operational state
+    without scraping.
+
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  note: >-
+    Optimizely publishes no API deprecation policy and no sunset window. Deprecations are
+    announced only as changelog entries and as `deprecated: true` flags inside the OpenAPI
+    documents. The one breaking removal found in the changelog window (the `/metrics`
+    endpoints removed from the Optimizely API, 2025-05-29) was announced in the changelog
+    with a pointer to the replacement Metrics Hub Service, but no deprecation period was
+    stated.
+  mechanism: [openapi deprecated flag, changelog entry]
+
+deprecated_operations:
+- {spec: 'openapi/_original/optimizely-configured-commerce-storefront-api-v1-openapi.json', operationId: ProductsV1_GetAutoCompleteAsync, path: /api/v1/autocomplete/products, method: GET}
+- {spec: 'openapi/_original/optimizely-configured-commerce-storefront-api-v1-openapi.json', operationId: QuotesV1_PostMessageAsync, path: '/api/v1/quotes/{quoteId}/messages', method: POST}
+- {spec: 'openapi/_original/optimizely-data-platform-consent-openapi.json', operationId: consent-legacy, path: /lists/subscriptions, method: POST}
+- {spec: 'openapi/_original/optimizely-platform-optimizely-swagger-openapi.json', operationId: get-BestBetCollectionHandler, path: /api/bestbets/collection, method: GET}
+- {spec: 'openapi/_original/optimizely-platform-optimizely-swagger-openapi.json', operationId: create-BestBetCollectionHandler, path: /api/bestbets/collection, method: POST}
+- {spec: 'openapi/_original/optimizely-platform-optimizely-swagger-openapi.json', operationId: update-BestBetCollectionHandler, path: '/api/bestbets/collection/{id}', method: PUT}
+- {spec: 'openapi/_original/optimizely-platform-optimizely-swagger-openapi.json', operationId: delete-BestBetCollectionHandler, path: '/api/bestbets/collection/{id}', method: DELETE}
+- {spec: 'openapi/_original/optimizely-platform-optimizely-swagger-openapi.json', operationId: post-ContentV2TypeHandler, path: /api/content/v2/types, method: POST}
+deprecated_operation_count: 13
+deprecated_operation_note: >-
+  13 flagged operations, but only 8 distinct — the Optimizely Graph deprecations appear in
+  both harvested Graph documents (optimizely-graph-api 3.23.1 and swagger 3.24.0).
+
+removed:
+- {date: '2025-05-29', api: 'Optimizely API', what: '/metrics endpoints', replacement: 'Metrics Hub Service API /metrics endpoints', announcement: 'https://docs.developers.optimizely.com/feature-experimentation/changelog/api-updates-2'}
+
+sla:
+  url: null
+  uptime_target: null
+  note: >-
+    No public SLA or uptime target is published on the developer portal or the status page.
+    SLA terms are contractual and sit behind the enterprise agreement.
+
+support:
+  url: https://support.optimizely.com/
+  changelog: changelog/optimizely-changelog.yml
+  community: https://world.optimizely.com/

@@ -1,0 +1,101 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://docs.developers.optimizely.com/feature-experimentation/docs/configure-webhooks,
+  https://docs.developers.optimizely.com/feature-experimentation/docs/change-approval-webhooks,
+  https://docs.developers.optimizely.com/feature-experimentation/docs/webhooks-agent,
+  https://docs.developers.optimizely.com/content-marketing-platform/reference/event-delivery,
+  openapi/_original/ webhook operations
+description: >-
+  Optimizely's real event surface, captured from the provider's own webhook documentation
+  and the webhook CRUD operations in its published OpenAPI. Optimizely publishes NO
+  AsyncAPI document anywhere in its estate — the two AsyncAPI files in this directory are
+  API Evangelist generations, not provider artifacts. This file is the searched webhook
+  catalog they should be read against.
+spec_type: Webhooks
+asyncapi_published: false
+
+surfaces:
+- product: Feature Experimentation / Web Experimentation
+  registration: project-level, via the REST API or Settings > Webhooks in the app
+  api_operations: [list_webhooks, create_webhook, get_webhook, update_webhook, delete_webhook]
+  api_spec: openapi/_original/optimizely-web-experimentation-optimizely-api-openapi.json
+  api_paths: ['/projects/{project_id}/webhooks', '/webhooks/{webhook_id}']
+  transport: HTTPS POST to a caller-supplied endpoint
+  signature_header: X-Hub-Signature
+  scope_note: >-
+    A webhook is registered at the PROJECT level and receives events for EVERY environment
+    in that project. Filter on the `environment` field in the payload — there is no
+    per-environment subscription.
+  primary_use: >-
+    Datafile-update notification, so an SDK client re-fetches and re-instantiates instead of
+    polling. Updating one environment bumps only that environment's datafile revision.
+  docs: https://docs.developers.optimizely.com/feature-experimentation/docs/configure-webhooks
+- product: Feature Experimentation — change approvals
+  registration: Settings > Webhooks
+  transport: HTTPS POST
+  docs: https://docs.developers.optimizely.com/feature-experimentation/docs/change-approval-webhooks
+- product: Optimizely Agent
+  registration: Agent configuration (self-hosted webhook listener)
+  transport: HTTPS POST to the Agent
+  docs: https://docs.developers.optimizely.com/feature-experimentation/docs/webhooks-agent
+  note: Agent consumes Optimizely webhooks to refresh its own datafile cache.
+- product: Content Marketing Platform
+  registration: CMP settings / updatesettings operation
+  transport: HTTPS POST
+  docs: https://docs.developers.optimizely.com/content-marketing-platform/reference/event-delivery
+- product: Optimizely Campaign
+  api_operations: [createwebhook, activatewebhook, deactivatewebhook, deletewebhook]
+  api_spec: openapi/_original/optimizely-campaign-optimizely-campaign-rest-api-openapi.json
+  docs: https://docs.developers.optimizely.com/optimizely-campaign/reference/createwebhook
+- product: Optimizely Graph
+  use_case: Next.js ISR cache invalidation on content publish
+  docs: https://docs.developers.optimizely.com/digital-experience-platform/docs/nextjs-isr-caching-and-optimizely-graph-webhooks
+
+events:
+  feature_experimentation:
+    model: >-
+      Subscribe to any entity captured in the Feature Experimentation change history. Each
+      entity type supports a documented subset of create/update/archive/delete.
+    matrix:
+    - {entity: Attribute, create: true, update: true, archive: true, delete: true}
+    - {entity: Audience, create: true, update: true, archive: true, delete: false}
+    - {entity: Change Approval, create: true, update: true, archive: true, delete: false}
+    - {entity: Change Approval Policy, create: true, update: true, archive: true, delete: false}
+    - {entity: Custom Field, create: true, update: true, archive: true, delete: false}
+    - {entity: Datafile, create: false, update: true, archive: false, delete: false}
+    - {entity: Environment, create: true, update: true, archive: true, delete: false}
+    - {entity: Event, create: true, update: true, archive: true, delete: true}
+    - {entity: Flag, create: true, update: true, archive: true, delete: true}
+    - {entity: Group, create: true, update: true, archive: true, delete: true}
+    - {entity: Project, create: true, update: true, archive: true, delete: false}
+    - {entity: Ruleset, create: true, update: true, archive: false, delete: false}
+    - {entity: Rule, create: true, update: true, archive: false, delete: true}
+    - {entity: Variable, create: true, update: true, archive: false, delete: true}
+    - {entity: Variation, create: true, update: true, archive: true, delete: true}
+  change_approval:
+    named_events:
+    - {event: project.approval_created, description: A user submits a change request for approval.}
+    - {event: project.approval_updated, description: The approval status changes to approved, rejected or withdrawn.}
+    - {event: project.approval_archived, description: A resolved change request is archived.}
+    envelope: {fields: [project_id, timestamp, event, 'data[]'], note: '`data[]` carries one entry per change request with change_type, environment, summary, entity{type,id,name,api_url,ui_url}, user{email,display_name} and changes[]{property,before,after}.'}
+    actionable_links: >-
+      Each entry carries `ui_url` (review in the Optimizely app) and `api_url` (fetch,
+      approve or reject through the REST API) — the payload is directly actionable by an agent.
+
+delivery_semantics:
+  feature_experimentation:
+    signature: X-Hub-Signature
+    verification: Required — verify the signature before trusting the payload.
+  content_marketing_platform:
+    acknowledgement: Return HTTP 200 or 202; any other status is a delivery failure.
+    ordering: Not guaranteed — CMP does not deliver events in generation order. Re-fetch current state via the Open API.
+    duplicates: >-
+      Possible. The provider's own guidance is to make event processing idempotent — notable
+      because the request side of Optimizely's APIs offers no idempotency key at all.
+    retry: Exponential backoff for up to three days on delivery failure.
+    timeout: 30 seconds; a slower endpoint has the connection terminated and the delivery marked failed.
+
+generated_asyncapi_files:
+- {file: 'asyncapi/optimizely-feature-experimentation-asyncapi.yml', method: generated, note: 'API Evangelist AsyncAPI 2.6.0 rendering of the Feature Experimentation webhook surface — not published by Optimizely.'}
+- {file: 'asyncapi/optimizely-cmp-asyncapi.yml', method: generated, note: 'API Evangelist AsyncAPI rendering of the CMP webhook surface — not published by Optimizely.'}

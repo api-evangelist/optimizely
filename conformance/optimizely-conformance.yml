@@ -1,0 +1,154 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  openapi/_original/ (28 provider-published OpenAPI documents harvested 2026-08-13),
+  https://docs.developers.optimizely.com/.well-known/api-catalog,
+  https://auth.mcp.opal.optimizely.com/.well-known/oauth-authorization-server,
+  https://www.optimizely.com/trust-center/compliance
+description: >-
+  Cross-cutting standards conformance for the Optimizely API estate, derived from the
+  harvested contracts and verified against live probes. Optimizely's strongest standards
+  posture is on the discovery and agent side — it is one of a small number of providers
+  serving a real RFC 9727 API catalog, and its MCP platform implements RFC 9728 + RFC 8414
+  + PKCE correctly.
+standards:
+- id: openapi-3
+  conforms: true
+  evidence: >-
+    28 published OpenAPI documents at versions 3.0.0, 3.0.1, 3.1.0, 3.1.1 and 3.2.0, all
+    discoverable from the provider's own /.well-known/api-catalog.
+- id: rfc9727-api-catalog
+  conforms: true
+  evidence: >-
+    https://docs.developers.optimizely.com/.well-known/api-catalog returns
+    application/linkset+json, HTTP 200, with 14 product anchors each carrying service-desc
+    and service-doc links; each anchor resolves to a nested api-catalog naming the OpenAPI.
+- id: rfc8615-well-known
+  conforms: true
+  evidence: api-catalog on the docs host; oauth-protected-resource and oauth-authorization-server on the MCP hosts.
+- id: oauth2
+  conforms: true
+  evidence: >-
+    OAuth 2.0 authorization code on the Experimentation v2 API
+    (app.optimizely.com/oauth2/authorize + /oauth2/token) and Flags v1; authorization code
+    plus client credentials on the Content Marketing Platform
+    (api.cmp.optimizely.com/oauth/token); authorization code + refresh token on the MCP
+    authorization server.
+- id: rfc8414-oauth-authorization-server-metadata
+  conforms: true
+  evidence: https://auth.mcp.opal.optimizely.com/.well-known/oauth-authorization-server returns full metadata, HTTP 200.
+- id: rfc9728-oauth-protected-resource-metadata
+  conforms: true
+  evidence: >-
+    All three MCP hosts return protected-resource metadata and answer an unauthenticated
+    request with a 401 carrying WWW-Authenticate Bearer realm=... resource_metadata=...
+- id: rfc7636-pkce
+  conforms: true
+  evidence: code_challenge_methods_supported [S256] in the MCP authorization-server metadata.
+- id: rfc7591-dynamic-client-registration
+  conforms: true
+  evidence: registration_endpoint https://auth.mcp.opal.optimizely.com/oauth/register
+- id: rfc7009-token-revocation
+  conforms: true
+  evidence: revocation_endpoint https://auth.mcp.opal.optimizely.com/oauth/revoke
+- id: oidc
+  conforms: partial
+  evidence: >-
+    The MCP authorization server advertises the `openid`, `profile` and `email` scopes and a
+    jwks_uri, but serves no /.well-known/openid-configuration (404 on every host probed), so
+    it is not an OIDC discovery-conformant provider.
+- id: mcp
+  conforms: true
+  evidence: >-
+    Three hosted remote MCP servers over streamable HTTP —
+    exp/analytics/cms.mcp.opal.optimizely.com/mcp — each responding to a JSON-RPC
+    tools/list with a spec-correct 401 + WWW-Authenticate challenge.
+- id: rfc9457-problem-details
+  conforms: partial
+  evidence: >-
+    Feature Experimentation Flags v1 declares application/problem+json with a ProblemDetail
+    schema (type/title/status/detail/uuid, RFC 7807 §3.1 cited in the schema description).
+    The Experimentation v2 API, ODP, Campaign, Graph and Configured Commerce all use their
+    own error envelopes instead. 16 of 1,606 documented error responses use problem+json.
+- id: rfc9110-conditional-requests
+  conforms: true
+  evidence: If-Match on 236 Configured Commerce operations (optimistic concurrency).
+- id: idempotency-key
+  conforms: false
+  evidence: Zero occurrences of "idempoten" across all 28 harvested specs and the whole developer portal.
+- id: odata
+  conforms: partial
+  evidence: >-
+    Configured Commerce accepts the OData query vocabulary — $filter, $select, $expand,
+    $top, $skip, $count, $orderby, $apply — on up to 987 operations, but publishes no
+    $metadata document or OData service root, so it is OData-flavoured query syntax rather
+    than an OData service.
+- id: graphql
+  conforms: true
+  evidence: >-
+    Optimizely Graph (cg.optimizely.com) is a first-class GraphQL surface with documented
+    error semantics; introspection requires a credential.
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    Optimizely publishes no AsyncAPI document. It does document webhooks (v2 API webhook
+    CRUD operations, Agent webhook listener) — see asyncapi/.
+- id: webhooks
+  conforms: true
+  evidence: >-
+    Five webhook operations in the Experimentation v2 API (list/create/get/update/delete),
+    plus a documented webhook listener for Optimizely Agent.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: No Deprecation or Sunset header is declared in any spec; no deprecation policy is published.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on www.optimizely.com and api.optimizely.com; the docs host answers with an SPA HTML shell.
+- id: a2a
+  conforms: false
+  evidence: /.well-known/agent-card.json and /.well-known/agent.json probed on every host 2026-08-13; no agent card served.
+- id: gdpr
+  conforms: true
+  evidence: >-
+    ODP publishes dedicated privacy operations — gdpr-delete, gdpr-status, ccpa-delete,
+    ccpa-optout, lgpd-delete, lgpd-status — and the Experimentation v2 API exposes Subject
+    Access Request operations.
+- id: soc2
+  conforms: true
+  evidence: https://www.optimizely.com/trust-center/compliance (see security/optimizely-trust-center.yml)
+- id: iso27001
+  conforms: true
+  evidence: https://www.optimizely.com/trust-center/compliance
+- id: iso27017
+  conforms: true
+  evidence: https://www.optimizely.com/trust-center/compliance
+- id: iso27018
+  conforms: true
+  evidence: https://www.optimizely.com/trust-center/compliance
+- id: pci-dss
+  conforms: true
+  evidence: https://www.optimizely.com/trust-center/compliance
+- id: hipaa
+  conforms: true
+  evidence: https://www.optimizely.com/trust-center/compliance
+- id: fhir
+  conforms: false
+- id: fapi
+  conforms: false
+- id: scim
+  conforms: false
+  note: Optimizely has a Permission Service with team/user entity permissions, but it is a proprietary shape, not SCIM 2.0.
+- id: json-api
+  conforms: false
+- id: restfuljson
+  conforms: true
+  evidence: >-
+    Feature Experimentation Flags v1 response schemas explicitly cite restfuljson.org link
+    relations — collection and entity responses carry url / first_url / last_url / next_url /
+    prev_url properties, and an absent link signals lack of authorization.
+summary:
+  conformant: 18
+  partial: 3
+  non_conformant: 8
+  strongest: [rfc9727-api-catalog, rfc9728-oauth-protected-resource-metadata, mcp, openapi-3]
+  weakest: [idempotency-key, rfc9116-security-txt, rfc8594-sunset-header, a2a, asyncapi]

@@ -1,0 +1,110 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  openapi/_original/optimizely-web-experimentation-optimizely-api-openapi.json,
+  openapi/_original/optimizely-feature-experimentation-optimizely-feature-experimentation-api-openapi.json,
+  openapi/_original/optimizely-data-platform-*.json
+description: >-
+  Entity-relationship graph derived from the id-reference fields and $ref links in
+  Optimizely's published OpenAPI. Three separate object graphs, joined only at the edges:
+  the Experimentation graph (Account > Project > everything), the Feature Experimentation
+  Flags graph (Project > Flag > Variation/Ruleset), and the ODP customer-data graph
+  (Customer profiles, events, objects, lists, segments).
+identifier_style:
+  experimentation: int64 numeric ids (`id`, `project_id`, `campaign_id`, `page_ids[]`)
+  flags_v1: >-
+    string keys, not numeric ids — `flag_key`, `environment_key`, `rule_key`,
+    `variation_key`, `variable_definition_key`. `project_id` stays numeric. The two
+    Experimentation APIs therefore identify the same conceptual objects differently.
+  odp: identifier fields declared in the ODP schema (`schema/identifiers`), account-defined
+  note: No prefixed opaque ids anywhere in the estate — Optimizely does not use Stripe-style typed id prefixes.
+
+entities:
+- {name: Account, api: experimentation-v2, key: id, schema: Account}
+- {name: Project, api: experimentation-v2, key: id, schema: Project}
+- {name: Experiment, api: experimentation-v2, key: id, schema: Experiment}
+- {name: Campaign, api: experimentation-v2, key: id, schema: Campaign, note: 'Web Personalization campaign, not an email campaign — Optimizely Campaign is a different product.'}
+- {name: Audience, api: experimentation-v2, key: id, schema: Audience}
+- {name: Page, api: experimentation-v2, key: id, schema: Page}
+- {name: Event, api: experimentation-v2, key: id, schema: Event}
+- {name: Environment, api: 'experimentation-v2 + flags-v1', key: 'id / environment_key', schema: Environment}
+- {name: Feature, api: experimentation-v2, key: id, schema: Feature}
+- {name: Attribute, api: experimentation-v2, key: id, schema: Attribute}
+- {name: Group, api: 'experimentation-v2 + flags-v1', key: 'id / group_id', schema: Group}
+- {name: Extension, api: experimentation-v2, key: id, schema: Extension}
+- {name: Section, api: experimentation-v2, key: section_id}
+- {name: Webhook, api: experimentation-v2, key: webhook_id}
+- {name: SubjectAccessRequest, api: experimentation-v2, key: request_id}
+- {name: ScheduledJob, api: experimentation-v2, key: job_id}
+- {name: Flag, api: flags-v1, key: flag_key}
+- {name: Variation, api: flags-v1, key: variation_key}
+- {name: VariableDefinition, api: flags-v1, key: variable_definition_key}
+- {name: Ruleset, api: flags-v1, key: '(flag_key, environment_key)'}
+- {name: Rule, api: flags-v1, key: rule_key}
+- {name: Holdout, api: flags-v1, key: holdout_id}
+- {name: Report, api: flags-v1, key: report_key}
+- {name: CustomField, api: flags-v1, key: id}
+- {name: ScheduledChange, api: flags-scheduling, key: schedule_id}
+- {name: Team, api: permission-service, key: team_id}
+- {name: User, api: permission-service, key: user_id}
+- {name: Customer, api: odp, key: 'account-defined identifiers', schema: profiles}
+- {name: ODPEvent, api: odp, key: 'n/a (append-only)'}
+- {name: ODPObject, api: odp, key: object_name}
+- {name: List, api: odp, key: list id}
+- {name: Segment, api: odp, key: segment_id}
+- {name: SchemaObject, api: odp, key: object_name}
+- {name: SchemaField, api: odp, key: '(object_name, field_name)'}
+
+relationships:
+- {from: Account, to: Project, type: has_many, via: account_id}
+- {from: Project, to: Experiment, type: has_many, via: project_id}
+- {from: Project, to: Campaign, type: has_many, via: project_id}
+- {from: Project, to: Audience, type: has_many, via: project_id}
+- {from: Project, to: Page, type: has_many, via: project_id}
+- {from: Project, to: Event, type: has_many, via: project_id}
+- {from: Project, to: Environment, type: has_many, via: project_id}
+- {from: Project, to: Feature, type: has_many, via: project_id}
+- {from: Project, to: Attribute, type: has_many, via: project_id}
+- {from: Project, to: Extension, type: has_many, via: project_id}
+- {from: Project, to: Webhook, type: has_many, via: project_id}
+- {from: Project, to: Flag, type: has_many, via: project_id}
+- {from: Project, to: Holdout, type: has_many, via: project_id}
+- {from: Project, to: CustomField, type: has_many, via: project_id}
+- {from: Experiment, to: Campaign, type: belongs_to, via: campaign_id}
+- {from: Experiment, to: Feature, type: belongs_to, via: feature_id}
+- {from: Experiment, to: Page, type: has_many, via: 'page_ids[]'}
+- {from: Experiment, to: Section, type: has_many, via: 'section_id (nested path)'}
+- {from: Campaign, to: Page, type: has_many, via: 'page_ids[]'}
+- {from: Event, to: Page, type: belongs_to, via: page_id}
+- {from: Flag, to: Variation, type: has_many, via: 'flag_key (nested path)'}
+- {from: Flag, to: VariableDefinition, type: has_many, via: 'flag_key (nested path)'}
+- {from: Flag, to: Ruleset, type: has_many, via: '(flag_key, environment_key)'}
+- {from: Ruleset, to: Rule, type: has_many, via: rule_key}
+- {from: Holdout, to: Experiment, type: has_many, via: 'holdout_id (fetch_holdout_experiments)'}
+- {from: Environment, to: Report, type: has_many, via: 'environment_key (nested path)'}
+- {from: Flag, to: ScheduledChange, type: has_many, via: 'flag_key (nested path)'}
+- {from: Team, to: User, type: has_many, via: 'team_id (permission service)'}
+- {from: SchemaObject, to: SchemaField, type: has_many, via: object_name}
+- {from: SchemaObject, to: SchemaObject, type: has_many, via: 'relations (create-relationship)'}
+- {from: Customer, to: ODPEvent, type: has_many, via: identifier fields}
+- {from: Customer, to: List, type: has_many, via: 'subscriptions (lists/subscriptions)'}
+- {from: Segment, to: Customer, type: has_many, via: 'realtime segment membership'}
+
+cross_product_joins:
+- from: Project (Experimentation)
+  to: ODP
+  via: dcp_service_id
+  note: >-
+    `Project.dcp_service_id` is the only structural link found between the Experimentation
+    object graph and the customer-data platform; the documented integration path for
+    real-time audiences is otherwise configuration, not a foreign key.
+- from: Flag
+  to: Experiment
+  via: feature_id / rule_key
+  note: >-
+    A Feature Experimentation experiment is a RULE on a flag in Flags v1, but appears as an
+    Experiment with a `feature_id` in the v2 API. The same object has two representations
+    across the two APIs — `fetch_rule_by_experiment_id` is the bridge.
+
+counts: {entities: 34, relationships: 33, apis_covered: 5}
+render: null
