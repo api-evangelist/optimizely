@@ -1,17 +1,15 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Optimizely Campaign REST Assets Campaigns API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  title: Optimizely Campaigns API
   version: '1.0'
-  contact:
-    name: Optimizely Support
-    url: https://support.optimizely.com
-  termsOfService: https://www.optimizely.com/legal/terms/
+  description: 'Operations tagged Campaigns across 4 of this provider''s published API definitions: optimizely-cmp-openapi.yml, optimizely-content-marketing-platform-optimizely-cmp-open-api-documentation-openapi.json, optimizely-web-experimentation-openapi.yml, optimizely-web-experimentation-optimizely-api-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://api.campaign.episerver.net/rest
-  description: Optimizely Campaign Production Server
-security:
-- basicAuth: []
+- url: https://api.cmp.optimizely.com/v0
+  description: Optimizely CMP API Server
+- url: https://api.cmp.optimizely.com/v3
+  description: v3 version of Optimizely CMP Open API
+- url: https://api.optimizely.com/v2
+  description: Optimizely REST API v2 Production Server
 tags:
 - name: Campaigns
   description: Manage content campaigns and editorial calendar entries.
@@ -43,29 +41,43 @@ paths:
                     $ref: '#/components/schemas/Pagination'
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - oauth2: []
     post:
       operationId: createCampaign
-      summary: Create a campaign
-      description: Creates a new campaign within the specified project.
       tags:
       - Campaigns
+      summary: POST /campaigns
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Create a campaign
       requestBody:
+        description: Payload to create a campaign
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CampaignInput'
+              $ref: '#/components/schemas/CampaignCreateRequest'
       responses:
         '201':
-          description: Campaign successfully created
+          description: Created campaign
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Campaign'
+                $ref: '#/components/schemas/CampaignResponse'
         '400':
-          description: Invalid request body
+          $ref: '#/components/responses/ClientError'
         '401':
-          description: Authentication credentials are missing or invalid
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+      security:
+      - oauth2: []
+    servers:
+    - url: https://api.cmp.optimizely.com/v0
+      description: Optimizely CMP API Server
   /campaigns/{campaignId}:
     get:
       operationId: getCampaign
@@ -86,6 +98,369 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Campaign not found
+      security:
+      - oauth2: []
+    servers:
+    - url: https://api.cmp.optimizely.com/v0
+      description: Optimizely CMP API Server
+  /campaigns/{id}:
+    get:
+      operationId: getCampaign
+      tags:
+      - Campaigns
+      summary: GET /campaigns/{id}
+      description: Get a campaign
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the campaign
+        example: 8q7f910551b00a722e0418830cee6612
+      responses:
+        '200':
+          description: Fetched campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    patch:
+      operationId: updateCampaign
+      tags:
+      - Campaigns
+      summary: PATCH /campaigns/{id}
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Update a campaign '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the campaign
+        example: 8q7f910551b00a722e0418830cee6612
+      requestBody:
+        description: Payload to update the campaign
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignUpdateRequest'
+      responses:
+        '204':
+          description: Campaign updated
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    servers:
+    - url: https://api.cmp.optimizely.com/v3
+      description: v3 version of Optimizely CMP Open API
+  /campaigns/{id}/comments:
+    post:
+      operationId: addCommentToCampaign
+      tags:
+      - Campaigns
+      summary: POST /campaigns/{id}/comments
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Post a comment on a campaign. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the campaign
+        example: da80cfd7bbf84959a8a981acbad996b3
+      requestBody:
+        description: Payload to add a comment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentCreateRequest'
+      responses:
+        '201':
+          description: Created a comment for the campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignCommentResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    servers:
+    - url: https://api.cmp.optimizely.com/v3
+      description: v3 version of Optimizely CMP Open API
+  /campaigns/{id}/fields:
+    get:
+      operationId: listCampaignFields
+      tags:
+      - Campaigns
+      summary: GET campaigns/{id}/fields
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get the list of fields of a campaign. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the campaign
+        example: 5f857f30e1c4a2038d6179e9
+      - $ref: '#/components/parameters/offset_2'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of fetched fields
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of fields
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FieldListResponseItem'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination_2'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/campaigns/5f857f30e1c4a2038d6179e9/fields?offset=10&page_size=10
+                required:
+                - data
+                - pagination
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    post:
+      operationId: addFieldToCampaign
+      tags:
+      - Campaigns
+      summary: POST campaigns/{id}/fields
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Add a field to a campaign.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the campaign
+        example: 5f857f30e1c4a2038d6179e9
+      requestBody:
+        description: Payload to add a field to a campaign
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectFieldCreateRequest'
+      responses:
+        '201':
+          description: Added field to a campaign.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectFieldCreateResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    servers:
+    - url: https://api.cmp.optimizely.com/v3
+      description: v3 version of Optimizely CMP Open API
+  /campaigns/{id}/brief:
+    get:
+      operationId: getCampaignBrief
+      tags:
+      - Campaigns
+      summary: GET /campaigns/{id}/brief
+      description: Get brief of the campaign
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the campaign
+        example: 5f857f30e1c4a2038d6179e9
+      responses:
+        '200':
+          description: Fetched brief of the campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignBriefResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    servers:
+    - url: https://api.cmp.optimizely.com/v3
+      description: v3 version of Optimizely CMP Open API
+  /campaigns/{id}/attachments:
+    post:
+      operationId: addAttachmentToCampaign
+      tags:
+      - Campaigns
+      summary: POST /campaigns/{id}/attachments
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Add an attachment to the campaign. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the campaign
+        example: 5f857f30e1c4a2038d6179e9
+      requestBody:
+        description: Payload to add an attachment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttachmentRequest'
+      responses:
+        '201':
+          description: Attachment added to the campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    servers:
+    - url: https://api.cmp.optimizely.com/v3
+      description: v3 version of Optimizely CMP Open API
+  /campaigns/{campaign_id}/fields/{field_id}:
+    put:
+      operationId: updateCampaignField
+      tags:
+      - Campaigns
+      summary: PUT /campaigns/{campaign_id}/fields/{field_id}
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Update the field value of a campaign. '
+      parameters:
+      - name: campaign_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the campaign
+        example: 5f857f30e1c4a2038d6179e9
+      - name: field_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the field of the campaign
+        example: 4f857f30e1c4a2038d6179e7
+      requestBody:
+        description: Payload to update the field value
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignFieldUpdateRequest'
+      responses:
+        '200':
+          description: Updated the campaign field
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignFieldUpdateResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    servers:
+    - url: https://api.cmp.optimizely.com/v3
+      description: v3 version of Optimizely CMP Open API
   /campaigns/{campaign_id}:
     get:
       operationId: getCampaign
@@ -106,6 +481,8 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Campaign not found
+      security:
+      - bearerAuth: []
     patch:
       operationId: updateCampaign
       summary: Update a campaign
@@ -133,6 +510,8 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Campaign not found
+      security:
+      - bearerAuth: []
     delete:
       operationId: deleteCampaign
       summary: Delete a campaign
@@ -148,6 +527,11 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Campaign not found
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.optimizely.com/v2
+      description: Optimizely REST API v2 Production Server
   /campaigns/{campaign_id}/results:
     get:
       operationId: getCampaignResults
@@ -168,8 +552,290 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Campaign not found
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.optimizely.com/v2
+      description: Optimizely REST API v2 Production Server
+  /campaigns/{campaign_id}/results/share:
+    get:
+      description: This link allows read-only access for anyone to view the results, even if they don't have an Optimizely account. Because anyone can use the link, be careful where you share it.
+      operationId: get_campaign_results_share_link
+      parameters:
+      - description: The ID of the campaign to generate a shareable link for
+        in: path
+        name: campaign_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultsShareLink'
+          description: Return a sharable link for the campaign's results page
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Unexpected error
+      summary: Get a sharable link for the campaign's results page
+      tags:
+      - Campaigns
+      x-release-state: alpha
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
+  /export/campaigns/{campaign_id}/results/csv:
+    get:
+      description: Get results for a Campaign as a CSV
+      operationId: get_campaign_results_csv
+      parameters:
+      - description: The ID for the Campaign you want results for
+        in: path
+        name: campaign_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: The start time of the time interval (beginning time included) used to calculate the results over. If unspecified, defaults to the time that the Campaign was first activated. The start time will be rounded the smallest time modulo 5 minutes larger or equal to start_time.
+        in: query
+        name: start_time
+        schema:
+          format: date-time
+          type: string
+      - description: The end of the time interval (end time excluded) used to calculate results over. If unspecified, defaults to the current time if the Experiment is still running, otherwise defaults to the time the experiment was last active. The end time will be rounded to the largest time modulo 5 minutes smaller or equal to end_time. The end_time in the response may be earlier than requested if fresher results are not available yet. In this case, the results will continue to calculate in the background and subsequent requests will eventually return the full results.
+        in: query
+        name: end_time
+        schema:
+          format: date-time
+          type: string
+      - $ref: '#/components/parameters/browser_segment'
+      - $ref: '#/components/parameters/device_segment'
+      - $ref: '#/components/parameters/source_segment'
+      - $ref: '#/components/parameters/attribute_id_segment'
+      - $ref: '#/components/parameters/attribute_value_segment'
+      - $ref: '#/components/parameters/segment_conditions'
+      responses:
+        '200':
+          description: '<p>Return Campaign results in CSV format</p> <p>Name of the columns returned: ''Start Time (UTC)'', ''End Time (UTC)'', ''Is Baseline Variation'', ''Metric Event Name'', ''Metric Event ID'', ''Metric Numerator Type'', ''Metric Denominator Type'', ''Metric Winning Direction'', ''Numerator Value'', ''Denominator Value'', ''Metric Value'', ''Improvement Status from Baseline'', ''Improvement Value from Baseline'', ''Statistical Significance'', ''Is Improvement Significant'', ''Confidence Interval - Low'', ''Confidence Interval - High'', ''Samples Remaining to Significance''</p> <p>(<a href="https://help.optimizely.com/Export_to_CSV_column_reference_for_campaigns_and_experiments">Column reference guide for CSV export</a>)</p>'
+        '202':
+          description: The results request has been received but has not yet finished processing. Wait a bit and try again.
+        '204':
+          description: There are no results data for this Campaign yet. Make sure the Campaign is started and try again later.
+        default:
+          content:
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Unexpected error
+      summary: Get Campaign results as a CSV
+      tags:
+      - Campaigns
+      x-release-state: beta
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
 components:
+  parameters:
+    campaignId:
+      name: campaignId
+      in: path
+      required: true
+      description: The unique identifier for the campaign
+      schema:
+        type: string
+    offset:
+      name: offset
+      in: query
+      required: false
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+    limit:
+      name: limit
+      in: query
+      required: false
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    page_size:
+      name: page_size
+      in: query
+      description: Number of results to return per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+      example: 15
+    offset_2:
+      name: offset
+      in: query
+      description: Starting index of results (zero indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 5
+    campaignId_2:
+      name: campaign_id
+      in: path
+      required: true
+      description: The unique identifier for the campaign
+      schema:
+        type: integer
+        format: int64
+    projectIdQuery:
+      name: project_id
+      in: query
+      required: true
+      description: The unique identifier for the project to filter by
+      schema:
+        type: integer
+        format: int64
+    page:
+      name: page
+      in: query
+      required: false
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    attribute_id_segment:
+      description: 'ID of the attribute to segment results by. Requests containing attribute_id will return the results for all visitors that have attribute_value for the attribute represented by attribute_id. If present, the attribute_value parameter must also be present, and it cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
+
+        '
+      in: query
+      name: attribute_id
+      schema:
+        format: int64
+        type: integer
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    source_segment:
+      description: 'Source to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, device, attribute_id, attribute_value].
+
+        Campaign: Contains users that arrive on a URL containing a ''utm_campaign,'' ''utm_source,'' ''gclid,'' or ''otm_source'' query parameter. If the URL contains one of these parameters, the visitor will count as "Campaign" traffic even if they arrived through search.
+
+        Direct:  Includes all users who do not have any external referrer in their URL.
+
+        Referral: Includes all users that come from another URL that doesn''t count as Campaign.
+
+        '
+      in: query
+      name: source
+      schema:
+        enum:
+        - campaign
+        - direct
+        - referral
+        - search
+        type: string
+    attribute_value_segment:
+      description: 'UTF-8 encoded value correlating to attribute_id. If present, the attribute_id parameter must also be present. This parameter also requires attribute_id to be set, and cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
+
+        '
+      in: query
+      name: attribute_value
+      schema:
+        type: string
+    device_segment:
+      description: Device to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, source, attribute_id, attribute_value].
+      in: query
+      name: device
+      schema:
+        enum:
+        - desktop
+        - ipad
+        - iphone
+        - mobile
+        - tablet
+        type: string
+    browser_segment:
+      description: Browser to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [device, source, attribute_id, attribute_value].
+      in: query
+      name: browser
+      schema:
+        enum:
+        - firefox
+        - chrome
+        - internet_explorer
+        - opera
+        - safari
+        type: string
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
+    segment_conditions:
+      description: '(BETA) A string representation of a JSON Segment Conditions Expression. This parameter can be either URL-escaped stringified JSON or Base64-encoded stringified JSON using URL-safe alphabet (preferred).
+
+        Segment Conditions Expressions consist of Logical Expressions and Match Expressions.
+
+        Logical Expressions are represented as an array of the format [<operator>, <expression>...], where the supported operators are "and", "or" and "not".
+
+        Match Expressions are represented as an object of the format {"attribute_id": <attribute_id>, "attribute_value": <value>[, "match_type": <match_type>]}, where supported values for match_type are "exact" match type will match only an exact string match between "value" string and the attribute value. "substring" match type will match if "value" is a substring of the attribute value. "prefix" match type will match if "value" is a string prefix of the attribute value. "regex" match type will match if "value" is a regular expression match for the attribute value. The default match_type is "exact".
+
+        '
+      in: query
+      name: segment_conditions
+      schema:
+        type: string
   schemas:
+    Pagination:
+      type: object
+      description: Pagination metadata
+      properties:
+        total:
+          type: integer
+          description: Total number of items
+        limit:
+          type: integer
+          description: Maximum items per page
+        offset:
+          type: integer
+          description: Current offset
     CmpCampaign:
       type: object
       description: A content campaign in the editorial calendar
@@ -207,6 +873,1141 @@ components:
           type: string
           format: date-time
           description: Timestamp when the campaign was last updated
+    CampaignBriefResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          description: Type of the campaign brief
+          example: template
+          enum:
+          - template
+          - attachment
+          - text
+        title:
+          type: string
+          description: Title of the campaign brief
+          example: Awesome Campaign Brief
+        template:
+          type:
+          - object
+          - 'null'
+          allOf:
+          - $ref: '#/components/schemas/CampaignBriefTemplateValue'
+        fields:
+          description: List of fields of the brief
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              name:
+                type: string
+                description: Name of the brief field
+                example: My Dropdown
+              value:
+                type: array
+                description: List of values set for the brief field
+                items:
+                  type: string
+                  description: value set in the brief field
+                  example: option 1
+            required:
+            - name
+            - value
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the brief
+              example: https://api.cmp.optimizely.com/v3/campaigns/5f857f30e1c4a2038d6179e9/brief
+            campaign:
+              type: string
+              description: URL of the campaign
+              example: https://api.cmp.optimizely.com/v3/campaigns/5f857f30e1c4a2038d6179e9
+          required:
+          - self
+          - campaign
+      required:
+      - type
+      - title
+      - fields
+      - links
+    CampaignUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the campaign
+          example: The awesome campaign
+        start_date:
+          type:
+          - string
+          - 'null'
+          description: 'Start date of the campaign in ISO 8601 format: `YYYY-MM-DD`'
+          example: '2022-09-06'
+        end_date:
+          type:
+          - string
+          - 'null'
+          description: 'End date of the campaign in ISO 8601 format: `YYYY-MM-DD`'
+          example: '2022-09-06'
+        owner_id:
+          type: string
+          description: Unique identifier of the campaign owner
+          example: 8q7f910551b00a722e0418830cee6612
+    AttachmentRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Unique identifier of the file upload session. This is the `upload_meta_fields.key` field retrieved from the `/v3/upload-url` endpoint.
+          example: ce8995aea58b11ea8cd90242ac120005
+        name:
+          type: string
+          minLength: 1
+          description: Filename of the attachment
+          example: sample_image.png
+      required:
+      - key
+      - name
+    FieldTypeCommon:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+    FieldTypeRadio:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          choices:
+            type: array
+            description: Choices of the radio button
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Radio 1 Choice 1
+              required:
+              - id
+              - name
+              - color
+        required:
+        - choices
+    FieldListResponseItem:
+      oneOf:
+      - $ref: '#/components/schemas/FieldTypeCommon'
+      - $ref: '#/components/schemas/FieldTypeLabel'
+      - $ref: '#/components/schemas/FieldTypeDropdown'
+      - $ref: '#/components/schemas/FieldTypeRadio'
+      - $ref: '#/components/schemas/FieldTypeCheckbox'
+      - $ref: '#/components/schemas/FieldTypeSimpleNumber'
+      - $ref: '#/components/schemas/FieldTypePercentageNumber'
+      - $ref: '#/components/schemas/FieldTypeCurrencyNumber'
+      discriminator:
+        propertyName: type
+        mapping:
+          checkbox: '#/components/schemas/FieldTypeCheckbox'
+          currency_number: '#/components/schemas/FieldTypeCurrencyNumber'
+          date: '#/components/schemas/FieldTypeCommon'
+          dropdown: '#/components/schemas/FieldTypeDropdown'
+          image: '#/components/schemas/FieldTypeCommon'
+          label: '#/components/schemas/FieldTypeLabel'
+          percentage_number: '#/components/schemas/FieldTypePercentageNumber'
+          radio_button: '#/components/schemas/FieldTypeRadio'
+          rich_text: '#/components/schemas/FieldTypeCommon'
+          simple_number: '#/components/schemas/FieldTypeSimpleNumber'
+          text: '#/components/schemas/FieldTypeCommon'
+          text_area: '#/components/schemas/FieldTypeCommon'
+          video: '#/components/schemas/FieldTypeCommon'
+    StringTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/StringTypeObjectFieldUpdatePayload'
+    FieldTypeDropdown:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          is_multi_select:
+            type: boolean
+            description: Select multiple values from the dropdown
+          choices:
+            type: array
+            description: Choices of the dropdown
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Dropdown 1 Choice 1
+              required:
+              - id
+              - name
+        required:
+        - is_multi_select
+        - choices
+    FieldTypeLabel:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          is_multi_select:
+            type: boolean
+            description: Select multiple values from the label
+          choices:
+            type: array
+            description: Choices of the label
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Label 1 Choice 1
+              required:
+              - id
+              - name
+              - color
+        required:
+        - is_multi_select
+        - choices
+    NumberTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Accepts a single numeric value
+            maxItems: 1
+            items:
+              type: number
+              example: 200
+    MultiChoiceTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/MultiChoiceTypeObjectFieldUpdatePayload'
+    FieldTypeSimpleNumber:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          has_thousand_separator:
+            type: boolean
+            description: Whether the numerical field has a thousand separator
+            example: true
+          decimal_places:
+            type:
+            - integer
+            - 'null'
+            description: Decimal place of the numerical field
+            example: 2
+        required:
+        - has_thousand_separator
+        - decimal_places
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
+    ObjectFieldCreateResponse:
+      type: object
+      additionalProperties: false
+      oneOf:
+      - $ref: '#/components/schemas/FieldTypeCommon'
+      - $ref: '#/components/schemas/FieldTypeLabel'
+      - $ref: '#/components/schemas/FieldTypeDropdown'
+      - $ref: '#/components/schemas/FieldTypeRadio'
+      - $ref: '#/components/schemas/FieldTypeCheckbox'
+      - $ref: '#/components/schemas/FieldTypeSimpleNumber'
+      - $ref: '#/components/schemas/FieldTypePercentageNumber'
+      - $ref: '#/components/schemas/FieldTypeCurrencyNumber'
+      discriminator:
+        propertyName: type
+        mapping:
+          checkbox: '#/components/schemas/FieldTypeCheckbox'
+          currency_number: '#/components/schemas/FieldTypeCurrencyNumber'
+          date: '#/components/schemas/FieldTypeCommon'
+          dropdown: '#/components/schemas/FieldTypeDropdown'
+          image: '#/components/schemas/FieldTypeCommon'
+          label: '#/components/schemas/FieldTypeLabel'
+          percentage_number: '#/components/schemas/FieldTypePercentageNumber'
+          radio_button: '#/components/schemas/FieldTypeRadio'
+          rich_text: '#/components/schemas/FieldTypeCommon'
+          simple_number: '#/components/schemas/FieldTypeSimpleNumber'
+          text: '#/components/schemas/FieldTypeCommon'
+          text_area: '#/components/schemas/FieldTypeCommon'
+          video: '#/components/schemas/FieldTypeCommon'
+    CampaignFieldUpdateResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the field
+          example: 5a7f910511b0a72230ce6631
+        name:
+          type: string
+          description: Name of the field
+          example: Image Field
+        type:
+          $ref: '#/components/schemas/CampaignFieldTypes'
+        values:
+          type: array
+          description: List of values selected or from user input
+          items:
+            type: string
+            example: 1nu8ue9wf8u9nusd9u
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            campaign_fields:
+              type: string
+              description: URL of the campaign fields
+              example: https://api.cmp.optimizely.com/v3/campaigns/5f857f30e1c4a2038d6179e9/fields
+            campaign:
+              type: string
+              description: URL of the campaign
+              example: https://api.cmp.optimizely.com/v3/campaigns/5f857f30e1c4a2038d6179e9
+          required:
+          - campaign_fields
+          - campaign
+      required:
+      - id
+      - name
+      - type
+      - values
+      - links
+    BaseObjectFieldUpdatePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the field
+          example: checkbox
+        values:
+          type: array
+          description: Values for the campaign field
+      required:
+      - type
+      - values
+    Pagination_2:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
+    CampaignListResponseItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the campaign
+          example: 8q7f910551b00a722e0418830cee6612
+        title:
+          type: string
+          description: Title of the campaign
+          example: The awesome campaign
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the campaign
+          example: The awesome campaign's description
+        start_date:
+          type:
+          - string
+          - 'null'
+          description: 'Start date of the campaign in ISO 8601 format: `YYYY-MM-DD`'
+          example: '2019-10-06'
+        end_date:
+          type:
+          - string
+          - 'null'
+          description: 'End date of the campaign in ISO 8601 format: `YYYY-MM-DD`'
+          example: '2019-10-16'
+        is_hidden:
+          type: boolean
+          description: Whether the campaign is hidden or not
+          example: false
+        reference_id:
+          type: string
+          description: Reference identifier of the campaign
+          example: CPN-1589
+        owner:
+          type: object
+          additionalProperties: false
+          description: Owner information of the campaign
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the owner of the campaign
+              example: 8q7f910551b00a722e0418830cee8211
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the campaign
+              example: https://api.cmp.optimizely.com/v3/campaigns/8q7f910551b00a722e0418830cee6612
+          required:
+          - self
+      required:
+      - id
+      - title
+      - description
+      - start_date
+      - end_date
+      - is_hidden
+      - reference_id
+      - owner
+      - links
+    FieldTypeCurrencyNumber:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          has_thousand_separator:
+            type: boolean
+            description: Whether the numerical field has a thousand separator
+            example: true
+          decimal_places:
+            type:
+            - integer
+            - 'null'
+            description: Decimal place of the numerical field
+            example: 2
+          currency_code:
+            type: string
+            description: Currency code of the numerical field
+            example: USD
+        required:
+        - has_thousand_separator
+        - decimal_places
+        - currency_code
+    BudgetResponse:
+      type: object
+      additionalProperties: false
+      description: Budget of the campaign
+      properties:
+        currency_code:
+          type: string
+          description: Currency code of the budget
+          example: USD
+        budgeted_amount:
+          type: string
+          description: Planned amount for the campaign
+          example: '1000.50'
+      required:
+      - currency_code
+      - budgeted_amount
+    CampaignResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the campaign
+          example: 8q7f910551b00a722e0418830cee6612
+        title:
+          type: string
+          description: Title of the campaign
+          example: The awesome campaign
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the campaign
+          example: The awesome campaign's description
+        start_date:
+          type:
+          - string
+          - 'null'
+          description: 'Start date of the campaign in ISO 8601 format: `YYYY-MM-DD`'
+          example: '2019-10-06'
+        end_date:
+          type:
+          - string
+          - 'null'
+          description: 'End date of the campaign in ISO 8601 format: `YYYY-MM-DD`'
+          example: '2019-10-16'
+        created_at:
+          type: string
+          format: date-time
+          description: Creation date and time of the campaign,  in ISO 8601 UTC format (`2035-02-10T10:40:45Z`)
+          example: '2035-10-06T13:15:30Z'
+        is_hidden:
+          type: boolean
+          description: Whether the campaign is hidden or not
+          example: false
+        status:
+          type: string
+          description: Status of the campaign
+          enum:
+          - Not Started
+          - Off Track
+          - On Track
+          - Complete
+          - At Risk
+          example: On Track
+        reference_id:
+          type: string
+          description: Reference identifier of the campaign
+          example: CPN-1589
+        budget:
+          type:
+          - object
+          - 'null'
+          allOf:
+          - $ref: '#/components/schemas/BudgetResponse'
+        labels:
+          type: array
+          description: Labels associated to the campaign
+          items:
+            $ref: '#/components/schemas/ResourceLabelResponse'
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the campaign
+              example: https://api.cmp.optimizely.com/v3/campaigns/8q7f910551b00a722e0418830cee6612
+            brief:
+              type:
+              - string
+              - 'null'
+              description: URL of the campaign brief
+              example: https://api.cmp.optimizely.com/v3/campaigns/8q7f910551b00a722e0418830cee6612/brief
+            owner:
+              type:
+              - string
+              - 'null'
+              description: URL of the campaign owner
+              example: https://api.cmp.optimizely.com/v3/users/6ea1bf781398c3147393arr1
+            parent_campaign:
+              type:
+              - string
+              - 'null'
+              description: URL of the parent campaign
+              example: https://api.cmp.optimizely.com/v3/campaigns/7u7f910551b00a722e0418830cee6643
+            child_campaigns:
+              type: array
+              description: URLs of the child campaigns
+              items:
+                type: string
+                example: https://api.cmp.optimizely.com/v3/campaigns/6fb21acf987094513ecb4b58
+          required:
+          - self
+          - brief
+          - owner
+          - parent_campaign
+          - child_campaigns
+      required:
+      - id
+      - title
+      - description
+      - start_date
+      - end_date
+      - created_at
+      - is_hidden
+      - status
+      - reference_id
+      - budget
+      - labels
+      - links
+    ResourceLabelResponse:
+      description: Label associated to a fetched resource
+      type: object
+      additionalProperties: false
+      properties:
+        group:
+          description: Label group
+          type: object
+          additionalProperties: false
+          properties:
+            id:
+              type: string
+              description: Identifier of the label group
+              example: 2467e583a60e23fda2b89db81a453cd2
+            name:
+              type: string
+              description: Name of the label group
+              example: Content Format
+          required:
+          - id
+          - name
+        values:
+          type: array
+          description: List of values of the label
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                description: Identifier of the label value
+                example: 71c378f3fee3d822759d1bdc2aab628c
+              name:
+                type: string
+                description: Name of the label value
+                example: Photos
+            required:
+            - id
+            - name
+      required:
+      - group
+      - values
+    DropdownTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of choice ID. Multiple choice values are not acceptable for `is_multi_select=false`.
+            items:
+              type: string
+              example: 9119a313057e401189407116fcd3
+    AssetTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/AssetTypeObjectFieldUpdatePayload'
+    DateTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/DateTypeObjectFieldUpdatePayload'
+    MultiChoiceTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of choice IDs
+            items:
+              type: string
+              example: 9119a313057e401189407116fcd3
+    AttachmentResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the attachment
+          example: 5a7f910511b0a72230ce6631
+        name:
+          type: string
+          description: Filename of the attachment
+          example: sample_image.png
+        url:
+          type: string
+          description: Download URL of the attachment
+          example: https://files.cmp.optimizely.com/download/2115bfe4450c11ebaae8000c291b51d4
+      required:
+      - id
+      - name
+      - url
+    StringTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Any single string
+            items:
+              type: string
+              example: This is a test string
+    FieldTypeCheckbox:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          choices:
+            type: array
+            description: Choices of the checkbox
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Checkbox 1 Choice 1
+              required:
+              - id
+              - name
+              - color
+        required:
+        - choices
+    CampaignFieldTypes:
+      type: string
+      description: Type of the field
+      example: image
+      enum:
+      - checkbox
+      - currency_number
+      - date
+      - dropdown
+      - label
+      - radio_button
+      - text_area
+      - percentage_number
+      - rich_text
+      - simple_number
+      - text
+      - image
+      - video
+    CampaignBriefTemplateValue:
+      type: object
+      description: Template info of the brief if the brief is of template type
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the template
+          example: 9nu8ue9wf8u9nusd9f
+        name:
+          type: string
+          description: Name of the template
+          example: My Template
+      required:
+      - id
+      - name
+    DateTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of date-time values, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+            items:
+              type: string
+              format: date-time
+              description: Date and time, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+              example: '2020-02-10T10:40:45Z'
+            maxItems: 1
+    CampaignFieldUpdateRequest:
+      type: object
+      additionalProperties: false
+      oneOf:
+      - $ref: '#/components/schemas/StringTypeObjectFieldUpdatePayload'
+      - $ref: '#/components/schemas/MultiChoiceTypeObjectFieldUpdatePayload'
+      - $ref: '#/components/schemas/DropdownTypeObjectFieldUpdatePayload'
+      - $ref: '#/components/schemas/RadioButtonTypeObjectFieldUpdatePayload'
+      - $ref: '#/components/schemas/NumberTypeObjectFieldUpdatePayload'
+      - $ref: '#/components/schemas/DateTypeObjectFieldUpdatePayload'
+      - $ref: '#/components/schemas/AssetTypeObjectFieldUpdatePayload'
+      discriminator:
+        propertyName: type
+        mapping:
+          checkbox: '#/components/schemas/MultiChoiceTypeObjectFieldUpdatePayload'
+          currency_number: '#/components/schemas/NumberTypeObjectFieldUpdatePayload'
+          date: '#/components/schemas/DateTypeObjectFieldUpdatePayload'
+          dropdown: '#/components/schemas/DropdownTypeObjectFieldUpdatePayload'
+          label: '#/components/schemas/MultiChoiceTypeObjectFieldUpdatePayload'
+          radio_button: '#/components/schemas/RadioButtonTypeObjectFieldUpdatePayload'
+          percentage_number: '#/components/schemas/NumberTypeObjectFieldUpdatePayload'
+          simple_number: '#/components/schemas/NumberTypeObjectFieldUpdatePayload'
+          text: '#/components/schemas/StringTypeObjectFieldUpdatePayload'
+          text_area: '#/components/schemas/StringTypeObjectFieldUpdatePayload'
+          rich_text: '#/components/schemas/StringTypeObjectFieldUpdatePayload'
+          image: '#/components/schemas/AssetTypeObjectFieldUpdatePayload'
+          video: '#/components/schemas/AssetTypeObjectFieldUpdatePayload'
+    AssetTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Payload for fields with attachments
+            maxItems: 1
+            items:
+              properties:
+                title:
+                  type: string
+                  description: Title of the image or video
+                  example: Sample.jpeg
+                  minLength: 1
+                key:
+                  type: string
+                  description: Unique identifier of the file upload session. This is the `upload_meta_fields.key` field retrieved from the `/v3/upload-url` endpoint.
+                  example: ce8995aea58b11ea8cd90242ac120005
+              required:
+              - title
+              - key
+    RadioButtonTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/RadioButtonTypeObjectFieldUpdatePayload'
+    CommentCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        value:
+          type: string
+          minLength: 1
+          description: Content of the comment. Markdown is supported. To mention a user belonging to the organization, use the `@[name](openapi-user-link)` format.
+          example: Comment mentioning @[Organization User](https://api.cmp.optimizely.com/v3/users/5fe38aeb574b52a62a089238)
+        attachments:
+          description: List of comment attachments.
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachmentRequest'
+      required:
+      - value
+    BaseObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          id:
+            type: string
+            description: Unique identifier of the field
+            example: 41aac313bda1e40b6cde7116fc24a
+        required:
+        - id
+    FieldBaseType:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Identifier of the field
+          example: 64be245ec0d79e79fdf1ad84
+        name:
+          type: string
+          description: Name of the field
+          example: Dropdown 101
+        values:
+          type: array
+          description: List of selected values or from user input
+          items:
+            type: string
+        type:
+          type: string
+          description: Type of the field
+          example: text
+      required:
+      - id
+      - name
+      - type
+      - values
+    ObjectFieldCreateRequest:
+      type: object
+      additionalProperties: false
+      oneOf:
+      - $ref: '#/components/schemas/StringTypeObjectField'
+      - $ref: '#/components/schemas/MultiChoiceTypeObjectField'
+      - $ref: '#/components/schemas/DropdownTypeObjectField'
+      - $ref: '#/components/schemas/RadioButtonTypeObjectField'
+      - $ref: '#/components/schemas/NumberTypeObjectField'
+      - $ref: '#/components/schemas/DateTypeObjectField'
+      - $ref: '#/components/schemas/AssetTypeObjectField'
+      discriminator:
+        propertyName: type
+        mapping:
+          checkbox: '#/components/schemas/MultiChoiceTypeObjectField'
+          currency_number: '#/components/schemas/NumberTypeObjectField'
+          date: '#/components/schemas/DateTypeObjectField'
+          dropdown: '#/components/schemas/DropdownTypeObjectField'
+          label: '#/components/schemas/MultiChoiceTypeObjectField'
+          radio_button: '#/components/schemas/RadioButtonTypeObjectField'
+          percentage_number: '#/components/schemas/NumberTypeObjectField'
+          simple_number: '#/components/schemas/NumberTypeObjectField'
+          text: '#/components/schemas/StringTypeObjectField'
+          text_area: '#/components/schemas/StringTypeObjectField'
+          rich_text: '#/components/schemas/StringTypeObjectField'
+          image: '#/components/schemas/AssetTypeObjectField'
+          video: '#/components/schemas/AssetTypeObjectField'
+    NumberTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/NumberTypeObjectFieldUpdatePayload'
+    DropdownTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/DropdownTypeObjectFieldUpdatePayload'
+    CampaignCommentResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the campaign comment
+          example: 5fe38c39574b52a62a089239
+        value:
+          type: string
+          description: Content of the comment
+          example: Well done!
+        is_resolved:
+          type: boolean
+          description: Determines if the comment is resolved in Optimizely CMP
+          example: false
+        parent_comment_id:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the parent comment
+          example: 5fe38c39574b52a62a089238
+        comment_by:
+          type: string
+          description: Unique identifier of the user who posted the comment
+          example: 62a8455e29fed3045d9c7a8b
+        created_at:
+          type: string
+          format: date-time
+          description: Creation date and time of the campaign comment in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2020-10-06T13:15:30Z'
+        modified_at:
+          type: string
+          format: date-time
+          description: Last modification date and time of the campaign comment in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2020-10-06T14:15:30Z'
+        attachments:
+          description: List of attachments of the comment
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachmentResponse'
+          example:
+          - id: a113667245d111eb8945000c
+            name: sample.png
+            url: https://files.cmp.optimizely.com/download/96c314a645d111eb8945000c291b51d4?token=
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            campaign:
+              type: string
+              description: URL of the campaign
+              example: https://api.cmp.optimizely.com/v3/campaigns/5fe38c39574b52a62a089239
+            comment_by:
+              type: string
+              description: URL of the user who posted the comment
+              example: https://api.cmp.optimizely.com/v3/users/62a8455e29fed3045d9c7a8b
+          required:
+          - campaign
+          - comment_by
+      required:
+      - id
+      - value
+      - is_resolved
+      - parent_comment_id
+      - comment_by
+      - created_at
+      - modified_at
+      - attachments
+      - links
+    FieldTypePercentageNumber:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          decimal_places:
+            type:
+            - integer
+            - 'null'
+            description: Decimal place of the numerical field
+            example: 2
+        required:
+        - decimal_places
+    RadioButtonTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Accepts a single choice Id.
+            maxItems: 1
+            items:
+              type: string
+              example: 9119a313057e401189407116fcd3
+    CampaignCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the campaign
+          example: Sample Title
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the campaign
+          example: Sample Description
+        parent_campaign:
+          type:
+          - string
+          - 'null'
+          description: ID of the parent campaign
+          example: 665d5717c8ba0201647a0992
+        start_date:
+          type: string
+          format: date
+          description: Start date of the campaign, in ISO 8601 UTC format (2025-02-10).
+          example: '2025-10-01'
+        end_date:
+          type: string
+          format: date
+          description: End date of the campaign, in ISO 8601 UTC format (2026-02-10).
+          example: '2026-10-06'
+        owner_id:
+          type: string
+          description: ID of the owner of the campaign
+          example: 665d5717c8ba0201647a0991
+        color:
+          type: string
+          enum:
+          - '#333'
+          - '#ec2e3b'
+          - '#fc594b'
+          - '#e2575b'
+          - '#f45097'
+          - '#de55a9'
+          - '#bd417f'
+          - '#a959cc'
+          - '#6456b7'
+          - '#4db2fc'
+          - '#3a97be'
+          - '#36c5a3'
+          - '#9bc94e'
+          - '#fdad3c'
+          - '#ef803c'
+          - '#fd8876'
+          - '#ea868a'
+          - '#f781b5'
+          - '#e785c1'
+          - '#cf69a3'
+          - '#c187db'
+          - '#9086cc'
+          - '#79c8fd'
+          - '#5ab5d0'
+          - '#4fd5bd'
+          - '#b8d877'
+          - '#fec454'
+          - '#f3a35a'
+          - '#d3998f'
+          - '#c79697'
+          - '#d096af'
+          - '#c897b4'
+          - '#ae7c98'
+          - '#b094be'
+          - '#908bae'
+          - '#97bed8'
+          - '#7aa8b6'
+          - '#7abeb2'
+          - '#bece9d'
+          - '#e3c68d'
+          - '#d3ac85'
+          - '#b9a29e'
+          - '#b29f9f'
+          - '#b9a1ac'
+          - '#b5a1ae'
+          - '#9a8692'
+          - '#a89bac'
+          - '#908e9b'
+          - '#a8b9c3'
+          - '#8ea1a7'
+          - '#96b1ac'
+          - '#c1c8b5'
+          - '#d4c8b0'
+          - '#c0b0a1'
+          - '#212121'
+          - '#CE515B'
+          - '#F16281'
+          - '#EB7777'
+          - '#A25555'
+          - '#B05F8C'
+          - '#AF8EC3'
+          - '#21B7EC'
+          - '#3AB0C9'
+          - '#669BA8'
+          - '#7ABEB2'
+          - '#5F9DCE'
+          - '#717CB9'
+          - '#4C557E'
+          - '#449C6C'
+          - '#63B05F'
+          - '#4D9B93'
+          - '#ACC050'
+          - '#A29F55'
+          - '#8AA872'
+          - '#E4844C'
+          - '#EE9808'
+          - '#DE7009'
+          - '#FCD404'
+          - '#CBB039'
+          - '#99896A'
+          - '#2e2a26'
+          - '#ccccdc'
+          description: Color of the campaign
+          example: '#ec2e3b'
+      required:
+      - title
     CampaignInput:
       type: object
       description: Input for creating or updating a campaign
@@ -226,6 +2027,49 @@ components:
           - paused
           - not_started
           - archived
+    Campaign:
+      type: object
+      description: A campaign that groups experiments under a shared objective
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the campaign
+        project_id:
+          type: integer
+          format: int64
+          description: The project this campaign belongs to
+        name:
+          type: string
+          description: Human-readable name of the campaign
+        status:
+          type: string
+          description: Current status of the campaign
+          enum:
+          - active
+          - paused
+          - not_started
+          - archived
+        experiment_ids:
+          type: array
+          description: List of experiment IDs in this campaign
+          items:
+            type: integer
+            format: int64
+        page_ids:
+          type: array
+          description: List of page IDs the campaign targets
+          items:
+            type: integer
+            format: int64
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the campaign was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the campaign was last modified
     ExperimentResults:
       type: object
       description: Statistical results for an experiment
@@ -291,102 +2135,678 @@ components:
                         significance:
                           type: number
                           description: Statistical significance level
-    Pagination:
-      type: object
-      description: Pagination metadata
+    CampaignResults:
       properties:
-        total:
+        campaign_id:
+          description: The unique identifier for the Campaign
+          format: int64
           type: integer
-          description: Total number of items
-        limit:
-          type: integer
-          description: Maximum items per page
-        offset:
-          type: integer
-          description: Current offset
-    Campaign:
+        confidence_threshold:
+          description: The significance level at which you would like to declare winning and losing variations. A lower number minimizes the time needed to declare a winning or losing variation, but increases the risk that your results aren't true winners and losers.
+          format: double
+          type: number
+        end_time:
+          description: End of the time interval (exclusive) used to calculate the results. The time is formatted in ISO 8601.
+          format: date-time
+          type: string
+        is_stale:
+          description: When true, indicates the results were delivered from a cache that is out of date.
+          type: boolean
+        metrics:
+          description: The breakdown of Campaign results by metric. CampaignMetricResults object ordering in the array is consistent with the order that metrics are attached to the Experiment in the Optimizely UI and REST API (i.e. index 0 is the primary metric, indices 1-4 are secondary metrics, indices 5+ are monitoring metrics). See here for an explantion of the impact of metric ordering on results calculations.
+          externalDocs:
+            description: See here
+            url: https://help.optimizely.com/Ideate_and_Hypothesize/Primary_and_secondary_metrics_and_monitoring_metrics
+          items:
+            $ref: '#/components/schemas/CampaignMetricResults'
+          type: array
+        start_time:
+          description: Start of the time interval (inclusive) used to calculate the results. The time is formatted in ISO 8601.
+          format: date-time
+          type: string
       type: object
-      description: A campaign that groups experiments under a shared objective
+    MetricEventProperties:
+      description: The conditions used to filter the metric on specific event property values.
       properties:
-        id:
-          type: integer
+        filter:
+          $ref: '#/components/schemas/MetricFilter'
+          description: The set of event property conditions a conversion must match to be counted toward the metric.
+      type: object
+    VariantResults:
+      properties:
+        experiment_id:
+          description: The unique identifier for the Experiment this entity contains results for (if applicable)
           format: int64
-          description: Unique identifier for the campaign
-        project_id:
           type: integer
-          format: int64
-          description: The project this campaign belongs to
-        name:
-          type: string
-          description: Human-readable name of the campaign
-        status:
-          type: string
-          description: Current status of the campaign
+        is_baseline:
+          description: Indicates that this variant is the baseline that all other entities will be compared against. Also referred to as the 'Control' or 'Control Group'
+          type: boolean
+        level:
+          description: The level of entity that this variant represents
           enum:
-          - active
-          - paused
-          - not_started
-          - archived
-        experiment_ids:
-          type: array
-          description: List of experiment IDs in this campaign
+          - variation
+          - experiment
+          - campaign
+          type: string
+        lift:
+          $ref: '#/components/schemas/Datapoint'
+        name:
+          description: The name of the variant
+          example: Blue Button
+          type: string
+        rate:
+          description: The value of the metric after dividing the numerator value over the denominator value
+          format: double
+          type: number
+        samples:
+          description: The value of the denominator
+          format: int64
+          type: number
+        total_increase:
+          $ref: '#/components/schemas/Datapoint'
+        value:
+          description: The value of the numerator
+          format: int64
+          type: number
+        variance:
+          description: The variance of the metric value
+          format: double
+          type: number
+        variation_id:
+          description: The unique identifier for the variation this entity contains results for (if applicable)
+          type: string
+      type: object
+    Datapoint:
+      description: A value with statistical context
+      properties:
+        confidence_interval:
+          description: The confidence interval measures the uncertainty around improvement. It starts out wide and shrinks as more data comes in. Significance means that the confidence interval is completely above or completely below 0. If the result is significant and positive, the confidence interval will be above 0. If the result is significant and negative, confidence interval will be below 0. If the result is inconclusive, confidence interval includes 0
+          example:
+          - 0.010399560300730457
+          - 0.0850821459929161
           items:
-            type: integer
-            format: int64
-        page_ids:
+            format: double
+            type: number
+          maxItems: 2
+          minItems: 2
           type: array
-          description: List of page IDs the campaign targets
+        confidence_interval_scaled:
+          description: The confidence interval with bounds that are scaled by the baseline conversion rate.
           items:
-            type: integer
-            format: int64
+            format: double
+            type: number
+          maxItems: 2
+          minItems: 2
+          type: array
+        end_of_epoch:
+          type: boolean
+        is_most_conclusive:
+          description: Indicates that this is the best performing variant for this metric. Also referred to as the 'Winner'
+          type: boolean
+        is_significant:
+          description: Indicates if significance is above your confidence threshold
+          type: boolean
+        lift_status:
+          description: Indicates whether a variation is doing better/worse than the baseline after taking the metric's winning direction into account.
+          enum:
+          - equal
+          - better
+          - worse
+          type: string
+        significance:
+          description: The likelihood that the observed difference in conversion rate is not due to chance
+          format: double
+          type: number
+        value:
+          description: The estimated improvement for this variant compared to the baseline
+          format: double
+          type: number
+        value_scaled:
+          description: The estimated improvement scaled by the baseline conversion rate.
+          format: double
+          type: number
+        visitors_remaining:
+          description: The number of estimated visitors remaining before result becomes statistically significant. A value of 9223372036854775807 means the value is not available.
+          format: int64
+          type: integer
+      type: object
+    SharedCodeChange:
+      properties:
+        async:
+          description: Indicates whether or not to execute the change asyncronously. If true, src will be returned in the response. Otherwise, it will be not included.
+          type: boolean
+        dependencies:
+          description: A list of dependent change IDs that must happen before this change
+          example:
+          - 993fd09c-b64a-4c13-95a9-13b3ed2c454e
+          - 95cf0144-fb63-431d-829b-193fe55ada18
+          items:
+            format: uuid
+            type: string
+          type: array
+        id:
+          description: The ID of the change
+          format: uuid
+          readOnly: true
+          type: string
+        name:
+          description: Name of the change
+          example: Setting button text
+          type: string
+        selector:
+          description: CSS selector to determine where changes are applied. Required for changes of type 'custom_css'.
+          example: head
+          type: string
+        src:
+          description: The path to the change payload on the CDN. Only present if 'async' is True.
+          readOnly: true
+          type: string
+        type:
+          description: The type of this change.
+          enum:
+          - custom_code
+          - custom_css
+          type: string
+        value:
+          description: The value for the change can be JavaScript or CSS as a string.
+          example: window.someGlobalFunction();
+          type: string
+      required:
+      - type
+      - value
+      type: object
+    Metric:
+      properties:
+        aggregator:
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
+          enum:
+          - unique
+          - count
+          - sum
+          - bounce
+          - exit
+          - ratio
+          type: string
+        display_title:
+          description: Display title for the metric
+          type: string
+        event_id:
+          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
+          format: int64
+          type:
+          - integer
+          - 'null'
+        event_properties:
+          $ref: '#/components/schemas/MetricEventProperties'
+          description: The conditions used to filter the metric on specific event property values.
+        field:
+          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
+          enum:
+          - revenue
+          - value
+          type: string
+        metrics:
+          description: A list of all metrics that will be used in the calculation of a ratio metric.
+          items:
+            $ref: '#/components/schemas/CompoundSubMetric'
+          type: array
+        scope:
+          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
+          enum:
+          - session
+          - visitor
+          - event
+          type: string
+        time_window:
+          description: The maximum amount of time a numerator event can differ from a denominator event in order to be included in a ratio metric. This can be an integer, or an integer followed by a letter denoting the unit of time (d = days, h = hours, m = minutes). If no unit of time is supplied, hours is assumed. If no value is supplied, a time window of 48 hours is assumed.
+          type: string
+        winning_direction:
+          description: The winning direction of this metric
+          enum:
+          - increasing
+          - decreasing
+          type: string
+      type: object
+    Error_2:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    MetricFilter:
+      description: The set of event property conditions a conversion must match to be counted toward the metric.
+      properties:
+        combine_operator:
+          description: Determines whether all conditions (and) or any condition (or) must be met.
+          enum:
+          - and
+          - or
+          type: string
+        conditions:
+          items:
+            $ref: '#/components/schemas/MetricFilterCondition'
+          type: array
+      type: object
+    Campaign_2:
+      properties:
+        archived:
+          default: false
+          description: Whether the Campaign has been archived
+          type: boolean
+        changes:
+          description: A list of changes to apply to the Campaign.  This corresponds to the Campaign's Shared Code in the application.  Only supports 'custom_css' or 'custom_code' type changes.
+          items:
+            $ref: '#/components/schemas/SharedCodeChange'
+          type: array
         created:
-          type: string
+          description: The time the Campaign was initially created
           format: date-time
-          description: Timestamp when the campaign was created
+          readOnly: true
+          type: string
+        custom_field_values:
+          additionalProperties: true
+          description: Map of custom field `api_name` to value for this Campaign. Keys correspond to the `api_name` of a custom field definition for the Project, and values are typed according to that definition's `field_type`. Returns an empty object when no values are set.
+          type: object
+        description:
+          description: The description or goal for a Campaign
+          example: Tailor the landing page hero element for specific audiences
+          type: string
+        earliest:
+          description: The first time the Campaign was activated
+          format: date-time
+          readOnly: true
+          type: string
+        experiment_priorities:
+          description: A list of lists of Experiment IDs that indicate the relative priority of how to show those Experiments in the context of the Campaign. Each list inside of the list represents a group of Experiments of equal priority where groups that appear earlier in the list are of higher priority to be shown.
+          items:
+            items:
+              format: int64
+              type: integer
+            type: array
+          type: array
+        for_journey:
+          default: false
+          description: Whether the Campaign has been part of journey or not
+          type: boolean
+        holdback:
+          description: Percentage of visitors to exclude from personalization, measured in basis points. 100 basis points = 1% traffic. For example, a value of 500 would mean that 95% of visitors will see a personalized experience and 5% will see the holdback.
+          example: 500
+          maximum: 10000
+          minimum: 0
+          type: integer
+        id:
+          description: The unique identifier for the Campaign
+          example: 2000
+          format: int64
+          readOnly: true
+          type: integer
+        journey_id:
+          description: The journey this campaign is associated with, or null if not set
+          type: string
         last_modified:
-          type: string
+          description: The last time the Campaign was modified
           format: date-time
-          description: Timestamp when the campaign was last modified
-  parameters:
-    campaignId:
-      name: campaignId
-      in: path
-      required: true
-      description: The unique identifier for the campaign
-      schema:
-        type: string
-    offset:
-      name: offset
-      in: query
-      required: false
-      description: Number of items to skip for pagination
-      schema:
-        type: integer
-        default: 0
-        minimum: 0
-    campaignId_2:
-      name: campaign_id
-      in: path
-      required: true
-      description: The unique identifier for the campaign
-      schema:
-        type: integer
-        format: int64
-    limit:
-      name: limit
-      in: query
-      required: false
-      description: Maximum number of items to return
-      schema:
-        type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
+          readOnly: true
+          type: string
+        latest:
+          description: The last time the Campaign was paused (not present if the Campaign still running)
+          format: date-time
+          readOnly: true
+          type: string
+        metrics:
+          description: An ordered list of metrics to track for the Campaign
+          items:
+            $ref: '#/components/schemas/Metric'
+          type: array
+        name:
+          description: The name of the Campaign
+          example: Landing Page Optimization
+          type: string
+        page_ids:
+          description: A list of Page IDs used in the Campaign
+          items:
+            format: int64
+            type: integer
+          type: array
+        project_id:
+          description: The Project ID the Campaign is in
+          example: 1000
+          format: int64
+          type: integer
+        status:
+          description: Current state of the Campaign. not_started means the Campaign has never been published to the world. running means the Campaign is currently live to the world. paused means the Campaign has been published, but is currently not running. archived means the Campaign is paused and not visible in the web UI.
+          enum:
+          - not_started
+          - running
+          - paused
+          - archived
+          readOnly: true
+          type: string
+        type:
+          default: personalization
+          description: Indicates the type of this campaign. Campaigns created or fetched via the API should currently all have a type of `personalization`, but if you get a campaign_id for an experiment and look it up, you may get an `other` value.
+          enum:
+          - personalization
+          - other
+          type: string
+        url_targeting:
+          $ref: '#/components/schemas/URLTargeting'
+      required:
+      - project_id
+      type: object
+    CampaignMetricResults:
+      description: Results specific to an Event
+      properties:
+        aggregator:
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
+          enum:
+          - unique
+          - count
+          - sum
+          - bounce
+          - exit
+          - ratio
+          type: string
+        event_id:
+          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
+          format: int64
+          type:
+          - integer
+          - 'null'
+        event_properties:
+          $ref: '#/components/schemas/MetricEventProperties'
+          description: The conditions used to filter the metric on specific event property values.
+        field:
+          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
+          enum:
+          - revenue
+          - value
+          type: string
+        metrics:
+          description: A list of all metrics that will be used in the calculation of a ratio metric.
+          items:
+            $ref: '#/components/schemas/CompoundSubMetric'
+          type: array
+        name:
+          description: The name of the Metric
+          type: string
+        results:
+          additionalProperties:
+            $ref: '#/components/schemas/VariantResults'
+          description: A map of results for the variants affected by the Campaign. Variants may represent aggregated results scoped to the Campaign and/or individual Experiment results scoped to just that Experiment. The special variant 'baseline' represents visitors that have been held back from any change in experience across all Experiments in the Campaign. The special variant 'campaign' represents the aggregated effect of all Experiments included in the Campaign.
+          type: object
+          x-map-key:
+            description: The name of the group or ID of the Experiment
+            example: campaign
+            type: string
+        scope:
+          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
+          enum:
+          - session
+          - visitor
+          - event
+          type: string
+        time_window:
+          description: The maximum amount of time a numerator event can differ from a denominator event in order to be included in a ratio metric. This can be an integer, or an integer followed by a letter denoting the unit of time (d = days, h = hours, m = minutes). If no unit of time is supplied, hours is assumed. If no value is supplied, a time window of 48 hours is assumed.
+          type: string
+        winning_direction:
+          description: The winning direction of this metric
+          enum:
+          - increasing
+          - decreasing
+          type: string
+      type: object
+    MetricFilterCondition:
+      description: defines the event property values and operator used to check whether the conversion meets the condition.
+      properties:
+        name:
+          description: The name of the event property to match to.
+          type: string
+        operator:
+          description: The type of match to be performed. equal_to and not_equal_to are available for all property types. greater_than, greater_than_or_equal_to, less_than, and less_than_or_equal_to are only available for properties with type number. contains and does_not_contain are only available for properties with type string.
+          enum:
+          - equal_to
+          - not_equal_to
+          - greater_than
+          - greater_than_or_equal_to
+          - less_than
+          - less_than_or_equal_to
+          - contains
+          - does_not_contain
+          type: string
+        type:
+          description: The data type of the event property.
+          enum:
+          - boolean
+          - number
+          - string
+          type: string
+        value:
+          description: The value the conversion's property should match, according to the operator.
+          type: string
+      type: object
+    URLTargeting:
+      properties:
+        activation_code:
+          description: Stringified Javascript function that determines when the Page is activated. Only required when activation_type is 'polling' or 'callback'.
+          example: function callbackFn(activate, options) { activate(); }
+          type: string
+        activation_type:
+          description: How this page is activated.  See the full documentation on the Page object.
+          enum:
+          - immediate
+          - manual
+          - polling
+          - callback
+          - dom_changed
+          - url_changed
+          example: callback
+          externalDocs:
+            description: Activation Types
+            url: https://help.optimizely.com/Build_Campaigns_and_Experiments/Conditional_activation_for_pages_in_Optimizely_X
+          type: string
+        conditions:
+          description: Conditions to activate the experiment; our knowledge base article on Activation Types is the best guide for how to set up this data.
+          example: '["and", {"type": "url", "match_type": "substring", "value": "optimize"}]'
+          externalDocs:
+            description: Conditions
+            url: https://help.optimizely.com/Build_Experiments/Set_up_pages%2C_events%2C_tags%2C_and_audiences#add_pages
+          type: string
+        edit_url:
+          description: URL to load in the editor for this page
+          example: https://www.optimizely.com
+          type: string
+        key:
+          description: Unique string identifier for this Page within the Project
+          example: home_page
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_]+$
+          type: string
+        page_id:
+          description: The unique identifier of the Page that represents the experiment or campaign's URL Targeting.
+          example: 6700
+          format: int64
+          readOnly: true
+          type: integer
+      required:
+      - edit_url
+      type: object
+    CampaignUpdate:
+      properties:
+        changes:
+          description: A list of changes to apply to the Campaign
+          items:
+            $ref: '#/components/schemas/SharedCodeChange'
+          type: array
+        description:
+          description: The description or goal for a Campaign
+          example: Tailor the landing page hero element for specific audiences
+          type: string
+        experiment_priorities:
+          description: A list of lists of Experiment IDs that indicate the relative priority of how to show those Experiments in the context of the Campaign. Each list inside of the list represents a group of Experiments of equal priority where groups that appear earlier in the list are of higher priority to be shown.
+          items:
+            items:
+              format: int64
+              type: integer
+            type: array
+          type: array
+        for_journey:
+          default: false
+          description: Whether the Campaign has been part of journey or not
+          type: boolean
+        holdback:
+          description: Percentage of visitors to exclude from personalization, measured in basis points. 100 basis points = 1% traffic. For example, a value of 500 would mean that 95% of visitors will see a personalized experience and 5% will see the holdback.
+          example: 500
+          maximum: 10000
+          minimum: 0
+          type: integer
+        journey_id:
+          description: The journey this campaign is associated with, or null if not set
+          type: string
+        metrics:
+          description: An ordered list of metrics to track for the Campaign
+          items:
+            $ref: '#/components/schemas/Metric'
+          type: array
+        name:
+          description: The name of the Campaign
+          example: Landing Page Optimization
+          type: string
+        page_ids:
+          description: A list of Page IDs used in the Campaign.  Only `url_targeting` or `page_ids` can be used when updating a Campaign, but not both.
+          items:
+            format: int64
+            type: integer
+          type: array
+        url_targeting:
+          $ref: '#/components/schemas/URLTargeting'
+      type: object
+    ResultsShareLink:
+      properties:
+        url:
+          description: The share link for the results of this Campaign
+          format: url
+          readOnly: true
+          type: string
+      type: object
+    CompoundSubMetric:
+      description: A metric that is used only as part of the calculation for a ratio metric.
+      properties:
+        aggregator:
+          default: unique
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value.
+          enum:
+          - unique
+          - count
+          - sum
+          type: string
+        event_id:
+          description: The ID for the Event to select data from.
+          format: int64
+          type:
+          - integer
+          - 'null'
+        event_type:
+          description: The type of this Event.
+          enum:
+          - custom
+          - click
+          - pageview
+          type: string
+        field:
+          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted.
+          enum:
+          - revenue
+          - value
+          type:
+          - string
+          - 'null'
+        scope:
+          default: visitor
+          description: Specifies how Events should be grouped. Can also be thought of as the denominator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event.
+          enum:
+          - session
+          - visitor
+          - event
+          type: string
+      type: object
+  responses:
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    UnprocessableEntity:
+      description: Unprocessable entity error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource cannot be processed
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
   securitySchemes:
-    basicAuth:
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 authentication for the CMP API.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.cmp.optimizely.com/oauth/token
+          scopes: {}
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/auth
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes:
+            openid: Grants the ability to receive a unique identifier for the user.
+            profile: Grants access to user profile information.
+            offline_access: Grants the ability to refresh access_token using the refresh token even when user is not present (not logged in).
+        clientCredentials:
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes: {}
+    bearerAuth:
       type: http
-      scheme: basic
-      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
-externalDocs:
-  description: Optimizely Campaign REST API Documentation
-  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+      scheme: bearer
+      description: OAuth 2.0 Bearer token or personal access token generated from the Optimizely application settings.
+    apiKey:
+      scheme: bearer
+      type: http
+x-refined-from:
+- optimizely-cmp-openapi.yml
+- optimizely-content-marketing-platform-optimizely-cmp-open-api-documentation-openapi.json
+- optimizely-web-experimentation-openapi.yml
+- optimizely-web-experimentation-optimizely-api-openapi.json

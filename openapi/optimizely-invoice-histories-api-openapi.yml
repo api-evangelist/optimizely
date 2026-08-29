@@ -1,0 +1,571 @@
+openapi: 3.2.0
+info:
+  version: admin-v1
+  title: Admin API V1 Invoice Histories API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Invoice Histories
+paths:
+  /api/v1/admin/InvoiceHistories:
+    get:
+      tags:
+      - Invoice Histories
+      summary: Returns the EntitySet InvoiceHistories
+      operationId: InvoiceHistories_Get
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    post:
+      tags:
+      - Invoice Histories
+      summary: Post a new entity to EntitySet InvoiceHistories
+      operationId: InvoiceHistories_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.InvoiceHistory'
+        description: The entity to post
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/InvoiceHistories({id}):
+    get:
+      tags:
+      - Invoice Histories
+      summary: Returns the entity with the key from InvoiceHistories
+      operationId: InvoiceHistories_GetById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    put:
+      tags:
+      - Invoice Histories
+      summary: Replace entity in EntitySet InvoiceHistories
+      operationId: InvoiceHistories_PutById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.InvoiceHistory'
+        description: The entity to put
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    delete:
+      tags:
+      - Invoice Histories
+      summary: Delete entity in EntitySet InvoiceHistories
+      operationId: InvoiceHistories_DeleteById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: If-Match
+        in: header
+        description: If-Match header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Invoice Histories
+      summary: Update entity in EntitySet InvoiceHistories
+      operationId: InvoiceHistories_PatchById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.InvoiceHistory'
+        description: The entity to patch
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/InvoiceHistories/Default.Default():
+    get:
+      tags:
+      - Invoice Histories
+      summary: Call operation  Default
+      operationId: InvoiceHistories_Default
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/invoicehistories/delete:
+    delete:
+      tags:
+      - Invoice Histories
+      operationId: InvoiceHistories_DeleteRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/invoicehistories({key})/customproperties({custompropertyKey}):
+    get:
+      tags:
+      - Invoice Histories
+      operationId: InvoiceHistories_GetCustomPropertyByKeyAndCustompropertykey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: custompropertyKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/invoicehistories({key})/invoicehistorylines({invoicehistorylineKey}):
+    get:
+      tags:
+      - Invoice Histories
+      operationId: InvoiceHistories_GetInvoiceHistoryLineByKeyAndInvoicehistorylinekey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: invoicehistorylineKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/invoicehistories({key})/invoicehistorytaxes({invoicehistorytaxKey}):
+    get:
+      tags:
+      - Invoice Histories
+      operationId: InvoiceHistories_GetInvoiceHistoryTaxByKeyAndInvoicehistorytaxkey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: invoicehistorytaxKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Data.Entities.InvoiceHistory:
+      required:
+      - invoiceNumber
+      - invoiceType
+      - customerNumber
+      - customerSequence
+      - customerPO
+      - status
+      - currencyCode
+      - terms
+      - shipCode
+      - salesperson
+      - btCompanyName
+      - btAddress1
+      - btAddress2
+      - btCity
+      - btState
+      - btPostalCode
+      - btCountry
+      - stCompanyName
+      - stAddress1
+      - stAddress2
+      - stCity
+      - stState
+      - stPostalCode
+      - stCountry
+      - notes
+      - customerVatNumber
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        invoiceNumber:
+          maxLength: 50
+          minLength: 0
+          type: string
+        invoiceDate:
+          format: date-time
+          type: string
+        dueDate:
+          format: date-time
+          type: string
+        invoiceType:
+          maxLength: 50
+          minLength: 0
+          type: string
+        customerNumber:
+          maxLength: 50
+          minLength: 0
+          type: string
+        customerSequence:
+          maxLength: 50
+          minLength: 0
+          type: string
+        customerPO:
+          maxLength: 50
+          minLength: 0
+          type: string
+        status:
+          maxLength: 50
+          minLength: 0
+          type: string
+        isOpen:
+          type: boolean
+        currencyCode:
+          maxLength: 50
+          minLength: 0
+          type: string
+        terms:
+          maxLength: 50
+          minLength: 0
+          type: string
+        shipCode:
+          maxLength: 50
+          minLength: 0
+          type: string
+        salesperson:
+          maxLength: 50
+          minLength: 0
+          type: string
+        btCompanyName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btAddress1:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btAddress2:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btCity:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btState:
+          maxLength: 50
+          minLength: 0
+          type: string
+        btPostalCode:
+          maxLength: 50
+          minLength: 0
+          type: string
+        btCountry:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stCompanyName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stAddress1:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stAddress2:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stCity:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stState:
+          maxLength: 50
+          minLength: 0
+          type: string
+        stPostalCode:
+          maxLength: 50
+          minLength: 0
+          type: string
+        stCountry:
+          maxLength: 100
+          minLength: 0
+          type: string
+        notes:
+          type: string
+        productTotal:
+          format: decimal
+          type: number
+        discountAmount:
+          format: decimal
+          type: number
+        shippingAndHandling:
+          format: decimal
+          type: number
+        otherCharges:
+          format: decimal
+          type: number
+        taxAmount:
+          format: decimal
+          type: number
+        invoiceTotal:
+          format: decimal
+          type: number
+        currentBalance:
+          format: decimal
+          type: number
+        customerVatNumber:
+          maxLength: 50
+          minLength: 0
+          type: string
+        shippingVatAmount:
+          format: decimal
+          type: number
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

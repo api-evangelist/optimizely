@@ -1,0 +1,645 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Sessions API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Sessions
+paths:
+  /api/v1/sessions/current:
+    get:
+      tags:
+      - Sessions
+      operationId: SessionsV1_GetAsync
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+    delete:
+      tags:
+      - Sessions
+      operationId: SessionsV1_DeleteAsync
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Sessions
+      operationId: SessionsV1_PatchAsync
+      requestBody:
+        $ref: '#/components/requestBodies/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+  /api/v1/sessions:
+    post:
+      tags:
+      - Sessions
+      operationId: SessionsV1_PostAsync
+      requestBody:
+        $ref: '#/components/requestBodies/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+  /api/v1/sessions/current/authentication:
+    delete:
+      tags:
+      - Sessions
+      operationId: SessionsV1_DeleteAuthenticationAsync
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+components:
+  schemas:
+    Insite.Websites.WebApi.V1.ApiModels.CountryModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        abbreviation:
+          type: string
+        states:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Account.WebApi.V1.ApiModels.SessionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        isAuthenticated:
+          type: boolean
+        hasRfqUpdates:
+          type: boolean
+        userName:
+          type: string
+        userProfileId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        userLabel:
+          type: string
+        userRoles:
+          type: string
+        userRolesTranslated:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        newPassword:
+          type: string
+        resetPassword:
+          type: boolean
+        activateAccount:
+          type: boolean
+        resetToken:
+          type: string
+        displayChangeCustomerLink:
+          type: boolean
+        redirectToChangeCustomerPageOnSignIn:
+          type: boolean
+        billTo:
+          $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.BillToModel'
+        shipTo:
+          $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.ShipToModel'
+        language:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.LanguageModel'
+        currency:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.CurrencyModel'
+        deviceType:
+          type: string
+        persona:
+          type: string
+        personas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.PersonaModel'
+        defaultPersonaId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        dashboardIsHomepage:
+          type: boolean
+        isSalesPerson:
+          type: boolean
+        customLandingPage:
+          type: string
+        hasDefaultCustomer:
+          type: boolean
+        rememberMe:
+          type: boolean
+        keepMeSignedIn:
+          type: boolean
+        isRestrictedProductRemovedFromCart:
+          type: boolean
+        firstName:
+          type: string
+        lastName:
+          type: string
+        customerWasUpdated:
+          type: boolean
+        isGuest:
+          type: boolean
+        isRestrictedProductExistInCart:
+          type: boolean
+        pickUpWarehouse:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel'
+        fulfillmentMethod:
+          type: string
+        cartReminderUnsubscribeToken:
+          type: string
+        cartReminderUnsubscribeEmail:
+          type: string
+        displayMyAccountMenu:
+          type: boolean
+        displayPricingAndInventory:
+          type: boolean
+        passwordExpiresInDays:
+          format: int32
+          type: integer
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Customers.WebApi.V1.ApiModels.ShipToModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        isNew:
+          type: boolean
+        oneTimeAddress:
+          type: boolean
+        label:
+          type: string
+        validation:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.CustomerValidationDto'
+        isDefault:
+          type: boolean
+        id:
+          type: string
+        customerNumber:
+          type: string
+        customerSequence:
+          type: string
+        customerName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        contactFullName:
+          type: string
+        companyName:
+          type: string
+        attention:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+        address3:
+          type: string
+        address4:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        state:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+        country:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.CountryModel'
+        phone:
+          type: string
+        fullAddress:
+          type: string
+        email:
+          type: string
+        fax:
+          type: string
+        isVmiLocation:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Customers.WebApi.V1.ApiModels.BillToModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        shipTosUri:
+          type: string
+        isGuest:
+          type: boolean
+        label:
+          type: string
+        budgetEnforcementLevel:
+          type: string
+        costCodeTitle:
+          type: string
+        customerCurrencySymbol:
+          type: string
+        costCodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.CostCodeModel'
+        shipTos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.ShipToModel'
+        validation:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.CustomerValidationDto'
+        isDefault:
+          type: boolean
+        accountsReceivable:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AccountsReceivableDto'
+        id:
+          type: string
+        customerNumber:
+          type: string
+        customerSequence:
+          type: string
+        customerName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        contactFullName:
+          type: string
+        companyName:
+          type: string
+        attention:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+        address3:
+          type: string
+        address4:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        state:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+        country:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.CountryModel'
+        phone:
+          type: string
+        fullAddress:
+          type: string
+        email:
+          type: string
+        fax:
+          type: string
+        isVmiLocation:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Websites.WebApi.V1.ApiModels.LanguageModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        languageCode:
+          type: string
+        cultureCode:
+          type: string
+        description:
+          type: string
+        imageFilePath:
+          type: string
+        currencyPositioning:
+          type: string
+        languageTag:
+          type: string
+        isDefault:
+          type: boolean
+        isLive:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Account.WebApi.V1.ApiModels.PersonaModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        description:
+          type: string
+        isDefault:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Websites.WebApi.V1.ApiModels.StateModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        abbreviation:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Websites.WebApi.V1.ApiModels.CurrencyModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        currencyCode:
+          type: string
+        description:
+          type: string
+        currencySymbol:
+          type: string
+        isDefault:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Customers.Services.Dtos.AgingBucketDto:
+      type: object
+      properties:
+        amount:
+          format: decimal
+          type: number
+        amountDisplay:
+          type: string
+        label:
+          type: string
+    Insite.Customers.Services.Dtos.FieldValidationDto:
+      type: object
+      properties:
+        isRequired:
+          type: boolean
+        isDisabled:
+          type: boolean
+        maxLength:
+          format: int32
+          type: integer
+    Insite.Customers.Services.Dtos.AccountsReceivableDto:
+      type: object
+      properties:
+        agingBuckets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
+        agingBucketTotal:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
+        agingBucketFuture:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
+    Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+        city:
+          type: string
+        contactName:
+          type: string
+        countryId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        deactivateOn:
+          format: date-time
+          type: string
+        description:
+          type: string
+        phone:
+          type: string
+        postalCode:
+          type: string
+        shipSite:
+          type: string
+        state:
+          type: string
+        isDefault:
+          type: boolean
+        alternateWarehouses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel'
+        latitude:
+          format: decimal
+          type: number
+        longitude:
+          format: decimal
+          type: number
+        hours:
+          type: string
+        distance:
+          format: double
+          type: number
+        allowPickup:
+          type: boolean
+        pickupShipViaId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Customers.Services.Dtos.CustomerValidationDto:
+      type: object
+      properties:
+        firstName:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        lastName:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        companyName:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        attention:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        address1:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        address2:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        address3:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        address4:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        country:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        state:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        city:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        postalCode:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        phone:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        email:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        fax:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+    Insite.Customers.WebApi.V1.ApiModels.CostCodeModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        costCode:
+          type: string
+        description:
+          type: string
+        isActive:
+          type: boolean
+  requestBodies:
+    Insite.Account.WebApi.V1.ApiModels.SessionModel:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+        text/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+        application/x-www-form-urlencoded:
+          schema:
+            $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+        text/html:
+          schema:
+            $ref: '#/components/schemas/Insite.Account.WebApi.V1.ApiModels.SessionModel'
+      required: true
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

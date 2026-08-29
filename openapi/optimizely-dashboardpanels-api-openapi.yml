@@ -1,0 +1,83 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Dashboardpanels API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Dashboardpanels
+paths:
+  /api/v1/dashboardpanels:
+    get:
+      tags:
+      - Dashboardpanels
+      operationId: DashboardsV1_GetAsync
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Dashboard.WebApi.V1.ApiModels.DashboardPanelCollectionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Dashboard.WebApi.V1.ApiModels.DashboardPanelCollectionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Dashboard.WebApi.V1.ApiModels.DashboardPanelCollectionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Dashboard.WebApi.V1.ApiModels.DashboardPanelCollectionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Dashboard.WebApi.V1.ApiModels.DashboardPanelCollectionModel'
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Dashboard.WebApi.V1.ApiModels.DashboardPanelModel:
+      type: object
+      properties:
+        text:
+          type: string
+        quickLinkText:
+          type: string
+        url:
+          type: string
+        count:
+          format: int32
+          type: integer
+        isPanel:
+          type: boolean
+        isQuickLink:
+          type: boolean
+        panelType:
+          type: string
+        order:
+          format: int32
+          type: integer
+        quickLinkOrder:
+          format: int32
+          type: integer
+        openInNewTab:
+          type: boolean
+    Insite.Dashboard.WebApi.V1.ApiModels.DashboardPanelCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        dashboardPanels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Dashboard.WebApi.V1.ApiModels.DashboardPanelModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

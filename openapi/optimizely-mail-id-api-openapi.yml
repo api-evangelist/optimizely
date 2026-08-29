@@ -1,0 +1,207 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Mail ID API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Mail ID
+  description: Get information about a mail ID
+paths:
+  /{clientId}/mailid/{mailId}:
+    get:
+      tags:
+      - Mail ID
+      summary: Get information about a mail ID
+      description: Get detailed information about a mail ID. A mail ID is the aggregation of the mailing ID, recipient list ID and recipient ID.
+      operationId: getDetailedMailIdInformationByEncodedId
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: mailId
+        in: path
+        description: Mail ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The mail ID information was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMailIdInfo'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMailIdInfo'
+        '400':
+          description: The mail ID is invalidly encoded.
+        '409':
+          description: The indicated mail ID is not assigned to the indicated client. Ensure that "clientId" and "mailId" are correct and that "mailId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+  /{clientId}/mailid/{mailId}/plain:
+    get:
+      tags:
+      - Mail ID
+      summary: Get information about a plain mail ID (contains only mailing id)
+      description: Get detailed information about a plain mail ID. A plain mail ID consists only of the mailing ID.
+      operationId: getDetailedMailIdInformationByEncodedPlainId
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: mailId
+        in: path
+        description: Mail ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The mail ID information was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMailIdPlainInfo'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMailIdPlainInfo'
+        '400':
+          description: The mail ID is invalidly encoded or the indicated mail ID is not assigned to the indicated client. Ensure that "clientId" and "mailId" are correct and that "mailId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+  /{clientId}/mailid:
+    get:
+      tags:
+      - Mail ID
+      summary: Retrieve a mail ID
+      description: Retrieve a mail ID (for further usage). A mail ID is the aggregation of the mailing ID, recipient list ID and recipient ID.
+      operationId: retrieveBmMailId
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: MailingToUserID
+        in: query
+        description: MailingToUserID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The mail ID information was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMailId'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMailId'
+        '400':
+          description: A valid mailingToUserId must be provided.
+        '409':
+          description: The indicated mailingToUser ID is not assigned to the indicated client. Ensure that "clientId" and "mailingToUserId" are correct and that "mailingToUserId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+components:
+  schemas:
+    RestMailId:
+      type: object
+      properties:
+        mailId:
+          type: string
+          description: Encoded mail ID
+    RestMailIdPlainInfo:
+      type: object
+      properties:
+        mailingId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+    RestMailIdInfo:
+      type: object
+      properties:
+        mailingId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        recipientListId:
+          type: integer
+          description: Recipient list ID
+          format: int64
+        recipientId:
+          type: string
+          description: Recipient ID
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

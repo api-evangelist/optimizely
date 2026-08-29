@@ -1,0 +1,519 @@
+openapi: 3.2.0
+info:
+  version: admin-v1
+  title: Admin API V1 Rule Managers API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Rule Managers
+paths:
+  /api/v1/admin/RuleManagers:
+    get:
+      tags:
+      - Rule Managers
+      summary: Returns the EntitySet RuleManagers
+      operationId: RuleManagers_Get
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    post:
+      tags:
+      - Rule Managers
+      summary: Post a new entity to EntitySet RuleManagers
+      operationId: RuleManagers_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.RuleManager'
+        description: The entity to post
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/RuleManagers({id}):
+    get:
+      tags:
+      - Rule Managers
+      summary: Returns the entity with the key from RuleManagers
+      operationId: RuleManagers_GetById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    put:
+      tags:
+      - Rule Managers
+      summary: Replace entity in EntitySet RuleManagers
+      operationId: RuleManagers_PutById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.RuleManager'
+        description: The entity to put
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    delete:
+      tags:
+      - Rule Managers
+      summary: Delete entity in EntitySet RuleManagers
+      operationId: RuleManagers_DeleteById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: If-Match
+        in: header
+        description: If-Match header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Rule Managers
+      summary: Update entity in EntitySet RuleManagers
+      operationId: RuleManagers_PatchById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.RuleManager'
+        description: The entity to patch
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/RuleManagers/Default.Default():
+    get:
+      tags:
+      - Rule Managers
+      summary: Call operation  Default
+      operationId: RuleManagers_Default
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/RuleManagers({id})/Default.rules:
+    post:
+      tags:
+      - Rule Managers
+      summary: Call operation  rules
+      operationId: RuleManagers_SetRulesById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ruleClauses:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Insite.Data.Entities.RuleClause'
+        description: rules action parameters
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/rulemanagers({key})/rules:
+    post:
+      tags:
+      - Rule Managers
+      operationId: RuleManagers_SetRulesByKey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/rulemanagers/delete:
+    delete:
+      tags:
+      - Rule Managers
+      operationId: RuleManagers_DeleteRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/rulemanagers({key})/customproperties({custompropertyKey}):
+    get:
+      tags:
+      - Rule Managers
+      operationId: RuleManagers_GetCustomPropertyByKeyAndCustompropertykey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: custompropertyKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/rulemanagers({key})/ruleclauses({ruleclauseKey}):
+    get:
+      tags:
+      - Rule Managers
+      operationId: RuleManagers_GetRuleClauseByKeyAndRuleclausekey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: ruleclauseKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Data.Entities.RuleManager:
+      required:
+      - name
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        ruleTypeId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          maxLength: 100
+          minLength: 0
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
+    Insite.Data.Entities.RuleClause:
+      required:
+      - condition
+      - criteriaType
+      - criteriaObject
+      - criteriaProperty
+      - criteriaValue
+      - comparisonOperator
+      - simpleValue
+      - valueList
+      - valueMinimum
+      - valueMaximum
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        ruleManagerId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        ruleTypeOptionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        executionGroup:
+          format: int32
+          type: integer
+        executionOrder:
+          format: int32
+          type: integer
+        condition:
+          maxLength: 50
+          minLength: 0
+          type: string
+        criteriaType:
+          maxLength: 50
+          minLength: 0
+          type: string
+        criteriaObject:
+          maxLength: 255
+          minLength: 0
+          type: string
+        criteriaProperty:
+          maxLength: 100
+          minLength: 0
+          type: string
+        criteriaValue:
+          maxLength: 255
+          minLength: 0
+          type: string
+        comparisonOperator:
+          maxLength: 50
+          minLength: 0
+          type: string
+        simpleValue:
+          maxLength: 2048
+          minLength: 0
+          type: string
+        valueList:
+          maxLength: 2048
+          minLength: 0
+          type: string
+        valueMinimum:
+          maxLength: 100
+          minLength: 0
+          type: string
+        valueMaximum:
+          maxLength: 100
+          minLength: 0
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

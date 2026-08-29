@@ -1,0 +1,178 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Realtimeinventory API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Realtimeinventory
+paths:
+  /api/v1/realtimeinventory:
+    post:
+      tags:
+      - Realtimeinventory
+      operationId: RealTimeInventoryV1_PostAsync
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryParameter'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryParameter'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryParameter'
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryParameter'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryParameter'
+          text/html:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryParameter'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryModel'
+components:
+  schemas:
+    Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        realTimeInventoryResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.ProductInventoryDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.Plugins.Inventory.ProductInventoryDto:
+      type: object
+      properties:
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        qtyOnHand:
+          format: decimal
+          type: number
+        inventoryAvailabilityDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.InventoryAvailabilityDto'
+        inventoryWarehousesDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.InventoryWarehousesDto'
+        additionalResults:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.WarehouseDto:
+      type: object
+      properties:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
+          type: string
+        requiresRealTimeInventory:
+          type: boolean
+        name:
+          type: string
+        description:
+          type: string
+        qty:
+          format: decimal
+          type: number
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.Plugins.Inventory.InventoryWarehousesDto:
+      type: object
+      properties:
+        unitOfMeasure:
+          type: string
+        warehouseDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.WarehouseDto'
+    Insite.Catalog.Services.Dtos.AvailabilityDto:
+      type: object
+      properties:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
+          type: string
+        requiresRealTimeInventory:
+          type: boolean
+    Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryParameter:
+      type: object
+      properties:
+        productIds:
+          type: array
+          items:
+            format: uuid
+            type: string
+            example: 00000000-0000-0000-0000-000000000000
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+        includeAlternateInventory:
+          type: boolean
+        configurations:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              format: uuid
+              type: string
+              example: 00000000-0000-0000-0000-000000000000
+    Insite.Core.Plugins.Inventory.InventoryAvailabilityDto:
+      type: object
+      properties:
+        unitOfMeasure:
+          type: string
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

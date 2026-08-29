@@ -1,17 +1,11 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Optimizely Campaign REST Assets Smart Campaigns API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  title: Optimizely Smart Campaigns API
   version: '1.0'
-  contact:
-    name: Optimizely Support
-    url: https://support.optimizely.com
-  termsOfService: https://www.optimizely.com/legal/terms/
+  description: 'Operations tagged Smart Campaigns across 2 of this provider''s published API definitions: optimizely-campaign-openapi.yml, optimizely-campaign-optimizely-campaign-rest-api-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.campaign.episerver.net/rest
   description: Optimizely Campaign Production Server
-security:
-- basicAuth: []
 tags:
 - name: Smart Campaigns
   description: Manage smart campaigns that automate multi-step marketing workflows.
@@ -36,6 +30,41 @@ paths:
                   $ref: '#/components/schemas/SmartCampaign'
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - basicAuth: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Create or copy a Smart Campaign
+      operationId: createOrCopySmartCampaign
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CampaignRequestData'
+      responses:
+        '201':
+          description: The Smart Campaign was created or copied successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+      description: Optimizely Campaign Production Server
   /{clientId}/smartcampaigns/{campaignId}:
     get:
       operationId: getSmartCampaign
@@ -57,6 +86,79 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Smart campaign not found
+      security:
+      - basicAuth: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Update the name of a Smart Campaign
+      operationId: updateCampaignMessage_2
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: New campaign name
+      responses:
+        '200':
+          description: The Smart Campaign name was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Delete a Smart Campaign
+      operationId: deleteSmartCampaign
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The Smart Campaign was deleted successfully.
+        '400':
+          description: 'The Smart Campaign #" + campaignMailing.getMailingId() + " cannot be deleted as it contains already started messages.'
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+      description: Optimizely Campaign Production Server
   /{clientId}/smartcampaigns/{campaignId}/start:
     post:
       operationId: startSmartCampaign
@@ -74,6 +176,11 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Smart campaign not found
+      security:
+      - basicAuth: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+      description: Optimizely Campaign Production Server
   /{clientId}/smartcampaigns/{campaignId}/pause:
     post:
       operationId: pauseSmartCampaign
@@ -91,7 +198,2330 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Smart campaign not found
+      security:
+      - basicAuth: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+      description: Optimizely Campaign Production Server
+  /{clientId}/smartcampaigns/{campaignId}/activate:
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Activate a Smart Campaign
+      description: Activate a Smart Campaign. The Smart Campaign will change status to "Activated".
+      operationId: activateSmartCampaign
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The Smart Campaign was activated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+        '409':
+          description: The Smart Campaign could not be activated because it must be in status "Activation required".
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/deactivate:
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Deactivate a Smart Campaign
+      description: Deactivate a Smart Campaign. The Smart Campaign will change status to "Activation required".
+      operationId: deactivateSmartCampaign
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The Smart Campaign was deactivated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+        '409':
+          description: The Smart Campaign could not be deactivated because it must be in status "Activated".
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/abtest:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about a "A/B test" node of a Smart Campaign
+      description: Get detailed information about a "A/B test" node of a Smart Campaign, such as mode (e.g. best open rate, best click rate), scheduled time or fallback.
+      operationId: getSplitNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The "A/B test" node was retrieved successfully (empty response if no "A/B test" node was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSplitNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSplitNode'
+        '404':
+          description: The "A/B test" node could not be found in the Smart Campaign. Ensure that the required parameters such as "campaignId" are correct and the "A/B test" node exists.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Create or update an "A/B test" node of a Smart Campaign
+      description: Create or update an "A/B test" node of a Smart Campaign. You can enable and specify optimization mode and set predecessor and successor node.
+      operationId: createOrUpdateSplitNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SplitRequestData'
+      responses:
+        '200':
+          description: The "A/B test" node was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSplitNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSplitNode'
+        '201':
+          description: The "A/B test" node was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSplitNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSplitNode'
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Delete an "A/B test" node of a Smart Campaign
+      operationId: deleteSplitNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The "A/B test" node of the Smart Campaign was deleted successfully.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/abtest/successors/{nodeId}:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about a connection from an "A/B test" node
+      description: Get detailed information about a connection from an "A/B test" node to other nodes, such as target group or relative or absolute number of recipients.
+      operationId: getSuccessor
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: nodeId
+        in: path
+        description: Successor node ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The connection was retrieved successfully (empty response if no successor node was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSplitSuccessor'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSplitSuccessor'
+        '404':
+          description: The successor node could not be found. Ensure that the required parameters such as "campaignId" or "nodeId" are correct and the successor node exists.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Create or update a connection from a "A/B test" node
+      description: Create or update a connection from a "A/B test" node. You can specify target groups or predecessor and successor node.
+      operationId: createOrUpdateSuccessorEdge
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: nodeId
+        in: path
+        description: Successor node ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SplitSuccessorRequestData'
+      responses:
+        '200':
+          description: The "A/B test" connection was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSplitSuccessor'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSplitSuccessor'
+        '201':
+          description: The "A/B test" connection was created successfully.
+        '404':
+          description: The "A/B test" successor node could not be found. Ensure that the required parameters such as "campaignId" or "nodeId" are correct and the successor node exists.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Delete a connection from a "A/B test" node to another node
+      operationId: deleteSuccessorEdge
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: nodeId
+        in: path
+        description: Successor node ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The connection to the successor node was deleted successfully.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/abtest/successors:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about all connections from an "A/B test" node
+      description: Get detailed information about all connections from an "A/B test" node to other nodes, such as target group or relative or absolute number of recipients.
+      operationId: findSuccessors
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The connections were retrieved successfully (empty response if no successor node was found).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestSplitSuccessor'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestSplitSuccessor'
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Delete all connections from the "A/B test" node to other nodes
+      operationId: deleteSuccessorEdges
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: All connections from the "A/B test" node were deleted successfully.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/analysis:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get analysis data of a Smart Campaign
+      description: Get detailed analysis data of a Smart Campaign, such as start date of the analysis, current state of the analysis or the number of mailing recipients.
+      operationId: getAnalysisData
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The analysis data was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestAnalysisData'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestAnalysisData'
+        '409':
+          description: The analysis data could not be retrieved because the analysis is not finished or was not started.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Schedule new recipient analysis for a Smart Campaign
+      operationId: scheduleAnalysis
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '202':
+          description: The recipient analysis was scheduled.
+        '400':
+          description: The request is invalid. The recipient analysis cannot be started.
+        '409':
+          description: The maximum number of simultaneously running campaign analyses was reached.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Cancel a running recipient analysis of a Smart Campaign
+      operationId: cancelAnalysis
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The recipient analysis of the Smart Campaign was cancelled successfully.
+        '404':
+          description: There is no recipient analysis for the specified Smart Campaign.
+        '409':
+          description: The recipient analysis of the Smart Campaign could not be cancelled because it is not running.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/block:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about a "Block" node of a Smart Campaign
+      description: Get detailed information about a "Block" node of a Smart Campaign, such as custom blacklist IDs or node ID.
+      operationId: getBlockNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The "Block" node was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestBlockNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestBlockNode'
+        '404':
+          description: The "Block" node could not be found. Ensure that the required parameters such as "campaignId" are correct and the "Block" node exists.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Create or update a "Block" node of a Smart Campaign
+      description: Create or update a "Block" node of a Smart Campaign, such as custom blacklist IDs or predecessor and successor node.
+      operationId: createOrUpdateBlockNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BlockRequestData'
+      responses:
+        '200':
+          description: The "Block" node was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestBlockNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestBlockNode'
+        '201':
+          description: The "Block" node was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestBlockNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestBlockNode'
+        '400':
+          description: Invalid request. Limit the number of "customblacklistIds" (default maximum is three).
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Delete a "Block" node of a Smart Campaign
+      operationId: deleteBlockNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The "Block" node was deleted successfully.
+        '404':
+          description: The "Block" node could not be found in the Smart Campaign. Ensure that the required parameters such as "campaignId" are correct and the "Block" node exists.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/cap:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about a "Limit" node of a Smart Campaign
+      description: Get detailed information about a "Limit" node of a Smart Campaign, such as relative or absolute number of recipients or node ID.
+      operationId: getCapNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The "Limit" node was retrieved successfully (empty response if no "Limit" node was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCapNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestCapNode'
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Create or update a "Limit" node of a Smart Campaign
+      description: Create or update a "Limit" node of a Smart Campaign, such as relative or absolute number of recipients or predecessor and successor node.
+      operationId: createOrUpdateCapNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CapRequestData'
+      responses:
+        '200':
+          description: The "Limit" node was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCapNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestCapNode'
+        '201':
+          description: The "Limit" node was created successfully.
+        '400':
+          description: Invalid request. Use either "relative" or "absolute" parameter.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Delete a "Limit" node of a Smart Campaign
+      operationId: deleteCapNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The "Limit" node was deleted successfully.
+        '404':
+          description: The "Limit" node could not be found in the Smart Campaign. Ensure that the required parameters such as "campaignId" are correct and the "Limit" node exists.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/messages:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about all mailings of a Smart Campaign
+      operationId: getMessages
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The mailings of given Smart Campaign were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestMessageNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestMessageNode'
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Create a mailing
+      description: Create a Smart Campaign mailing and specify information such as sender address, name, content (plain text) or media code.
+      operationId: createCampaignMessage
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MessageRequestData'
+      responses:
+        '201':
+          description: The mailing was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/messages/{mailingId}:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about a mailing
+      description: Get detailed information about a mailing of a Smart Campaign, such as status, format, type or creation date.
+      operationId: getSmartCampaignMessage_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The mailing was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Update a mailing
+      description: Update information of a mailing, such as name, subject or content.
+      operationId: updateCampaignMessage_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MessageRequestData'
+      responses:
+        '200':
+          description: The mailing was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Delete a mailing
+      description: Delete a mailing that was created in Smart Campaigns.
+      operationId: deleteCampaignMessage_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The mailing was deleted successfully.
+        '409':
+          description: The mailing could not be deleted because the Smart Campaign must be in status "New". Please check the status of the campaign to which the mailing belongs.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/messages/{mailingId}/attachments:
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Add attachments into a campaign message. Only applicable for campaign message of type email
+      description: Add attachments into a campaign message. With this operation you can add a single, or multiple attachments into a campaign message.
+      operationId: addAttachments_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                attachmentIds:
+                  type: array
+                  description: A comma separated list of attachment ids to be added
+                  items:
+                    type: integer
+                    format: int64
+            encoding:
+              attachmentIds:
+                explode: false
+      responses:
+        '200':
+          description: The attachments were successfully added into campaign message.
+        '400':
+          description: The "attachmentIds" parameter is either empty or invalid, or the campaign mailing is of type FAX.
+        '404':
+          description: The campaign mailing was not found.
+        '405':
+          description: The campaign message is not of type EMAIL.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Delete attachments of a campaign message. Only applicable for campaign message of type email
+      operationId: deleteAttachments_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: attachmentIds
+        in: query
+        description: A comma separated list of attachment ids to be deleted
+        required: true
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The attachments were successfully deleted from campaign message.
+        '400':
+          description: The "attachmentIds" parameter is empty, or the campaign mailing is of type FAX.
+        '404':
+          description: The campaign mailing was not found.
+        '405':
+          description: The campaign message is not of type EMAIL.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/messages/{mailingId}/content:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get the content of a mailing (email)
+      description: Get the content of a mailing (email) and define the content type to be delivered.
+      operationId: getCampaignMessageContent_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: Accept
+        in: header
+        description: 'Controls which content type is used <p><i>Available values</i> : text/plain, text/html<p><i>Default value</i> : text/plain</p><p>Does not work with the "Try it out" feature.</p>'
+        schema:
+          type: string
+      - name: source
+        in: query
+        schema:
+          type: string
+          default: message
+          enum:
+          - EDITOR
+          - MESSAGE
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The content of the mailing (in the indicated content type) was retrieved successfully.
+        '404':
+          description: No content could be found for the indicated content type. Ensure that the "Accept" parameter has the correct content type and the content exists.
+        '406':
+          description: The content type is not supported. Ensure that the "Accept" parameter has the correct content type.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Update the content of a mailing
+      description: 'Update the content of a mailing. You can transmit plain text, html, or multipart content that consists of HTML and plain text. See <a href="https://world.episerver.com/blogs/philipp-gaska/dates/2021/6/updating-mailing-content-via-rest-api" target="_blank">Updating mailing content via REST API</a> on Optimizely World. <b>Note</b>: You can only update the content of mailings created via REST API. This operation is also not suitable for confirmation mailings.'
+      operationId: storeCampaignMessageContent_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MultiRequest'
+      responses:
+        '200':
+          description: The mailing content was updated successfully.
+        '409':
+          description: The mailing content could not be updated because of a general error.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Delete the content of a mailing (email)
+      operationId: removeContentFromCampaignMessage_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The mailing content was deleted successfully.
+        '400':
+          description: The mailing content cannot be deleted because the mailing is not in status "New". Please check the mailing status.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/messages/{mailingId}/test/{testMailingId}:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about the sending status of all recipients of a test mailing
+      description: Get detailed information about the sending status of all recipients of a test mailing, such as enqueued, sending, sent or failed.
+      operationId: getTestMailingReport_2
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: testMailingId
+        in: path
+        description: Test mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The report was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestMailingReport'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/TestMailingReport'
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/messages/{mailingId}/test:
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Send a test mailing
+      description: Send a test mailing to check content, layout or target groups before sending the actual mailing.
+      operationId: startTestMailing_2
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TestMailingRequestData'
+      responses:
+        '202':
+          description: The test message was sent successfully. The response contains a report on the recipients included in the test mailing (check "validRecipientAddresses" field).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestMailingStartedReport'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/TestMailingStartedReport'
+        '400':
+          description: At least one request parameter is not valid
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/messages/{mailingId}/tracking/links/{trackingLinkId}:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about a tracking link of a mailing
+      description: Get detailed information about a tracking link of a mailing, such as ID, URL or link occurrences in the text version.
+      operationId: getTrackingLink_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: trackingLinkId
+        in: path
+        description: Tracking link ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The tracking link was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingLink'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingLink'
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Update the tracking link configuration of a mailing
+      operationId: updateLinkTracking_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: trackingLinkId
+        in: path
+        description: Tracking link ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TrackingLinkConfigurationRequestData'
+      responses:
+        '200':
+          description: The tracking link configuration was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingLink'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingLink'
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/messages/{mailingId}/tracking/links:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about all tracking links of a mailing
+      description: Get detailed information about all tracking links of a mailing, such as ID, URL or link occurrences in the text version.
+      operationId: getTrackingLinks_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The tracking links were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestTrackingLink'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestTrackingLink'
+        '400':
+          description: The number of tracking links exceeded the maximum of 3000.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/messages/{mailingId}/tracking:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about the tracking configuration of a mailing
+      operationId: getTrackingConfiguration_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The tracking configuration was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingConfiguration'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingConfiguration'
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Update the tracking configuration of a mailing
+      operationId: updateTrackingConfiguration_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TrackingConfigurationRequestData'
+      responses:
+        '200':
+          description: The tracking configuration was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingConfiguration'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingConfiguration'
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/messages/{mailingId}/pause:
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Pause a mailing
+      description: Pause a mailing that is part of a Smart Campaign.
+      operationId: pauseCampaignMessage_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The mailing was paused successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+        '409':
+          description: The mailing could not be paused because the Smart Campaign must be in status "Sending". Please check the status of the campaign to which the mailing belongs.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/messages/{mailingId}/start:
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Start a mailing
+      description: Start a mailing that is part of a Smart Campaign. The Smart Campaign to which the mailing belongs must be in status "Activated" or "Paused".
+      operationId: startCampaignMessage_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The mailing was started successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+        '409':
+          description: The mailing could not be started because the Smart Campaign must be in status "Activated". Please check the status of the campaign to which the mailing belongs.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/messages/{mailingId}/stop:
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Stop a mailing
+      description: Stop a mailing that is part of a Smart Campaign.
+      operationId: stopCampaignMessage_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: path
+        description: Campaign mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The mailing was stopped successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+        '409':
+          description: The mailing could not be stopped because the Smart Campaign must be in status "Sending" or "Paused". Please check the status of the campaign to which the mailing belongs.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/recipientLists:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about a "Recipients" node
+      description: Get detailed information about a "Recipients" node, such as node ID, successor node ID or grid location.
+      operationId: getRecipientListsNodeForSCMailing_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The "Recipients" node was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListsNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListsNode'
+        '404':
+          description: 'The "Recipients" node could not be found. Ensure that the required parameters such as "campaignId" or "nodeId" are correct and the "Recipients" node exists. '
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Create or update a "Recipients" node
+      description: Create or update a "Recipients" node. The "recipientListIds" parameter is only required for updating.
+      operationId: createOrUpdateRecipientListsNode_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RecipientListsRequestData'
+      responses:
+        '200':
+          description: The "Recipient" node was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListsNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListsNode'
+        '201':
+          description: The "Recipient" node was created successfully.
+        '404':
+          description: The "Recipient" node could not be found. Ensure that the required parameters such as "campaignId" or "recipientListIds" are correct and the "Recipients" node exists.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/schedules:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about all "Wait" nodes of a Smart Campaign
+      description: Get detailed information about all "Wait" nodes of a Smart Campaign, such as period (days, hours, minutes) or fallback.
+      operationId: findWaitNodes
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The "Wait" nodes were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestWaitNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestWaitNode'
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Create a new "Wait" node in a Smart Campaign
+      description: Create a new "Wait" node in a Smart Campaign and add information such as scheduled time or predecessor and successor node.
+      operationId: createWaitNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WaitRequestData'
+      responses:
+        '201':
+          description: The "Wait" node was created successfully (check "Location" header for exact URI).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestWaitNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestWaitNode'
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/schedules/{waitNodeId}:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about a "Wait" node of a Smart Campaign
+      description: Get detailed information about a "Wait" node of a Smart Campaign, such as period (days, hours, minutes) or fallback.
+      operationId: getWaitNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: waitNodeId
+        in: path
+        description: '"Wait" node ID'
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The "Wait" node was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestWaitNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestWaitNode'
+        '404':
+          description: The "Wait" node could not be found. Ensure that the required parameters such as "campaignId" ore "waitNodeId" are correct and the "Wait" node exists.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Update a "Wait" node in a Smart Campaign
+      description: Update information of a "Wait" node in a Smart Campaign, such as scheduled time, send time optimization or predecessor and successor node.
+      operationId: updateWaitNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: waitNodeId
+        in: path
+        description: '"Wait" node ID'
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WaitRequestData'
+      responses:
+        '200':
+          description: The "Wait" node was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestWaitNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestWaitNode'
+        '404':
+          description: The "Wait" node could not be found. Ensure that the required parameters such as "campaignId" or "waitNodeId" are correct and the "Wait" node exists.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Delete a "Wait" node in a Smart Campaign
+      operationId: deleteWaitNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: waitNodeId
+        in: path
+        description: '"Wait" node ID'
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The "Wait" node was deleted successfully.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/targetGroups:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about all "Target groups" nodes of a Smart Campaign
+      description: Get detailed information about all "Target groups" nodes of a Smart Campaign, such as name of the target group, node ID or successor node ID.
+      operationId: findTargetGroups
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The "Target groups" nodes were retrieved successfully (empty response if none was found).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestTargetGroupNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestTargetGroupNode'
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Create or update a "Target groups" node of a Smart Campaign
+      description: Create or update a "Target groups" node of a Smart Campaign, such as name of the target group or predecessor and successor node.
+      operationId: createOrUpdateTargetGroupNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TargetGroupRequestData'
+      responses:
+        '200':
+          description: The "Target groups" node was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestTargetGroupNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestTargetGroupNode'
+        '201':
+          description: The "Target groups" node was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestTargetGroupNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestTargetGroupNode'
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Delete all "Target groups" nodes of a Smart Campaign
+      operationId: deleteTargetGroupNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The "Target groups" nodes were deleted successfully.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/targetGroups/{filterNodeId}:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about a "Target groups" node of a Smart Campaign
+      description: Get detailed information about a "Target groups" node of a Smart Campaign, such as name of the target group, node ID or successor node ID.
+      operationId: getTargetGroup
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: filterNodeId
+        in: path
+        description: '"Target groups" node ID'
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The "Target groups" node was retrieved successfully (empty response if no "Target group" node was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestTargetGroupNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestTargetGroupNode'
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Delete a "Target groups" node of a Smart Campaign
+      operationId: deleteTargetGroupNodeByNodeId
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: filterNodeId
+        in: path
+        description: ID of the "Target group" node which should be deleted
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The "Target groups" node was deleted successfully.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/throttles:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about all "Throttle" nodes of a Smart Campaign
+      description: Get detailed information about all "Throttle" nodes of a Smart Campaign, such messages per hour, node ID or successor node ID.
+      operationId: findThrottleNodes
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The "Throttle" nodes were retrieved successfully (empty response if no "Throttle" node was found).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestThrottleNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestThrottleNode'
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Create a new "Throttle" node in a Smart Campaign
+      description: Create a new "Throttle" node in a Smart Campaign and add information such as maximum number of messages per hour or predecessor and successor node.
+      operationId: createThrottleNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ThrottleRequestData'
+      responses:
+        '201':
+          description: The "Throttle" node was created successfully (check "Location" header for exact URI).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestThrottleNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestThrottleNode'
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/throttles/{throttleNodeId}:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get information about a "Throttle" node of a Smart Campaign
+      description: Get detailed information about a "Throttle" node in a Smart Campaign, such as messages per hour, node ID or successor node ID.
+      operationId: getThrottleNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: throttleNodeId
+        in: path
+        description: '"Throttle" node ID'
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The "Throttle" node was retrieved successfully (empty response if no "Throttle" node was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestThrottleNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestThrottleNode'
+        '404':
+          description: The "Throttle" node could not be found in the Smart Campaign. Ensure that the required parameters such as "campaignId" or "throttleNodeId" are correct and the "Throttle" node exists.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Update a "Throttle" node of a Smart Campaign
+      description: Update a "Throttle" node of a Smart Campaign and specify information such as maximum number of messages per hour or predecessor and successor node.
+      operationId: updateThrottleNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: throttleNodeId
+        in: path
+        description: '"Throttle" node ID'
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ThrottleRequestData'
+      responses:
+        '200':
+          description: The "Throttle" node was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestThrottleNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestThrottleNode'
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Smart Campaigns
+      summary: Delete a "Throttle" node in a Smart Campaign
+      operationId: deleteThrottleNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: throttleNodeId
+        in: path
+        description: '"Throttle" node ID'
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The "Throttle" node was deleted successfully.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/report:
+    get:
+      tags:
+      - Smart Campaigns
+      summary: Get a campaign report
+      description: Get a detailed campaign report containing information such as number of recipients, opens, clicks, bounces or unsubscribes.
+      operationId: getReport_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The report was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignMailingRestReport'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/CampaignMailingRestReport'
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/smartcampaigns/{campaignId}/stop:
+    post:
+      tags:
+      - Smart Campaigns
+      summary: Cancel a Smart Campaign
+      operationId: stopSmartCampaign
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: campaignId
+        in: path
+        description: Smart Campaign ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The Smart Campaign was cancelled successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+        '409':
+          description: The Smart Campaign could not be cancelled. Ensure that the Smart Campaign has started.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
 components:
+  parameters:
+    campaignId:
+      name: campaignId
+      in: path
+      required: true
+      description: The unique identifier for the campaign
+      schema:
+        type: integer
+        format: int64
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
   schemas:
     SmartCampaign:
       type: object
@@ -120,27 +2550,1446 @@ components:
           type: string
           format: date-time
           description: Timestamp when the campaign was last modified
-  parameters:
-    campaignId:
-      name: campaignId
-      in: path
-      required: true
-      description: The unique identifier for the campaign
-      schema:
-        type: integer
-        format: int64
-    clientId:
-      name: clientId
-      in: path
-      required: true
-      description: The unique identifier for the Optimizely Campaign client
-      schema:
-        type: string
+    TargetGroupRequestData:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the target group
+        targetGroup:
+          type: string
+          description: 'Target group definition as JSON, e.g. { "targetGroup": { "id": 123456 }}. Connect definitions by using the operators ''and'', ''or'' or ''not''.'
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
+    RestSplitSuccessor:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        name:
+          type: string
+          description: Node name
+        targetGroup:
+          $ref: '#/components/schemas/Filter'
+        relative:
+          type: number
+          description: Number of relative recipients in percent
+          format: float
+        absolute:
+          type: integer
+          description: Number of absolute recipients
+          format: int32
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    RestThrottleNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        maxMessagesPerHour:
+          type: integer
+          format: int32
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    RestTrackingLink:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Tracking link ID
+          format: int64
+        url:
+          type: string
+          description: Tracking link URL
+        htmlTracking:
+          type: string
+          description: Tracking state of a link in the HTML version
+          enum:
+          - DEFAULT
+          - ENABLED
+          - DISABLED
+        textTracking:
+          type: string
+          description: Tracking state of a link in the text version
+          enum:
+          - DEFAULT
+          - ENABLED
+          - DISABLED
+        description:
+          type: string
+          description: Tracking link description
+        htmlOccurrences:
+          type: integer
+          description: Link occurrences in the HTML version
+          format: int32
+        textOccurrences:
+          type: integer
+          description: Link occurrences in the text version
+          format: int32
+        clickProfileIds:
+          type: array
+          description: Click profile IDs
+          items:
+            type: integer
+            description: Click profile IDs
+            format: int64
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+    RestRecipientListsNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        recipientListIds:
+          type: array
+          description: List of recipient list IDs
+          items:
+            type: integer
+            description: List of recipient list IDs
+            format: int64
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    RestRecipients:
+      type: object
+      properties:
+        net:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+        skipped:
+          type: integer
+          format: int32
+        inQueue:
+          type: integer
+          format: int32
+      description: Number of total, skipped and in-queue recipients
+    TrackingLinkConfigurationRequestData:
+      type: object
+      properties:
+        htmlTracking:
+          type: string
+          description: Tracking state of a link in the HTML version
+          enum:
+          - DEFAULT
+          - ENABLED
+          - DISABLED
+        textTracking:
+          type: string
+          description: Tracking state of a link in the text version
+          enum:
+          - DEFAULT
+          - ENABLED
+          - DISABLED
+        clickProfileIds:
+          type: array
+          description: IDs of relevant click profiles. An empty list will remove all entries.
+          items:
+            type: integer
+            description: IDs of relevant click profiles. An empty list will remove all entries.
+            format: int64
+        description:
+          type: string
+          description: Tracking link description
+    RestClicks:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+        unique:
+          type: integer
+          format: int32
+      description: Number of unique and total clicks
+    SplitSuccessorRequestData:
+      type: object
+      properties:
+        absolute:
+          type: integer
+          description: Number of recipients to be contacted. Cannot be provided simultaneously with relative value.
+          format: int32
+        relative:
+          type: number
+          description: Percentage of recipients to be contacted. Cannot be provided simultaneously with absolute value.
+          format: float
+        name:
+          type: string
+          description: Name of the target group
+        targetGroup:
+          type: string
+          description: 'Target group definition as JSON, e.g. { "targetGroup": { "id": 123456 }}. Connect definitions by using the operators ''and'', ''or'' or ''not''.'
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
+    Filter:
+      type: object
+      properties:
+        name:
+          type: string
+    RecipientListsRequestData:
+      required:
+      - recipientListIds
+      type: object
+      properties:
+        recipientListIds:
+          type: array
+          description: Comma-separated list of recipient list IDs
+          items:
+            type: integer
+            description: Comma-separated list of recipient list IDs
+            format: int64
+        successorNodeId:
+          type: string
+          description: Successor node
+    RestSmartCampaignStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestSmartCampaign'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    CampaignMailingRestReport:
+      type: object
+      properties:
+        campaignId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        campaignName:
+          type: string
+          description: Mailing name
+        recipients:
+          $ref: '#/components/schemas/RestRecipients'
+        bounces:
+          $ref: '#/components/schemas/RestBounces'
+        unsubscribes:
+          type: integer
+          description: Number of unique unsubscribes
+          format: int32
+        opens:
+          $ref: '#/components/schemas/RestOpens'
+        clicks:
+          $ref: '#/components/schemas/RestClicks'
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    RestAnalysisData:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Number of recipients that can receive the mailing
+          format: int32
+        analysisDate:
+          type: string
+          description: Start date of the analysis
+          format: date-time
+        state:
+          type: string
+          description: Current state of the analysis
+          enum:
+          - running
+          - finished
+          - failed
+        childMailings:
+          type: object
+          additionalProperties:
+            type: integer
+            description: Number of recipients of the child mailings
+            format: int32
+          description: Number of recipients of the child mailings
+    MultiRequest:
+      type: object
+      properties:
+        content:
+          type: string
+          description: New mailing content to be uploaded
+    ThrottleRequestData:
+      type: object
+      properties:
+        maxMessagesPerHour:
+          type: integer
+          description: Maximum number of messages per hour
+          format: int32
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
+    MessageRequestData:
+      type: object
+      properties:
+        deepLinkName:
+          type: string
+          description: This parameter is deprecated. Use "payload.[name]" instead.
+        mediaType:
+          type: string
+          description: Media type of the mailing (required only for creation)
+          enum:
+          - email
+          - sms
+          - push
+        subjectForTargetGroup:
+          type: string
+          description: Subject for a specific target group. Set "subject.[targetGroupId]" in request data (only email).<p>Does not work with the "Try it out" feature.</p>
+        replyToAddress:
+          type: string
+          description: Reply-to address (only email)
+        archiveEnabled:
+          type: boolean
+          description: Toggle whether a mailing can be archived or not
+        iconMetaData:
+          type: string
+          description: Icon meta data. Configure "icon.[attribute]".<p>Does not work with the "Try it out" feature.</p>
+        archivePeriod:
+          type: string
+          description: Period suggesting for how long a mailing should be archived
+          enum:
+          - ONE_MONTH
+          - TWO_MONTHS
+          - THREE_MONTHS
+          - SIX_MONTHS
+          - ONE_YEAR
+          - TWO_YEARS
+        resetReplyToAddress:
+          type: boolean
+          description: If true, the local part of the reply-to address is reset
+        resetTargetedSubjects:
+          type: boolean
+          description: If true, all target group subjects are deleted (only email)
+        replyToName:
+          type: string
+          description: Reply-to mailing name (only email)
+        resetDeeplinks:
+          type: boolean
+          description: This parameter is deprecated. Use "resetPayload" instead.
+        resetPayload:
+          type: boolean
+          description: If true, all payload parameters are deleted. All set parameters within this request remain (only Web Push mailings).
+        name:
+          type: string
+          description: Mailing name
+        content:
+          type: string
+          description: Mailing content (plain text)
+        payload:
+          type: string
+          description: Payload parameters for Mobile Push and Web Push. Set "payload.[name]" in request data.<p>Does not work with the "Try it out" feature.</p>
+        description:
+          type: string
+          description: Mailing description
+        senderName:
+          type: string
+          description: Mailing sender name (only email)
+        subject:
+          type: string
+          description: Mailing subject
+        mediaCode:
+          type: string
+          description: Media code (only email)
+        expiry:
+          type: string
+          description: Expiry date (only push mailings, use ISO 8601 format without milliseconds, e.g. 2022-03-03T08:45:07+01:00)
+          format: date-time
+        image:
+          type: string
+          description: Image for the Web Push message
+        senderAddress:
+          type: string
+          description: Mailing sender address
+        clickAction:
+          type: string
+          description: Click action for the Web Push message
+        pushType:
+          type: string
+          description: Push type
+          enum:
+          - MOBILE
+          - WEB
+        icon:
+          type: string
+          description: Icon for the Web Push message
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
+    RestOpens:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+        unique:
+          type: integer
+          format: int32
+      description: Number of unique and total opens
+    RestMessageNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        name:
+          type: string
+          description: Mailing name
+        mailingId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        description:
+          type: string
+          description: Mailing description
+        mediaType:
+          type: string
+          description: Media type of the mailing
+        status:
+          type: string
+          description: Current status of the mailing
+          enum:
+          - invalid
+          - activationRequired
+          - activated
+          - canceled
+          - paused
+          - running
+          - finished
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        started:
+          type: string
+          description: Start date of the mailing
+          format: date-time
+        finished:
+          type: string
+          description: Finish date of the mailing
+          format: date-time
+        senderAddress:
+          type: string
+          description: Email address of the sender
+        senderName:
+          type: string
+          description: Sender name
+        replyToAddress:
+          type: string
+          description: Email address for reply emails
+        replyToName:
+          type: string
+          description: Name for reply emails
+        subject:
+          type: object
+          additionalProperties:
+            type: string
+        mediaCode:
+          type: string
+          description: Media code of the mailing
+        format:
+          type: string
+          description: Mailing format
+        dispatchOption:
+          type: string
+          description: Dispatch options of the print mailing
+        dispatchStrategyOption:
+          type: string
+          description: Dispatch strategy of the print mailing
+        accumulateMessagesForDays:
+          type: integer
+          description: Number of messages per day
+          format: int32
+        pushType:
+          type: string
+          description: Push type (push message)
+          enum:
+          - MOBILE
+          - WEB
+        icon:
+          type: string
+          description: Icon (push message)
+        clickAction:
+          type: string
+          description: Click action (push message)
+        archiveEnabled:
+          type: boolean
+          description: Is mail archiving enabled
+        archivePeriod:
+          type: string
+          description: Mail archiving period
+          enum:
+          - ONE_MONTH
+          - TWO_MONTHS
+          - THREE_MONTHS
+          - SIX_MONTHS
+          - ONE_YEAR
+          - TWO_YEARS
+        smsParts:
+          type: integer
+          description: Number of SMS parts
+          format: int32
+        deeplinks:
+          type: object
+          additionalProperties:
+            type: string
+            description: Deeplinks of the push message
+          description: Deeplinks of the push message
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+        content:
+          type: string
+          description: Mailing content
+        payload:
+          type: object
+          additionalProperties:
+            type: string
+            description: Payload of the push message
+          description: Payload of the push message
+        contentType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+          description: Content type of the mailing
+        expiry:
+          type: string
+          description: Expiry date and time of the push message
+          format: date-time
+        attachmentIds:
+          type: array
+          description: Comma-separated list of attachment IDs
+          items:
+            type: integer
+            description: Comma-separated list of attachment IDs
+            format: int64
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    RestWaitNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        scheduledAt:
+          type: string
+          description: Scheduled dispatch time
+          format: date-time
+        sto:
+          $ref: '#/components/schemas/RestPersonalizedSchedule'
+        scheduledAfterRecipientImport:
+          type: boolean
+          description: If true, messages are sent after the recipient import
+        scheduledAfterRecipientImportAtTime:
+          type: string
+          description: Time (in format HH:mm) messages are sent after the recipient import
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    CampaignRequestData:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Campaign name
+        sourceCampaignId:
+          type: integer
+          description: ID of the campaign to be copied (only required for copying)
+          format: int64
+        recipientListIds:
+          type: array
+          description: Comma-separated list of recipient list IDs
+          items:
+            type: integer
+            description: Comma-separated list of recipient list IDs
+            format: int64
+    WaitRequestData:
+      type: object
+      properties:
+        scheduledAt:
+          type: string
+          description: Scheduled time in ISO 8601 format
+          format: date-time
+        sto.enabled:
+          type: boolean
+          description: If true, send time optimization is enabled. The "sto" parameters are only considered if one of the "scheduled" parameters is provided.
+        sto.type:
+          type: string
+          description: Type of send time optimization (can be combined with "scheduledAt" scheduler; DAY will be set by other schedulers)
+          enum:
+          - DAY
+          - WEEK
+        sto.fallbackAt:
+          type: string
+          description: Fallback at time of send time optimization in ISO 8601 format (can be combined with "scheduledAt" scheduler)
+          format: date-time
+        sto.optimizationEndsAt:
+          type: string
+          description: Optimization ends at time of send time optimization in ISO 8601 format (can be combined with "scheduledAt" scheduler)
+          format: date-time
+        scheduledAfterRecipientImport:
+          type: boolean
+          description: If true, the scheduler is triggered after recipient import
+        scheduledAfterRecipientImportAtTime:
+          type: string
+          description: Scheduled after import time in ISO 8601 format
+        sto.period:
+          type: string
+          description: Duration of send time optimization in ISO 8601 format (only days (max. 1), hours, and minute will be accepted (can be combined with "scheduledAfterRecipientImport" and "scheduledAfterRecipientImportAtTime" schedulers)
+          example: PT22H30M (22 hours 30 minutes)
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
+    RestDelay:
+      type: object
+      properties:
+        days:
+          type: integer
+          format: int32
+        hours:
+          type: integer
+          format: int32
+        minutes:
+          type: integer
+          format: int32
+      description: Delay time
+    BlockRequestData:
+      type: object
+      properties:
+        customBlacklistIds:
+          type: array
+          description: Custom blacklist IDs.
+          items:
+            type: integer
+            description: Custom blacklist IDs.
+            format: int64
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
+    RestBlockNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        customBlacklistIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    RestBounces:
+      type: object
+      properties:
+        hard:
+          type: integer
+          format: int32
+        soft:
+          type: integer
+          format: int32
+      description: Number of hard and soft bounces
+    RestCapNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        relative:
+          type: number
+          description: Relative number of recipients in percent
+          format: float
+        absolute:
+          type: integer
+          description: Absolute number of recipients
+          format: int32
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    TrackingConfigurationRequestData:
+      type: object
+      properties:
+        defaultTextLinkTrackingEnabled:
+          type: boolean
+          description: If true, links are tracked for the text version by default
+        defaultHtmlLinkTrackingEnabled:
+          type: boolean
+          description: If true, links are tracked for the HTML version by default
+        clickTrackingEnabled:
+          type: boolean
+          description: If true, clicks are tracked
+        openTrackingEnabled:
+          type: boolean
+          description: If true, opens are tracked
+        openTrackingOfPartiallyLoadedMessagesEnabled:
+          type: boolean
+          description: If true, opens of partially loaded messages are tracked
+    RestSmartCampaign:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Campaign ID
+          format: int64
+        name:
+          type: string
+          description: Campaign name
+        mailingGroupId:
+          type: integer
+          description: Client ID
+          format: int64
+        description:
+          type: string
+          description: Mailing description
+        status:
+          type: string
+          description: Current campaign status
+          enum:
+          - invalid
+          - activationRequired
+          - activated
+          - canceled
+          - paused
+          - running
+          - finished
+        type:
+          type: string
+          description: Campaign type
+          enum:
+          - regular
+          - event
+          - confirmation
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        started:
+          type: string
+          description: Start date of the campaign
+          format: date-time
+        finished:
+          type: string
+          description: Finish date of the campaign
+          format: date-time
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+        recipientLists:
+          $ref: '#/components/schemas/RestRecipientListsNode'
+        targetGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestTargetGroupNode'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestMessageNode'
+        message:
+          $ref: '#/components/schemas/RestMessageNode'
+    RestPersonalizedSchedule:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: If true, send time optimization is enabled
+        type:
+          type: string
+          description: Period of time that is used for optimizing the sending of messages
+          enum:
+          - DAY
+          - WEEK
+        fallbackAt:
+          type: string
+          description: Fallback time
+          format: date-time
+        optimizationEndsAt:
+          type: string
+          description: End time
+          format: date-time
+        period:
+          $ref: '#/components/schemas/RestDelay'
+      description: Send time optimization settings
+    RestTrackingConfiguration:
+      type: object
+      properties:
+        openTracking:
+          type: boolean
+          description: If true, opens are tracked
+        clickTracking:
+          type: boolean
+          description: If true, clicks are tracked
+        openTrackingOfPartiallyLoadedMessages:
+          type: boolean
+          description: If true, opens of partially loaded messages are tracked
+        defaultHtmlLinkTracking:
+          type: boolean
+          description: If true, links are tracked for the HTML version by default
+        defaultTextLinkTracking:
+          type: boolean
+          description: If true, links are tracked for the text version by default
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+    SplitRequestData:
+      type: object
+      properties:
+        optimization.scheduledAt:
+          type: string
+          description: Dispatch time of the messages
+          format: date-time
+        optimization.sto.enabled:
+          type: boolean
+          description: If true, send time optimization is enabled. The "sto" parameters are only considered if one of the "optimization.scheduled" parameters is provided.
+        optimization.sto.type:
+          type: string
+          description: Type of send time optimization (can be combined with "optimization.scheduledAt" scheduler, DAY will be set by other)
+          enum:
+          - DAY
+          - WEEK
+        optimization.sto.fallbackAt:
+          type: string
+          description: Fallback at time of send time optimization in ISO 8601 format (can be combined with "optimization.scheduledAt" scheduler)
+          format: date-time
+        optimization.sto.optimizationEndsAt:
+          type: string
+          description: Optimization ends at time of send time optimization in ISO 8601 format (can be combined with "optimization.scheduledAt" scheduler)
+          format: date-time
+        optimization.enabled:
+          type: boolean
+          description: If true, the automatic optimization is activated
+        optimization.scheduledWithDelay:
+          type: string
+          description: Duration in ISO 8601
+          example: P4DT3H2M (4 days, 3 hours, 2 minutes)
+        optimization.scheduledManually:
+          type: boolean
+          description: If true, the optimization is started manually
+        optimization.mode:
+          type: string
+          description: Optimization mode
+          enum:
+          - bestOpenRate
+          - bestUniqueClickRate
+          - bestClickRate
+          - lowestUniqueUnsubscribe
+          - lowestBounceRate
+          - byPostClickValue
+        optimization.sto.period:
+          type: string
+          description: Duration of send time optimization in ISO 8601 format (only days (max. 1), hours and minutes (can be combined with "optimization.scheduledWithDelay" and "optimization.scheduledManually" schedulers)
+          example: PT22H30M (22 hours 30 minutes)
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
+    TestMailingStartedReport:
+      type: object
+      properties:
+        mailingId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        validRecipientAddresses:
+          type: array
+          description: Valid recipient addresses
+          items:
+            type: string
+            description: Valid recipient addresses
+        userIdsOfRecipientsWithoutValidAddresses:
+          type: array
+          description: User IDs of recipients without valid addresses
+          items:
+            type: string
+            description: User IDs of recipients without valid addresses
+        blacklistedRecipientAddresses:
+          type: array
+          description: Blacklisted recipient addresses
+          items:
+            type: string
+            description: Blacklisted recipient addresses
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    CapRequestData:
+      type: object
+      properties:
+        absolute:
+          type: integer
+          description: Number of recipients to be contacted. Cannot be provided simultaneously with relative value.
+          format: int32
+        relative:
+          type: number
+          description: Percentage of recipients to be contacted. Cannot be provided simultaneously with absolute value.
+          format: float
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
+    RestSplitNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        optimization:
+          $ref: '#/components/schemas/RestSplitOptimization'
+        successors:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestSplitSuccessor'
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    Point:
+      type: object
+      properties:
+        x:
+          type: integer
+          format: int32
+          xml:
+            attribute: true
+        y:
+          type: integer
+          format: int32
+          xml:
+            attribute: true
+      description: Grid location point
+      xml:
+        name: Point
+    TestMailingReport:
+      type: object
+      properties:
+        recipientStatus:
+          type: object
+          additionalProperties:
+            type: string
+            description: Sending status of the recipients
+            enum:
+            - enqueued
+            - sending
+            - sent
+            - failed
+          description: Sending status of the recipients
+        mailingId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        reportDate:
+          type: string
+          description: Report date
+          format: date-time
+        mediaType:
+          type: string
+          description: Media type
+        status:
+          type: string
+          description: Current status of the mailing
+          enum:
+          - invalid
+          - activationRequired
+          - activated
+          - canceled
+          - paused
+          - running
+          - finished
+        started:
+          type: string
+          description: Start date of the mailing
+          format: date-time
+        finished:
+          type: string
+          description: Finish date of the mailing
+          format: date-time
+    RestTargetGroupNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        name:
+          type: string
+          description: Target group name
+        targetGroup:
+          $ref: '#/components/schemas/Filter'
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    RestSplitOptimization:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: If true, automatic optimization is enabled
+        mode:
+          type: string
+          description: Optimization mode
+          enum:
+          - bestOpenRate
+          - bestUniqueClickRate
+          - bestClickRate
+          - lowestUniqueUnsubscribe
+          - lowestBounceRate
+          - byPostClickValue
+        scheduledAt:
+          type: string
+          description: Scheduled dispatch time
+          format: date-time
+        sto:
+          $ref: '#/components/schemas/RestPersonalizedSchedule'
+        scheduledWithDelay:
+          $ref: '#/components/schemas/RestDelay'
+        scheduledManually:
+          type: boolean
+          description: If true, the optimization is started manually
+    TestMailingRequestData:
+      required:
+      - recipientIds
+      - recipientListId
+      type: object
+      properties:
+        recipientIds:
+          type: array
+          description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the recipient list, no test mailing will be sent to this recipient.
+          items:
+            type: string
+            description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the recipient list, no test mailing will be sent to this recipient.
+        mimeType:
+          type: string
+          description: Mime type of the mailing during sending (use empty string to use the mime type of the mailing).
+          example: text/plain, text/html, text/multipart
+        subject:
+          type: string
+          description: Subject of the test mailing (if mailing has a subject).
+        senderAddress:
+          type: string
+          description: Sender address for test mailing (if mailing has a sender address). Must not be empty if specified.
+        recipientListId:
+          type: string
+          description: Recipient list ID of the recipient list to be used for the test mailing.
   securitySchemes:
     basicAuth:
       type: http
       scheme: basic
       description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
 externalDocs:
   description: Optimizely Campaign REST API Documentation
   url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+x-refined-from:
+- optimizely-campaign-openapi.yml
+- optimizely-campaign-optimizely-campaign-rest-api-openapi.json

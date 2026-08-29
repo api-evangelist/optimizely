@@ -1,0 +1,108 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Realtimecartinventory API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Realtimecartinventory
+paths:
+  /api/v1/realtimecartinventory:
+    post:
+      tags:
+      - Realtimecartinventory
+      operationId: RealTimeCartInventoryV1_PostAsync
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeCartInventoryParameter'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeCartInventoryParameter'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeCartInventoryParameter'
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeCartInventoryParameter'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeCartInventoryParameter'
+          text/html:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeCartInventoryParameter'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeCartInventoryModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeCartInventoryModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeCartInventoryModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeCartInventoryModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeCartInventoryModel'
+components:
+  schemas:
+    Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeCartInventoryModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        warehouseAvailabilities:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeCartInventoryParameter:
+      type: object
+      properties:
+        cartId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        warehouseIds:
+          type: array
+          items:
+            format: uuid
+            type: string
+            example: 00000000-0000-0000-0000-000000000000
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.AvailabilityDto:
+      type: object
+      properties:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
+          type: string
+        requiresRealTimeInventory:
+          type: boolean
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

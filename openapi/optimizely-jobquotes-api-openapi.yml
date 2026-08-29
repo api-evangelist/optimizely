@@ -1,0 +1,2386 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Jobquotes API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Jobquotes
+paths:
+  /api/v1/jobquotes:
+    get:
+      tags:
+      - Jobquotes
+      operationId: JobQuotesV1_GetCollectionAsync
+      parameters:
+      - name: parameter.page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteCollectionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteCollectionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteCollectionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteCollectionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteCollectionModel'
+      security:
+      - access_token: []
+  /api/v1/jobquotes/{jobQuoteId}:
+    get:
+      tags:
+      - Jobquotes
+      operationId: JobQuotesV1_GetAsync
+      parameters:
+      - name: jobQuoteId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Jobquotes
+      operationId: JobQuotesV1_PatchAsync
+      parameters:
+      - name: jobQuoteId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+          text/html:
+            schema:
+              $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Websites.WebApi.V1.ApiModels.CountryModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        abbreviation:
+          type: string
+        states:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Rfq.WebApi.V1.ApiModels.CalculationMethod:
+      type: object
+      properties:
+        value:
+          type: string
+        name:
+          type: string
+        displayName:
+          type: string
+        maximumDiscount:
+          type: string
+        minimumMargin:
+          type: string
+    Insite.Catalog.Services.Dtos.ConfigSectionOptionDto:
+      type: object
+      properties:
+        sectionOptionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sectionName:
+          type: string
+        productName:
+          type: string
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        description:
+          type: string
+        price:
+          format: decimal
+          type: number
+        userProductPrice:
+          type: boolean
+        selected:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        quantity:
+          format: decimal
+          type: number
+        cantBuy:
+          type: boolean
+    Insite.Core.WebApi.PaginationModel:
+      type: object
+      properties:
+        currentPage:
+          format: int32
+          type: integer
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        defaultPageSize:
+          format: int32
+          type: integer
+        totalItemCount:
+          format: int32
+          type: integer
+        numberOfPages:
+          format: int32
+          type: integer
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
+        sortType:
+          type: string
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
+          type: string
+    Insite.Customers.Services.Dtos.AgingBucketDto:
+      type: object
+      properties:
+        amount:
+          format: decimal
+          type: number
+        amountDisplay:
+          type: string
+        label:
+          type: string
+    Insite.Cart.Services.Dtos.WarehouseDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        address1:
+          type: string
+        address2:
+          type: string
+        city:
+          type: string
+        countryId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        description:
+          type: string
+        isDefault:
+          type: boolean
+        name:
+          type: string
+        phone:
+          type: string
+        postalCode:
+          type: string
+        shipSite:
+          type: string
+        state:
+          type: string
+    Insite.Catalog.Services.Dtos.ConfigSectionDto:
+      type: object
+      properties:
+        sectionName:
+          type: string
+        label:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionOptionDto'
+    Insite.Cart.Services.Dtos.CarrierDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        description:
+          type: string
+        shipVias:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Cart.Services.Dtos.ShipViaDto'
+    Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+        city:
+          type: string
+        contactName:
+          type: string
+        countryId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        deactivateOn:
+          format: date-time
+          type: string
+        description:
+          type: string
+        phone:
+          type: string
+        postalCode:
+          type: string
+        shipSite:
+          type: string
+        state:
+          type: string
+        isDefault:
+          type: boolean
+        alternateWarehouses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel'
+        latitude:
+          format: decimal
+          type: number
+        longitude:
+          format: decimal
+          type: number
+        hours:
+          type: string
+        distance:
+          format: double
+          type: number
+        allowPickup:
+          type: boolean
+        pickupShipViaId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Customers.Services.Dtos.AccountsReceivableDto:
+      type: object
+      properties:
+        agingBuckets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
+        agingBucketTotal:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
+        agingBucketFuture:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
+    Insite.Catalog.Services.Dtos.BadgeDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        tagName:
+          type: string
+        badgeStyle:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        badgeType:
+          type: string
+        displayOnProductImages:
+          type: boolean
+        displayOnBadgeWidget:
+          type: boolean
+        displayText:
+          type: string
+        textColorHexCode:
+          type: string
+        badgeColorHexCode:
+          type: string
+        largeImageBadgePath:
+          type: string
+        largeImageTextSize:
+          type: string
+        largeImagePlacement:
+          type: string
+        otherImageBadgePath:
+          type: string
+        otherImageTextSize:
+          type: string
+        otherImagePlacement:
+          type: string
+        imageAltText:
+          type: string
+        detailWidgetBadgeSize:
+          type: string
+    Insite.Catalog.Services.Dtos.BrandDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        urlSegment:
+          type: string
+        logoSmallImagePath:
+          type: string
+        logoLargeImagePath:
+          type: string
+        logoImageAltText:
+          type: string
+        detailPagePath:
+          type: string
+    Insite.Cart.WebApi.V1.ApiModels.CartLineModel:
+      required:
+      - productId
+      - qtyOrdered
+      type: object
+      properties:
+        uri:
+          type: string
+        productUri:
+          type: string
+        id:
+          type: string
+        line:
+          format: int32
+          type: integer
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        requisitionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        smallImagePath:
+          type: string
+        altText:
+          type: string
+        productName:
+          type: string
+        manufacturerItem:
+          type: string
+        customerName:
+          type: string
+        shortDescription:
+          type: string
+        erpNumber:
+          type: string
+        unitOfMeasure:
+          type: string
+        unitOfMeasureDisplay:
+          type: string
+        unitOfMeasureDescription:
+          type: string
+        baseUnitOfMeasure:
+          type: string
+        baseUnitOfMeasureDisplay:
+          type: string
+        qtyPerBaseUnitOfMeasure:
+          format: decimal
+          type: number
+        costCode:
+          type: string
+        notes:
+          type: string
+        qtyOrdered:
+          format: double
+          type: number
+        qtyLeft:
+          format: decimal
+          type: number
+        pricing:
+          $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
+        isPromotionItem:
+          type: boolean
+        isDiscounted:
+          type: boolean
+        isConfigured:
+          type: boolean
+        isFixedConfiguration:
+          type: boolean
+        quoteRequired:
+          type: boolean
+        breakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        sectionOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Cart.Services.Dtos.SectionOptionDto'
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+        qtyOnHand:
+          format: decimal
+          type: number
+        canAddToCart:
+          type: boolean
+        isQtyAdjusted:
+          type: boolean
+        hasInsufficientInventory:
+          type: boolean
+        canBackOrder:
+          type: boolean
+        trackInventory:
+          type: boolean
+        salePriceLabel:
+          type: string
+        cantBuy:
+          type: boolean
+        isSubscription:
+          type: boolean
+        productSubscription:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductSubscriptionDto'
+        isRestricted:
+          type: boolean
+        canAddToWishlist:
+          type: boolean
+        isActive:
+          type: boolean
+        brand:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BrandDto'
+        vmiBinId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        isDiscontinued:
+          type: boolean
+        allowZeroPricing:
+          type: boolean
+        parentProductErpNumber:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.RelatedProductDto:
+      type: object
+      properties:
+        relatedProductType:
+          type: string
+        productDto:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+    Insite.Cart.Services.Dtos.PaymentOptionsDto:
+      type: object
+      properties:
+        paymentMethods:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Cart.Services.Dtos.PaymentMethodDto'
+        cardTypes:
+          type: array
+          items:
+            type: string
+        expirationMonths:
+          type: array
+          items:
+            type: string
+        expirationYears:
+          type: array
+          items:
+            type: string
+        creditCard:
+          $ref: '#/components/schemas/Insite.Core.Plugins.PaymentGateway.Dtos.CreditCardDto'
+        eCheck:
+          $ref: '#/components/schemas/Insite.Core.Plugins.PaymentGateway.Dtos.ECheckDto'
+        canStorePaymentProfile:
+          type: boolean
+        storePaymentProfile:
+          type: boolean
+        isPayPal:
+          type: boolean
+        isAdyenDropIn:
+          type: boolean
+        payPalPayerId:
+          type: string
+        payPalToken:
+          type: string
+        payerId:
+          type: string
+        payPalPaymentUrl:
+          type: string
+        threeDs:
+          $ref: '#/components/schemas/Insite.Core.Plugins.PaymentGateway.Dtos.ThreeDsDto'
+        adyenPspReference:
+          type: string
+        isBnpl:
+          type: boolean
+        bnplTransactionToken:
+          type: string
+        bnplClientSecret:
+          type: string
+    Insite.Core.Plugins.Search.Dtos.ScoreExplanationDto:
+      type: object
+      properties:
+        totalBoost:
+          format: float
+          type: number
+        aggregateFieldScores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDto'
+        detailedFieldScores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDetailedDto'
+    Insite.Core.WebApi.SortOptionModel:
+      type: object
+      properties:
+        displayName:
+          type: string
+        sortType:
+          type: string
+    Insite.Catalog.Services.Dtos.ProductSubscriptionDto:
+      type: object
+      properties:
+        subscriptionAddToInitialOrder:
+          type: boolean
+        subscriptionAllMonths:
+          type: boolean
+        subscriptionApril:
+          type: boolean
+        subscriptionAugust:
+          type: boolean
+        subscriptionCyclePeriod:
+          type: string
+        subscriptionDecember:
+          type: boolean
+        subscriptionFebruary:
+          type: boolean
+        subscriptionFixedPrice:
+          type: boolean
+        subscriptionJanuary:
+          type: boolean
+        subscriptionJuly:
+          type: boolean
+        subscriptionJune:
+          type: boolean
+        subscriptionMarch:
+          type: boolean
+        subscriptionMay:
+          type: boolean
+        subscriptionNovember:
+          type: boolean
+        subscriptionOctober:
+          type: boolean
+        subscriptionPeriodsPerCycle:
+          format: int32
+          type: integer
+        subscriptionSeptember:
+          type: boolean
+        subscriptionShipViaId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        subscriptionTotalCycles:
+          format: int32
+          type: integer
+    Insite.Catalog.Services.Dtos.StyleTraitDto:
+      type: object
+      properties:
+        styleTraitId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        nameDisplay:
+          type: string
+        unselectedValue:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        styleValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleValueDto'
+        displayType:
+          type: string
+        numberOfSwatchesVisible:
+          format: int32
+          type: integer
+        displayTextWithSwatch:
+          type: boolean
+    Insite.Core.Plugins.Search.Dtos.FieldScoreDetailedDto:
+      type: object
+      properties:
+        name:
+          type: string
+        score:
+          format: float
+          type: number
+        boost:
+          format: float
+          type: number
+        matchText:
+          type: string
+        termFrequencyNormalized:
+          format: float
+          type: number
+        inverseDocumentFrequency:
+          format: float
+          type: number
+        scoreUsed:
+          type: boolean
+    Insite.Customers.WebApi.V1.ApiModels.ShipToModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        isNew:
+          type: boolean
+        oneTimeAddress:
+          type: boolean
+        label:
+          type: string
+        validation:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.CustomerValidationDto'
+        isDefault:
+          type: boolean
+        id:
+          type: string
+        customerNumber:
+          type: string
+        customerSequence:
+          type: string
+        customerName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        contactFullName:
+          type: string
+        companyName:
+          type: string
+        attention:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+        address3:
+          type: string
+        address4:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        state:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+        country:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.CountryModel'
+        phone:
+          type: string
+        fullAddress:
+          type: string
+        email:
+          type: string
+        fax:
+          type: string
+        isVmiLocation:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.LegacyConfigurationDto:
+      type: object
+      properties:
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionDto'
+        hasDefaults:
+          type: boolean
+        isKit:
+          type: boolean
+    Insite.Cart.Services.Dtos.CustomerOrderTaxDto:
+      type: object
+      properties:
+        taxCode:
+          type: string
+        taxDescription:
+          type: string
+        taxRate:
+          format: decimal
+          type: number
+        taxAmount:
+          format: decimal
+          type: number
+        taxAmountDisplay:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+    Insite.Cart.Services.Dtos.ShipViaDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        description:
+          type: string
+        isDefault:
+          type: boolean
+    Insite.Catalog.Services.Dtos.DocumentDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        description:
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        filePath:
+          type: string
+        fileUrl:
+          type: string
+        documentType:
+          type: string
+        languageId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        fileTypeString:
+          type: string
+    Insite.Cart.Services.Dtos.CostCodeDto:
+      type: object
+      properties:
+        costCode:
+          type: string
+        description:
+          type: string
+    Insite.Core.Plugins.Pricing.ProductPriceDto:
+      type: object
+      properties:
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        isOnSale:
+          type: boolean
+        requiresRealTimePrice:
+          type: boolean
+        additionalResults:
+          type: object
+          additionalProperties:
+            type: string
+        unitCost:
+          format: decimal
+          type: number
+        unitCostDisplay:
+          type: string
+        unitListPrice:
+          format: decimal
+          type: number
+        unitListPriceDisplay:
+          type: string
+        extendedUnitListPrice:
+          format: decimal
+          type: number
+        extendedUnitListPriceDisplay:
+          type: string
+        unitRegularPrice:
+          format: decimal
+          type: number
+        unitRegularPriceDisplay:
+          type: string
+        extendedUnitRegularPrice:
+          format: decimal
+          type: number
+        extendedUnitRegularPriceDisplay:
+          type: string
+        unitNetPrice:
+          format: decimal
+          type: number
+        unitNetPriceDisplay:
+          type: string
+        extendedUnitNetPrice:
+          format: decimal
+          type: number
+        extendedUnitNetPriceDisplay:
+          type: string
+        unitOfMeasure:
+          type: string
+        vatRate:
+          format: decimal
+          type: number
+        vatAmount:
+          format: decimal
+          type: number
+        vatAmountDisplay:
+          type: string
+        unitListBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        unitRegularBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        regularPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        regularPriceDisplay:
+          type: string
+          readOnly: true
+        extendedRegularPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        extendedRegularPriceDisplay:
+          type: string
+          readOnly: true
+        actualPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        actualPriceDisplay:
+          type: string
+          readOnly: true
+        extendedActualPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        extendedActualPriceDisplay:
+          type: string
+          readOnly: true
+        regularBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+          readOnly: true
+        actualBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+          readOnly: true
+        unitListPriceWithVat:
+          format: decimal
+          type: number
+        unitListPriceWithVatDisplay:
+          type: string
+        extendedUnitListPriceWithVat:
+          format: decimal
+          type: number
+        extendedUnitListPriceWithVatDisplay:
+          type: string
+        unitRegularPriceWithVat:
+          format: decimal
+          type: number
+        unitRegularPriceWithVatDisplay:
+          type: string
+        extendedUnitRegularPriceWithVat:
+          format: decimal
+          type: number
+        extendedUnitRegularPriceWithVatDisplay:
+          type: string
+        vatMinusExtendedUnitRegularPrice:
+          format: decimal
+          type: number
+    Insite.Catalog.Services.Dtos.StyledProductDto:
+      type: object
+      properties:
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        shortDescription:
+          type: string
+        erpNumber:
+          type: string
+        customerName:
+          type: string
+        mediumImagePath:
+          type: string
+        smallImagePath:
+          type: string
+        largeImagePath:
+          type: string
+        qtyOnHand:
+          format: decimal
+          type: number
+        unitOfMeasure:
+          type: string
+        trackInventory:
+          type: boolean
+        minimumOrderQty:
+          format: int32
+          type: integer
+        productDetailUrl:
+          type: string
+        pricing:
+          $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
+        quoteRequired:
+          type: boolean
+        styleValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleValueDto'
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+        productUnitOfMeasures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto'
+        productImages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductImageDto'
+        warehouses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.WarehouseDto'
+        manufacturerItem:
+          type: string
+        upcCode:
+          type: string
+        sku:
+          type: string
+        cantBuy:
+          type: boolean
+        allowZeroPricing:
+          type: boolean
+        htmlContent:
+          type: string
+        specifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.DocumentDto'
+        attributeTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeTypeDto'
+        crossSells:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+        relatedProducts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.RelatedProductDto'
+        metaDescription:
+          type: string
+        metaKeywords:
+          type: string
+        pageTitle:
+          type: string
+        openGraphTitle:
+          type: string
+        openGraphUrl:
+          type: string
+        openGraphImage:
+          type: string
+        customerProductNumber:
+          type: string
+    Insite.Catalog.Services.Dtos.AttributeTypeDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        label:
+          type: string
+        isFilter:
+          type: boolean
+        isComparable:
+          type: boolean
+        isSearchable:
+          type: boolean
+        includeOnProduct:
+          type: boolean
+        isActive:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        attributeValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeValueDto'
+    Insite.Catalog.Services.Dtos.StyleValueDto:
+      type: object
+      properties:
+        styleTraitName:
+          type: string
+        styleTraitId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        styleTraitValueId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        value:
+          type: string
+        valueDisplay:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        isDefault:
+          type: boolean
+        swatchType:
+          type: string
+        swatchImageValue:
+          type: string
+        swatchColorValue:
+          type: string
+    Insite.Core.Plugins.PaymentGateway.Dtos.ThreeDsDto:
+      type: object
+      properties:
+        dsTransId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        iframeIsChallenge:
+          type: boolean
+        iframeIsHidden:
+          type: boolean
+        rejected:
+          type: boolean
+        acsEci:
+          type: string
+        authenticationToken:
+          type: string
+        authenticationVersion:
+          type: string
+        iframe:
+          type: string
+        messageId:
+          type: string
+        transStatus:
+          type: string
+    Insite.Catalog.Services.Dtos.WarehouseDto:
+      type: object
+      properties:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
+          type: string
+        requiresRealTimeInventory:
+          type: boolean
+        name:
+          type: string
+        description:
+          type: string
+        qty:
+          format: decimal
+          type: number
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        jobQuotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.AvailabilityDto:
+      type: object
+      properties:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
+          type: string
+        requiresRealTimeInventory:
+          type: boolean
+    Insite.Cart.Services.Dtos.PaymentMethodDto:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        isCreditCard:
+          type: boolean
+        isECheck:
+          type: boolean
+        isPaymentProfile:
+          type: boolean
+        cardType:
+          type: string
+        billingAddress:
+          type: string
+        isPaymentProfileExpired:
+          type: boolean
+        tokenScheme:
+          type: string
+        fingerprint:
+          type: string
+        isBnpl:
+          type: boolean
+        bnplTransactionToken:
+          type: string
+        bnplClientSecret:
+          type: string
+    Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        jobQuoteId:
+          type: string
+        isEditable:
+          type: boolean
+        expirationDate:
+          format: date-time
+          type: string
+        jobName:
+          type: string
+        jobQuoteLineCollection:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteLineModel'
+        customerName:
+          type: string
+        shipToFullAddress:
+          type: string
+        orderTotal:
+          format: decimal
+          type: number
+        orderTotalDisplay:
+          type: string
+        cartLinesUri:
+          type: string
+        id:
+          type: string
+        trackId:
+          type: string
+        status:
+          type: string
+        statusDisplay:
+          type: string
+        type:
+          type: string
+        typeDisplay:
+          type: string
+        orderNumber:
+          type: string
+        erpOrderNumber:
+          type: string
+        orderDate:
+          format: date-time
+          type: string
+        billTo:
+          $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.BillToModel'
+        shipTo:
+          $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.ShipToModel'
+        userLabel:
+          type: string
+        userRoles:
+          type: string
+        shipToLabel:
+          type: string
+        notes:
+          type: string
+        carrier:
+          $ref: '#/components/schemas/Insite.Cart.Services.Dtos.CarrierDto'
+        shipVia:
+          $ref: '#/components/schemas/Insite.Cart.Services.Dtos.ShipViaDto'
+        paymentMethod:
+          $ref: '#/components/schemas/Insite.Cart.Services.Dtos.PaymentMethodDto'
+        fulfillmentMethod:
+          type: string
+        requestedPickupDate:
+          type: string
+        poNumber:
+          type: string
+        promotionCode:
+          type: string
+        initiatedByUserName:
+          type: string
+        totalQtyOrdered:
+          format: int32
+          type: integer
+        lineCount:
+          format: int32
+          type: integer
+        totalCountDisplay:
+          format: int32
+          type: integer
+        quoteRequiredCount:
+          format: int32
+          type: integer
+        orderSubTotal:
+          format: decimal
+          type: number
+        orderSubTotalDisplay:
+          type: string
+        orderSubTotalWithOutProductDiscounts:
+          format: decimal
+          type: number
+        orderSubTotalWithOutProductDiscountsDisplay:
+          type: string
+        totalTax:
+          format: decimal
+          type: number
+        totalTaxDisplay:
+          type: string
+        shippingAndHandling:
+          format: decimal
+          type: number
+        shippingAndHandlingDisplay:
+          type: string
+        orderGrandTotal:
+          format: decimal
+          type: number
+        orderGrandTotalDisplay:
+          type: string
+        costCodeLabel:
+          type: string
+        isAuthenticated:
+          type: boolean
+        isGuestOrder:
+          type: boolean
+        isSalesperson:
+          type: boolean
+        isSubscribed:
+          type: boolean
+        requiresPoNumber:
+          type: boolean
+        displayContinueShoppingLink:
+          type: boolean
+        canModifyOrder:
+          type: boolean
+        canSaveOrder:
+          type: boolean
+        canBypassCheckoutAddress:
+          type: boolean
+        canRequisition:
+          type: boolean
+        canRequestQuote:
+          type: boolean
+        canEditCostCode:
+          type: boolean
+        showTaxAndShipping:
+          type: boolean
+        showLineNotes:
+          type: boolean
+        showCostCode:
+          type: boolean
+        showNewsletterSignup:
+          type: boolean
+        showPoNumber:
+          type: boolean
+        showCreditCard:
+          type: boolean
+        showECheck:
+          type: boolean
+        showPayPal:
+          type: boolean
+        enableGooglePay:
+          type: boolean
+        enableApplePay:
+          type: boolean
+        isAwaitingApproval:
+          type: boolean
+        requiresApproval:
+          type: boolean
+        approverReason:
+          type: string
+        hasApprover:
+          type: boolean
+        salespersonName:
+          type: string
+        paymentOptions:
+          $ref: '#/components/schemas/Insite.Cart.Services.Dtos.PaymentOptionsDto'
+        costCodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Cart.Services.Dtos.CostCodeDto'
+        carriers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Cart.Services.Dtos.CarrierDto'
+        warehouses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Cart.Services.Dtos.WarehouseDto'
+        cartLines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Cart.WebApi.V1.ApiModels.CartLineModel'
+        customerOrderTaxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Cart.Services.Dtos.CustomerOrderTaxDto'
+        canCheckOut:
+          type: boolean
+        hasInsufficientInventory:
+          type: boolean
+        currencySymbol:
+          type: string
+        requestedDeliveryDate:
+          type: string
+        requestedDeliveryDateDisplay:
+          format: date-time
+          type: string
+        cartNotPriced:
+          type: boolean
+        messages:
+          type: array
+          items:
+            type: string
+        creditCardBillingAddress:
+          $ref: '#/components/schemas/Insite.Cart.WebApi.V1.ApiModels.CreditCardBillingAddressDto'
+        alsoPurchasedProducts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+        requestedPickupDateDisplay:
+          format: date-time
+          type: string
+        taxFailureReason:
+          type: string
+        failedToGetRealTimeInventory:
+          type: boolean
+        unassignCart:
+          type: boolean
+        customerVatNumber:
+          type: string
+        vmiLocationId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        additionalEmails:
+          type: string
+        defaultWarehouse:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel'
+        orderApprovalStatus:
+          type: string
+        orderApprovalStatusDisplay:
+          type: string
+        orderApprovalEditResult:
+          type: string
+        requestRevisionMessage:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Rfq.WebApi.V1.ApiModels.BreakPriceRfqModel:
+      type: object
+      properties:
+        startQty:
+          format: decimal
+          type: number
+        startQtyDisplay:
+          type: string
+        endQty:
+          format: decimal
+          type: number
+        endQtyDisplay:
+          type: string
+        price:
+          format: decimal
+          type: number
+        priceDispaly:
+          type: string
+        percent:
+          format: double
+          type: number
+        calculationMethod:
+          type: string
+    Insite.Core.Plugins.Pricing.BreakPriceDto:
+      type: object
+      properties:
+        breakQty:
+          format: decimal
+          type: number
+        breakPrice:
+          format: decimal
+          type: number
+        breakPriceDisplay:
+          type: string
+        savingsMessage:
+          type: string
+        breakPriceWithVat:
+          format: decimal
+          type: number
+        breakPriceWithVatDisplay:
+          type: string
+    Insite.Catalog.Services.Dtos.ProductDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        orderLineId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        customerName:
+          type: string
+        shortDescription:
+          type: string
+        erpNumber:
+          type: string
+        erpDescription:
+          type: string
+        urlSegment:
+          type: string
+        basicListPrice:
+          format: decimal
+          type: number
+        basicSalePrice:
+          format: decimal
+          type: number
+        basicSaleStartDate:
+          format: date-time
+          type: string
+        basicSaleEndDate:
+          format: date-time
+          type: string
+        smallImagePath:
+          type: string
+        mediumImagePath:
+          type: string
+        largeImagePath:
+          type: string
+        pricing:
+          $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
+        currencySymbol:
+          type: string
+        qtyOnHand:
+          format: decimal
+          type: number
+        isConfigured:
+          type: boolean
+        isFixedConfiguration:
+          type: boolean
+        isActive:
+          type: boolean
+        isHazardousGood:
+          type: boolean
+        isDiscontinued:
+          type: boolean
+        isSpecialOrder:
+          type: boolean
+        isGiftCard:
+          type: boolean
+        isBeingCompared:
+          type: boolean
+        isSponsored:
+          type: boolean
+        isSubscription:
+          type: boolean
+        quoteRequired:
+          type: boolean
+        manufacturerItem:
+          type: string
+        packDescription:
+          type: string
+        altText:
+          type: string
+        customerUnitOfMeasure:
+          type: string
+        canBackOrder:
+          type: boolean
+        trackInventory:
+          type: boolean
+        multipleSaleQty:
+          format: int32
+          type: integer
+        minimumOrderQty:
+          format: int32
+          type: integer
+        htmlContent:
+          type: string
+        productCode:
+          type: string
+        priceCode:
+          type: string
+        sku:
+          type: string
+        upcCode:
+          type: string
+        modelNumber:
+          type: string
+        taxCode1:
+          type: string
+        taxCode2:
+          type: string
+        taxCategory:
+          type: string
+        shippingClassification:
+          type: string
+        shippingLength:
+          type: string
+        shippingWidth:
+          type: string
+        shippingHeight:
+          type: string
+        shippingWeight:
+          type: string
+        qtyPerShippingPackage:
+          format: decimal
+          type: number
+        shippingAmountOverride:
+          format: double
+          type: number
+        handlingAmountOverride:
+          format: double
+          type: number
+        metaDescription:
+          type: string
+        metaKeywords:
+          type: string
+        pageTitle:
+          type: string
+        allowAnyGiftCardAmount:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        hasMsds:
+          type: boolean
+        unspsc:
+          type: string
+        roundingRule:
+          type: string
+        vendorNumber:
+          type: string
+        configurationDto:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.LegacyConfigurationDto'
+        unitOfMeasure:
+          type: string
+        unitOfMeasureDisplay:
+          type: string
+        unitOfMeasureDescription:
+          type: string
+        selectedUnitOfMeasure:
+          type: string
+        selectedUnitOfMeasureDisplay:
+          type: string
+        productDetailUrl:
+          type: string
+        canAddToCart:
+          type: boolean
+        allowedAddToCart:
+          type: boolean
+        canAddToWishlist:
+          type: boolean
+        canViewDetails:
+          type: boolean
+        canShowPrice:
+          type: boolean
+        canShowUnitOfMeasure:
+          type: boolean
+        canEnterQuantity:
+          type: boolean
+        canConfigure:
+          type: boolean
+        isStyleProductParent:
+          type: boolean
+        styleParentId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        requiresRealTimeInventory:
+          type: boolean
+        numberInCart:
+          format: decimal
+          type: number
+        qtyOrdered:
+          format: decimal
+          type: number
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+        styleTraits:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleTraitDto'
+        styledProducts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyledProductDto'
+        attributeTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeTypeDto'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.DocumentDto'
+        specifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+        crossSells:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+        accessories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+        productUnitOfMeasures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto'
+        productImages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductImageDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+        score:
+          format: double
+          type: number
+        scoreExplanation:
+          $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.ScoreExplanationDto'
+        searchBoost:
+          format: int32
+          type: integer
+        searchBoostDecimal:
+          format: decimal
+          type: number
+        salePriceLabel:
+          type: string
+        cantBuy:
+          type: boolean
+        allowZeroPricing:
+          type: boolean
+        brand:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BrandDto'
+        productLine:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductLineDto'
+        productSubscription:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductSubscriptionDto'
+        replacementProductId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        warehouses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.WarehouseDto'
+        relatedProducts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.RelatedProductDto'
+        alsoPurchasedProducts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+        openGraphTitle:
+          type: string
+        openGraphUrl:
+          type: string
+        openGraphImage:
+          type: string
+        badges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BadgeDto'
+        replacementProduct:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+        parentProductErpNumber:
+          type: string
+    Insite.Customers.Services.Dtos.CustomerValidationDto:
+      type: object
+      properties:
+        firstName:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        lastName:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        companyName:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        attention:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        address1:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        address2:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        address3:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        address4:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        country:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        state:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        city:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        postalCode:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        phone:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        email:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        fax:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+    Insite.Cart.Services.Dtos.SectionOptionDto:
+      type: object
+      properties:
+        sectionOptionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sectionName:
+          type: string
+        optionName:
+          type: string
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        cantBuy:
+          type: boolean
+        quantity:
+          format: decimal
+          type: number
+    Insite.Core.Plugins.PaymentGateway.Dtos.CreditCardDto:
+      type: object
+      properties:
+        cardType:
+          type: string
+        cardHolderName:
+          type: string
+        cardNumber:
+          type: string
+        expirationMonth:
+          format: int32
+          type: integer
+        expirationYear:
+          format: int32
+          type: integer
+        securityCode:
+          type: string
+        useBillingAddress:
+          type: boolean
+        address1:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        stateAbbreviation:
+          type: string
+        country:
+          type: string
+        countryAbbreviation:
+          type: string
+        postalCode:
+          type: string
+        maskedCardNumber:
+          type: string
+        browserInfo:
+          type: string
+        antiFraudSessionId:
+          type: string
+        issuerIdentificationNumber:
+          type: string
+    Insite.Catalog.Services.Dtos.AttributeValueDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        value:
+          type: string
+        valueDisplay:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        isActive:
+          type: boolean
+    Insite.JobQuote.WebApi.V1.ApiModels.JobQuoteLineModel:
+      required:
+      - productId
+      - qtyOrdered
+      type: object
+      properties:
+        uri:
+          type: string
+        pricingRfq:
+          $ref: '#/components/schemas/Insite.Rfq.WebApi.V1.ApiModels.PricingRfqModel'
+        maxQty:
+          format: decimal
+          type: number
+        qtySold:
+          format: decimal
+          type: number
+        qtyRequested:
+          format: decimal
+          type: number
+        productUri:
+          type: string
+        id:
+          type: string
+        line:
+          format: int32
+          type: integer
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        requisitionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        smallImagePath:
+          type: string
+        altText:
+          type: string
+        productName:
+          type: string
+        manufacturerItem:
+          type: string
+        customerName:
+          type: string
+        shortDescription:
+          type: string
+        erpNumber:
+          type: string
+        unitOfMeasure:
+          type: string
+        unitOfMeasureDisplay:
+          type: string
+        unitOfMeasureDescription:
+          type: string
+        baseUnitOfMeasure:
+          type: string
+        baseUnitOfMeasureDisplay:
+          type: string
+        qtyPerBaseUnitOfMeasure:
+          format: decimal
+          type: number
+        costCode:
+          type: string
+        notes:
+          type: string
+        qtyOrdered:
+          format: double
+          type: number
+        qtyLeft:
+          format: decimal
+          type: number
+        pricing:
+          $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
+        isPromotionItem:
+          type: boolean
+        isDiscounted:
+          type: boolean
+        isConfigured:
+          type: boolean
+        isFixedConfiguration:
+          type: boolean
+        quoteRequired:
+          type: boolean
+        breakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        sectionOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Cart.Services.Dtos.SectionOptionDto'
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+        qtyOnHand:
+          format: decimal
+          type: number
+        canAddToCart:
+          type: boolean
+        isQtyAdjusted:
+          type: boolean
+        hasInsufficientInventory:
+          type: boolean
+        canBackOrder:
+          type: boolean
+        trackInventory:
+          type: boolean
+        salePriceLabel:
+          type: string
+        cantBuy:
+          type: boolean
+        isSubscription:
+          type: boolean
+        productSubscription:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductSubscriptionDto'
+        isRestricted:
+          type: boolean
+        canAddToWishlist:
+          type: boolean
+        isActive:
+          type: boolean
+        brand:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BrandDto'
+        vmiBinId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        isDiscontinued:
+          type: boolean
+        allowZeroPricing:
+          type: boolean
+        parentProductErpNumber:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Customers.WebApi.V1.ApiModels.BillToModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        shipTosUri:
+          type: string
+        isGuest:
+          type: boolean
+        label:
+          type: string
+        budgetEnforcementLevel:
+          type: string
+        costCodeTitle:
+          type: string
+        customerCurrencySymbol:
+          type: string
+        costCodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.CostCodeModel'
+        shipTos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.ShipToModel'
+        validation:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.CustomerValidationDto'
+        isDefault:
+          type: boolean
+        accountsReceivable:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AccountsReceivableDto'
+        id:
+          type: string
+        customerNumber:
+          type: string
+        customerSequence:
+          type: string
+        customerName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        contactFullName:
+          type: string
+        companyName:
+          type: string
+        attention:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+        address3:
+          type: string
+        address4:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        state:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+        country:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.CountryModel'
+        phone:
+          type: string
+        fullAddress:
+          type: string
+        email:
+          type: string
+        fax:
+          type: string
+        isVmiLocation:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.ProductImageDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sortOrder:
+          format: int32
+          type: integer
+        name:
+          type: string
+        imageType:
+          type: string
+        smallImagePath:
+          type: string
+        mediumImagePath:
+          type: string
+        largeImagePath:
+          type: string
+        altText:
+          type: string
+    Insite.Catalog.Services.Dtos.ProductLineDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+    Insite.Core.Plugins.Search.Dtos.FieldScoreDto:
+      type: object
+      properties:
+        name:
+          type: string
+        score:
+          format: float
+          type: number
+    Insite.Websites.WebApi.V1.ApiModels.StateModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        abbreviation:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.SpecificationDto:
+      type: object
+      properties:
+        specificationId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        nameDisplay:
+          type: string
+        value:
+          type: string
+        description:
+          type: string
+        sortOrder:
+          format: decimal
+          type: number
+        isActive:
+          type: boolean
+        parentSpecification:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+        htmlContent:
+          type: string
+        specifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+    Insite.Customers.Services.Dtos.FieldValidationDto:
+      type: object
+      properties:
+        isRequired:
+          type: boolean
+        isDisabled:
+          type: boolean
+        maxLength:
+          format: int32
+          type: integer
+    Insite.Rfq.WebApi.V1.ApiModels.PricingRfqModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        unitCost:
+          format: decimal
+          type: number
+        unitCostDisplay:
+          type: string
+        listPrice:
+          format: decimal
+          type: number
+        listPriceDisplay:
+          type: string
+        customerPrice:
+          format: decimal
+          type: number
+        customerPriceDisplay:
+          type: string
+        minimumPriceAllowed:
+          format: decimal
+          type: number
+        minimumPriceAllowedDisplay:
+          type: string
+        maxDiscountPct:
+          format: decimal
+          type: number
+        minMarginAllowed:
+          format: decimal
+          type: number
+        showListPrice:
+          type: boolean
+        showCustomerPrice:
+          type: boolean
+        showUnitCost:
+          type: boolean
+        priceBreaks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Rfq.WebApi.V1.ApiModels.BreakPriceRfqModel'
+        calculationMethods:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Rfq.WebApi.V1.ApiModels.CalculationMethod'
+        validationMessages:
+          type: array
+          items:
+            type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Cart.WebApi.V1.ApiModels.CreditCardBillingAddressDto:
+      type: object
+      properties:
+        address1:
+          type: string
+        address2:
+          type: string
+        city:
+          type: string
+        stateAbbreviation:
+          type: string
+        countryAbbreviation:
+          type: string
+        postalCode:
+          type: string
+    Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto:
+      type: object
+      properties:
+        productUnitOfMeasureId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        unitOfMeasure:
+          type: string
+        unitOfMeasureDisplay:
+          type: string
+        description:
+          type: string
+        qtyPerBaseUnitOfMeasure:
+          format: decimal
+          type: number
+        roundingRule:
+          type: string
+        isDefault:
+          type: boolean
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+    Insite.Core.Plugins.PaymentGateway.Dtos.ECheckDto:
+      type: object
+      properties:
+        accountHolder:
+          type: string
+        accountNumber:
+          type: string
+        routingNumber:
+          type: string
+        useBillingAddress:
+          type: boolean
+        address1:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        stateAbbreviation:
+          type: string
+        country:
+          type: string
+        countryAbbreviation:
+          type: string
+        postalCode:
+          type: string
+    Insite.Customers.WebApi.V1.ApiModels.CostCodeModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        costCode:
+          type: string
+        description:
+          type: string
+        isActive:
+          type: boolean
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

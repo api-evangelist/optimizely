@@ -1,0 +1,385 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Flags Scheduling Scheduled Change API
+  version: 1.0.0
+  description: "This page documents how to use Optimizely Flags Scheduling API. These APIs allow you to turn a flag on/off, turn a \nrule on/off, change the traffic allocation of a rule and change the audience conditions of a rule.\n"
+  x-logo:
+    url: https://app.optimizely.com/static/img/rebrand/logo.svg
+servers:
+- url: http://localhost:3002/
+  description: Local server
+- url: https://api.app.optimizely.com/flags-scheduling
+  description: Production server
+tags:
+- name: Scheduled Change
+  description: APIs to interact with Scheduled Change of a flag in an environment
+paths:
+  /projects/{project_id}/flags/{flag_key}/schedules/{schedule_id}:
+    delete:
+      tags:
+      - Scheduled Change
+      summary: Delete a Scheduled Change for a flag in an environment
+      description: 'Delete a Scheduled Change for a flag in an environment
+
+        '
+      operationId: delete_scheduled_change
+      responses:
+        '204':
+          description: Successful Response
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                details: Job with id 123 is already deleted
+                status: 400
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                details: Not authenticated
+                status: 401
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      parameters:
+      - name: project_id
+        in: path
+        schema:
+          type: integer
+        required: true
+      - name: flag_key
+        in: path
+        schema:
+          type: string
+        required: true
+      - name: schedule_id
+        in: path
+        schema:
+          type: integer
+        required: true
+    patch:
+      tags:
+      - Scheduled Change
+      summary: Update the Scheduled Change for a flag in an environment
+      description: 'Update the Scheduled Change for a flag in an environment
+
+        '
+      operationId: update_scheduled_change
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduledChangeUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledChange'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                details: Not authenticated
+                status: 401
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                details: Job with id 10 not found
+                status: 404
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      parameters:
+      - name: project_id
+        in: path
+        schema:
+          type: integer
+        required: true
+      - name: flag_key
+        in: path
+        schema:
+          type: string
+        required: true
+      - name: schedule_id
+        in: path
+        schema:
+          type: integer
+        required: true
+components:
+  schemas:
+    ScheduleAction:
+      title: ScheduleAction
+      required:
+      - subject
+      - changed_element
+      - value
+      type: object
+      properties:
+        subject:
+          type: object
+          description: The entity this action will apply to
+          properties:
+            key:
+              type: string
+              description: The identifier of the subject
+            type:
+              type: string
+              description: The type of subject. Can be a flag or a rule of the flag
+              enum:
+              - flag
+              - rule
+        changed_element:
+          type: string
+          enum:
+          - status
+          - percentage_included
+          - audience_conditions
+        value:
+          description: Value of the action. Can be of any type.
+          type: object
+          $ref: '#/components/schemas/ActionValue'
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+        status:
+          title: Status
+          type: integer
+          description: Status code of the response.
+          example: 422
+    ScheduledChangeUpdateRequest:
+      title: ScheduledChangeUpdateRequest
+      type: object
+      properties:
+        actions:
+          title: Actions
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleAction'
+          description: Schedule action details.
+        schedule:
+          title: ScheduledTime
+          allOf:
+          - $ref: '#/components/schemas/ScheduledTime'
+          description: Schedule details.
+        environment:
+          title: Environment
+          type: string
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - details
+      - status
+      type: object
+      properties:
+        details:
+          title: Details
+          type: string
+          description: Details of Error.
+        status:
+          title: Status
+          type: integer
+          description: Status code of the response.
+          example: 400
+    ActionValue:
+      title: ActionValue
+      description: "The value of a schedule action.\n\nFor status change, value can be on/off. \n\nFor changing traffic percentage, value should be integer. For example, for 40% traffic, value should be 4000.\n"
+      anyOf:
+      - type: string
+        enum:
+        - 'on'
+        - 'off'
+      - type: integer
+        example: 5000
+    ScheduledTime:
+      title: ScheduledTime
+      required:
+      - time_zone
+      - time
+      - date
+      type: object
+      properties:
+        time:
+          title: Time
+          type: string
+          description: 'The schedule will run at this time. Expected format: hh:MM (24 hour)'
+          example: '20:14'
+        time_zone:
+          title: Time Zone
+          type: string
+          description: The timezone information for the scheduled time. Must be an IANA timezone.
+          example: Etc/UTC
+        date:
+          title: Date
+          type: string
+          description: 'The schedule will run at this date. Expected format: yyyy-mm-dd.'
+          example: '2023-07-30'
+    ValidationError:
+      title: ValidationError
+      required:
+      - loc
+      - msg
+      - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          description: Path to the invalid value
+        msg:
+          title: Message
+          type: string
+          description: Error message
+        type:
+          title: Error Type
+          type: string
+          description: Error type
+    ScheduledChange:
+      title: ScheduledChange
+      type: object
+      required:
+      - id
+      - account_id
+      - project_id
+      - flag_key
+      - environment
+      - actions
+      - schedule
+      - status
+      - completed_at
+      - created_at
+      - updated_at
+      - updated_by
+      - created_by
+      properties:
+        id:
+          title: Id
+          type: integer
+          description: The unique identifier for the schedule.
+        account_id:
+          title: Account Id
+          type: integer
+          description: The account the Project is associated with.
+        project_id:
+          title: Project Id
+          type: integer
+          description: The id of the project for which the schedule is set.
+        flag_key:
+          title: Flag Key
+          type: string
+          description: The Flag identifier
+        environment:
+          title: Environment
+          type: string
+          description: The Environment of the flag
+        actions:
+          title: Actions
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleAction'
+          description: Schedule actions.
+        schedule:
+          title: Schedule
+          allOf:
+          - $ref: '#/components/schemas/ScheduledTimeWithUTC'
+          description: Schedule details.
+        status:
+          title: Status
+          type: string
+          description: The status of the scheduled job.
+        completed_at:
+          title: Completed At
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp when the schedule is completed.
+          format: date-time
+          example: 2023-04-15T20:14+0000
+        updated_at:
+          title: Updated At
+          type: string
+          description: The UTC timestamp when the schedule is updated.
+          format: date-time
+          example: 2023-04-15T20:14+0000
+        created_at:
+          title: Created At
+          type: string
+          description: The UTC timestamp when the schedule is created.
+          format: date-time
+          example: 2023-04-15T20:14+0000
+        updated_by:
+          title: Updated By
+          type: string
+          description: The user who updated the schedule.
+        created_by:
+          title: Created By
+          type: string
+          description: The user who created the schedule.
+    ScheduledTimeWithUTC:
+      title: ScheduledTimeWithUTC
+      required:
+      - time_zone
+      - time
+      - date
+      - utc_time
+      type: object
+      properties:
+        time:
+          title: Time
+          type: string
+          description: 'The schedule will run at this time. Expected format: hh:MM (24 hour)'
+          example: 07:02
+        time_zone:
+          title: Time Zone
+          type: string
+          description: The timezone information for the scheduled time. Must be an IANA timezone.
+          example: Etc/UTC
+        date:
+          title: Date
+          type: string
+          description: 'The schedule will run at this date. Expected format: yyyy-mm-dd.'
+          example: '2023-07-30'
+        utc_time:
+          title: UTC Time
+          type: string
+          description: The utc timestamp when the scheduled job will be executed.
+          example: 2023-07-30T07:02:00+0000
+  securitySchemes:
+    BearerAuth:
+      description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      type: http
+      scheme: bearer
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

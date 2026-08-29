@@ -1,0 +1,5455 @@
+openapi: 3.2.0
+info:
+  version: V3
+  title: Optimizely CMP Open API Documentation Library API
+servers:
+- url: https://api.cmp.optimizely.com/v3
+  description: v3 version of Optimizely CMP Open API
+security:
+- OAuth2:
+  - openid
+  - profile
+  - offline_access
+tags:
+- name: Library
+paths:
+  /folders:
+    get:
+      operationId: listFolders
+      tags:
+      - Library
+      summary: GET /folders
+      description: Get the list of folders sorted by `modified_at` in descending order.
+      parameters:
+      - name: parent_folder_id
+        in: query
+        required: false
+        description: ID of the parent folder to filter by
+        schema:
+          type: string
+        example: 1d9d8aeca10811ebbc640242ac12001b
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of fetched folders
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of folders
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FolderResponse'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/folders?offset=10&page_size=10
+                required:
+                - data
+                - pagination
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      operationId: createFolder
+      tags:
+      - Library
+      summary: POST /folders
+      description: Create a folder. Use the `parent_folder_id` field to create a nested folder.
+      requestBody:
+        description: Payload to create a folder
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FolderCreateRequest'
+      responses:
+        '201':
+          description: Created folder
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /folders/{id}:
+    get:
+      operationId: getFolder
+      tags:
+      - Library
+      summary: GET /folders/{id}
+      description: Get a folder
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the folder
+        example: 5d7f910551b00a722e0418830cee6632
+      responses:
+        '200':
+          description: Fetched folder
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateFolder
+      tags:
+      - Library
+      summary: PATCH /folders/{id}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Update a folder's name and/or parent.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the folder
+        example: 5d7f910551b00a722e0418830cee6632
+      requestBody:
+        description: Payload to update a folder
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FolderUpdateRequest'
+      responses:
+        '200':
+          description: Updated Folder
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: deleteFolder
+      tags:
+      - Library
+      summary: DELETE /folders/{id}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Delete a folder.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the folder
+        example: 5d7f910551b00a722e0418830cee6632
+      responses:
+        '204':
+          description: Folder deleted successfully
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /folders/{id}/permissions:
+    get:
+      operationId: listFolderPermissions
+      tags:
+      - Library
+      summary: GET /folders/{id}/permissions
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> List of entities that have permission to access the folder
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the folder
+        example: 5d7f910551b00a722e0418830cee6631
+      - name: access
+        in: query
+        schema:
+          type: string
+          description: To filter by specific access level. Cannot be used in addition to max_access and min_access params.
+          enum:
+          - view
+          - edit
+          - comment
+          - delete
+        example: view
+      - name: max_access
+        in: query
+        schema:
+          type: string
+          description: To filter by specific access level and higher. Cannot be used in addition to access and min_access params.
+          enum:
+          - view
+          - edit
+          - comment
+          - delete
+        example: view
+      - name: min_access
+        in: query
+        schema:
+          type: string
+          description: To filter by specific access level and lower. Cannot be used in addition to access and max_access params.
+          enum:
+          - view
+          - edit
+          - comment
+          - delete
+        example: view
+      responses:
+        '200':
+          description: List of permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderPermissionListResponseItem'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      operationId: addFolderPermissions
+      tags:
+      - Library
+      summary: POST /folders/{id}/permissions
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Grant folder access to users or teams
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the folder
+        example: 5d7f910551b00a722e0418830cee6631
+      requestBody:
+        description: Payload to add list of accessors to folder permissions
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FolderPermissionBulkCreateRequest'
+      responses:
+        '204':
+          description: Permission access granted
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /folders/{id}/permissions/{accessor_id}:
+    patch:
+      operationId: updateFolderPermission
+      tags:
+      - Library
+      summary: PATCH /folders/{id}/permissions/{accessor_id}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Update accessor's access level and ownership of folder
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the folder
+        example: 5d7f910551b00a722e0418830cee6631
+      - name: accessor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the accessor. Accessor should be a user or a team.
+        example: 5d7f910551b00a722e0418830cee6631
+      requestBody:
+        description: Payload to update permission of accessors
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FolderPermissionUpdateRequest'
+      responses:
+        '204':
+          description: Permission access granted
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      operationId: removeFolderPermission
+      tags:
+      - Library
+      summary: DELETE /folders/{id}/permissions/{accessor_id}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Remove accessor's access from a folder
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the folder
+        example: 5d7f910551b00a722e0418830cee6631
+      - name: accessor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the accessor. Accessor should be a user or a team. Accessor cannot be an owner.
+        example: 5d7f910551b00a722e0418830cee6631
+      responses:
+        '204':
+          description: Accessor's access removed
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /file-urls:
+    post:
+      operationId: createFileUrls
+      tags:
+      - Library
+      summary: POST /file-urls
+      description: Generates download URLs of files given file guid.
+      requestBody:
+        description: Payload to generate download URLs for files.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FileUrlBulkCreateRequest'
+      responses:
+        '200':
+          description: Generated URLs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchFileUrlResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /assets:
+    get:
+      operationId: listAssets
+      tags:
+      - Library
+      summary: GET /assets
+      description: 'Get the list of assets. Assets are sorted by `modified_at` in descending order.
+
+        To get assets that are not inside any folder, pass `include_subfolder_assets=false` in the query param.
+
+        '
+      parameters:
+      - name: type
+        in: query
+        description: 'Asset type to filter by. Example: `type=image&type=video`'
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - article
+            - image
+            - video
+            - raw_file
+            - structured_content
+          default:
+          - article
+          - image
+          - video
+          - raw_file
+          - structured_content
+        style: form
+        explode: true
+        examples:
+          single:
+            summary: Filter by a single type
+            value:
+            - image
+          multiple:
+            summary: Filter by multiple types
+            value:
+            - article
+            - image
+            - video
+      - name: label
+        in: query
+        description: Label to filter by. **Must be passed as urlencoded string**. Labels that do not exist are ignored. If none of the provided labels exist, filtering is not applied. Example – `label=%7B%22group%22%3A%22ee63e3ee43925bb5cc8cd17b817d93ee%22%2C%22values%22%3A%5B%226706efc7828cd6aaedbc0434139cd3e1%22%2C%221f32651216cf2aefcaa08be1ea7dedf1%22%5D%7D`
+        schema:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              group:
+                type: string
+                description: Identifier of the label group
+                example: 2467e583a60e23fda2b89db81a453cd2
+              values:
+                type: array
+                description: List of identifiers of the label values
+                items:
+                  type: string
+                  description: Identifier of the label value
+                  example: 71c378f3fee3d822759d1bdc2aab628c
+            required:
+            - group
+            - values
+        style: form
+        explode: true
+        examples:
+          single:
+            summary: Filter by a single label
+            value:
+            - '{"group": "ee63e3ee43925bb5cc8cd17b817d93ee", "values": ["6706efc7828cd6aaedbc0434139cd3e1", "1f32651216cf2aefcaa08be1ea7dedf1"]}'
+          multiple:
+            summary: Filter by multiple labels
+            value:
+            - '{"group": "ee63e3ee43925bb5cc8cd17b817d93ee", "values": ["6706efc7828cd6aaedbc0434139cd3e1", "1f32651216cf2aefcaa08be1ea7dedf1"]}'
+            - '{"group": "126123b543912bb5cc12d17b817d9312", "values": ["aa63e3ee43925bb5cc8cd17b817d93aa", "df697bd824a944bf7d4fb6e350d9c5bd"]}'
+      - name: fields
+        in: query
+        description: List of fields to filter by. **Must be passed as base64 encoded string**. Fields that do not exist are ignored. If none of the provided fields exist, filtering is not applied. Example – `fields=Wwp7CiJpZCI6ICI2N2E4NDZhMWM3NzU1YTFwNThpNjh5MzVhIiwKInZhbHVlcyI6IFsiNjdhODQ2YTFjNzc1YWU1YWExYTE0YTA1Il0KfQpd=`
+        schema:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                description: Identifier of the field
+                example: 2467e583a60e23fda2b89db81a453cd2
+              values:
+                type: array
+                description: List of identifiers of the field values
+                items:
+                  type: string
+                  description: Identifier of the field value
+                  example: 71c378f3fee3d822759d1bdc2aab628c
+            required:
+            - id
+            - values
+        style: form
+        explode: true
+        examples:
+          single:
+            summary: Filter by a single field
+            value:
+            - '[{"id": "ee63e3ee43925bb5cc8cd17b817d93ee", "values": ["6706efc7828cd6aaedbc0434139cd3e1", "1f32651216cf2aefcaa08be1ea7dedf1"]}]'
+          multiple:
+            summary: Filter by multiple fields
+            value:
+            - '[{"id": "ee63e3ee43925bb5cc8cd17b817d93ee", "values": ["6706efc7828cd6aaedbc0434139cd3e1", "1f32651216cf2aefcaa08be1ea7dedf1"]}, {"id": "126123b543912bb5cc12d17b817d9312", "values": ["aa63e3ee43925bb5cc8cd17b817d93aa", "df697bd824a944bf7d4fb6e350d9c5bd"]}]'
+      - name: created_at__from
+        in: query
+        required: false
+        description: Date and time as the lower limit to filter assets by `created_at`, in ISO 8601 UTC format
+        schema:
+          type: string
+          format: date-time
+        example: '2018-11-30T13:32:44Z'
+      - name: created_at__to
+        in: query
+        required: false
+        description: Date and time as the upper limit to filter assets by `created_at`, in ISO 8601 UTC format
+        schema:
+          type: string
+          format: date-time
+        example: '2018-11-30T13:32:44Z'
+      - name: modified_at__from
+        in: query
+        required: false
+        description: Date and time as the lower limit to filter assets by `modified_at`, in ISO 8601 UTC format
+        schema:
+          type: string
+          format: date-time
+        example: '2018-11-30T13:32:44Z'
+      - name: modified_at__to
+        in: query
+        required: false
+        description: Date and time as the upper limit to filter assets by `modified_at`, in ISO 8601 UTC format
+        schema:
+          type: string
+          format: date-time
+        example: '2018-11-30T13:32:44Z'
+      - name: folder_id
+        in: query
+        required: false
+        description: ID of the library folder to include assets from
+        schema:
+          type: string
+        example: 6bb8db20a5b611ebae319b7c541b1a7f
+      - name: include_subfolder_assets
+        in: query
+        required: false
+        description: Indicates whether assets from subfolders need to be included
+        schema:
+          type: boolean
+          default: true
+        example: 'false'
+      - name: search_text
+        in: query
+        required: false
+        description: Search assets by title or content description
+        schema:
+          type: string
+        example: Cute Cat
+      - name: campaign_id
+        in: query
+        required: false
+        description: ID of the campaign to include assets from
+        schema:
+          type: string
+        example: 673218bee23887779e9e9a6f
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of fetched assets
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of assets
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AssetResponse'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/assets?offset=10&page_size=10
+                  total_count:
+                    type: number
+                    description: Total number of assets found based on the request
+                required:
+                - data
+                - pagination
+                - total_count
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      operationId: createAsset
+      tags:
+      - Library
+      summary: POST /assets
+      description: Create a new asset. Supports only `images`, `videos`, and `raw files`. See [Upload assets](https://docs.developers.optimizely.com/content-marketing-platform/docs/upload-assets) to upload an asset.
+      requestBody:
+        description: Payload to create an asset
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LibraryAssetCreateRequest'
+      responses:
+        '201':
+          description: Created asset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /assets/{asset_id}/fields:
+    get:
+      operationId: listAssetFields
+      tags:
+      - Library
+      summary: GET assets/{asset_id}/fields
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get the list of fields of an asset.
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5f857f30e1c4a2038d6179e9
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of fetched fields
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of fields
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AssetFieldListResponseItem'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/assets/5f857f30e1c4a2038d6179e9/fields?offset=10&page_size=10
+                required:
+                - data
+                - pagination
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: updateAssetFields
+      tags:
+      - Library
+      summary: PUT /assets/{asset_id}/fields
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Replace existing fields of an asset.
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5f857f30e1c4a2038d6179e9
+      requestBody:
+        description: Payload to replace the fields
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetFieldsUpdateRequest'
+      responses:
+        '200':
+          description: List of fields after replacement
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of fields
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AssetFieldListResponseItem'
+                  links:
+                    type: object
+                    additionalProperties: false
+                    description: Meta links
+                    properties:
+                      asset_fields:
+                        type: string
+                        description: URL to get the asset fields
+                        example: https://api.cmp.optimizely.com/v3/assets/5f857f30e1c4a2038d6179e9/fields
+                      asset_url:
+                        type: string
+                        description: URL of the asset
+                        example: https://api.cmp.optimizely.com/v3/asset-urls/5f857f30e1c4a2038d6179e9
+                    required:
+                    - asset_fields
+                    - asset_url
+                required:
+                - data
+                - links
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /assets/{asset_id}/fields/{field_id}:
+    put:
+      operationId: updateAssetField
+      tags:
+      - Library
+      summary: PUT /assets/{asset_id}/fields/{field_id}
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Update the field value of an asset. '
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5f857f30e1c4a2038d6179e9
+      - name: field_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the field of the asset
+        example: 4f857f30e1c4a2038d6179e7
+      requestBody:
+        description: Payload to update the field value
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetFieldUpdateRequest'
+      responses:
+        '200':
+          description: Updated the asset field
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetFieldUpdateResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /assets/{asset_id}/versions:
+    post:
+      operationId: createAssetVersion
+      tags:
+      - Library
+      summary: POST /assets/{asset_id}/versions
+      description: Add a new version to a library asset. Supports adding versions to only `images`, `videos`, and `raw files` type assets. See [Upload assets](https://docs.developers.optimizely.com/content-marketing-platform/docs/upload-assets) to upload a version to a library asset.
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5d7f910551b00a722e0418830cee6631
+      requestBody:
+        description: Payload to add a version to a library asset
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetVersionCreateRequest'
+      responses:
+        '201':
+          description: Created version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryAssetVersionResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /assets/{asset_id}/renditions:
+    get:
+      operationId: listAssetRenditions
+      tags:
+      - Library
+      summary: GET /assets/{asset_id}/renditions
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get the renditions of an asset given its `id`. '
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5d7f910551b00a722e0418830cee6631
+      responses:
+        '200':
+          description: List of fetched renditions
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of renditions
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BaseAssetRenditionResponse'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/assets/5d7f910551b00a722e0418830cee6631/renditions?offset=10&page_size=10
+                required:
+                - data
+                - pagination
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /assets/{asset_id}/permissions:
+    get:
+      operationId: listAssetPermissions
+      tags:
+      - Library
+      summary: GET /assets/{asset_id}/permissions
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> List of entities that have permission to access the asset
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5d7f910551b00a722e0418830cee6631
+      - name: access
+        in: query
+        schema:
+          type: string
+          description: To filter by specific access level. Cannot be used in addition to max_access and min_access params.
+          enum:
+          - view
+          - edit
+          - comment
+          - delete
+        example: view
+      - name: max_access
+        in: query
+        schema:
+          type: string
+          description: To filter by specific access level and higher. Cannot be used in addition to access and min_access params.
+          enum:
+          - view
+          - edit
+          - comment
+          - delete
+        example: view
+      - name: min_access
+        in: query
+        schema:
+          type: string
+          description: To filter by specific access level and lower. Cannot be used in addition to access and max_access params.
+          enum:
+          - view
+          - edit
+          - comment
+          - delete
+        example: view
+      responses:
+        '200':
+          description: List of permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetPermissionListResponseItem'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      operationId: addAssetPermissions
+      tags:
+      - Library
+      summary: POST /assets/{asset_id}/permissions
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Grant asset access to users or teams
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5d7f910551b00a722e0418830cee6631
+      requestBody:
+        description: Payload to add list of accessors to asset permissions
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetPermissionBulkCreateRequest'
+      responses:
+        '204':
+          description: Permission access granted
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /assets/{asset_id}/permissions/{accessor_id}:
+    patch:
+      operationId: updateAssetPermission
+      tags:
+      - Library
+      summary: PATCH /assets/{asset_id}/permissions/{accessor_id}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Update accessor's access level and ownership of asset
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5d7f910551b00a722e0418830cee6631
+      - name: accessor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the accessor. Accessor should be a user or a team.
+        example: 5d7f910551b00a722e0418830cee6631
+      requestBody:
+        description: Payload to update permission of accessors
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetPermissionUpdateRequest'
+      responses:
+        '204':
+          description: Permission access granted
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      operationId: removeAssetPermission
+      tags:
+      - Library
+      summary: DELETE /asstes/{asset_id}/permissions/{accessor_id}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Remove accessor's access from an asset
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5d7f910551b00a722e0418830cee6631
+      - name: accessor_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the accessor. Accessor should be a user or a team. Accessor cannot be an owner.
+        example: 5d7f910551b00a722e0418830cee6631
+      responses:
+        '204':
+          description: Accessor's access removed
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /renditions/{id}:
+    get:
+      operationId: getRendition
+      tags:
+      - Library
+      summary: GET /renditions/{id}
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a rendition given its `id`. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the rendition
+        example: c2603a6e0b4811eebea95edf08e23f48
+      responses:
+        '200':
+          description: Details of the rendition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedAssetRenditionResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /rendition-configs/{id}:
+    get:
+      operationId: getRenditionConfig
+      tags:
+      - Library
+      summary: GET /rendition-configs/{id}
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a rendition configuration of an organization given its `id`. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the rendition configuration
+        example: 5d7f910551b00a722e0418830cee6631
+      responses:
+        '200':
+          description: Data of a rendition configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RenditionConfigResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /assets/{asset_id}/lineages:
+    post:
+      operationId: createAssetLineage
+      tags:
+      - Library
+      summary: POST /assets/{asset_id}/lineages
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Add a new external asset lineage.
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5d7f910551b00a722e0418830cee6631
+      requestBody:
+        description: Payload to add an external asset lineage for a library asset
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetLineageCreateRequest'
+      responses:
+        '201':
+          description: Created external asset lineage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetLineageResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /assets/{asset_id}/lineages/{lineage_id}:
+    delete:
+      operationId: deleteAssetLineage
+      tags:
+      - Library
+      summary: DELETE /assets/{asset_id}/lineages/{lineage_id}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Delete an asset lineage.
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5d7f910551b00a722e0418830cee6631
+      - name: lineage_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the lineage
+        example: ff3f8e024f0611ed993202420ac8001b
+      responses:
+        '204':
+          description: Deleted the asset lineage
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /assets/{asset_id}/related-assets:
+    get:
+      tags:
+      - Library
+      operationId: listRelatedAssets
+      summary: GET /assets/{asset_id}/related-assets
+      description: 'Returns a paginated list of related assets for the specified asset. Only supported for asset types: article, image, video, raw_file, and structured_content.'
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5d7f910551b00a722e0418830cee6631
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of related assets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelatedAssetsListResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Library
+      operationId: replaceRelatedAssets
+      summary: PUT /assets/{asset_id}/related-assets
+      description: 'Replaces all related assets for the specified asset. Only supported for asset types: article, image, video, raw_file, and structured_content.'
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5d7f910551b00a722e0418830cee6631
+      requestBody:
+        description: List of related assets to set for the specified asset
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceRelatedAssetsRequest'
+      responses:
+        '200':
+          description: Successfully replaced related assets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceRelatedAssetsResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /asset-lineages:
+    get:
+      operationId: listAssetLineages
+      tags:
+      - Library
+      summary: GET /asset-lineages
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get the list of asset lineage.
+      parameters:
+      - name: asset_id
+        in: query
+        schema:
+          type: string
+          description: Unique identifier of the asset. Can be appended multiple times, such as `asset_id=assetId1&asset_id=assetId2`
+        example: 1265ca474ba987cc925164aa7
+      - name: used_in
+        in: query
+        schema:
+          type: string
+          description: Indicates where an asset is being used.
+          enum:
+          - external
+        example: external
+      - name: created_at__from
+        in: query
+        required: false
+        description: Date and time as the lower limit to filter asset lineages by `created_at`, in ISO 8601 UTC format
+        schema:
+          type: string
+          format: date-time
+        example: '2018-11-30T13:32:44Z'
+      - name: created_at__to
+        in: query
+        required: false
+        description: Date and time as the upper limit to filter asset lineages by `created_at`, in ISO 8601 UTC format
+        schema:
+          type: string
+          format: date-time
+        example: '2018-11-30T13:32:44Z'
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of fetched asset lineage
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of asset lineage
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AssetLineageResponse'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/asset-lineages?offset=10&page_size=10
+                required:
+                - data
+                - pagination
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /articles/{id}:
+    get:
+      operationId: getArticle
+      tags:
+      - Library
+      summary: GET /articles/{id}
+      description: Get an article
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the article
+        example: 5d7f910551b00a722e0418830cee6631
+      responses:
+        '200':
+          description: Fetched article
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryArticle'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /images/{id}:
+    get:
+      operationId: getImage
+      tags:
+      - Library
+      summary: GET /images/{id}
+      description: Get an image
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the image
+        example: 5d7f910551b00a722e0418830cee6632
+      responses:
+        '200':
+          description: Fetched image
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryImage'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateImage
+      tags:
+      - Library
+      summary: PATCH /images/{id}
+      description: Updates an image
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the image
+        example: 5d7f910551b00a722e0418830cee6631
+      requestBody:
+        description: Payload to update the image
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LibraryImageUpdateRequest'
+      responses:
+        '200':
+          description: Updated Image
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryImage'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      operationId: deleteImage
+      tags:
+      - Library
+      summary: DELETE /images/{id}
+      description: Delete an image
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the image
+        example: 5d7f910551b00a722e0418830cee6632
+      responses:
+        '204':
+          description: Deleted the image
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /videos/{id}:
+    get:
+      operationId: getVideo
+      tags:
+      - Library
+      summary: GET /videos/{id}
+      description: Get a video
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the video
+        example: 5d7f910551b00a722e0418830cee6633
+      responses:
+        '200':
+          description: Fetched video
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVideo'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateVideo
+      tags:
+      - Library
+      summary: PATCH /videos/{id}
+      description: Updates a video
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the Video
+        example: 5d7f910551b00a722e0418830cee6631
+      requestBody:
+        description: Payload to update the video
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LibraryVideoUpdateRequest'
+      responses:
+        '200':
+          description: Video Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryVideo'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      operationId: deleteVideo
+      tags:
+      - Library
+      summary: DELETE /videos/{id}
+      description: Delete a video
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the video
+        example: 5d7f910551b00a722e0418830cee6633
+      responses:
+        '204':
+          description: Deleted the video
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /raw-files/{id}:
+    get:
+      operationId: getRawFile
+      tags:
+      - Library
+      summary: GET /raw-files/{id}
+      description: Get a raw file
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the raw file
+        example: 5d7f910551b00a722e0418830cee6634
+      responses:
+        '200':
+          description: Fetched raw file
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryRawFile'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateRawFile
+      tags:
+      - Library
+      summary: PATCH /raw-files/{id}
+      description: Updates a raw file
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the raw file
+        example: 5d7f910551b00a722e0418830cee6631
+      requestBody:
+        description: Payload to update the raw file
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LibraryRawFileUpdateRequest'
+      responses:
+        '200':
+          description: Raw file updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryRawFile'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      operationId: deleteRawFile
+      tags:
+      - Library
+      summary: DELETE /raw-files/{id}
+      description: Delete a raw file
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the raw file
+        example: 5d7f910551b00a722e0418830cee6634
+      responses:
+        '200':
+          description: Deleted the raw file
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /structured-contents:
+    post:
+      operationId: createStructuredContent
+      tags:
+      - Library
+      summary: POST /structured-contents
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Creates a structured content.
+      requestBody:
+        description: Payload to create the structured content
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LibraryStructuredContentCreateRequest'
+      responses:
+        '200':
+          description: Structured content created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryStructuredContent'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /structured-contents/{id}:
+    get:
+      operationId: getStructuredContent
+      tags:
+      - Library
+      summary: GET /structured-contents/{id}
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get the structured content. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the structured content
+        example: a24b834427a043ab8caed1ded4606f7d
+      responses:
+        '200':
+          description: Fetched structured content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryStructuredContent'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateStructuredContent
+      tags:
+      - Library
+      summary: PATCH /structured-contents/{id}
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Updates a structured content. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the structured content
+        example: 5d7f910551b00a722e0418830cee6631
+      requestBody:
+        description: Payload to update the structured content
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LibraryStructuredContentUpdateRequest'
+      responses:
+        '200':
+          description: Structured content updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryStructuredContent'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+components:
+  schemas:
+    ReplaceRelatedAssetsRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        related_assets:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                description: Unique identifier for the asset
+                example: 5d7f910551b00a722e0418830cee6631
+            required:
+            - id
+      required:
+      - related_assets
+    AllowedContentTypeItem:
+      required:
+      - name
+      - url
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the item
+        url:
+          type: string
+          description: URL of the item
+    LocationDefaultValue:
+      required:
+      - longitude
+      - latitude
+      type: object
+      properties:
+        longitude:
+          type: number
+          description: Longitude of the location
+        latitude:
+          type: number
+          description: Latitude of the location
+    LibraryVideoUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          description: Title of the video
+          example: product.mp4
+        description:
+          type: string
+          minLength: 0
+          description: Description of the video. Set an empty string to clear the description.
+          example: A short video on product demo
+        alt_text:
+          type: string
+          minLength: 0
+          description: Alt text of the video. Set an empty string to clear the alt text.
+          example: Sample alt text
+        attribution_text:
+          type: string
+          minLength: 0
+          description: Attribution text of the video. Set an empty string to clear the attribution text.
+          example: Sample attribution text
+        tags:
+          type: array
+          description: Tags of the video. Provided tags will replace the existing ones. Set an empty array to clear the existing tags.
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          uniqueItems: true
+          minItems: 0
+          maxItems: 100
+          example:
+          - dhaka
+          - new york
+          - london
+        is_public:
+          type: boolean
+          description: Whether the video URL should be public
+          example: true
+        is_archived:
+          type: boolean
+          description: Whether the video should be archived
+          example: true
+        allow_se_indexing:
+          type: boolean
+          description: Whether the video is allowed to be indexed by search engines
+          example: true
+        folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the folder containing the video in the library
+          example: 6bb8db20a5b611ebae319b7c541b1a5a
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time when the video expires, in ISO 8601 UTC format
+          example: '2019-10-07T13:15:30Z'
+        labels:
+          type: array
+          description: Please use [PUT /assets/{asset_id}/fields](https://docs.developers.optimizely.com/content-marketing-platform/reference/put_assets-asset-id-fields) or  [PUT /assets/{asset_id}/fields/{field_id}](https://docs.developers.optimizely.com/content-marketing-platform/reference/put_assets-asset-id-fields-field-id)  API to update label type asset fields
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/ResourceLabelRequest'
+    FolderPermissionUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        access_type:
+          type: string
+          description: Set the level of access the accessor has to the folder
+          enum:
+          - view
+          - edit
+          example: view
+        is_owner:
+          type: boolean
+          description: Used to set an accessor as owner. This field can only be set to true as an owner cannot be removed without another accessor being set as the new owner. A team cannot be an owner.
+          example: true
+    AssetFieldTypeDropdown:
+      allOf:
+      - $ref: '#/components/schemas/BaseAssetField'
+      - type: object
+        properties:
+          is_multi_select:
+            type: boolean
+            description: Allow users to select multiple values from the dropdown
+          choices:
+            type: array
+            description: Choices of the dropdown
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Dropdown 1 Choice 1
+              required:
+              - id
+              - name
+        required:
+        - is_multi_select
+        - choices
+    DetailedAssetRenditionResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseAssetRenditionResponse'
+      - type: object
+        properties:
+          modified_at:
+            type: string
+            format: date-time
+            description: Date and time on which the rendition was last modified, in ISO 8601 UTC format
+            example: '2022-09-27T09:14:30Z'
+          width:
+            type:
+            - integer
+            - 'null'
+            description: The width (in pixels) of the rendition
+            example: 600
+          height:
+            type:
+            - integer
+            - 'null'
+            description: The height (in pixels) of the rendition
+            example: 400
+          alt_text:
+            type:
+            - string
+            - 'null'
+            description: Alternative text for rendition
+            example: image title
+          original_asset_id:
+            type: string
+            description: ID of the original asset the rendition was generated from
+            example: 5d7f910551b00a722e0418830cee6631
+          rendition_config_id:
+            type: string
+            description: ID of rendition config used to generate the rendition
+            example: f910551b00ae0418830cee6631452651
+          asset_type:
+            type: string
+            description: Type of the original asset the rendition was generated from
+            example: image
+          status:
+            type: string
+            description: Status of the rendition's generation
+            enum:
+            - Done
+            - InProgress
+            - Error
+            example: Done
+        required:
+        - modified_at
+        - original_asset_id
+        - width
+        - height
+        - alt_text
+        - asset_type
+        - status
+    ContentTypeFieldEmbedMixConfig:
+      enum:
+      - 1
+      - 2
+      - 3
+      type: integer
+      description: "Ref Type:\n  * `1` Refer only\n  * `2` Refer and create embed\n  * `3` Create only\n"
+    FolderPermissionBulkCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          description: Type of the accessor
+          example: user
+          enum:
+          - user
+          - team
+        permissions:
+          type: array
+          minItems: 1
+          description: List of permissions to be granted to folder
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                description: Unique identifier of accessor
+                example: 5d7f910551b00a722e0418830cee6632
+              access_type:
+                type: string
+                description: level of access the accessor has to the folder
+                enum:
+                - view
+                - edit
+                example: view
+              is_owner:
+                type: boolean
+                description: Indicates if the accessor is the owner of the folder. A team cannot be an owner.
+                example: false
+                default: false
+            required:
+            - id
+            - access_type
+      required:
+      - type
+      - permissions
+    LibraryImage:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the image
+          example: 5d7f910551b00a722e0418830cee6632
+        title:
+          type: string
+          description: Title of the image
+          example: cat.jpeg
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the image
+          example: Very important image
+        mime_type:
+          type: string
+          description: MIME type of the image
+          example: image/jpeg
+        file_extension:
+          type:
+          - string
+          - 'null'
+          description: File extension of the image file
+          example: jpg
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the image was created, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-06T13:15:30Z'
+        modified_at:
+          type: string
+          format: date-time
+          description: Date and time of the most recent modification of the image, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-07T13:15:30Z'
+        file_size:
+          type: integer
+          description: Size of the image in bytes
+          example: 11244
+        image_resolution:
+          type: object
+          additionalProperties: false
+          description: Width and height of the image in pixels
+          properties:
+            height:
+              type: integer
+              description: Height of the image in pixels
+              example: 800
+            width:
+              type: integer
+              description: Width of the image in pixels
+              example: 700
+          required:
+          - height
+          - width
+        folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the folder containing the image in the library
+          example: 6bb8db20a5b611ebae319b7c541b1a5a
+        file_location:
+          type: string
+          description: Location of the folder containing the image in the library
+          example: /images/
+        is_archived:
+          type: boolean
+          description: Whether the image is archived or not
+          example: true
+        is_public:
+          type: boolean
+          description: Whether the image URL is public or not
+          example: true
+        allow_se_indexing:
+          type: boolean
+          description: Whether the image is allowed to be indexed by search engines
+          example: true
+        url:
+          type: string
+          description: Download the URL of the image
+          example: http://images.cmp.optimizely.com/Zz0xODQ3NDU3Y2Y2YmYzOTlmNjkyOTgyZDY3Y2I3YWM2OA==
+        labels:
+          type: array
+          description: Labels associated with the image
+          items:
+            $ref: '#/components/schemas/ResourceLabelResponse'
+        owner_organization_id:
+          type: string
+          description: ID of owner organization of the image
+          example: 5108c3a9becac35915111191
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time for the expiration of the image, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-07T13:15:30Z'
+        thumbnail_url:
+          type:
+          - string
+          - 'null'
+          description: URL of the thumbnail of the image
+          example: http://images.cmp.optimizely.com/Zz0xODQ3NDU3Y2Y2YmYzOTlmNjkyOTgyZDY3Y2I3YWM2OA==
+        version_number:
+          type: integer
+          description: Version number of image
+          example: 2
+        version_id:
+          type: string
+          description: Version id of image
+          example: 5d7f910551b00a722e0418830cee6631
+        alt_text:
+          type:
+          - string
+          - 'null'
+          description: Alternative text for image
+          example: image title
+        tags:
+          type: array
+          description: Tags for the image
+          items:
+            $ref: '#/components/schemas/Tag'
+        attribution_text:
+          type:
+          - string
+          - 'null'
+          description: Attribution of Image
+          example: Nature
+        owner_id:
+          type: string
+          description: ID of the image owner
+          example: 5108c3a9becac35915111191
+        focal_point:
+          type:
+          - object
+          - 'null'
+          additionalProperties: false
+          description: Focal point of the image
+          properties:
+            x:
+              type: integer
+              description: X coordinate of the focal point
+              example: 35
+            y:
+              type: integer
+              description: Y coordinate of the focal point
+              example: 75
+          required:
+          - x
+          - y
+      required:
+      - id
+      - title
+      - description
+      - mime_type
+      - file_extension
+      - created_at
+      - modified_at
+      - file_size
+      - image_resolution
+      - folder_id
+      - file_location
+      - is_archived
+      - is_public
+      - allow_se_indexing
+      - url
+      - labels
+      - owner_organization_id
+      - expires_at
+      - thumbnail_url
+      - version_number
+      - version_id
+      - alt_text
+      - tags
+      - attribution_text
+      - owner_id
+      - focal_point
+    ChoiceDisplayOption:
+      enum:
+      - radio
+      - dropdown
+      - tag
+      - checkbox
+      type: string
+      description: An enumeration.
+    LocationFieldValueModel:
+      required:
+      - longitude
+      - latitude
+      type: object
+      properties:
+        longitude:
+          type: number
+          description: Longitude of the field value
+        latitude:
+          type: number
+          description: Longitude of the field value
+        order_index:
+          type: integer
+          description: Order index of the field value
+    AssetFieldTypeLabel:
+      allOf:
+      - $ref: '#/components/schemas/BaseAssetField'
+      - type: object
+        properties:
+          is_multi_select:
+            type: boolean
+            description: Select multiple values from the label
+          choices:
+            type: array
+            description: Choices of the label
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Label 1 Choice 1
+              required:
+              - id
+              - name
+        required:
+        - is_multi_select
+        - choices
+    AssetFieldTypeCheckbox:
+      allOf:
+      - $ref: '#/components/schemas/BaseAssetField'
+      - type: object
+        properties:
+          choices:
+            type: array
+            description: Choices of the checkbox
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Checkbox 1 Choice 1
+              required:
+              - id
+              - name
+        required:
+        - choices
+    AssetPermissionUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        access_type:
+          type: string
+          description: Set the level of access the accessor has to the asset
+          enum:
+          - view
+          - edit
+          example: view
+        is_owner:
+          type: boolean
+          description: Used to set an accessor as owner. This field can only be set to true as an owner cannot be removed without another accessor being set as the new owner. A team cannot be an owner.
+          example: true
+    BaseObjectFieldUpdatePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the field
+          example: checkbox
+        values:
+          type: array
+          description: Values for the campaign field
+      required:
+      - type
+      - values
+    LocalizedFieldValuesWithEmbeddedContent:
+      required:
+      - locale
+      - field_values
+      type: object
+      properties:
+        locale:
+          type: string
+        field_values:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/NumberFieldValueModel'
+            - $ref: '#/components/schemas/BooleanFieldValueModel'
+            - $ref: '#/components/schemas/DatetimeFieldValueModel'
+            - $ref: '#/components/schemas/TextFieldValueModel'
+            - $ref: '#/components/schemas/RichTextFieldValueModel'
+            - $ref: '#/components/schemas/LibraryAssetFieldValueModel'
+            - $ref: '#/components/schemas/ContentFieldValueWithEmbeddedModel'
+            - $ref: '#/components/schemas/ContentFieldValueModel'
+            - $ref: '#/components/schemas/URLFieldValueModel'
+            - $ref: '#/components/schemas/JSONFieldValueModel'
+            - $ref: '#/components/schemas/ChoiceFieldValueModel'
+            - $ref: '#/components/schemas/LocationFieldValueModel'
+    LibraryArticle:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the article
+          example: 5d7f910551b00a722e0418830cee6631
+        title:
+          type: string
+          description: Title of the article
+          example: 3 Ways Influencer Marketing Will Further Mature in 2020
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the article was created, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-06T13:15:30Z'
+        modified_at:
+          type: string
+          format: date-time
+          description: Date and time of the most recent modification of the article, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-07T13:15:30Z'
+        html_body:
+          type: string
+          description: Content of the article
+          example: <p>Article text</p>
+        folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the folder containing the article in the library
+          example: 6bb8db20a5b611ebae319b7c541b1a5a
+        file_location:
+          type: string
+          description: Location of the folder containing the article in the library
+          example: /all assets/
+        is_archived:
+          type: boolean
+          description: Whether the article is archived or not
+          example: false
+        labels:
+          type: array
+          description: Labels associated with the article
+          items:
+            $ref: '#/components/schemas/ResourceLabelResponse'
+        group_id:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the source article in case of copied or translated articles
+          example: 7949c82ce3ae11eba378dbacdf18f20c
+        meta_title:
+          type:
+          - string
+          - 'null'
+          description: Meta title of the article
+          example: 3 Ways Influencer Marketing Will Further Mature in 2020
+        meta_description:
+          type:
+          - string
+          - 'null'
+          description: Meta description of the article
+          example: Article text
+        meta_url:
+          type:
+          - string
+          - 'null'
+          description: Meta URL of the article
+          example: /
+        meta_keywords:
+          type: array
+          description: Meta Keywords of the article
+          items:
+            type: string
+          example:
+          - key
+          - word
+          - keyword
+        source_article:
+          type:
+          - string
+          - 'null'
+          description: Link to the vendor article for Marketplace article or Task article ID for created article
+          example: https://source-vendor.com/sample-article
+        source_name:
+          type:
+          - string
+          - 'null'
+          description: Name of the article's source
+          example: Optimizely CMP
+        url:
+          type:
+          - string
+          - 'null'
+          description: Link to the published article
+          example: https://example.com/sample-article
+        authors:
+          type: array
+          description: List of authors of the article
+          items:
+            $ref: '#/components/schemas/ArticleAuthorResponse'
+        lang_code:
+          type:
+          - string
+          - 'null'
+          description: Language code depicting the language of the article
+          example: eng
+        pixel_key:
+          type: string
+          description: Unique tracking pixel of the article
+          example: https://pixel.cmp.optimizely.com/px.gif?key=YXJ0aWNsZT0zZmJjN2Y5NmUzYzcxMWViOGVmNTAyNDJhYzEyMDAxOA==
+        images:
+          type: array
+          description: Featured images of the article
+          items:
+            $ref: '#/components/schemas/FeaturedImageResponse'
+        owner_organization_id:
+          type: string
+          description: ID of owner organization of the article
+          example: 5108c3a9becac35915111191
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time for the expiration of the article, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-07T13:15:30Z'
+        thumbnail_url:
+          type:
+          - string
+          - 'null'
+          description: URL of the thumbnail of the article
+          example: http://images.cmp.optimizely.com/Zz0xODQ3NDU3Y2Y2YmYzOTlmNjkyOTgyZDY3Y2I3YWM2OA==
+        version_number:
+          type: integer
+          description: Version number of article
+          example: 2
+        version_id:
+          type: string
+          description: Version id of article
+          example: 5d7f910551b00a722e0418830cee6631
+        tags:
+          type: array
+          description: Tags for the article
+          items:
+            $ref: '#/components/schemas/Tag'
+        owner_id:
+          type: string
+          description: ID of the article owner
+          example: 5108c3a9becac35915111191
+      required:
+      - id
+      - title
+      - created_at
+      - modified_at
+      - html_body
+      - folder_id
+      - url
+      - file_location
+      - is_archived
+      - labels
+      - group_id
+      - meta_title
+      - meta_description
+      - meta_url
+      - meta_keywords
+      - source_article
+      - source_name
+      - authors
+      - lang_code
+      - pixel_key
+      - images
+      - owner_organization_id
+      - expires_at
+      - thumbnail_url
+      - version_number
+      - version_id
+      - tags
+      - owner_id
+    AssetFieldsUpdateRequest:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        oneOf:
+        - $ref: '#/components/schemas/StringTypeObjectField'
+        - $ref: '#/components/schemas/MultiChoiceTypeObjectField'
+        - $ref: '#/components/schemas/DropdownTypeObjectField'
+        - $ref: '#/components/schemas/RadioButtonTypeObjectField'
+        - $ref: '#/components/schemas/NumberTypeObjectField'
+        - $ref: '#/components/schemas/DateTypeObjectField'
+        - $ref: '#/components/schemas/AssetTypeObjectField'
+        discriminator:
+          propertyName: type
+          mapping:
+            checkbox: '#/components/schemas/MultiChoiceTypeObjectField'
+            currency_number: '#/components/schemas/NumberTypeObjectField'
+            date: '#/components/schemas/DateTypeObjectField'
+            dropdown: '#/components/schemas/DropdownTypeObjectField'
+            label: '#/components/schemas/MultiChoiceTypeObjectField'
+            radio_button: '#/components/schemas/RadioButtonTypeObjectField'
+            percentage_number: '#/components/schemas/NumberTypeObjectField'
+            simple_number: '#/components/schemas/NumberTypeObjectField'
+            text: '#/components/schemas/StringTypeObjectField'
+            text_area: '#/components/schemas/StringTypeObjectField'
+            rich_text: '#/components/schemas/StringTypeObjectField'
+            image: '#/components/schemas/AssetTypeObjectField'
+            video: '#/components/schemas/AssetTypeObjectField'
+    PatchLocalizedFieldValuesWithEmbeddedContent:
+      required:
+      - locale
+      - field_values
+      type: object
+      properties:
+        locale:
+          type: string
+          description: The default value should be en_US
+        field_values:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/NumberFieldValueModel'
+            - $ref: '#/components/schemas/BooleanFieldValueModel'
+            - $ref: '#/components/schemas/DatetimeFieldValueModel'
+            - $ref: '#/components/schemas/TextFieldValueModel'
+            - $ref: '#/components/schemas/RichTextFieldValueModel'
+            - $ref: '#/components/schemas/LibraryAssetFieldValueModel'
+            - $ref: '#/components/schemas/ContentFieldValueWithEmbeddedModel'
+            - $ref: '#/components/schemas/ContentFieldValueModel'
+            - $ref: '#/components/schemas/URLFieldValueModel'
+            - $ref: '#/components/schemas/JSONFieldValueModel'
+            - $ref: '#/components/schemas/ChoiceFieldValueModel'
+            - $ref: '#/components/schemas/LocationFieldValueModel'
+            - $ref: '#/components/schemas/DeleteFieldValueModel'
+            - $ref: '#/components/schemas/ContentFieldWithEmbeddedPatchValueModel'
+    LibraryAssetFieldDefinition:
+      required:
+      - core
+      - allowed_types
+      type: object
+      properties:
+        core:
+          $ref: '#/components/schemas/CoreFieldDef'
+        allowed_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/LibraryAssetType'
+        default_values:
+          type: array
+          description: Default values for the field
+          items:
+            $ref: '#/components/schemas/LibraryAssetDefaultValue'
+    StructuredContentBody:
+      type: object
+      description: The fields of structured content
+      properties:
+        has_embedded:
+          description: Whether the structured content has embedded content reference field values
+          type:
+          - boolean
+          - 'null'
+      additionalProperties:
+        type: array
+        items:
+          $ref: '#/components/schemas/LocalizedFieldValuesWithEmbeddedContent'
+    LibraryImageUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          description: Title of the image
+          example: cat.jpeg
+        description:
+          type: string
+          minLength: 0
+          description: Description of the image. Set an empty string to clear the description.
+          example: Image of a cute cat
+        alt_text:
+          type: string
+          minLength: 0
+          description: Alt text of the image. Set an empty string to clear the alt text.
+          example: Sample alt text
+        attribution_text:
+          type: string
+          minLength: 0
+          description: Attribution text of the image. Set an empty string to clear the attribution text.
+          example: Sample attribution text
+        tags:
+          type: array
+          description: Tags of the image. Provided tags will replace the existing ones. Set an empty array to clear the existing tags.
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          uniqueItems: true
+          minItems: 0
+          maxItems: 100
+          example:
+          - dhaka
+          - new york
+          - london
+        is_public:
+          type: boolean
+          description: Whether the image URL should be public
+          example: true
+        is_archived:
+          type: boolean
+          description: Whether the image should be archived
+          example: true
+        allow_se_indexing:
+          type: boolean
+          description: Whether the image is allowed to be indexed by search engines
+          example: true
+        folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the folder containing the image in the library
+          example: 6bb8db20a5b611ebae319b7c541b1a5a
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time when the image expires, in ISO 8601 UTC format
+          example: '2019-10-07T13:15:30Z'
+        labels:
+          type: array
+          description: Please use [PUT /assets/{asset_id}/fields](https://docs.developers.optimizely.com/content-marketing-platform/reference/put_assets-asset-id-fields) or  [PUT /assets/{asset_id}/fields/{field_id}](https://docs.developers.optimizely.com/content-marketing-platform/reference/put_assets-asset-id-fields-field-id)  API to update label type asset fields
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/ResourceLabelRequest'
+    BaseAssetField:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Identifier of the field
+          example: 64be245ec0d79e79fdf1ad84
+        name:
+          type: string
+          description: Name of the field
+          example: Simple Text
+        values:
+          type: array
+          description: List of selected values or from user input
+          items:
+            type: string
+        type:
+          type: string
+          description: Type of the field
+          example: text
+      required:
+      - id
+      - name
+      - type
+      - values
+    ContentFieldValueWithEmbeddedModel:
+      required:
+      - content_details
+      type: object
+      properties:
+        content_details:
+          title: Contentdetails
+          description: The embedded content object
+          $ref: '#/components/schemas/RecursiveStructuredContent'
+    LibraryRawFileUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          description: Title of the raw file
+          example: documents.zip
+        description:
+          type: string
+          minLength: 0
+          description: Description of the raw file. Set an empty string to clear the description.
+          example: A zip file that contains some documents
+        attribution_text:
+          type: string
+          minLength: 0
+          description: Attribution text of the raw file. Set an empty string to clear the attribution text.
+          example: Sample attribution text
+        tags:
+          type: array
+          description: Tags of the raw file. Provided tags will replace the existing ones. Set an empty array to clear the existing tags.
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          uniqueItems: true
+          minItems: 0
+          maxItems: 100
+          example:
+          - dhaka
+          - new york
+          - london
+        is_public:
+          type: boolean
+          description: Whether the raw file URL should be public
+          example: true
+        is_archived:
+          type: boolean
+          description: Whether the raw file should be archived
+          example: true
+        allow_se_indexing:
+          type: boolean
+          description: Whether the raw file is allowed to be indexed by search engines
+          example: true
+        folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the folder containing the raw file in the library
+          example: 6bb8db20a5b611ebae319b7c541b1a5a
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time when the raw file expires, in ISO 8601 UTC format
+          example: '2019-10-07T13:15:30Z'
+        labels:
+          type: array
+          description: Please use [PUT /assets/{asset_id}/fields](https://docs.developers.optimizely.com/content-marketing-platform/reference/put_assets-asset-id-fields) or  [PUT /assets/{asset_id}/fields/{field_id}](https://docs.developers.optimizely.com/content-marketing-platform/reference/put_assets-asset-id-fields-field-id)  API to update label type asset fields
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/ResourceLabelRequest'
+    StringTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Any single string
+            items:
+              type: string
+              example: This is a test string
+    LocalizedFieldValues:
+      required:
+      - locale
+      - field_values
+      type: object
+      properties:
+        locale:
+          type: string
+        field_values:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/NumberFieldValueModel'
+            - $ref: '#/components/schemas/BooleanFieldValueModel'
+            - $ref: '#/components/schemas/DatetimeFieldValueModel'
+            - $ref: '#/components/schemas/TextFieldValueModel'
+            - $ref: '#/components/schemas/RichTextFieldValueModel'
+            - $ref: '#/components/schemas/LibraryAssetFieldValueModel'
+            - $ref: '#/components/schemas/ContentFieldValueExpandedModel'
+            - $ref: '#/components/schemas/ContentFieldValueModel'
+            - $ref: '#/components/schemas/URLFieldValueModel'
+            - $ref: '#/components/schemas/JSONFieldValueModel'
+            - $ref: '#/components/schemas/ChoiceFieldValueModel'
+            - $ref: '#/components/schemas/LocationFieldValueModel'
+    RenditionConfigResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the rendition config
+          example: 5d7f910551b00a722e0418830cee6631
+        name:
+          type: string
+          description: Name of the rendition config
+          example: Facebook
+        asset_type:
+          type: string
+          description: The asset type this config applies to
+          example: image
+        width:
+          type:
+          - integer
+          - 'null'
+          description: The expected width (in pixels) of the renditions generated using this config
+          example: 600
+        height:
+          type:
+          - integer
+          - 'null'
+          description: The expected height (in pixels) of the renditions generated using this config
+          example: 400
+        input_format:
+          type:
+          - string
+          - 'null'
+          description: The file format of the target asset
+          example: JPG
+        output_format:
+          type:
+          - string
+          - 'null'
+          description: The file format of the generated rendition
+          example: PNG
+        quality:
+          type:
+          - number
+          - 'null'
+          description: The quality (percent) of the renditions generated using this config
+          example: 80
+      required:
+      - id
+      - name
+      - asset_type
+      - input_format
+      - width
+      - height
+      - output_format
+      - quality
+    AssetPermissionBulkCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          description: Type of the accessor
+          example: user
+          enum:
+          - user
+          - team
+        permissions:
+          type: array
+          minItems: 1
+          description: List of permissions to be granted to asset
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                description: Unique identifier of accessor
+                example: 5d7f910551b00a722e0418830cee6632
+              access_type:
+                type: string
+                description: level of access the accessor has to the asset
+                enum:
+                - view
+                - edit
+                example: view
+              is_owner:
+                type: boolean
+                description: Indicates if the accessor is the owner of the asset. A team cannot be an owner.
+                example: false
+                default: false
+            required:
+            - id
+            - access_type
+      required:
+      - type
+      - permissions
+    SCContentTypeVersion:
+      allOf:
+      - $ref: '#/components/schemas/BaseContentTypeVersionModel'
+      - type: object
+        properties:
+          field_definitions:
+            type: array
+            items:
+              anyOf:
+              - $ref: '#/components/schemas/ContentTypeFieldDefinition'
+              - $ref: '#/components/schemas/LibraryAssetFieldDefinition'
+              - $ref: '#/components/schemas/TextFieldDefinition'
+              - $ref: '#/components/schemas/BaseFieldDefinition'
+              - $ref: '#/components/schemas/DatetimeFieldDefinition'
+              - $ref: '#/components/schemas/RichTextFieldDefinition'
+              - $ref: '#/components/schemas/ChoiceFieldDefinition'
+              - $ref: '#/components/schemas/NumberFieldDefinition'
+        required:
+        - field_definitions
+    Tag:
+      type: object
+      additionalProperties: false
+      properties:
+        guid:
+          type: string
+          description: Unique identifier of the tag
+          example: 5d7f910551b00a722e0418830cee6633
+        name:
+          type: string
+          description: Name of the tag
+          example: Sample Tag
+      required:
+      - guid
+      - name
+    NumberTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/NumberTypeObjectFieldUpdatePayload'
+    ContentFieldValueModel:
+      required:
+      - content_guid
+      - embedded
+      type: object
+      properties:
+        embedded:
+          type: boolean
+          description: Indicates whether the field value is embedded
+        order_index:
+          type: integer
+          description: Order index of the field value
+        content_guid:
+          type: string
+          description: Content GUID of the field value
+        content_url:
+          type: string
+          description: Content URL of the field value
+    RecursiveStructuredContent:
+      type: object
+      properties:
+        content_type_guid:
+          title: Contenttypeguid
+          type: string
+          description: The guid of the content's content type
+        root_content:
+          title: Rootcontent
+          type: boolean
+          description: This is true when the content is not embedded in another content through a content type reference field
+        title:
+          type: string
+          description: Title of the structured content
+          example: Some webpage
+        expired:
+          title: Expired
+          type: boolean
+          description: Expired status of the content
+        expiry_datetime:
+          title: Expirydatetime
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time on which the content will expire, in ISO 8601 UTC format
+        source:
+          title: Source
+          type:
+          - string
+          - 'null'
+          description: Source of the content
+        source_id:
+          title: Sourceid
+          type:
+          - string
+          - 'null'
+          description: Source id of the content
+        source_metadata:
+          title: Sourcemetadata
+          type:
+          - string
+          - 'null'
+          description: Source metadata of the content
+      additionalProperties:
+        type: array
+        items:
+          $ref: '#/components/schemas/LocalizedFieldValuesWithEmbeddedContent'
+      required:
+      - content_type_guid
+      - root_content
+    ReplaceRelatedAssetsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the asset
+          example: 5d7f910551b00a722e0418830cee6631
+        related_assets:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                description: Unique identifier for the asset
+                example: 5d7f910551b00a722e0418830cee6631
+            required:
+            - id
+      required:
+      - id
+      - related_assets
+    RadioButtonTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Accepts a single choice Id.
+            maxItems: 1
+            items:
+              type: string
+              example: 9119a313057e401189407116fcd3
+    AssetFieldUpdateRequest:
+      type: object
+      additionalProperties: false
+      oneOf:
+      - $ref: '#/components/schemas/StringTypeObjectFieldUpdatePayload'
+      - $ref: '#/components/schemas/MultiChoiceTypeObjectFieldUpdatePayload'
+      - $ref: '#/components/schemas/DropdownTypeObjectFieldUpdatePayload'
+      - $ref: '#/components/schemas/RadioButtonTypeObjectFieldUpdatePayload'
+      - $ref: '#/components/schemas/NumberTypeObjectFieldUpdatePayload'
+      - $ref: '#/components/schemas/DateTypeObjectFieldUpdatePayload'
+      - $ref: '#/components/schemas/AssetTypeObjectFieldUpdatePayload'
+      discriminator:
+        propertyName: type
+        mapping:
+          checkbox: '#/components/schemas/MultiChoiceTypeObjectFieldUpdatePayload'
+          currency_number: '#/components/schemas/NumberTypeObjectFieldUpdatePayload'
+          date: '#/components/schemas/DateTypeObjectFieldUpdatePayload'
+          dropdown: '#/components/schemas/DropdownTypeObjectFieldUpdatePayload'
+          label: '#/components/schemas/MultiChoiceTypeObjectFieldUpdatePayload'
+          radio_button: '#/components/schemas/RadioButtonTypeObjectFieldUpdatePayload'
+          percentage_number: '#/components/schemas/NumberTypeObjectFieldUpdatePayload'
+          simple_number: '#/components/schemas/NumberTypeObjectFieldUpdatePayload'
+          text: '#/components/schemas/StringTypeObjectFieldUpdatePayload'
+          text_area: '#/components/schemas/StringTypeObjectFieldUpdatePayload'
+          rich_text: '#/components/schemas/StringTypeObjectFieldUpdatePayload'
+          image: '#/components/schemas/AssetTypeObjectFieldUpdatePayload'
+          video: '#/components/schemas/AssetTypeObjectFieldUpdatePayload'
+    AssetFieldTypePercentageNumber:
+      allOf:
+      - $ref: '#/components/schemas/BaseAssetField'
+      - type: object
+        properties:
+          decimal_places:
+            type:
+            - integer
+            - 'null'
+            description: Decimal place of the numerical field
+            example: 2
+        required:
+        - decimal_places
+    FolderUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Name of the folder
+          example: Optimizely Digital Asset Management
+        parent_folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the parent folder. If you pass null, the folder will be moved to the root.
+          example: 5e6f910551b00a722e0418830cee6630
+      anyOf:
+      - required:
+        - name
+      - required:
+        - parent_folder_id
+    BaseFieldDefinitionType:
+      enum:
+      - boolean
+      - json
+      - url
+      - location
+      type: string
+      description: An enumeration.
+    VersionedContentTypeModel:
+      required:
+      - name
+      - component
+      - content_type_guid
+      - created_by
+      - updated_by
+      - created_at
+      - updated_at
+      - links
+      - version
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the content type
+        description:
+          type: string
+          description: Description of the content type
+        component:
+          type: boolean
+          description: Indicates whether the content type is a component
+        disabled:
+          type: boolean
+          description: Disabled status of the content type
+        source:
+          type: string
+          description: Source of the content type
+        version:
+          $ref: '#/components/schemas/SCContentTypeVersion'
+        thumbnail_guid:
+          type: string
+          description: Thumbnail GUID of the content type
+        content_type_guid:
+          type: string
+          description: Unique identifier of the content type
+        created_by:
+          type: string
+          description: Unique identifier of the user who created the content type
+        updated_by:
+          type: string
+          description: Unique identifier of the user who last updated the content type
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the content type was created, in ISO 8601 UTC format
+        updated_at:
+          type: string
+          format: date-time
+          description: Date and time on which the content type was last updated, in ISO 8601 UTC format
+        source_id:
+          type: string
+          description: Source of the content type
+        source_metadata:
+          type: string
+          description: Source metadata of the content type
+        links:
+          type: object
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the content type
+              example: https://api.cmp.optimizely.com/v3/structured-content/content-types/9fda53cf66a14fd487251480ca695c7b
+            versions:
+              type: string
+              description: URL of the content type versions
+              example: https://api.cmp.optimizely.com/v3/structured-content/content-types/9fda53cf66a14fd487251480ca695c7b/versions
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
+    ContentFieldsVersionDetails:
+      required:
+      - fields
+      - created_by
+      - created_at
+      - version_guid
+      - content_hash
+      type: object
+      properties:
+        fields:
+          type: object
+          description: List of fields
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/LocalizedFieldValues'
+        validation:
+          $ref: '#/components/schemas/ContentFieldsVersionValidation'
+        created_by:
+          type: string
+          description: Unique identifier of the user who created the version
+        source_id:
+          type: string
+          description: Source ID of the version
+        source_metadata:
+          type: string
+          description: Source metadata of the version
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the version was created, in ISO 8601 UTC format
+        version_guid:
+          type: string
+          description: Unique identifier of the version
+        content_hash:
+          type: string
+          description: Content hash of the version
+    DatetimeFieldDefinition:
+      required:
+      - core
+      - min_date
+      - max_date
+      type: object
+      properties:
+        core:
+          $ref: '#/components/schemas/CoreFieldDef'
+        min_date:
+          type: string
+          format: date-time
+          description: Minimum date of the field
+        max_date:
+          type: string
+          format: date-time
+          description: Maximum date of the field
+        default_values:
+          type: array
+          description: Default values of the field
+          items:
+            type: string
+            format: date-time
+    FolderResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the folder
+          example: 5d7f910551b00a722e0418830cee6632
+        name:
+          type: string
+          description: Name of the folder
+          example: icons
+        parent_folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the parent folder
+          example: 1d9d8aeca10811ebbc640242ac12001b
+        path:
+          type: string
+          description: Folder location
+          example: /images/icons
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the folder was created,  in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-06T13:15:30Z'
+        modified_at:
+          type: string
+          format: date-time
+          description: Date and time of the most recent modification of the folder, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-07T13:15:30Z'
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the folder
+              example: https://api.cmp.optimizely.com/v3/folders/5d7f910551b00a722e0418830cee6632
+            parent_folder:
+              type:
+              - string
+              - 'null'
+              description: URL of the parent of the folder
+              example: https://api.cmp.optimizely.com/v3/folders/1d9d8aeca10811ebbc640242ac12001b
+            child_folders:
+              type: string
+              description: URL of the children list of the folder
+              example: https://api.cmp.optimizely.com/v3/folders?parent_folder_id=5d7f910551b00a722e0418830cee6632
+            assets:
+              type: string
+              description: URL of the assets inside the folder
+              example: https://api.cmp.optimizely.com/v3/assets?folder_id=5d7f910551b00a722e0418830cee6632&include_subfolder_assets=false
+          required:
+          - self
+          - parent_folder
+          - child_folders
+          - assets
+      required:
+      - id
+      - name
+      - parent_folder_id
+      - path
+      - created_at
+      - modified_at
+      - links
+    RichTextFieldDefinition:
+      required:
+      - core
+      - min_visual_text_length
+      type: object
+      properties:
+        core:
+          $ref: '#/components/schemas/CoreFieldDef'
+        min_visual_text_length:
+          type: integer
+          description: Minimum length of the field
+        max_visual_text_length:
+          type: integer
+          description: Maximum length of the field
+        default_values:
+          type: array
+          description: Default values of the field
+          items:
+            type: string
+    AssetVersionCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+          maxLength: 100
+          description: Unique identifier of the file upload session. This is the `upload_meta_fields.key` field retrieved from the `/v3/upload-url` endpoint.
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Title of the asset
+          example: sample_image.png
+      required:
+      - key
+      - title
+    DatetimeFieldValueModel:
+      required:
+      - datetime_value
+      type: object
+      properties:
+        order_index:
+          type: integer
+          description: Order index of the field value
+        datetime_value:
+          type: string
+          format: date-time
+          description: Value of the field value
+    ResourceLabelResponse:
+      description: Label associated to a fetched resource
+      type: object
+      additionalProperties: false
+      properties:
+        group:
+          description: Label group
+          type: object
+          additionalProperties: false
+          properties:
+            id:
+              type: string
+              description: Identifier of the label group
+              example: 2467e583a60e23fda2b89db81a453cd2
+            name:
+              type: string
+              description: Name of the label group
+              example: Content Format
+          required:
+          - id
+          - name
+        values:
+          type: array
+          description: List of values of the label
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                description: Identifier of the label value
+                example: 71c378f3fee3d822759d1bdc2aab628c
+              name:
+                type: string
+                description: Name of the label value
+                example: Photos
+            required:
+            - id
+            - name
+      required:
+      - group
+      - values
+    URLFieldValueModel:
+      required:
+      - url
+      type: object
+      properties:
+        url:
+          maxLength: 65536
+          minLength: 1
+          type: string
+          format: uri
+          description: URL of the field value
+        order_index:
+          type: integer
+          description: Order index of the field value
+    AssetLineageResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the asset lineage
+          example: 5d7f910551b00a722e0418830cee6631
+        name:
+          type: string
+          description: Name of the source
+          example: Sample Name
+        asset_id:
+          type: string
+          description: Unique identifier of the asset
+          example: 5d7f910551b00a722e0418830cee6632
+        version_id:
+          type: string
+          description: Unique identifier of the asset version
+          example: 5d7f910551b00a722e0418830cee6633
+        used_in:
+          type: string
+          enum:
+          - external
+          description: Indicates where the asset is being used
+          example: external
+        uri:
+          type: string
+          description: Unique identifier of the location where the asset is being used
+          example: https://somewebsite.com
+        icon_url:
+          type:
+          - string
+          - 'null'
+          description: Icon url of the asset lineage
+          example: https://somewebsite.com/abc.png
+        rendition_id:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of a rendition of the asset
+          example: 1d7491a891b00a721e0419630a7f8a4b
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the asset lineage was created, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-06T13:15:30Z'
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the asset lineage
+              example: https://api.cmp.optimizely.com/v3/assets/5d7f910551bw0a722e0418830cee6632/lineages/5d7f910551bw0a722e0418830cee6631
+            asset:
+              type: string
+              description: URL of the asset
+              example: https://api.cmp.optimizely.com/v3/articles/5d7f910551bw0a722e0418830cee6632
+          required:
+          - self
+          - asset
+      required:
+      - id
+      - name
+      - asset_id
+      - version_id
+      - used_in
+      - uri
+      - icon_url
+      - rendition_id
+      - created_at
+      - links
+    MultiChoiceTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of choice IDs
+            items:
+              type: string
+              example: 9119a313057e401189407116fcd3
+    AssetFieldUpdateResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the field
+          example: 5a7f910511b0a72230ce6631
+        name:
+          type: string
+          description: Name of the field
+          example: Image Field
+        type:
+          $ref: '#/components/schemas/AssetFieldTypes'
+        values:
+          type: array
+          description: List of values selected or from user input
+          items:
+            type: string
+            example: 1nu8ue9wf8u9nusd9u
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            asset_fields:
+              type: string
+              description: URL of the asset fields
+              example: https://api.cmp.optimizely.com/v3/assets/5f857f30e1c4a2038d6179e9/fields
+            asset:
+              type: string
+              description: URL of the asset
+              example: https://api.cmp.optimizely.com/v3/assets/5f857f30e1c4a2038d6179e9
+          required:
+          - asset_fields
+          - asset
+      required:
+      - id
+      - name
+      - type
+      - values
+      - links
+    ChoiceFieldValueModel:
+      required:
+      - choice_key
+      type: object
+      properties:
+        order_index:
+          type: integer
+          description: Order index of the field value
+        choice_key:
+          type: string
+          description: Choice key of the field value
+    ChoiceFieldDefinition:
+      required:
+      - core
+      - choices
+      type: object
+      properties:
+        core:
+          $ref: '#/components/schemas/CoreFieldDef'
+        choices:
+          type: object
+          description: Choices of the field
+          additionalProperties:
+            type: string
+        display_option:
+          $ref: '#/components/schemas/ChoiceDisplayOption'
+        default_values:
+          type: array
+          description: Default values of the field
+          items:
+            type: string
+    AssetLineageCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          description: Name of the source
+          example: Some website name
+        uri:
+          type: string
+          description: URI of the resource where the asset is used. If this is an external url, make sure the url starts with http:// or https://.
+          example: https://domain.xyz/path/to/resource
+        icon_url:
+          type: string
+          description: Website favicon url
+          example: https://domain.xyz/path/to/favicon
+        rendition_id:
+          type: string
+          description: Unique identifier of a rendition of an existing version of the asset
+          example: 1d7491a891b00a721e0419630a7f8a4b
+      required:
+      - name
+      - uri
+    CoreFieldDef:
+      required:
+      - key
+      - name
+      - is_list
+      - is_required
+      - need_internationalization
+      type: object
+      properties:
+        key:
+          type: string
+          description: Key of the field
+        name:
+          type: string
+          description: Name of the field
+        is_list:
+          type: boolean
+          description: Indicates whether the field is a list
+        is_required:
+          type: boolean
+          description: Required status of the field
+        need_internationalization:
+          type: boolean
+          description: Indicates whether the field needs internationalization
+        min_list_length:
+          type: integer
+          description: Minimum length of the list
+        max_list_length:
+          type: integer
+          description: Maximum length of the list
+        field_type:
+          $ref: '#/components/schemas/FieldType'
+        source_id:
+          type: string
+          description: Source ID of the field
+        source_metadata:
+          type: string
+          description: Source metadata of the field
+        order_index:
+          type: integer
+          description: Order index of the field
+        help_text:
+          type: string
+          description: Helptext of the field
+        editor_metadata:
+          description: Editor metadata of the field
+          anyOf:
+          - type: object
+          - type: array
+            items: {}
+    LibraryStructuredContentUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type:
+          - string
+          - 'null'
+          description: Title of the structured content asset
+        is_archived:
+          type: boolean
+          description: Whether the structured content should be archived
+          example: true
+        content_body:
+          description: The structured content body
+          type: object
+          properties:
+            title:
+              type:
+              - string
+              - 'null'
+              description: Title of the structured content
+              example: Some webpage
+            expired:
+              title: Expired
+              type:
+              - boolean
+              - 'null'
+              description: Expired status of the content
+            expiry_datetime:
+              title: Expirydatetime
+              type:
+              - string
+              - 'null'
+              format: date-time
+              description: Date and time on which the content will expire, in ISO 8601 UTC format
+            source:
+              title: Source
+              type:
+              - string
+              - 'null'
+              description: Source of the content
+            source_id:
+              title: Sourceid
+              type:
+              - string
+              - 'null'
+              description: Source id of the content
+            source_metadata:
+              title: Sourcemetadata
+              type:
+              - string
+              - 'null'
+              description: Source metadata of the content
+            fields:
+              title: Contentbody
+              type:
+              - object
+              - 'null'
+              $ref: '#/components/schemas/StructuredContentFields'
+    LibraryStructuredContentCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the structured content asset
+        folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the folder containing the structured content in the library
+          example: 6bb8db20a5b611ebae319b7c541b1a5a
+        content_body:
+          description: The structured content body
+          type: object
+          properties:
+            content_type_guid:
+              title: Contenttypeguid
+              type: string
+              description: The guid of the content's content type
+            fields:
+              title: fields
+              type:
+              - object
+              - 'null'
+              $ref: '#/components/schemas/StructuredContentBody'
+            root_content:
+              title: Rootcontent
+              type: boolean
+              description: This is true when the content is not embedded in another content through a content type reference field
+            title:
+              type: string
+              description: Title of the structured content
+              example: Some webpage
+            expired:
+              title: Expired
+              type: boolean
+              description: Expired status of the content
+            expiry_datetime:
+              title: Expirydatetime
+              type:
+              - string
+              - 'null'
+              format: date-time
+              description: Date and time on which the content will expire, in ISO 8601 UTC format
+            source:
+              title: Source
+              type:
+              - string
+              - 'null'
+              description: Source of the content
+            source_id:
+              title: Sourceid
+              type:
+              - string
+              - 'null'
+              description: Source id of the content
+            source_metadata:
+              title: Sourcemetadata
+              type:
+              - string
+              - 'null'
+              description: Source metadata of the content
+          required:
+          - content_type_guid
+          - root_content
+      required:
+      - content_body
+    RadioButtonTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/RadioButtonTypeObjectFieldUpdatePayload'
+    BaseObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          id:
+            type: string
+            description: Unique identifier of the field
+            example: 41aac313bda1e40b6cde7116fc24a
+        required:
+        - id
+    TextFieldDefinition:
+      required:
+      - core
+      - validation_pattern
+      - min_length
+      type: object
+      properties:
+        core:
+          $ref: '#/components/schemas/CoreFieldDef'
+        validation_pattern:
+          type: string
+          description: Validation pattern of the field
+        min_length:
+          type: integer
+          description: Minimum length of the field
+        max_length:
+          type: integer
+          description: Maximum length of the field
+        default_values:
+          type: array
+          description: Default values of the field
+          items:
+            type: string
+    LibraryAssetCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+          maxLength: 100
+          description: Unique identifier of the file upload session. This is the `upload_meta_fields.key` field retrieved from the `/v3/upload-url` endpoint.
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Title of the asset
+          example: sample_image.png
+        folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the folder where the asset should be added
+          example: 5d7f910551b00a722e0418830cee6631
+      required:
+      - key
+      - title
+    RichTextFieldValueModel:
+      required:
+      - rich_text_value
+      type: object
+      properties:
+        order_index:
+          type: integer
+          description: Order index of the field value
+        rich_text_value:
+          type: string
+          description: Value of the field value
+    ContentDetailsModel:
+      required:
+      - root_content
+      - title
+      - latest_fields_version
+      - content_guid
+      - created_by
+      - updated_by
+      - created_at
+      - updated_at
+      - content_type_guid
+      - content_type_name
+      - links
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the content
+        primary_locale:
+          type: string
+          description: The primary locale of the content
+          example: en_US
+        expired:
+          type: boolean
+          description: Expired status of the content
+        source:
+          type: string
+          description: Source of the content
+        root_content:
+          type: boolean
+          description: This is true when the content is not embedded in another content through a content type reference field
+        template_guid:
+          type: string
+          description: Template GUID of the content
+        expiry_datetime:
+          type: string
+          format: date-time
+          description: Date and time on which the content will expire, in ISO 8601 UTC format
+        source_id:
+          type: string
+          description: Source ID of the content
+        source_metadata:
+          type: string
+          description: Source metadata of the content
+        latest_fields_version:
+          $ref: '#/components/schemas/ContentFieldsVersionDetails'
+        content_guid:
+          type: string
+          description: Unique identifier of the content
+        created_by:
+          type: string
+          description: Unique identifier of the user who created the content
+        updated_by:
+          type: string
+          description: Unique identifier of the user who last updated the content
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the content was created, in ISO 8601 UTC format
+        updated_at:
+          type: string
+          format: date-time
+          description: Date and time on which the content was last updated, in ISO 8601 UTC format
+        content_type_guid:
+          type: string
+          description: Unique identifier of the content type
+        content_type_name:
+          type: string
+          description: Name of the content type
+        content_type:
+          $ref: '#/components/schemas/VersionedContentTypeModel'
+        links:
+          type: object
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the content
+              example: https://api.cmp.optimizely.com/v3/structured-content/contents/a24b834428a043ab8caed1ded4606f7d
+            definition:
+              type: string
+              description: URL of the content definition
+              example: https://api.cmp.optimizely.com/v3/structured-content/content-types/5291e00b990a49f1857adc024fd26620/versions/a8b48d529701452aa56a4e752e1b0ffc
+    FolderCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Name of the folder
+          example: Optimizely Digital Asset Management
+        parent_folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the parent folder
+          example: 5e6f910551b00a722e0418830cee6630
+      required:
+      - name
+    ContentTypeFieldDefinition:
+      required:
+      - core
+      - allowed_content_types
+      - ref_type
+      type: object
+      properties:
+        core:
+          $ref: '#/components/schemas/CoreFieldDef'
+        allowed_content_types:
+          type: array
+          description: List of allowed content types
+          items:
+            type: string
+        ref_type:
+          $ref: '#/components/schemas/ContentTypeFieldEmbedMixConfig'
+        allow_ref_edit:
+          type: boolean
+          description: Whether to allow ref editing
+        content_type_links:
+          type: object
+          description: Links related to the content type
+          additionalProperties:
+            $ref: '#/components/schemas/AllowedContentTypeItem'
+        default_value:
+          type: string
+          description: Default value for the field
+    ContentFieldValueExpandedModel:
+      required:
+      - content_guid
+      - embedded
+      - content_details
+      type: object
+      properties:
+        embedded:
+          type: boolean
+          description: Indicates whether the field value is embedded
+        order_index:
+          type: integer
+          description: Order index of the field value
+        content_guid:
+          type: string
+          description: Content GUID of the field value
+        content_url:
+          type: string
+          description: Content URL of the field value
+        content_details:
+          $ref: '#/components/schemas/ContentDetailsModel'
+    LibraryAssetType:
+      enum:
+      - article
+      - image
+      - video
+      - raw_file
+      - structured_content
+      type: string
+      description: An enumeration.
+    FeaturedImageResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        attribution_text:
+          type:
+          - string
+          - 'null'
+          description: Attribution text of the featured image
+          example: This is a sample attribution text
+        caption:
+          type: string
+          description: Caption of the featured image
+          example: This is a sample caption
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the featured image
+          example: This is a sample description
+        mime_type:
+          type: string
+          description: MIME type of the featured image
+          example: image/jpeg
+        source:
+          type: object
+          description: Source of the featured image
+          additionalProperties: false
+          properties:
+            name:
+              type:
+              - string
+              - 'null'
+              description: Organization or vendor name of the featured image
+              example: Reuters
+          required:
+          - name
+        url:
+          type: string
+          description: URL of the featured image
+          example: https://images-cdn.cmp.optimizely.com/sample.jpeg
+        height:
+          type: integer
+          description: Height of the featured image in pixels
+          example: 400
+        width:
+          type: integer
+          description: Width of the featured image in pixels
+          example: 700
+        thumbnail:
+          type:
+          - string
+          - 'null'
+          description: URL of the featured image thumbnail
+          example: https://images-cdn.cmp.optimizely.com/Zz01Y2FkOWFjZWQ5OTMxMWViYjY3OTEzNDMzOWM3ZDNhNA==?width=75&height=75
+      required:
+      - attribution_text
+      - caption
+      - description
+      - mime_type
+      - source
+      - height
+      - width
+      - thumbnail
+      - url
+    AssetFieldTypeCommon:
+      allOf:
+      - $ref: '#/components/schemas/BaseAssetField'
+      - type: object
+    LibraryVideo:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the video
+          example: 5d7f910551b00a722e0418830cee6633
+        title:
+          type: string
+          description: Title of the video
+          example: product.mp4
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the video
+          example: Very important video
+        mime_type:
+          type: string
+          description: MIME type of the video
+          example: video/mp4
+        file_extension:
+          type:
+          - string
+          - 'null'
+          description: File extension of the video file
+          example: mp4
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the video was created, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-06T13:15:30Z'
+        modified_at:
+          type: string
+          format: date-time
+          description: Date and time of the most recent modification of the video, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-07T13:15:30Z'
+        file_size:
+          type: integer
+          description: Size of the video in bytes
+          example: 11244
+        folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the folder containing the video in the library
+          example: 6bb8db20a5b611ebae319b7c541b1a5a
+        file_location:
+          type: string
+          description: Location of the folder containing the video in the library
+          example: /example/
+        is_archived:
+          type: boolean
+          description: Whether the video is archived or not
+          example: true
+        is_public:
+          type: boolean
+          description: Whether the video URL is public
+          example: true
+        allow_se_indexing:
+          type: boolean
+          description: Whether the video is allowed to be indexed by search engines
+          example: true
+        url:
+          type: string
+          description: Download the URL of the video
+          example: https://videos.cmp.optimizely.com/03a747babe81ceb55763fa085bqa20dc
+        labels:
+          type: array
+          description: Labels associated with the video
+          items:
+            $ref: '#/components/schemas/ResourceLabelResponse'
+        owner_organization_id:
+          type: string
+          description: ID of owner organization of the video
+          example: 5108c3a9becac35915111191
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time for the expiration of the video, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-07T13:15:30Z'
+        thumbnail_url:
+          type:
+          - string
+          - 'null'
+          description: URL of the thumbnail of the video
+          example: http://images.cmp.optimizely.com/Zz0xODQ3NDU3Y2Y2YmYzOTlmNjkyOTgyZDY3Y2I3YWM2OA==
+        version_number:
+          type: integer
+          description: Version number of video
+          example: 2
+        version_id:
+          type: string
+          description: Version id of video
+          example: 5d7f910551b00a722e0418830cee6631
+        alt_text:
+          type:
+          - string
+          - 'null'
+          description: Alternative text for video
+          example: video title
+        tags:
+          type: array
+          description: Tags for the video
+          items:
+            $ref: '#/components/schemas/Tag'
+        attribution_text:
+          type:
+          - string
+          - 'null'
+          description: Attribution of Video
+          example: Sci-fi
+        owner_id:
+          type: string
+          description: ID of the video owner
+          example: 5108c3a9becac35915111191
+      required:
+      - id
+      - title
+      - description
+      - mime_type
+      - file_extension
+      - created_at
+      - modified_at
+      - file_size
+      - folder_id
+      - file_location
+      - is_archived
+      - is_public
+      - allow_se_indexing
+      - url
+      - labels
+      - owner_organization_id
+      - expires_at
+      - thumbnail_url
+      - version_number
+      - version_id
+      - alt_text
+      - tags
+      - attribution_text
+      - owner_id
+    NumberFieldValueModel:
+      required:
+      - num_value
+      type: object
+      properties:
+        order_index:
+          type: integer
+          description: Order index of the field value
+        num_value:
+          type: number
+          description: Value of the field value
+    LibraryAssetVersionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        version_number:
+          type: integer
+          description: The serial number of the version
+          example: 2
+        asset_id:
+          type: string
+          description: Unique identifier of the asset
+          example: 5d7f910551b00a722e0418830cee6631
+        title:
+          type: string
+          description: Title of the asset
+          example: sample_image.png
+        type:
+          type: string
+          enum:
+          - image
+          - video
+          - raw_file
+          description: Type of the version
+          example: image
+        mime_type:
+          type: string
+          description: MIME type of the version
+          example: image/png
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the version was created,  in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-06T13:15:30Z'
+        content:
+          description: Content of the version
+          type: object
+          additionalProperties: false
+          properties:
+            type:
+              type: string
+              description: Type of the content
+              enum:
+              - url
+              example: url
+            value:
+              type: string
+              description: Content of the version. It is the download URL for image, raw file, and video.
+              example: http://images.cmp.optimizely.com/Zz0xODQ3NDU3Y2Y2YmYzOTlmNjkyOTgyZDY3Y2I3YWM2OA==S
+          required:
+          - type
+          - value
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            asset:
+              type: string
+              description: URL of the asset that the version is associated with
+              example: https://api.cmp.optimizely.com/v3/images/5d7f910551b00a722e0418830cee6631
+          required:
+          - asset
+      required:
+      - version_number
+      - asset_id
+      - title
+      - type
+      - mime_type
+      - created_at
+      - content
+      - links
+    BatchFileUrlResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        urls:
+          type: object
+          description: List of urls for Files.
+          additionalProperties:
+            type:
+            - string
+            - 'null'
+            description: Returns download URLs of files in a hashmap with guids of assets representing binary files as the key. For public files, it will return the public URL. For private files, a tokenized URL is provided. For invalid file guids, the URL will be `null`.
+          example:
+            791569bab45811eebb2802420ac8001c: http://images.cmp.optimizely.com/Zz0xODQ3NDU3Y2Y2YmYzOTlmNjkyOTgyZDY3Y2I3YWM2OA==
+            '000': null
+            947769bab45811eebb2802420ac8072n: http://images.cmp.optimizely.com/Zz0xODQ3NDU3Y2Y2YmYzOTlmNjkyOTgyZDY3Y2I3YWM2OA==?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOlsiNDVhY2MyYmVhMGExMTF
+      required:
+      - urls
+    Pagination:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
+    NumberFieldDefinition:
+      required:
+      - core
+      type: object
+      properties:
+        core:
+          $ref: '#/components/schemas/CoreFieldDef'
+        min_value:
+          type: number
+          description: Minimum value of the field
+        max_value:
+          type: number
+          description: Maximum value of the field
+        default_values:
+          type: array
+          description: Default values of the field
+          items:
+            type: number
+    DeleteLocaleFieldValueModel:
+      required:
+      - locale
+      - delete
+      type: object
+      properties:
+        locale:
+          type: string
+        delete:
+          type: boolean
+          description: Should be true if the field value with locale needs to be deleted
+    TextFieldValueModel:
+      required:
+      - text_value
+      type: object
+      properties:
+        order_index:
+          type: integer
+          description: Order index of the field value
+        text_value:
+          type: string
+          description: Value of the field value
+    BaseAssetRenditionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the rendition
+          example: 5d7f910551b00a722e0418830cee6631
+        name:
+          type: string
+          description: Name of the rendition
+          example: Facebook
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the rendition was created, in ISO 8601 UTC format
+          example: '2022-09-27T08:18:41Z'
+        mime_type:
+          type: string
+          description: MIME type of the rendition
+          example: image/png
+        url:
+          type: string
+          description: URL of the rendition
+          example: https://files.cmp.optimizely.com/download/6ceee2f4fa3411ecb37802420ac8001b
+      required:
+      - id
+      - name
+      - created_at
+      - mime_type
+      - url
+    AssetPermissionListResponseItem:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          description: List of Permissions
+          type: array
+          items:
+            $ref: '#/components/schemas/BasePermissionsResponseSchema'
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/Pagination'
+          - type: object
+            properties:
+              next:
+                type:
+                - string
+                - 'null'
+                example: https://api.cmp.optimizely.com/v3/assets/c00bfb60703f11ef805602420ac8001b/permissions?offset=10&page_size=10
+      required:
+      - data
+      - pagination
+    RecursivePatchStructuredContentFields:
+      type: object
+      additionalProperties: false
+      properties:
+        root_content:
+          title: Rootcontent
+          type: boolean
+          description: This is true when the content is not embedded in another content through a content type reference field
+        title:
+          type: string
+          description: Title of the structured content
+          example: Some webpage
+        expired:
+          title: Expired
+          type: boolean
+          description: Expired status of the content
+        expiry_datetime:
+          title: Expirydatetime
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time on which the content will expire, in ISO 8601 UTC format
+        source:
+          title: Source
+          type:
+          - string
+          - 'null'
+          description: Source of the content
+        source_id:
+          title: Sourceid
+          type:
+          - string
+          - 'null'
+          description: Source id of the content
+        source_metadata:
+          title: Sourcemetadata
+          type: string
+        content_body:
+          title: Contentbody
+          type: object
+          $ref: '#/components/schemas/StructuredContentFields'
+    error_reason:
+      title: error_reason
+      enum:
+      - REQUIRED_FIELD_ABSENT
+      - LIST_EMPTY
+      - INVALID_STATE
+      - INVALID_SELF_REF
+      - MIN_NOT_MET
+      - MAX_NOT_MET
+      - PATTERN_ERROR
+      type: string
+      description: An enumeration.
+    DropdownTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of choice ID. Multiple choice values are not acceptable for `is_multi_select=false`.
+            items:
+              type: string
+              example: 9119a313057e401189407116fcd3
+    AssetTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/AssetTypeObjectFieldUpdatePayload'
+    ContentFieldsVersionValidation:
+      type: object
+      properties:
+        fields:
+          type: object
+          description: Validation for the fields
+          additionalProperties:
+            type: object
+            additionalProperties:
+              $ref: '#/components/schemas/error_reason'
+    RelatedAssetsListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          description: List of related assets
+          items:
+            $ref: '#/components/schemas/RelatedAssetItem'
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/Pagination'
+          - type: object
+            properties:
+              next:
+                type:
+                - string
+                - 'null'
+                example: https://api.cmp.optimizely.com/v3/assets/5d7f910551b00a722e0418830cee6631/related-assets?offset=10&page_size=10
+      required:
+      - data
+      - pagination
+    LibraryAssetFieldValueModel:
+      required:
+      - asset_guid
+      - asset_type
+      type: object
+      properties:
+        links:
+          type: object
+          description: Meta links
+          additionalProperties:
+            type: string
+        order_index:
+          type: integer
+          description: Order index of the field value
+        asset_guid:
+          type: string
+          description: Asset GUID of the field value
+        asset_type:
+          $ref: '#/components/schemas/LibraryAssetType'
+    AssetFieldTypeCurrencyNumber:
+      allOf:
+      - $ref: '#/components/schemas/BaseAssetField'
+      - type: object
+        properties:
+          has_thousand_separator:
+            type: boolean
+            description: Whether the numerical field has a thousand separator
+            example: true
+          decimal_places:
+            type:
+            - integer
+            - 'null'
+            description: Decimal place of the numerical field
+            example: 2
+          currency_code:
+            type: string
+            description: Currency code of the numerical field
+            example: USD
+        required:
+        - has_thousand_separator
+        - decimal_places
+        - currency_code
+    AssetFieldListResponseItem:
+      oneOf:
+      - $ref: '#/components/schemas/AssetFieldTypeCommon'
+      - $ref: '#/components/schemas/AssetFieldTypeLabel'
+      - $ref: '#/components/schemas/AssetFieldTypeDropdown'
+      - $ref: '#/components/schemas/AssetFieldTypeRadio'
+      - $ref: '#/components/schemas/AssetFieldTypeCheckbox'
+      - $ref: '#/components/schemas/AssetFieldTypeSimpleNumber'
+      - $ref: '#/components/schemas/AssetFieldTypePercentageNumber'
+      - $ref: '#/components/schemas/AssetFieldTypeCurrencyNumber'
+      discriminator:
+        propertyName: type
+        mapping:
+          checkbox: '#/components/schemas/AssetFieldTypeCheckbox'
+          currency_number: '#/components/schemas/AssetFieldTypeCurrencyNumber'
+          date: '#/components/schemas/AssetFieldTypeCommon'
+          dropdown: '#/components/schemas/AssetFieldTypeDropdown'
+          label: '#/components/schemas/AssetFieldTypeLabel'
+          percentage_number: '#/components/schemas/AssetFieldTypePercentageNumber'
+          radio_button: '#/components/schemas/AssetFieldTypeRadio'
+          rich_text: '#/components/schemas/AssetFieldTypeCommon'
+          simple_number: '#/components/schemas/AssetFieldTypeSimpleNumber'
+          text: '#/components/schemas/AssetFieldTypeCommon'
+          text_area: '#/components/schemas/AssetFieldTypeCommon'
+          image: '#/components/schemas/AssetFieldTypeCommon'
+          video: '#/components/schemas/AssetFieldTypeCommon'
+    DateTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of date-time values, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+            items:
+              type: string
+              format: date-time
+              description: Date and time, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+              example: '2020-02-10T10:40:45Z'
+            maxItems: 1
+    AssetTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Payload for fields with attachments
+            maxItems: 1
+            items:
+              properties:
+                title:
+                  type: string
+                  description: Title of the image or video
+                  example: Sample.jpeg
+                  minLength: 1
+                key:
+                  type: string
+                  description: Unique identifier of the file upload session. This is the `upload_meta_fields.key` field retrieved from the `/v3/upload-url` endpoint.
+                  example: ce8995aea58b11ea8cd90242ac120005
+              required:
+              - title
+              - key
+    FieldType:
+      enum:
+      - boolean
+      - number
+      - text-field
+      - rich-text
+      - datetime
+      - library-asset
+      - content-type
+      - json
+      - url
+      - choice
+      - location
+      type: string
+      description: An enumeration.
+    AssetResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the asset
+          example: 5d7f910551b00a722e0418830cee6631
+        title:
+          type: string
+          description: Title of the asset
+          example: sample_image.png
+        type:
+          type: string
+          enum:
+          - article
+          - image
+          - video
+          - raw_file
+          - structured_content
+          description: Type of the asset
+          example: image
+        mime_type:
+          type: string
+          description: MIME type of the asset
+          example: image/png
+        file_extension:
+          type:
+          - string
+          - 'null'
+          description: File extension of the asset
+          example: png
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the asset was created, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-06T13:15:30Z'
+        modified_at:
+          type: string
+          format: date-time
+          description: Date and time of the most recent modification of the asset, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-07T13:15:30Z'
+        folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the folder containing the asset in the library
+          example: 6bb8db20a5b611ebae319b7c541b1a5a
+        file_location:
+          type: string
+          description: Location of the folder containing the asset in the library
+          example: /all assets/important assets
+        is_archived:
+          type: boolean
+          description: Whether the asset is archived or not
+          example: false
+        content:
+          $ref: '#/components/schemas/AssetContent'
+        labels:
+          type: array
+          description: Labels associated with the asset
+          items:
+            $ref: '#/components/schemas/ResourceLabelResponse'
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the asset (only GET is supported)
+              example: https://api.cmp.optimizely.com/v3/images/5d7f910551bw0a722e0418830cee6631
+          required:
+          - self
+        owner_organization_id:
+          type: string
+          description: ID of the asset's owner organization
+          example: 5108c3a9becac35915111191
+        thumbnail_url:
+          type:
+          - string
+          - 'null'
+          description: URL of the asset's thumbnail
+          example: https://images1.cmp.optimizely.com/Pz1kYmI9Z2FkYTJtZWI5VGI1WZq4MTZkNTdmGHjM5OGRmYq==
+      required:
+      - id
+      - title
+      - type
+      - mime_type
+      - file_extension
+      - created_at
+      - modified_at
+      - folder_id
+      - file_location
+      - is_archived
+      - content
+      - labels
+      - links
+      - owner_organization_id
+      - thumbnail_url
+    StructuredContentFields:
+      type: object
+      description: The fields of structured content
+      additionalProperties:
+        type: array
+        items:
+          anyOf:
+          - $ref: '#/components/schemas/PatchLocalizedFieldValuesWithEmbeddedContent'
+          - $ref: '#/components/schemas/DeleteLocaleFieldValueModel'
+    AssetContent:
+      description: Content of the asset
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          description: "Type of the content. \n - article  – `html_body`\n - image, raw_file, video  – `url`\n - structured_content  – `api_url`"
+          enum:
+          - url
+          - api_url
+          - html_body
+          example: url
+        value:
+          type: string
+          description: Content of the asset.  - article – the html body - image, raw_file, video – the download URL - structured_content – api url
+          example: http://images.cmp.optimizely.com/Zz0xODQ3NDU3Y2Y2YmYzOTlmNjkyOTgyZDY3Y2I3YWM2OA==S
+      required:
+      - type
+      - value
+    DropdownTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/DropdownTypeObjectFieldUpdatePayload'
+    DeleteFieldValueModel:
+      required:
+      - delete
+      type: object
+      properties:
+        order_index:
+          type: integer
+          description: Order index of the field value
+        delete:
+          type: boolean
+          description: Should be true if the field value needs to be deleted
+    LibraryAssetDefaultValue:
+      required:
+      - asset_type
+      - asset_guid
+      type: object
+      properties:
+        asset_type:
+          $ref: '#/components/schemas/LibraryAssetType'
+        asset_guid:
+          type: string
+          description: Unique identifier of the asset
+    BooleanFieldValueModel:
+      required:
+      - bool_value
+      type: object
+      properties:
+        order_index:
+          type: integer
+          description: Order index of the field value
+        bool_value:
+          type: boolean
+          description: Value of the field value
+    LibraryRawFile:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the raw file
+          example: 5d7f910551b00a722e0418830cee6634
+        title:
+          type: string
+          description: Title of the raw file
+          example: documents.zip
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the raw file
+          example: Very important file
+        mime_type:
+          type: string
+          description: MIME type of the raw file
+          example: application/zip
+        file_extension:
+          type:
+          - string
+          - 'null'
+          description: File extension of the raw file
+          example: zip
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the raw file was created, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-06T13:15:30Z'
+        modified_at:
+          type: string
+          format: date-time
+          description: Date and time of the most recent modification of the raw file, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-07T13:15:30Z'
+        file_size:
+          type: integer
+          description: Size of the raw file in bytes
+          example: 11244
+        folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the folder containing the raw file in the library
+          example: 6bb8db20a5b611ebae319b7c541b1a5a
+        file_location:
+          type: string
+          description: Location of the folder containing the raw file in the library
+          example: /all files/
+        is_archived:
+          type: boolean
+          description: Whether the raw file is archived or not
+          example: false
+        is_public:
+          type: boolean
+          description: Whether the raw file URL is public or not
+          example: true
+        allow_se_indexing:
+          type: boolean
+          description: Whether the raw file is allowed to be indexed by search engines
+          example: true
+        url:
+          type: string
+          description: Download the URL of the raw file
+          example: https://files.cmp.optimizely.com/171451644651701b96f1122009f026bc
+        labels:
+          type: array
+          description: Labels associated to the raw file
+          items:
+            $ref: '#/components/schemas/ResourceLabelResponse'
+        owner_organization_id:
+          type: string
+          description: ID of owner organization of the raw file
+          example: 5108c3a9becac35915111191
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time for the expiration of the raw file, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-07T13:15:30Z'
+        thumbnail_url:
+          type:
+          - string
+          - 'null'
+          description: URL of the thumbnail of the raw file
+          example: http://images.cmp.optimizely.com/Zz0xODQ3NDU3Y2Y2YmYzOTlmNjkyOTgyZDY3Y2I3YWM2OA==
+        version_number:
+          type: integer
+          description: Version number of raw file
+          example: 2
+        version_id:
+          type: string
+          description: Version id of raw file
+          example: 5d7f910551b00a722e0418830cee6631
+        tags:
+          type: array
+          description: Tags for the raw file
+          items:
+            $ref: '#/components/schemas/Tag'
+        attribution_text:
+          type:
+          - string
+          - 'null'
+          description: Attribution of raw file
+          example: Text
+        owner_id:
+          type: string
+          description: ID of the raw file owner
+          example: 5108c3a9becac35915111191
+      required:
+      - id
+      - title
+      - description
+      - mime_type
+      - file_extension
+      - created_at
+      - modified_at
+      - file_size
+      - folder_id
+      - file_location
+      - is_archived
+      - is_public
+      - allow_se_indexing
+      - url
+      - labels
+      - owner_organization_id
+      - expires_at
+      - thumbnail_url
+      - version_number
+      - version_id
+      - tags
+      - attribution_text
+      - owner_id
+    FolderPermissionListResponseItem:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          description: List of Permissions
+          type: array
+          items:
+            $ref: '#/components/schemas/BasePermissionsResponseSchema'
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/Pagination'
+          - type: object
+            properties:
+              next:
+                type:
+                - string
+                - 'null'
+                example: https://api.cmp.optimizely.com/v3/folders/c00bfb60703f11ef805602420ac8001b/permissions?offset=10&page_size=10
+      required:
+      - data
+      - pagination
+    RelatedAssetItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the asset
+          example: 5d7f910551b00a722e0418830cee6631
+        title:
+          type: string
+          description: Title of the asset
+          example: sample_image.png
+        type:
+          type: string
+          enum:
+          - article
+          - image
+          - video
+          - raw_file
+          - structured_content
+          description: Type of the asset
+          example: image
+        mime_type:
+          type:
+          - string
+          - 'null'
+          description: MIME type of the asset
+          example: image/png
+        file_extension:
+          type:
+          - string
+          - 'null'
+          description: File extension of the asset
+          example: png
+        content:
+          type: object
+          additionalProperties: false
+          properties:
+            type:
+              type: string
+              enum:
+              - url
+              - api_url
+              - html_body
+              description: "Type of the content.\n - article  – `html_body`\n - image, raw_file, video  – `url`\n - structured_content  – `api_url`"
+              example: url
+            value:
+              type: string
+              description: Content of the asset. - article – the html body - image, raw_file, video – the download URL - structured_content – api url
+          required:
+          - type
+          - value
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the asset (only GET is supported)
+              example: https://api.cmp.optimizely.com/v3/images/5d7f910551b00a722e0418830cee6631
+          required:
+          - self
+      required:
+      - id
+      - title
+      - type
+      - mime_type
+      - file_extension
+      - content
+      - links
+    StringTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/StringTypeObjectFieldUpdatePayload'
+    NumberTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Accepts a single numeric value
+            maxItems: 1
+            items:
+              type: number
+              example: 200
+    MultiChoiceTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/MultiChoiceTypeObjectFieldUpdatePayload'
+    ArticleAuthorResponse:
+      description: Author of the article
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: Name of Author
+          example: John Doe
+      required:
+      - name
+    LibraryStructuredContent:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the structured content
+          example: a24b834427a043ab8caed1ded4606f7d
+        title:
+          type: string
+          description: Title of the structured content
+          example: Some webpage
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the structured content was created, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-06T13:15:30Z'
+        modified_at:
+          type: string
+          format: date-time
+          description: Date and time of the most recent modification of the structured content, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2019-10-07T13:15:30Z'
+        folder_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the folder containing the structured content in the library
+          example: 6bb8db20a5b611ebae319b7c541b1a5a
+        file_location:
+          type: string
+          description: Location of the folder containing the structured content in the library
+          example: /all files/
+        is_archived:
+          type: boolean
+          description: Whether the structured content is archived or not
+          example: true
+        owner_organization_id:
+          type: string
+          description: ID of owner organization of the structured content
+          example: 5108c3a9becac35915111191
+        content_body:
+          $ref: '#/components/schemas/ContentDetailsModel'
+        labels:
+          type: array
+          description: Labels associated with the structured content
+          items:
+            $ref: '#/components/schemas/ResourceLabelResponse'
+        links:
+          type: object
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the structured content
+              example: https://api.cmp.optimizely.com/v3/structured-contents/a24b834427a043ab8caed1ded4606f7d
+          required:
+          - self
+      required:
+      - id
+      - title
+      - created_at
+      - modified_at
+      - folder_id
+      - file_location
+      - is_archived
+      - labels
+      - owner_organization_id
+      - links
+    BaseFieldDefinition:
+      required:
+      - core
+      - base_type
+      type: object
+      properties:
+        core:
+          $ref: '#/components/schemas/CoreFieldDef'
+        base_type:
+          $ref: '#/components/schemas/BaseFieldDefinitionType'
+        default_values:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/LocationDefaultValue'
+            - type: boolean
+            - maxLength: 65536
+              minLength: 1
+              type: string
+              format: uri
+            - type: object
+            - type: array
+              items: {}
+    ResourceLabelRequest:
+      description: Payload to associate labels to a resource
+      type: object
+      additionalProperties: false
+      properties:
+        group:
+          description: Label group
+          type: string
+          minLength: 32
+          maxLength: 32
+          example: 2467e583a60e23fda2b89db81a453cd2
+        values:
+          type: array
+          description: List of values of the label
+          items:
+            type: string
+            minLength: 32
+            maxLength: 32
+            example: 71c378f3fee3d822759d1bdc2aab628c
+      required:
+      - group
+      - values
+    FileUrlBulkCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        guids:
+          type: array
+          minItems: 1
+          description: List of guids of assets representing binary files to generate URLs for the corresponding files
+          items:
+            type: string
+            example:
+            - 791569bab45811eebb2802420ac8001c
+            - 467569bab45811eebb2802420ac8111h
+      required:
+      - guids
+    AssetFieldTypes:
+      type: string
+      description: Type of the field
+      example: image
+      enum:
+      - checkbox
+      - currency_number
+      - date
+      - dropdown
+      - label
+      - radio_button
+      - text_area
+      - percentage_number
+      - rich_text
+      - simple_number
+      - text
+    BaseContentTypeVersionModel:
+      required:
+      - version_guid
+      - created_by
+      - created_at
+      - latest
+      - expected_locales
+      - links
+      type: object
+      properties:
+        latest:
+          type: boolean
+          description: Indicates whether the version is the latest
+        version_guid:
+          type: string
+          description: Unique identifier of the version
+        created_by:
+          type: string
+          description: Unique identifier of the user who created the version
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the version was created, in ISO 8601 UTC format
+        expected_locales:
+          type: array
+          description: Expected locales of the version
+          items:
+            type: string
+        links:
+          type: object
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the content type version
+              example: https://api.cmp.optimizely.com/v3/structured-content/content-types/555876bf63e94ea4b3ec4da318736414/versions/31a6d15b09c54a04935203eb958ae058
+            content_type:
+              type: string
+              description: URL of the content type
+              example: https://api.cmp.optimizely.com/v3/structured-content/content-types/555876bf63e94ea4b3ec4da318736414
+    BasePermissionsResponseSchema:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the accessor
+          example: 5d7f910551b00a722e0418830cee6631
+        type:
+          type: string
+          description: Type of the accessor
+          enum:
+          - user
+          - team
+          - organization
+          example: user
+        name:
+          type: string
+          description: Name of the accessor
+          example: John Doe
+        is_owner:
+          type: boolean
+          description: Indicates if the accessor is the owner of the object
+          example: false
+        access_type:
+          type: string
+          description: level of access the accessor has to the resource
+          enum:
+          - view
+          - edit
+          - comment
+          - delete
+          example: view
+        links:
+          type: object
+          additionalProperties: false
+          properties:
+            accessor:
+              type:
+              - string
+              - 'null'
+              description: links for user and team type objects
+              example: https://api.cmp.optimizely.com/v3/users/5f857f30e1c4a2038d6179e9
+          required:
+          - accessor
+      required:
+      - id
+      - name
+      - type
+      - access_type
+      - is_owner
+      - links
+    DateTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/DateTypeObjectFieldUpdatePayload'
+    AssetFieldTypeSimpleNumber:
+      allOf:
+      - $ref: '#/components/schemas/BaseAssetField'
+      - type: object
+        properties:
+          has_thousand_separator:
+            type: boolean
+            description: Whether the numerical field has a thousand separator
+            example: true
+          decimal_places:
+            type:
+            - integer
+            - 'null'
+            description: Decimal place of the numerical field
+            example: 2
+        required:
+        - has_thousand_separator
+        - decimal_places
+    JSONFieldValueModel:
+      required:
+      - json_value
+      type: object
+      properties:
+        order_index:
+          type: integer
+          description: Order index of the field value
+        json_value:
+          description: Value of the field value
+          anyOf:
+          - type: object
+          - type: array
+            items: {}
+    AssetFieldTypeRadio:
+      allOf:
+      - $ref: '#/components/schemas/BaseAssetField'
+      - type: object
+        properties:
+          choices:
+            type: array
+            description: Choices of the radio button
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Radio 1 Choice 1
+              required:
+              - id
+              - name
+        required:
+        - choices
+    ContentFieldWithEmbeddedPatchValueModel:
+      required:
+      - content_id
+      - patch_details
+      type: object
+      properties:
+        content_id:
+          type: string
+        patch_details:
+          $ref: '#/components/schemas/RecursivePatchStructuredContentFields'
+  responses:
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+    UnprocessableEntity:
+      description: Unprocessable entity error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource cannot be processed
+  parameters:
+    page_size:
+      name: page_size
+      in: query
+      description: Number of results to return per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+      example: 15
+    offset:
+      name: offset
+      in: query
+      description: Starting index of results (zero indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 5
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/auth
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes:
+            openid: Grants the ability to receive a unique identifier for the user.
+            profile: Grants access to user profile information.
+            offline_access: Grants the ability to refresh access_token using the refresh token even when user is not present (not logged in).
+        clientCredentials:
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes: {}
+x-tagGroups:
+- name: API
+  tags:
+  - Uploader
+  - Library
+  - Labels
+  - Brand Compliance
+  - Tasks
+  - Task Step
+  - Campaigns
+  - Publishing
+  - Templates
+  - Users
+  - Work Requests
+  - Structured Contents
+  - Assets
+  - Milestones
+  - Teams
+  - Settings
+  - Workflows
+  - Fields
+  - Events

@@ -1,0 +1,76 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Odpimport API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Odpimport
+paths:
+  /api/v1/odpimport/personas:
+    post:
+      tags:
+      - Odpimport
+      operationId: ImportPersona_Personas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Plugins.Odp.WebApi.Models.PersonasMessage'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Plugins.Odp.WebApi.Models.PersonasMessage'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Plugins.Odp.WebApi.Models.PersonasMessage'
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Plugins.Odp.WebApi.Models.PersonasMessage'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Insite.Plugins.Odp.WebApi.Models.PersonasMessage'
+          text/html:
+            schema:
+              $ref: '#/components/schemas/Insite.Plugins.Odp.WebApi.Models.PersonasMessage'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+            text/json:
+              schema:
+                type: object
+            application/xml:
+              schema:
+                type: object
+            text/xml:
+              schema:
+                type: object
+            text/html:
+              schema:
+                type: object
+components:
+  schemas:
+    Insite.Plugins.Odp.WebApi.Models.PersonasMessage:
+      type: object
+      properties:
+        secret:
+          type: string
+        segmentName:
+          type: string
+        businessUserIds:
+          type: array
+          items:
+            format: uuid
+            type: string
+            example: 00000000-0000-0000-0000-000000000000
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

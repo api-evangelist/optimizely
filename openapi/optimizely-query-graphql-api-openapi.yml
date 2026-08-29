@@ -1,0 +1,140 @@
+openapi: 3.2.0
+info:
+  title: Optimizely ▶️ Query ( GraphQL ) API
+  contact:
+    name: Documentation
+    url: https://cg.optimizely.com/
+  license:
+    name: ' '
+  version: '1.0'
+  description: 'Operations tagged ▶️ Query ( GraphQL ) across 2 of this provider''s published API definitions: optimizely-platform-optimizely-optimizely-graph-api-openapi.json, optimizely-platform-optimizely-swagger-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://cg.optimizely.com
+- url: https://prod.cg.optimizely.com
+tags:
+- name: ▶️ Query ( GraphQL )
+paths:
+  /content/v2:
+    get:
+      operationId: get-GraphQLV2Handler
+      responses:
+        '200':
+          description: Returns query result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLResponse'
+      description: Retrieve content respect to graphql query
+      summary: Execute graphql query
+      tags:
+      - ▶️ Query ( GraphQL )
+      security:
+      - epi-single: []
+      - epi-hmac: []
+      - epi-obo: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - in: query
+        name: query
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: mutation
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: operationName
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: variables
+        required: false
+        schema:
+          type: string
+    post:
+      operationId: post-GraphQLV2Handler
+      responses:
+        '200':
+          description: Returns query result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLResponse'
+      description: Retrieve content respect to graphql query
+      summary: Execute graphql query
+      tags:
+      - ▶️ Query ( GraphQL )
+      security:
+      - epi-single: []
+      - epi-hmac: []
+      - epi-obo: []
+      - Bearer: []
+      - Basic: []
+      parameters: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphQLRequest'
+    servers:
+    - url: https://cg.optimizely.com
+components:
+  schemas:
+    GraphQLRequest:
+      properties:
+        query:
+          type: string
+        mutation:
+          type: string
+        operationName:
+          type: string
+        variables:
+          anyOf:
+          - properties: {}
+            additionalProperties:
+              type: string
+            type: object
+          - type: string
+      type: object
+      additionalProperties: false
+    Record_string.any_:
+      properties: {}
+      additionalProperties: {}
+      type: object
+      description: Construct a type with a set of properties K of type T
+    GraphQLResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/Record_string.any_'
+        extensions:
+          $ref: '#/components/schemas/Record_string.any_'
+      type: object
+      additionalProperties: false
+  securitySchemes:
+    epi-single:
+      type: apiKey
+      name: auth
+      in: query
+      description: Single key authentication
+    epi-hmac:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: HMAC authentication (`epi-hmac xxx`)
+    Basic:
+      type: http
+      scheme: basic
+      description: HMAC credentials
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token
+x-refined-from:
+- optimizely-platform-optimizely-optimizely-graph-api-openapi.json
+- optimizely-platform-optimizely-swagger-openapi.json

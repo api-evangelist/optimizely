@@ -1,0 +1,371 @@
+openapi: 3.2.0
+info:
+  title: Optimizely List Attributes API
+  version: '2.0'
+  description: A List Attribute is a set of user identifiers that you have uploaded to Optimizely. Membership in a list can be used to define an Optimizely audience, so you can target experiments and campaigns only to a particular set of users.
+servers:
+- url: https://api.optimizely.com/v2
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- description: A List Attribute is a set of user identifiers that you have uploaded to Optimizely. Membership in a list can be used to define an Optimizely audience, so you can target experiments and campaigns only to a particular set of users.
+  name: List Attributes
+paths:
+  /list_attributes:
+    get:
+      description: Get all of the List Attributes that have been created in a given project.
+      operationId: list_list_attributes
+      parameters:
+      - description: The ID of the project for which you would like to get List Attributes
+        in: query
+        name: project_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ListAttribute'
+                type: array
+          description: Return all List Attributes in the specified Project
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access to the List Attributes in the specified Project
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: List Attributes not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Get list attributes by project
+      tags:
+      - List Attributes
+    post:
+      description: Create a List Attribue with provided `name`, `list_type` and `key_field`. Fields `description` and `list_content` are optional.
+      operationId: create_list_attribute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListAttribute'
+        description: A string in JSON format that includes all the fields to create a new List Attribute
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAttribute'
+          description: Successfully created the List Attribute
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request body content
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Create a List Attribute
+      tags:
+      - List Attributes
+  /list_attributes/{list_attribute_id}:
+    delete:
+      description: Archive List Attribute by ID
+      operationId: archive_list_attribute
+      parameters:
+      - description: The ID of the List Attribute you'd like to archive
+        in: path
+        name: list_attribute_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '204':
+          description: Successfully archived List Attribute
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to archive the specified List Attribute.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: List Attribute not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Archive a List Attribute
+      tags:
+      - List Attributes
+    get:
+      description: Get metadata for a single List Attribute.
+      operationId: get_list_attribute
+      parameters:
+      - description: the unique identifier for the List Attribute
+        in: path
+        name: list_attribute_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAttribute'
+          description: Successfully retrieved List Attribute
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access specified List Attribute.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: List Attribute not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Read a List Attribute
+      tags:
+      - List Attributes
+    patch:
+      description: Overwrite the List Attribute with the provided id. Required arguments are identical to creating a new List Attribute.
+      operationId: update_list_attribute
+      parameters:
+      - description: The ID of the List Attribute you'd like to update
+        in: path
+        name: list_attribute_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListAttributeUpdate'
+        description: A string in JSON format that includes all the fields you'd like to change for a List Attribute
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAttribute'
+          description: Successfully updated the List Attribute
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request body content
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to update the specified List Attribute.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: List Attribute not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Update a List Attribute
+      tags:
+      - List Attributes
+components:
+  schemas:
+    ListAttributeUpdate:
+      properties:
+        archived:
+          description: Whether or not the List Attribute has been archived
+          type: boolean
+        description:
+          description: A short description of the List Attribute
+          type: string
+        key_field:
+          description: The name of the object which holds targeting ids on your website
+          type: string
+        list_content:
+          description: A comma separated string of IDs or ZIP Codes. Items will be matched against the key_field to determine if an active visitor should be targeted by the list.  Note that if the list currently contains data, providing this value will overwrite the previous data.
+          type: string
+        list_type:
+          description: The type of data object which holds targeting ids on your website (cookies, query parameters, zip codes, Global JS variables)
+          enum:
+          - cookies
+          - query_parameters
+          - zip_codes
+          - js_variables
+          type: string
+        name:
+          description: A unique, human-readable name for the List Attribute
+          example: SubscriberStatus
+          pattern: ^[-_0-9A-Za-z]+$
+          type: string
+      type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    ListAttribute:
+      properties:
+        account_id:
+          description: The unique identifier for the Optimizely account
+          format: int64
+          readOnly: true
+          type: integer
+        archived:
+          default: false
+          description: Whether or not the List Attribute has been archived
+          type: boolean
+        aws_access_key:
+          description: AWS access key to upload List Attribute source file to S3
+          readOnly: true
+          type: string
+        aws_secret_key:
+          description: AWS secret key to upload List Attribute source file to S3
+          readOnly: true
+          type: string
+        created:
+          description: Time when the List Attribute was created
+          format: date-time
+          readOnly: true
+          type: string
+        description:
+          description: A short description of the List Attribute
+          type: string
+        id:
+          description: The unique identifier for the List Attribute
+          format: int64
+          readOnly: true
+          type: integer
+        key_field:
+          description: The name of the object which holds targeting ids on your website
+          type: string
+        last_modified:
+          description: The last time the List Attribute was modified
+          format: date-time
+          readOnly: true
+          type: string
+        list_content:
+          description: A comma separated string of IDs or ZIP Codes. Items will be matched against the key_field to determine if an active visitor should be targeted by the list.  Note that if the list currently contains data, providing this value will overwrite the previous data.
+          type: string
+        list_type:
+          description: The type of data object which holds targeting ids on your website (cookies, query parameters, zip codes, Global JS variables)
+          enum:
+          - cookies
+          - query_parameters
+          - zip_codes
+          - js_variables
+          type: string
+        name:
+          description: A unique, human-readable name for the List Attribute
+          example: SubscriberStatus
+          pattern: ^[-_0-9A-Za-z]+$
+          type: string
+        project_id:
+          description: The ID of the project the List Attribute belongs to
+          format: int64
+          type: integer
+        s3_path:
+          description: S3 path containing files used to populate the List Attribute with data. Can be used with an S3 client or CLI to upload data.
+          readOnly: true
+          type: string
+      required:
+      - name
+      - key_field
+      - project_id
+      type: object
+  securitySchemes:
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http

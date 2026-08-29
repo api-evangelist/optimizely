@@ -1,17 +1,17 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Optimizely Campaign REST Assets Profiles API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
-  version: '1.0'
+  title: Optimizely Data Platform REST Profiles API
+  description: The Optimizely Data Platform (ODP) REST API enables developers to integrate customer data with the Optimizely Data Platform. It provides endpoints for managing customer profiles, sending events, managing objects, and querying schema information. The API supports real-time data ingestion and retrieval using both public and private API keys, allowing developers to build personalized experiences powered by comprehensive customer intelligence.
+  version: '3.0'
   contact:
     name: Optimizely Support
     url: https://support.optimizely.com
   termsOfService: https://www.optimizely.com/legal/terms/
 servers:
-- url: https://api.campaign.episerver.net/rest
-  description: Optimizely Campaign Production Server
+- url: https://api.zaius.com/v3
+  description: Optimizely Data Platform API v3 Server
 security:
-- basicAuth: []
+- publicApiKey: []
 tags:
 - name: Profiles
   description: Create, update, and retrieve customer profiles with unified identity resolution.
@@ -68,20 +68,22 @@ paths:
         '404':
           description: Profile not found
 components:
+  parameters:
+    identifierValue:
+      name: identifier_value
+      in: path
+      required: true
+      description: The value of the identifier field
+      schema:
+        type: string
+    identifierField:
+      name: identifier_field
+      in: path
+      required: true
+      description: The identifier field name (e.g., email, customer_id, vuid)
+      schema:
+        type: string
   schemas:
-    ProfileInput:
-      type: object
-      description: Input for creating or updating a customer profile
-      properties:
-        identifiers:
-          type: object
-          description: Customer identifiers for matching
-          additionalProperties:
-            type: string
-        attributes:
-          type: object
-          description: Profile attributes to set or update
-          additionalProperties: true
     Profile:
       type: object
       description: A customer profile in ODP
@@ -123,26 +125,30 @@ components:
           description: Segments the customer belongs to
           items:
             type: string
-  parameters:
-    identifierField:
-      name: identifier_field
-      in: path
-      required: true
-      description: The identifier field name (e.g., email, customer_id, vuid)
-      schema:
-        type: string
-    identifierValue:
-      name: identifier_value
-      in: path
-      required: true
-      description: The value of the identifier field
-      schema:
-        type: string
+    ProfileInput:
+      type: object
+      description: Input for creating or updating a customer profile
+      properties:
+        identifiers:
+          type: object
+          description: Customer identifiers for matching
+          additionalProperties:
+            type: string
+        attributes:
+          type: object
+          description: Profile attributes to set or update
+          additionalProperties: true
   securitySchemes:
-    basicAuth:
-      type: http
-      scheme: basic
-      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+    publicApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Public API Key (Tracker ID) for sending data to ODP. May be exposed publicly on the internet.
+    privateApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Private API Key for querying data from ODP. Must be kept confidential and used only in backend services.
 externalDocs:
-  description: Optimizely Campaign REST API Documentation
-  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+  description: Optimizely Data Platform API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-data-platform/reference/introduction

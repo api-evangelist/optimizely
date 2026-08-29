@@ -1,0 +1,125 @@
+openapi: 3.2.0
+info:
+  description: '# Edge Worker API
+
+    Defines the schema to interact with the Optimizely Edge Decider.
+
+    ## Usage
+
+    Note the use of __first-party__ script in order to enable domain cookies; you will have to set up a route to forward the request on to https://optimizely-edge.com/edge-client/v1 with required headers/page URLs.
+
+    `<script src="/optimizely-edge/your-project-id.js"></script>`
+
+    '
+  version: 0.1.0
+  title: Optimizely Edge Decider API
+  contact:
+    email: webdelivery@optimizely.com
+servers:
+- url: https://optimizely-edge.com/edge-client/v1
+tags:
+- name: Optimizely Edge Decider
+paths:
+  /{accountId}/{projectId}:
+    get:
+      summary: Get a microsnippet response
+      description: 'Call the Edge Decider API to fetch a microsnippet.  Given the required arguments, the Edge Decider will bucket visitors into variations of active experiments they''re qualified for and return the JavaScript microsnippet.  The microsnippet is executed by the browser to apply the variations'' changes.
+
+
+        Note that for security, the Edge Decider API only supports connections made over HTTPS. It does not support connections made over insecure HTTP and responds with a 403 status instead.
+
+        '
+      parameters:
+      - name: accountId
+        in: path
+        description: Optimizely Account ID
+        required: true
+        schema:
+          type: string
+      - name: projectId
+        in: path
+        required: true
+        description: Project ID of the Performance Edge project.
+        schema:
+          type: string
+      - name: extend_cookie_lifetime
+        in: query
+        description: 'Whether or not the snippet should extend cookies. Defaults to true.
+
+
+          Only has an effect on cookies which are already set, according to the Cookie header value. If it has not been set before, the cookie is set regardless of this parameter value.
+
+
+          Currently, this only affects the "OptimizelyEndUserId" cookie.
+
+          '
+        schema:
+          type: string
+          enum:
+          - 'false'
+      - name: url
+        in: query
+        description: 'Document URL requested, which is used to determine the active pages(s)/experiment(s)
+
+
+          Needs to be passed encoded.
+
+          '
+        schema:
+          type: string
+      - name: Cookie
+        in: header
+        required: true
+        description: 'Cookies set on the requested domain. For cookie targeting, userId derivation, bucketing. Include any cookies that your users may want to use to define visitor audiences.
+
+
+          At a minimum, must include the value of the optimizelyEndUserId cookie, if set. If unset, the JavaScript response will instruct the browser to set that cookie on the user’s device.
+
+
+          **NOTE** Please review our [guidance on usage of PII](https://help.optimizely.com/Account_Settings/PII%3A_Personally_identifiable_information_in_Optimizely) with Optimizely Products.
+
+          '
+        schema:
+          type: string
+      - name: Referer
+        in: header
+        required: true
+        description: 'Document URL requested, which is used to determine the active pages(s)/experiment(s), if the “url” query parameter is not specified.
+
+
+          In typical implementations, the Referer header in the script request will equal the URL of the page on which the script was loaded.
+
+          '
+        schema:
+          type: string
+      - name: User-Agent
+        in: header
+        required: true
+        description: 'User Agent used to make the request. Optimizely Edge will only serve the JavaScript response to browsers that are detected as having support for it, using this value. Also used for browser, device, platform targeting ([Reference](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent))
+
+          '
+        schema:
+          type: string
+      - name: X-Forwarded-For
+        in: header
+        required: true
+        description: 'A comma-separated list of IP addresses, the first of which will be used as the basis for IP Address and Location experiment targeting. ([Reference](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For))
+
+          '
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response supplies JavaScript code for microsnippet
+        '403':
+          description: Request made not using HTTPS
+        '405':
+          description: Invalid input
+      tags:
+      - Optimizely Edge Decider
+externalDocs:
+  description: Find out more about Edge Experiments
+  url: http://link.optimizely.com/edge
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

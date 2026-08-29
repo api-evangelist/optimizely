@@ -1,0 +1,191 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Experiment Summary API
+  version: '2.0'
+servers:
+- url: https://api.optimizely.com/v2
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- name: ExperimentSummary
+paths:
+  /experiment_summaries:
+    get:
+      description: Summaries of Experiments and Campaigns in a Project
+      operationId: get_experiment_summaries
+      parameters:
+      - $ref: '#/components/parameters/per_page'
+      - $ref: '#/components/parameters/page'
+      - description: The column to sort by.
+        in: query
+        name: sort
+        required: false
+        schema:
+          enum:
+          - name
+          - last_modified
+          type: string
+      - description: The order to sort with.
+        in: query
+        name: order
+        required: false
+        schema:
+          default: asc
+          enum:
+          - asc
+          - desc
+          type: string
+      - description: Return Experiments and Campaigns for specified project.
+        in: query
+        name: project_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: Whether or not to include archived entities. If this parameter is not provided it will default to false and no archived entities will be included. Supersedes status filter.
+        in: query
+        name: archived
+        required: false
+        schema:
+          default: false
+          type: boolean
+      - description: Filters search results by the current status of the entity. Specifying multiple statuses will search for entities with ANY of those statuses.
+        in: query
+        name: status
+        required: false
+        schema:
+          enum:
+          - running
+          - paused
+          - archived
+          - not_started
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ExperimentSummary'
+                type: array
+          description: Return experiment summary results
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to search the specified Account or Project
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Summaries of Experiments and Campaigns
+      tags:
+      - ExperimentSummary
+      x-release-state: alpha
+components:
+  parameters:
+    page:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
+  schemas:
+    ExperimentSummary:
+      properties:
+        archived:
+          description: Whether or not the entity is archived.
+          example: 'False'
+          type: boolean
+        created:
+          description: The time that the entity was created.
+          format: date-time
+          type: string
+        description:
+          description: Description for the entity if it has one.
+          example: Test out the hero image on the home page
+          type: string
+        experiment_type:
+          description: The type of experiment
+          example: a/b
+          type: string
+        id:
+          description: ID of the entity
+          readOnly: true
+          type: integer
+        last_modified:
+          description: The time that the entity was last modified.
+          format: date-time
+          type: string
+        name:
+          description: Name of the entity. This value will be the 'key' of the entity if there is no name.
+          example: Hero Image Test
+          type: string
+        project_id:
+          description: ID of the project that contains the entity (if applicable)
+          type: integer
+        project_name:
+          description: Name of the project that contains the entity (if applicable)
+          type: string
+        status:
+          description: The current status for the entity if it has one.
+          example: running
+          type: string
+        type:
+          description: Type of the entity.
+          enum:
+          - experiment
+          - campaign
+          example: experiment
+          type: string
+      type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+  securitySchemes:
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http

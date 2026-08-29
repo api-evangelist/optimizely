@@ -1,0 +1,246 @@
+openapi: 3.2.0
+info:
+  title: Optimizely 📖 Definition ( v2 ) API
+  contact:
+    name: Documentation
+    url: https://cg.optimizely.com/
+  license:
+    name: ' '
+  version: '1.0'
+  description: 'Operations tagged 📖 Definition ( v2 ) across 2 of this provider''s published API definitions: optimizely-platform-optimizely-optimizely-graph-api-openapi.json, optimizely-platform-optimizely-swagger-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://cg.optimizely.com
+- url: https://prod.cg.optimizely.com
+tags:
+- name: 📖 Definition ( v2 )
+paths:
+  /api/content/v2/data:
+    post:
+      operationId: post-ContentV2DataHandler
+      responses:
+        '200':
+          description: Index content successful
+      description: Synchronize data for given source
+      summary: Sync content data
+      tags:
+      - 📖 Definition ( v2 )
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - in: query
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+    delete:
+      operationId: delete-ContentV2DataHandler
+      responses:
+        '204':
+          description: Reset data successfully
+      description: Purge data for given source
+      summary: Purge content data
+      tags:
+      - 📖 Definition ( v2 )
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: The id of the source
+        in: query
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: The language of the source
+        in: query
+        name: languages
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+    servers:
+    - url: https://cg.optimizely.com
+  /api/content/v2/types:
+    post:
+      operationId: post-ContentV2TypeHandler
+      responses:
+        '200':
+          description: Successfully updated content type
+        '400':
+          description: Content type languages could not be updated
+      description: Synchronize content types from one source
+      summary: Sync content types
+      tags:
+      - 📖 Definition ( v2 )
+      deprecated: true
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentSource_V2'
+    servers:
+    - url: https://cg.optimizely.com
+components:
+  schemas:
+    ContentTypeProperty_V2:
+      allOf:
+      - $ref: '#/components/schemas/Property_V2'
+      - properties:
+          helpText:
+            $ref: '#/components/schemas/Optional_string_'
+        type: object
+    LinkMap:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/LinkConfig'
+      type: object
+    Optional_string_:
+      type:
+      - string
+      - 'null'
+    PropertyType_V2:
+      properties:
+        properties:
+          items:
+            $ref: '#/components/schemas/Property_V2'
+          type: array
+        name:
+          type: string
+      required:
+      - name
+      type: object
+    ContentType_V2:
+      properties:
+        properties:
+          items:
+            $ref: '#/components/schemas/ContentTypeProperty_V2'
+          type: array
+        abstract:
+          type: boolean
+        base:
+          type: string
+        description:
+          $ref: '#/components/schemas/Optional_string_'
+        sortOrder:
+          type: number
+          format: double
+        displayName:
+          $ref: '#/components/schemas/Optional_string_'
+        contentType:
+          items:
+            type: string
+          type: array
+        name:
+          type: string
+      required:
+      - properties
+      - contentType
+      - name
+      type: object
+    LinkConfig:
+      properties:
+        to:
+          type: string
+        from:
+          type: string
+      required:
+      - to
+      - from
+      type: object
+    Property_V2:
+      properties:
+        index:
+          type: boolean
+        searchable:
+          type: boolean
+        type:
+          type: string
+        name:
+          type: string
+      required:
+      - type
+      - name
+      type: object
+    ContentSource_V2:
+      properties:
+        useTypedFieldNames:
+          type: boolean
+        languages:
+          items:
+            type: string
+          type: array
+          default: []
+        links:
+          $ref: '#/components/schemas/LinkMap'
+        contentTypes:
+          items:
+            $ref: '#/components/schemas/ContentType_V2'
+          type: array
+          default: []
+        propertyTypes:
+          items:
+            $ref: '#/components/schemas/PropertyType_V2'
+          type: array
+          default: []
+      type: object
+      additionalProperties: false
+      example:
+        languages:
+        - en
+        links: {}
+        contentTypes:
+        - name: IContent
+          contentType: []
+          properties:
+          - name: id
+            type: string
+          - name: Name
+            type: string
+        - name: StartPage
+          contentType:
+          - IContent
+          properties:
+          - name: MainBody
+            type: string
+          - name: MainContentArea
+            type: string
+        propertyTypes: []
+  securitySchemes:
+    epi-single:
+      type: apiKey
+      name: auth
+      in: query
+      description: Single key authentication
+    epi-hmac:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: HMAC authentication (`epi-hmac xxx`)
+    Basic:
+      type: http
+      scheme: basic
+      description: HMAC credentials
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token
+x-refined-from:
+- optimizely-platform-optimizely-optimizely-graph-api-openapi.json
+- optimizely-platform-optimizely-swagger-openapi.json

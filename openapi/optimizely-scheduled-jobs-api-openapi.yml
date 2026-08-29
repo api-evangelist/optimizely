@@ -1,0 +1,621 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Scheduled jobs API
+  version: '1.0'
+  description: 'Operations tagged Scheduled jobs across 2 of this provider''s published API definitions: optimizely-campaign-optimizely-campaign-rest-api-openapi.json, optimizely-web-experimentation-optimizely-api-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.campaign.episerver.net/rest
+- url: https://api.optimizely.com/v2
+tags:
+- name: Scheduled jobs
+  description: Get information about scheduled jobs
+paths:
+  /{clientId}/customerjobs/configured:
+    get:
+      tags:
+      - Scheduled jobs
+      summary: Get information about all configured scheduled jobs
+      description: Get detailed information about all configured scheduled jobs, such as name, description, triggers.
+      operationId: selectAllConfiguredJobs
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved configured scheduled jobs <p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: All configured scheduled jobs were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestConfiguredJobStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestConfiguredJobStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+        '403':
+          description: IP address was not allowed to access jobs rest api server.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/customerjobs/running:
+    get:
+      tags:
+      - Scheduled jobs
+      summary: Get information about all running scheduled jobs
+      description: Get detailed information about all running scheduled jobs, such as name, start time, elapsed running time.
+      operationId: selectAllRunningJobs
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: All running scheduled jobs were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRunningJobStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestRunningJobStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+        '403':
+          description: IP address was not allowed to access jobs rest api server.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /scheduled-jobs:
+    get:
+      description: Get the list of Scheduled Jobs that belong to your account
+      operationId: list_scheduled_jobs
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ScheduledJob'
+                type: array
+          description: Return Scheduled Job info
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Get a list of Scheduled Jobs
+      tags:
+      - Scheduled jobs
+      x-release-state: alpha
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    post:
+      description: Create a Scheduled Job
+      operationId: create_scheduled_job
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduledJob'
+        description: A string in JSON format that includes all the fields to create a Scheduled Job
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJob'
+          description: Return the created ScheduledJob
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request body content
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to create a Scheduled Job under the specified Project
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Create a Scheduled Job
+      tags:
+      - Scheduled jobs
+      x-release-state: alpha
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
+  /scheduled-jobs/{job_id}:
+    delete:
+      description: Archive a Scheduled Job by ID
+      operationId: delete_scheduled_job
+      parameters:
+      - description: The ID of the Scheduled Job you'd like to archive
+        in: path
+        name: job_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '204':
+          description: Successfully archived Scheduled Job
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials.
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to archive the specified Scheduled Job
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Job not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Archive a Scheduled Job
+      tags:
+      - Scheduled jobs
+      x-release-state: alpha
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    get:
+      description: Get a Scheduled Job by ID
+      operationId: get_scheduled_job
+      parameters:
+      - description: The ID of the Scheduled Job you'd like to get
+        in: path
+        name: job_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJob'
+          description: Return Scheduled Job info
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid ID supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access the specified Scheduled Job
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Scheduled Job not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Get a Scheduled Job
+      tags:
+      - Scheduled jobs
+      x-release-state: alpha
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    patch:
+      description: Update a Scheduled Job by ID
+      operationId: update_scheduled_job
+      parameters:
+      - description: The ID of the Scheduled Job you'd like to update
+        in: path
+        name: job_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduledJobUpdate'
+        description: A string in JSON format that includes all the fields you'd like to change for a Scheduled Job
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledJob'
+          description: Return the updated Scheduled Job
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid ID or request body supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to edit the specified Scheduled Job
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Scheduled Job not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Update a Scheduled Job
+      tags:
+      - Scheduled jobs
+      x-release-state: alpha
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
+components:
+  schemas:
+    RestRunningJobStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestRunningJob'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestRunningJob:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the running scheduled job
+        started:
+          type: string
+          description: Start date and time of the scheduled job
+          format: date-time
+        elapsedRunningTime:
+          type: object
+          properties:
+            seconds:
+              type: integer
+              format: int64
+            zero:
+              type: boolean
+            nano:
+              type: integer
+              format: int32
+            negative:
+              type: boolean
+            units:
+              type: array
+              items:
+                type: object
+                properties:
+                  durationEstimated:
+                    type: boolean
+                  duration:
+                    type: object
+                    properties:
+                      seconds:
+                        type: integer
+                        format: int64
+                      zero:
+                        type: boolean
+                      nano:
+                        type: integer
+                        format: int32
+                      negative:
+                        type: boolean
+                  timeBased:
+                    type: boolean
+                  dateBased:
+                    type: boolean
+          description: Elapsed running time of the scheduled job
+    RestConfiguredJob:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the scheduled job
+        description:
+          type: string
+          description: Description of the scheduled job
+        type:
+          type: string
+          description: Type of the scheduled job
+        jobData:
+          type: object
+          additionalProperties:
+            type: string
+        triggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestJobTrigger'
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestJobTrigger:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Trigger name
+        state:
+          type: string
+          description: Trigger status
+        nextFireTime:
+          type: string
+          description: Date and time of the next trigger fire
+          format: date-time
+        lastFiredTime:
+          type: string
+          description: Date and time of the last trigger fire
+          format: date-time
+        started:
+          type: string
+          description: Start date and time of the trigger
+          format: date-time
+        finished:
+          type: string
+          description: Finish date and time of the trigger
+          format: date-time
+    RestConfiguredJobStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestConfiguredJob'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    ScheduledJobUpdate:
+      properties:
+        archived:
+          description: Whether the Scheduled Job is archived
+          type: boolean
+        campaign_ids:
+          description: A list of campaign_ids that should be considered during the job
+          items:
+            format: int64
+            type: integer
+          type: array
+        experiment_ids:
+          description: A list of experiment_ids that should be considered during the job
+          items:
+            format: int64
+            type: integer
+          type: array
+        frequency:
+          enum:
+          - daily
+          - weekly
+          type: string
+        job_type:
+          description: The type of job to be performed
+          enum:
+          - project_results
+          type: string
+        output_channels:
+          description: An object describing how the output of the job should be communicated
+          type: object
+        project_id:
+          description: The project that the job is associated with
+          format: int64
+          type: integer
+      type: object
+    ScheduledJob:
+      properties:
+        account_id:
+          description: The account that the job is associated with
+          example: 456
+          format: int64
+          readOnly: true
+          type: integer
+        archived:
+          default: false
+          description: Whether the Scheduled Job is archived
+          example: false
+          readOnly: true
+          type: boolean
+        campaign_ids:
+          default: []
+          description: A list of campaign_ids that should be considered during the job
+          example:
+          - 12
+          - 34
+          items:
+            format: int64
+            type: integer
+          type: array
+        experiment_ids:
+          default: []
+          description: A list of experiment_ids that should be considered during the job
+          example:
+          - 56
+          - 78
+          - 90
+          items:
+            format: int64
+            type: integer
+          type: array
+        frequency:
+          description: How often the job should be performed
+          enum:
+          - daily
+          - weekly
+          example: weekly
+          type: string
+        id:
+          description: The unique identifier of the Scheduled Job
+          example: 123
+          format: int64
+          readOnly: true
+          type: integer
+        job_type:
+          description: The type of job to be performed
+          enum:
+          - project_results
+          example: project_results
+          type: string
+        output_channels:
+          default: {}
+          description: An object describing how the output of the job should be communicated
+          example: '{"email": ["test@example.com", "another@example.com"]}'
+          type: object
+        project_id:
+          description: The project that the job is associated with
+          example: 789
+          format: int64
+          type: integer
+      required:
+      - project_id
+      - job_type
+      - frequency
+      type: object
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http
+x-refined-from:
+- optimizely-campaign-optimizely-campaign-rest-api-openapi.json
+- optimizely-web-experimentation-optimizely-api-openapi.json

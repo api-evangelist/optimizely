@@ -1,0 +1,170 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Content Recommendations Deliveries API
+  version: 1.0.0
+  contact:
+    email: support@optimizely.com
+  description: Delivery management operations
+servers:
+- url: https://{hostname}/1.0
+  description: Primary API server
+  variables:
+    hostname:
+      default: api.usea01.idio.episerver.net
+      enum:
+      - api.apac01.idio.episerver.net
+      - api.caea01.idio.episerver.net
+      - api.emea01.idio.episerver.net
+      - api.usea01.idio.episerver.net
+security:
+- key: []
+tags:
+- name: deliveries
+  description: Delivery management operations
+paths:
+  /deliveries:
+    get:
+      operationId: deliveriesList
+      summary: List deliveries
+      description: Retrieve all widget deliveries, including API keys where applicable.
+      tags:
+      - deliveries
+      responses:
+        '200':
+          description: Map of all deliveries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryMap'
+        '204':
+          description: No active widget deliveries exist
+  /deliveries/{key}:
+    parameters:
+    - $ref: '#/components/parameters/deliveryKey'
+    get:
+      operationId: deliveryGet
+      summary: Fetch delivery
+      description: Retrieve detailed information about a delivery using its API key. Use 'me' for the current delivery.
+      tags:
+      - deliveries
+      responses:
+        '200':
+          description: Details of a single delivery
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Delivery'
+        '404':
+          description: Delivery does not exist
+components:
+  parameters:
+    deliveryKey:
+      name: key
+      in: path
+      required: true
+      description: API delivery key. Use `me` to refer to the current delivery.
+      schema:
+        type: string
+      examples:
+        me:
+          value: me
+  schemas:
+    DeliveryMap:
+      type: object
+      description: A map of delivery identifiers to their corresponding API keys.
+      properties:
+        deliveries:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Map'
+          description: Key-value pairs where key is the delivery ID or name and value is the API key.
+    Delivery:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - active
+      - configuration
+      - content_selection
+      - sections
+      description: Represents a content delivery configuration, such as a widget or feed.
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the delivery.
+          example: 101
+        title:
+          type: string
+          description: Display title of the delivery.
+          example: Homepage Recommendations
+        active:
+          type: boolean
+          description: Indicates whether this delivery is currently active.
+          example: true
+        configuration:
+          $ref: '#/components/schemas/Map'
+        content_selection:
+          $ref: '#/components/schemas/DeliveryContentSelection'
+        sections:
+          type: array
+          uniqueItems: true
+          description: List of sections included in this delivery.
+          items:
+            $ref: '#/components/schemas/ContentSection'
+    ContentSection:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      description: Represents a section that groups related content.
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the section.
+          example: 42
+        title:
+          type: string
+          description: The display title of the section.
+          example: Technology
+        full_details_url:
+          type: string
+          format: url
+          description: API link to fetch full details of this section.
+          example: https://api.usea01.idio.episerver.net/1.0/sections/42
+    DeliveryContentSelection:
+      type: object
+      additionalProperties: false
+      required:
+      - approved
+      - featured
+      description: Criteria used to select which content is delivered.
+      properties:
+        approved:
+          type: string
+          enum:
+          - approved
+          - unapproved
+          - all
+          description: Filter content by approval status.
+          example: approved
+        featured:
+          type: string
+          enum:
+          - featured
+          - unfeatured
+          - all
+          description: Filter content by featured status.
+          example: featured
+    Map:
+      type: object
+      additionalProperties:
+        type: string
+  securitySchemes:
+    key:
+      type: apiKey
+      in: query
+      name: key
+      description: API key required for authentication. Must be provided as a query parameter, for example, `?key=YOUR_API_KEY`.

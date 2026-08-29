@@ -1,17 +1,11 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Optimizely Campaign REST Assets Extensions API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
-  version: '1.0'
-  contact:
-    name: Optimizely Support
-    url: https://support.optimizely.com
-  termsOfService: https://www.optimizely.com/legal/terms/
+  title: Optimizely Extensions API
+  version: '2.0'
+  description: 'Operations tagged Extensions across 2 of this provider''s published API definitions: optimizely-web-experimentation-openapi.yml, optimizely-web-experimentation-optimizely-api-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://api.campaign.episerver.net/rest
-  description: Optimizely Campaign Production Server
-security:
-- basicAuth: []
+- url: https://api.optimizely.com/v2
+  description: Optimizely REST API v2 Production Server
 tags:
 - name: Extensions
   description: Manage reusable extensions that encapsulate experiment logic and visual changes.
@@ -38,7 +32,257 @@ paths:
                   $ref: '#/components/schemas/Extension'
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - bearerAuth: []
+    post:
+      description: Create a new Extension in a provided project
+      operationId: create_extension
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Extension_2'
+        description: A string in JSON format that includes all the fields to create an extension
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Extension_2'
+          description: Return the created extension
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request body content
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to create an extension under the specified project
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Create an Extension
+      tags:
+      - Extensions
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.optimizely.com/v2
+      description: Optimizely REST API v2 Production Server
+  /extensions/{extension_id}:
+    delete:
+      description: Archive an Extension by ID
+      operationId: delete_extension
+      parameters:
+      - description: The ID of the extension you'd like to archive
+        in: path
+        name: extension_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '204':
+          description: Successfully archived extension
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to archive the specified extension
+        '404':
+          description: Extension not found
+      summary: Archive an Extension
+      tags:
+      - Extensions
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    get:
+      description: Get an Extension by ID
+      operationId: get_extension
+      parameters:
+      - description: The ID of the extension you'd like to get
+        in: path
+        name: extension_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Extension_2'
+          description: Return extension info
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access the specified Extension
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Extension not found or invalid ID supplied
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Get an Extension
+      tags:
+      - Extensions
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    patch:
+      description: Update an extension by ID.
+      operationId: update_extension
+      parameters:
+      - description: The extension ID of the extension you want to change
+        in: path
+        name: extension_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtensionUpdate'
+        description: A string in JSON format that includes all the fields you'd like to change for an extension
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Extension_2'
+          description: Return the updated extension
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request body supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to edit the specified extension
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Extension not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Update an Extension
+      tags:
+      - Extensions
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
 components:
+  parameters:
+    projectIdQuery:
+      name: project_id
+      in: query
+      required: true
+      description: The unique identifier for the project to filter by
+      schema:
+        type: integer
+        format: int64
+    page:
+      name: page
+      in: query
+      required: false
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
   schemas:
     Extension:
       type: object
@@ -78,39 +322,222 @@ components:
             css:
               type: string
               description: CSS styles of the extension
-  parameters:
-    projectIdQuery:
-      name: project_id
-      in: query
-      required: true
-      description: The unique identifier for the project to filter by
-      schema:
-        type: integer
-        format: int64
-    perPage:
-      name: per_page
-      in: query
-      required: false
-      description: Number of results per page
-      schema:
-        type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
-    page:
-      name: page
-      in: query
-      required: false
-      description: Page number for pagination
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
+    Choices:
+      properties:
+        label:
+          description: label of the choice
+          type: string
+        value:
+          description: value of the choice
+          type: string
+      type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    ExtensionUpdate:
+      properties:
+        archived:
+          description: Whether the extension is archived
+          type: boolean
+        description:
+          description: The description for the extension
+          type: string
+        edit_url:
+          description: The URL to load when editing the extension
+          type: string
+        enabled:
+          description: Whether the extension is enabled
+          type: boolean
+        fields:
+          description: Array of editable fields in the extension
+          example:
+          - api_name: text
+            default_value: My Butterbar
+            field_type: text
+            label: A text field
+          items:
+            $ref: '#/components/schemas/Field'
+          type: array
+        implementation:
+          $ref: '#/components/schemas/Implementation'
+        name:
+          description: Name of the extension
+          example: My Extension
+          type: string
+      type: object
+    Extension_2:
+      properties:
+        archived:
+          description: Whether the extension is archived
+          readOnly: true
+          type: boolean
+        created:
+          description: The time when the extension was initially created
+          format: date-time
+          readOnly: true
+          type: string
+        description:
+          description: The description for the extension
+          type: string
+        edit_url:
+          description: The URL to load when editing the extension
+          type: string
+        enabled:
+          description: Whether the extension is enabled. A disabled extension won't appear in the editor and won't be built into the snippet
+          type: boolean
+        experiment_count:
+          description: Number of experiments that reference this extension across all statuses (running, paused, draft, archived). Computed by the upstream service.
+          example: 3
+          format: int64
+          readOnly: true
+          type: integer
+        fields:
+          default: []
+          description: Array of editable fields in the extension
+          example:
+          - api_name: text
+            default_value: My Butterbar
+            field_type: text
+            label: A text field
+          items:
+            $ref: '#/components/schemas/Field'
+          type: array
+        id:
+          description: The unique identifier for the extension
+          example: 3000
+          format: int64
+          readOnly: true
+          type: integer
+        implementation:
+          $ref: '#/components/schemas/Implementation'
+        last_modified:
+          description: The last time when the extension was modified
+          format: date-time
+          readOnly: true
+          type: string
+        name:
+          description: Name of the extension
+          example: My Extension
+          type: string
+        project_id:
+          description: The project the extension is in
+          example: 1000
+          format: int64
+          type: integer
+      required:
+      - project_id
+      - name
+      - edit_url
+      - implementation
+      type: object
+    Options:
+      properties:
+        choices:
+          description: The choices for a field
+          items:
+            $ref: '#/components/schemas/Choices'
+          type: array
+      type: object
+    Field:
+      externalDocs:
+        description: Fields
+        url: https://developers.optimizely.com/x/extensions/#fields
+      properties:
+        api_name:
+          description: The API name of the field
+          type: string
+        default_value:
+          description: A string in JSON format that corresponds to the default_value of the field
+          type: string
+        field_type:
+          description: The type of the field
+          enum:
+          - selector
+          - text
+          - multi_text
+          - rich_text
+          - number
+          - html
+          - css
+          - js
+          - toggle
+          - dropdown
+          - multi_select
+          - image
+          - color
+          - slider
+          type: string
+        label:
+          description: The label of the field
+          type: string
+        options:
+          $ref: '#/components/schemas/Options'
+      required:
+      - api_name
+      - label
+      - default_value
+      - field_type
+      type: object
+    Implementation:
+      properties:
+        apply_js:
+          default: ''
+          description: The Apply JS code is used to inject the extension onto the page
+          externalDocs:
+            description: Apply JS
+            url: https://developers.optimizely.com/x/extensions/#apply-js
+          type: string
+        css:
+          default: ''
+          description: Some extensions may not need any CSS because they inherit styles from the page itself. However, you can add additional styling here. This will be injected on the page through a <style> tag
+          externalDocs:
+            description: CSS
+            url: https://developers.optimizely.com/x/extensions/#css
+          type: string
+        html:
+          default: ''
+          description: The html implementation of the field
+          externalDocs:
+            description: HTML
+            url: https://developers.optimizely.com/x/extensions/#html
+          type: string
+        reset_js:
+          default: ''
+          description: Reset JS is used to "clean up" after a extension. It's used in the editor, when changing field values or removing an existing extension. Reset JS should remove the element and any other side-effects
+          externalDocs:
+            description: Reset JS
+            url: https://developers.optimizely.com/x/extensions/#reset-js
+          type: string
+      type: object
   securitySchemes:
-    basicAuth:
+    bearerAuth:
       type: http
-      scheme: basic
-      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+      scheme: bearer
+      description: OAuth 2.0 Bearer token or personal access token generated from the Optimizely application settings.
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http
 externalDocs:
-  description: Optimizely Campaign REST API Documentation
-  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+  description: Optimizely Web Experimentation API Documentation
+  url: https://docs.developers.optimizely.com/web-experimentation/docs/rest-api-introduction
+x-refined-from:
+- optimizely-web-experimentation-openapi.yml
+- optimizely-web-experimentation-optimizely-api-openapi.json

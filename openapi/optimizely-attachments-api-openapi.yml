@@ -1,0 +1,536 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Attachments API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Attachments
+  description: Manage email attachments
+paths:
+  /{clientId}/attachments/count:
+    get:
+      tags:
+      - Attachments
+      summary: Get the total number of attachments
+      operationId: count_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The total number was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCount'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestCount'
+      security:
+      - Authorization: []
+  /{clientId}/attachments:
+    get:
+      tags:
+      - Attachments
+      summary: Get information about all attachments
+      description: Get detailed information about all attachments, such as type, mime type, size or creation date. You can sort the result by specific criteria and limit the maximum number of retrieved attachments.
+      operationId: getAllAttachments
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        description: 'Starting point of the result list <p><i>Default value</i> : 0</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved attachments<p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: sort
+        in: query
+        description: Sort result by specific criteria
+        schema:
+          type: string
+          default: created
+          enum:
+          - id
+          - mailingGroup
+          - name
+          - uploaded
+          - url
+          - fileName
+          - type
+          - mimeType
+          - size
+          - created
+          - modified
+      - name: direction
+        in: query
+        description: Sort order
+        schema:
+          type: string
+          default: ASC
+          enum:
+          - ASC
+          - DESC
+      responses:
+        '200':
+          description: The attachments were retrieved successfully (empty result if none were found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestAttachmentStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestAttachmentStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Attachments
+      summary: Create an attachment
+      description: Create an attachment. You can specify name, mime type or attachment file.
+      operationId: createAttachment
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RestMultiPartRequestSchema'
+      responses:
+        '201':
+          description: The attachment was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestAttachment'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestAttachment'
+        '400':
+          description: The parameters "name" and "file" are required or the file name has an invalid extension. Ensure that "name" and "file" parameters are added to the request and the file extension is correct.
+      security:
+      - Authorization: []
+  /{clientId}/attachments/{attachmentId}/content:
+    get:
+      tags:
+      - Attachments
+      summary: Get the content of an uploaded attachment
+      operationId: getUploadAttachment
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: attachmentId
+        in: path
+        description: Attachment ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The uploaded content attachment was downloaded successfully.
+          content:
+            application/octet-stream:
+              schema:
+                type: object
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: object
+        '404':
+          description: The attachment could not be found. Ensure that the required parameters such as "attachmentId" are correct and the attachment exists.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Attachments
+      summary: Update the content of an uploaded attachment
+      operationId: uploadAttachment
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: attachmentId
+        in: path
+        description: Attachment ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RestMultiPartRequestSchema'
+      responses:
+        '200':
+          description: The attachment content was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestAttachment'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestAttachment'
+        '404':
+          description: The attachment could not be found. Ensure that the required parameters such as "attachmentId" are correct and the attachment exists.
+      security:
+      - Authorization: []
+  /{clientId}/attachments/{attachmentId}:
+    get:
+      tags:
+      - Attachments
+      summary: Get information about an attachment
+      description: Get detailed information about an attachment, such as type, mime type, size or creation date.
+      operationId: getAttachment
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: attachmentId
+        in: path
+        description: Attachment ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The attachment was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestAttachment'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestAttachment'
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Attachments
+      summary: Update attachment information
+      description: Update attachment information. You can specify name, file name or mime type.
+      operationId: updateAttachment
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: attachmentId
+        in: path
+        description: Attachment ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttachmentRequestData'
+      responses:
+        '200':
+          description: The attachment was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestAttachment'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestAttachment'
+        '404':
+          description: The attachment could not be found. Ensure that the required parameters such as "attachmentId" are correct and the attachment exists.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Attachments
+      summary: Delete an attachment
+      operationId: deleteAttachment
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: attachmentId
+        in: path
+        description: Attachment ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The attachment was deleted successfully.
+        '404':
+          description: The attachment could not be found. Ensure that the required parameters such as "attachmentId" are correct and the attachment exists.
+        '409':
+          description: The attachment is being used by at least one mailing and can not be deleted
+      security:
+      - Authorization: []
+  /{clientId}/attachments/personalized:
+    post:
+      tags:
+      - Attachments
+      summary: Create a personalized attachment
+      description: Create a personalized attachment. You can specify the attachment name and attachment file(s).
+      operationId: createAttachment_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RestMultiPartRequestSchema'
+      responses:
+        '200':
+          description: The attachment was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestPersonalizedAttachmentUpload'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestPersonalizedAttachmentUpload'
+        '400':
+          description: An erroneous request was sent.
+        '406':
+          description: The uploaded file is empty.
+        '500':
+          description: The request could not be processed successfully.
+      security:
+      - Authorization: []
+components:
+  schemas:
+    RestMultiPartRequestSchema:
+      required:
+      - file
+      type: object
+      properties:
+        file:
+          type: string
+          description: file to be uploaded
+          format: binary
+        name:
+          type: string
+          description: name of the attachment
+    RestPersonalizedAttachmentUpload:
+      type: object
+      properties:
+        uploadedFiles:
+          type: array
+          description: List of uploaded attachments
+          items:
+            $ref: '#/components/schemas/RestPersonalizedAttachment'
+        token:
+          type: string
+          description: Personalized attachment token for all files uploaded - can be used when sending transactional mailings
+    RestAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Attachment ID
+          format: int64
+        owner:
+          type: integer
+          description: Client ID
+          format: int64
+        name:
+          type: string
+          description: Attachment name
+        uploaded:
+          type: boolean
+          description: If true, the attachment was successfully uploaded
+        fileName:
+          type: string
+          description: File name
+        type:
+          type: string
+          description: File type of the attachment
+        mimeType:
+          type: string
+          description: Mime type of the attachment
+        size:
+          type: integer
+          description: Attachment size
+          format: int64
+        created:
+          type: string
+          description: Date and time of creation
+          format: date-time
+        modified:
+          type: string
+          description: Date and time of modification
+          format: date-time
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    RestCount:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+        count:
+          type: integer
+          description: Total number
+          format: int64
+    AttachmentRequestData:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Attachment name
+        fileName:
+          type: string
+          description: File name of the attachment
+        mimeType:
+          type: string
+          description: Mime type of the attachment
+    RestAttachmentStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestAttachment'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestPersonalizedAttachment:
+      type: object
+      properties:
+        fileName:
+          type: string
+          description: File name
+        fileSize:
+          type: integer
+          description: File size in bytes
+          format: int64
+        id:
+          type: integer
+          description: Attachment ID
+          format: int64
+        contentType:
+          type: string
+          description: File content type
+        expiresAt:
+          type: string
+          description: Expiry date
+          format: date-time
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+      description: List of uploaded attachments
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

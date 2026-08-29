@@ -1,0 +1,104 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Agent Send Odp Event API
+  description: Optimizely Agent is a stand-alone, open-source microservice that provides major benefits over using Optimizely SDKs in certain use cases. Its REST API offers consolidated and simplified endpoints for accessing all the functionality of Optimizely Feature Experimentation SDKs. Use this API the control experiments (such as a feature tests). For more info, see https://docs.developers.optimizely.com/experimentation/v4.0.0-full-stack/docs/optimizely-agent
+  termsOfService: https://www.optimizely.com/legal/terms/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.12.0
+security:
+- SdkKeyAuth: []
+- TokenAuth: []
+tags:
+- name: Send Odp Event
+paths:
+  /v1/send-odp-event:
+    post:
+      summary: Send event to Optimizely Data Platform (ODP).
+      description: Send ODP event to Optimizely Data Platform. Clients can send arbitrary events to the ODP server. For instance, they can bind an email to the FS userId via this API.
+      operationId: sendOdpEvent
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendOdpEventContext'
+        required: true
+      responses:
+        '200':
+          description: Valid response, event received
+          content:
+            application/json: {}
+        '400':
+          description: Missing required parameters
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized, invalid JWT
+          content:
+            application/json: {}
+        '403':
+          description: You do not have necessary permissions for the resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Forbidden'
+        '500':
+          description: Failed to send odp event
+          content:
+            application/json: {}
+      deprecated: false
+      tags:
+      - Send Odp Event
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
+          type: string
+    SendOdpEventContext:
+      title: SendOdpEventContext
+      required:
+      - action
+      - identifiers
+      type: object
+      properties:
+        action:
+          type: string
+        type:
+          type: string
+        identifiers:
+          type: object
+          additionalProperties:
+            type: string
+        data:
+          type: object
+          additionalProperties:
+            oneOf:
+            - type: string
+            - type: integer
+              format: int32
+            - type: number
+            - type: boolean
+  responses:
+    Forbidden:
+      description: You do not have necessary permissions for the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    SdkKeyAuth:
+      type: apiKey
+      name: X-Optimizely-SDK-Key
+      in: header
+    TokenAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

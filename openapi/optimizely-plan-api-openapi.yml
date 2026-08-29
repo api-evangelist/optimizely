@@ -1,0 +1,161 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Plan API
+  version: '2.0'
+  description: Plan & Usage information for current account
+servers:
+- url: https://api.optimizely.com/v2
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- description: Plan & Usage information for current account
+  name: Plan
+paths:
+  /plan:
+    get:
+      description: Get Plan & Usage information for all products, only accessible for Administrators on the account
+      operationId: get_plan
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plan'
+          description: Return Plan & Usage information
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access Plan & Usage information
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Get Plan & Usage information for all products
+      tags:
+      - Plan
+      x-release-state: beta
+components:
+  schemas:
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    Plan:
+      properties:
+        account_id:
+          description: The account ID of the account that this Plan & Usage information is associated with
+          example: 1234567
+          format: int64
+          type: integer
+        plan_name:
+          description: The name of the plan for the current account
+          example: Enterprise - Premium Optimizely X Web
+          type: string
+        product_usages:
+          description: Array of products under this account
+          items:
+            $ref: '#/components/schemas/ProductUsage'
+          type: array
+        status:
+          description: The status of the plan for the current account
+          enum:
+          - trial
+          - active
+          - inactive
+          type: string
+        unit_of_measurement:
+          description: The unit by which we measure the `usage` of this account
+          enum:
+          - Monthly Unique Visitors
+          - Impressions
+          externalDocs:
+            description: Unit of Measurement
+            url: https://help.optimizely.com/Account_Settings/Billing_and_invoices/Monthly_unique_visitors_(MUVs)
+          type: string
+      type: object
+    ProductUsage:
+      properties:
+        allocation_term_in_months:
+          description: The current allocation term length in months. The allocation term is the time between the `start_time` and the `end_time`. For example the `usage` for an account with an `allocation_term_in_months` of 6 has started accumulating on the `start_time` and will reset to 0 at `end_time` (6 months later)
+          example: 6
+          format: int64
+          type: integer
+        end_time:
+          description: The end date of the current allocation term period. For monthly paying accounts, the current allocation term period means the current billing month
+          format: date-time
+          type: string
+        last_update_time:
+          description: The last time that the `unit_of_measurement` count was updated
+          format: date-time
+          type: string
+        overage_cents_per_visitor:
+          description: (optional) The cost in cents for every visitor when the number of `unit_of_measurement` has exceeded the `usage_allowance`. This value is only set for accounts with a limited `usage_allowance`
+          example: 0.001
+          format: float
+          type: number
+        product_name:
+          description: The product name
+          enum:
+          - Optimizely X AB Testing
+          - Classic AB Testing
+          - Personalization
+          - Mobile
+          - Full Stack
+          - Recommendations
+          - Over The Top
+          - Impressions
+          type: string
+        projects:
+          additionalProperties:
+            type: integer
+          description: Key-value map of `usage` per project under this account and this product. Keys are project IDs, values are `usage` numbers. Only available for the Impressions metrics, otherwise omitted.
+          type: object
+        start_time:
+          description: The start date of the current allocation term period. For monthly paying accounts, the current allocation term period means the current billing month
+          format: date-time
+          type: string
+        usage:
+          description: The total `usage` in the `unit_of_measurement` within the current allocation term
+          example: 12345
+          format: int64
+          type: integer
+        usage_allowance:
+          description: (optional) The total `usage` allowed in the `unit_of_measurement` for the current allocation term. This value is only set for accounts with a limited `usage_allowance`
+          example: 123456
+          format: int64
+          type: integer
+      type: object
+  securitySchemes:
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http

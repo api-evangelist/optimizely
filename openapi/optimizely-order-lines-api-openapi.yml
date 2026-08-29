@@ -1,0 +1,502 @@
+openapi: 3.2.0
+info:
+  version: admin-v1
+  title: Admin API V1 Order Lines API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Order Lines
+paths:
+  /api/v1/admin/OrderLines:
+    get:
+      tags:
+      - Order Lines
+      summary: Returns the EntitySet OrderLines
+      operationId: OrderLines_Get
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    post:
+      tags:
+      - Order Lines
+      summary: Post a new entity to EntitySet OrderLines
+      operationId: OrderLines_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.OrderLine'
+        description: The entity to post
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/OrderLines({id}):
+    get:
+      tags:
+      - Order Lines
+      summary: Returns the entity with the key from OrderLines
+      operationId: OrderLines_GetById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    put:
+      tags:
+      - Order Lines
+      summary: Replace entity in EntitySet OrderLines
+      operationId: OrderLines_PutById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.OrderLine'
+        description: The entity to put
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    delete:
+      tags:
+      - Order Lines
+      summary: Delete entity in EntitySet OrderLines
+      operationId: OrderLines_DeleteById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: If-Match
+        in: header
+        description: If-Match header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Order Lines
+      summary: Update entity in EntitySet OrderLines
+      operationId: OrderLines_PatchById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.OrderLine'
+        description: The entity to patch
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/OrderLines/Default.Default():
+    get:
+      tags:
+      - Order Lines
+      summary: Call operation  Default
+      operationId: OrderLines_Default
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/orderlines/delete:
+    delete:
+      tags:
+      - Order Lines
+      operationId: OrderLines_DeleteRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/orderlines({key})/customerorderpromotions({customerorderpromotionKey}):
+    get:
+      tags:
+      - Order Lines
+      operationId: OrderLines_GetCustomerOrderPromotionByKeyAndCustomerorderpromotionkey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: customerorderpromotionKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/orderlines({key})/customproperties({custompropertyKey}):
+    get:
+      tags:
+      - Order Lines
+      operationId: OrderLines_GetCustomPropertyByKeyAndCustompropertykey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: custompropertyKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Data.Entities.OrderLine:
+      required:
+      - status
+      - description
+      - notes
+      - unitOfMeasure
+      - taxCode1
+      - taxCode2
+      - shipSite
+      - customerPOLine
+      - costCode
+      - smartPart
+      - configurationViewModel
+      - configDataSet
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        customerOrderId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        line:
+          format: int32
+          type: integer
+        release:
+          format: int32
+          type: integer
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        websiteId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        status:
+          maxLength: 50
+          minLength: 0
+          type: string
+        description:
+          maxLength: 2048
+          minLength: 0
+          type: string
+        notes:
+          type: string
+        qtyOrdered:
+          format: decimal
+          type: number
+        unitRegularPrice:
+          format: decimal
+          type: number
+        unitNetPrice:
+          format: decimal
+          type: number
+        unitOfMeasure:
+          maxLength: 50
+          minLength: 0
+          type: string
+        qtyShipped:
+          format: decimal
+          type: number
+        taxCode1:
+          maxLength: 50
+          minLength: 0
+          type: string
+        taxCode2:
+          maxLength: 50
+          minLength: 0
+          type: string
+        dueDate:
+          format: date-time
+          type: string
+        promiseDate:
+          format: date-time
+          type: string
+        shipSite:
+          maxLength: 50
+          minLength: 0
+          type: string
+        shipDate:
+          format: date-time
+          type: string
+        isPromotionItem:
+          type: boolean
+        promotionResultId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        customerPOLine:
+          maxLength: 50
+          minLength: 0
+          type: string
+        costCode:
+          maxLength: 100
+          minLength: 0
+          type: string
+        orderLineOtherCharges:
+          format: decimal
+          type: number
+        taxAmount:
+          format: decimal
+          type: number
+        totalRegularPrice:
+          format: decimal
+          type: number
+        totalNetPrice:
+          format: decimal
+          type: number
+        warehouseId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        unitListPrice:
+          format: decimal
+          type: number
+        unitCost:
+          format: decimal
+          type: number
+        smartPart:
+          maxLength: 256
+          minLength: 0
+          type: string
+        configurationViewModel:
+          type: string
+        configDataSet:
+          type: string
+        netPriceWithVat:
+          format: decimal
+          type: number
+        unitPriceWithVat:
+          format: decimal
+          type: number
+        vmiBinId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

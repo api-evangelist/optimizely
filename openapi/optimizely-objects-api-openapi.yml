@@ -1,21 +1,87 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Optimizely Campaign REST Assets Objects API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  title: Optimizely Objects API
   version: '1.0'
-  contact:
-    name: Optimizely Support
-    url: https://support.optimizely.com
-  termsOfService: https://www.optimizely.com/legal/terms/
+  description: 'Operations tagged Objects across 2 of this provider''s published API definitions: optimizely-data-platform-objects-openapi.json, optimizely-data-platform-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://api.campaign.episerver.net/rest
-  description: Optimizely Campaign Production Server
-security:
-- basicAuth: []
+- url: https://api.us1.odp.optimizely.com/v3
+  description: United States
+- url: https://api.eu1.odp.optimizely.com/v3
+  description: Europe
+- url: https://api.au1.odp.optimizely.com/v3
+  description: Asia-Pacific
+- url: https://api.zaius.com/v3
+  description: Optimizely Data Platform API v3 Server
 tags:
 - name: Objects
-  description: Create, update, and manage objects such as products, orders, and custom entities in ODP.
 paths:
+  /objects/{object_name}:
+    post:
+      tags:
+      - Objects
+      summary: Update Object
+      description: Update an object (for example, Concert Tickets or Reviews). Use the Objects endpoint to update the top-level order summary fields without generating events.
+      operationId: update-object
+      parameters:
+      - in: path
+        name: object_name
+        required: true
+        schema:
+          type: string
+        description: name of the object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Object'
+            examples:
+              Example Payload:
+                description: Example Payload
+                value:
+                - primary_key: 123
+                  field_example: true
+                - primary_key: 456
+                  field_example: false
+        required: true
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericUpdateResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/40xResponse'
+              example: '{"title":"Bad Request","status":400,"timestamp":"2018-09-10T21:07:10-05:00","detail":{"invalids":[{"field":"delimiter","reason":"Unrecognized delimiter, valid options are comma, tab or pipe"}]}}'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/403Response'
+              example: '{  "message": "Forbidden"}'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/40xResponse'
+              example: '{"title":"Bad Request","status":404,"timestamp":"2018-09-10T21:07:10-05:00","detail":{"message":"Not found description"}}'
+      security:
+      - x-api-key: []
+    servers:
+    - url: https://api.us1.odp.optimizely.com/v3
+      description: United States
+    - url: https://api.eu1.odp.optimizely.com/v3
+      description: Europe
+    - url: https://api.au1.odp.optimizely.com/v3
+      description: Asia-Pacific
   /objects/{object_type}:
     post:
       operationId: upsertObjects
@@ -40,6 +106,11 @@ paths:
           description: Invalid object data
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - publicApiKey: []
+    servers:
+    - url: https://api.zaius.com/v3
+      description: Optimizely Data Platform API v3 Server
   /objects/{object_type}/{object_id}:
     get:
       operationId: getObject
@@ -61,23 +132,55 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Object not found
+      security:
+      - publicApiKey: []
+    servers:
+    - url: https://api.zaius.com/v3
+      description: Optimizely Data Platform API v3 Server
 components:
-  parameters:
-    objectType:
-      name: object_type
-      in: path
-      required: true
-      description: The type of object (e.g., products, orders)
-      schema:
-        type: string
-    objectId:
-      name: object_id
-      in: path
-      required: true
-      description: The unique identifier for the object
-      schema:
-        type: string
   schemas:
+    403Response:
+      type: object
+      properties:
+        message:
+          type: string
+    40xResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        timestamp:
+          type: string
+        detail:
+          type: object
+          properties:
+            invalids:
+              type: array
+              items:
+                type: object
+                properties:
+                  event:
+                    type: integer
+                  message:
+                    type: string
+    Object:
+      type: object
+      additionalProperties:
+        type: string
+        description: any other field within the object that you wish to update associated with the primary key
+    GenericUpdateResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        timestamp:
+          type: string
     OdpObject:
       type: object
       description: An object in ODP (product, order, etc.)
@@ -111,11 +214,39 @@ components:
           type: object
           description: Object field values
           additionalProperties: true
+  parameters:
+    objectId:
+      name: object_id
+      in: path
+      required: true
+      description: The unique identifier for the object
+      schema:
+        type: string
+    objectType:
+      name: object_type
+      in: path
+      required: true
+      description: The type of object (e.g., products, orders)
+      schema:
+        type: string
   securitySchemes:
-    basicAuth:
-      type: http
-      scheme: basic
-      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+    x-api-key:
+      type: apiKey
+      name: x-api-key
+      in: header
+    publicApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Public API Key (Tracker ID) for sending data to ODP. May be exposed publicly on the internet.
+    privateApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Private API Key for querying data from ODP. Must be kept confidential and used only in backend services.
 externalDocs:
-  description: Optimizely Campaign REST API Documentation
-  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+  description: Optimizely Data Platform API Documentation
+  url: https://docs.developers.optimizely.com/optimizely-data-platform/reference/introduction
+x-refined-from:
+- optimizely-data-platform-objects-openapi.json
+- optimizely-data-platform-openapi.yml

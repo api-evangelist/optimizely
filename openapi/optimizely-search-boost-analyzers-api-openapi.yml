@@ -1,0 +1,82 @@
+openapi: 3.2.0
+info:
+  version: admin-v1
+  title: Admin API V1 Search Boost Analyzers API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Search Boost Analyzers
+paths:
+  /api/v1/admin/SearchBoostAnalyzers:
+    get:
+      tags:
+      - Search Boost Analyzers
+      summary: Returns the EntitySet SearchBoostAnalyzers
+      operationId: SearchBoostAnalyzers_Get
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+components:
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

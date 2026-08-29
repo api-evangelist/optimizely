@@ -1,0 +1,178 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Agent Decide API
+  description: Optimizely Agent is a stand-alone, open-source microservice that provides major benefits over using Optimizely SDKs in certain use cases. Its REST API offers consolidated and simplified endpoints for accessing all the functionality of Optimizely Feature Experimentation SDKs. Use this API the control experiments (such as a feature tests). For more info, see https://docs.developers.optimizely.com/experimentation/v4.0.0-full-stack/docs/optimizely-agent
+  termsOfService: https://www.optimizely.com/legal/terms/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.12.0
+security:
+- SdkKeyAuth: []
+- TokenAuth: []
+tags:
+- name: Decide
+paths:
+  /v1/decide:
+    post:
+      summary: Decide makes feature decisions for the selected query parameters.
+      description: Returns decision results for flag keys for a user. The result for a single key is returned as an OptimizelyDecision object whereas the result for multiple keys is returned as an array of OptimizelyDecision objects. If no flag key is provided, decision is made for all flag keys. OptimizelyDecision object contains all data required to deliver the flag rule.
+      operationId: decide
+      parameters:
+      - name: keys
+        in: query
+        description: Flag keys for decision
+        style: form
+        explode: true
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecideContext'
+        required: true
+      responses:
+        '200':
+          description: Valid response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/OptimizelyDecision'
+                - $ref: '#/components/schemas/OptimizelyDecision'
+                contentMediaType: application/json
+        '400':
+          description: Missing required parameters
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized, invalid JWT
+          content:
+            application/json: {}
+        '403':
+          description: You do not have necessary permissions for the resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Failed to fetch qualified segments
+          content:
+            application/json: {}
+      deprecated: false
+      tags:
+      - Decide
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
+          type: string
+    DecideOption:
+      title: DecideOption
+      enum:
+      - DISABLE_DECISION_EVENT
+      - ENABLED_FLAGS_ONLY
+      - IGNORE_USER_PROFILE_SERVICE
+      - EXCLUDE_VARIABLES
+      - INCLUDE_REASONS
+      type: string
+    OptimizelyDecision:
+      title: OptimizelyDecision
+      required:
+      - ruleKey
+      - flagKey
+      - userContext
+      type: object
+      properties:
+        variables:
+          type: object
+        variationKey:
+          type: string
+        enabled:
+          type: boolean
+        ruleKey:
+          type: string
+        flagKey:
+          type: string
+        userContext:
+          $ref: '#/components/schemas/UserContext'
+        reasons:
+          type: array
+          items:
+            type: string
+          description: ''
+    UserContext:
+      title: UserContext
+      required:
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+        attributes:
+          type: object
+    ForcedDecision:
+      title: ForcedDecision
+      required:
+      - flagKey
+      - variationKey
+      type: object
+      properties:
+        flagKey:
+          type: string
+        ruleKey:
+          type: string
+        variationKey:
+          type: string
+    DecideContext:
+      title: DecideContext
+      required:
+      - userId
+      type: object
+      properties:
+        decideOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DecideOption'
+          description: ''
+        userId:
+          type: string
+        userAttributes:
+          type: object
+        forcedDecisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ForcedDecision'
+          description: ''
+        fetchSegments:
+          type: boolean
+        fetchSegmentsOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/FetchSegmentsOption'
+          description: ''
+    FetchSegmentsOption:
+      title: FetchSegmentsOption
+      enum:
+      - IGNORE_CACHE
+      - RESET_CACHE
+      type: string
+  securitySchemes:
+    SdkKeyAuth:
+      type: apiKey
+      name: X-Optimizely-SDK-Key
+      in: header
+    TokenAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

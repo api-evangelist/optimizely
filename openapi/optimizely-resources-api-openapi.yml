@@ -1,0 +1,229 @@
+openapi: 3.2.0
+info:
+  title: Optimizely 📝 Resources API
+  contact:
+    name: Documentation
+    url: https://cg.optimizely.com/
+  license:
+    name: ' '
+  version: '1.0'
+  description: 'Operations tagged 📝 Resources across 2 of this provider''s published API definitions: optimizely-platform-optimizely-optimizely-graph-api-openapi.json, optimizely-platform-optimizely-swagger-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://cg.optimizely.com
+- url: https://prod.cg.optimizely.com
+tags:
+- name: 📝 Resources
+paths:
+  /resources/stopwords:
+    put:
+      operationId: upsert-StopwordHandler
+      responses:
+        '204':
+          description: No content
+      description: Stop words are the words in a stop list (or stop list or negative dictionary) which are filtered out (stopped) before or after processing of natural language data (text) because they are insignificant
+      summary: Store stop words
+      tags:
+      - 📝 Resources
+      security:
+      - epi-hmac: []
+      - Basic: []
+      - Bearer: []
+      parameters:
+      - in: query
+        name: language_routing
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: source_routing
+        required: false
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/StopwordsBody'
+    delete:
+      operationId: delete-StopwordHandler
+      responses:
+        '204':
+          description: No content
+      summary: Delete stop words
+      tags:
+      - 📝 Resources
+      security:
+      - epi-hmac: []
+      - Basic: []
+      - Bearer: []
+      parameters:
+      - in: query
+        name: language_routing
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: source_routing
+        required: false
+        schema:
+          type: string
+    servers:
+    - url: https://cg.optimizely.com
+  /resources/synonyms:
+    get:
+      operationId: list-SynonymHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+      description: Get synonyms for a given slot
+      summary: List synonyms
+      tags:
+      - 📝 Resources
+      security:
+      - epi-hmac: []
+      - Basic: []
+      - Bearer: []
+      parameters:
+      - in: query
+        name: language_routing
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: source_routing
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: synonym_slot
+        required: false
+        schema:
+          default: one
+          type: string
+          enum:
+          - one
+          - two
+    put:
+      operationId: upsert-SynonymHandler
+      responses:
+        '204':
+          description: No content
+      description: 'When you write a query, you can use synonyms to expand the keywords to get results that users otherwise may not have found.
+
+        This reduces the problem of getting too few or no results, leading to fewer chances of conversions or even search abandonment.
+
+        For example, if you search for "H2O", you mat want to find results that contain "water".
+
+        This happens when you store synonyms in Optimizely Graph and enable them per field in your query. Otherwise, many relevant results may not be retrieved.'
+      summary: Store synonyms
+      tags:
+      - 📝 Resources
+      security:
+      - epi-hmac: []
+      - Basic: []
+      - Bearer: []
+      parameters:
+      - in: query
+        name: language_routing
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: source_routing
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: synonym_slot
+        required: false
+        schema:
+          default: one
+          type: string
+          enum:
+          - one
+          - two
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/SynonymsBody'
+    delete:
+      operationId: delete-SynonymHandler
+      responses:
+        '204':
+          description: No content
+      summary: Delete synonyms
+      tags:
+      - 📝 Resources
+      security:
+      - epi-hmac: []
+      - Basic: []
+      - Bearer: []
+      parameters:
+      - in: query
+        name: language_routing
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: source_routing
+        required: false
+        schema:
+          type: string
+    servers:
+    - url: https://cg.optimizely.com
+components:
+  schemas:
+    StopwordsBody:
+      type: string
+      example: 'the
+
+        Schwarzenegger
+
+        amy
+
+        Bob'
+    Response:
+      description: 'This Fetch API interface represents the response to a request.
+
+
+        [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response)'
+      properties: {}
+      type: object
+      additionalProperties: false
+    SynonymsBody:
+      type: string
+      example: 'H20 => water
+
+        Siteseeker, Welcome, Episerver => Optimizely
+
+        William Henry Gates III => Bill Gates'
+  securitySchemes:
+    epi-single:
+      type: apiKey
+      name: auth
+      in: query
+      description: Single key authentication
+    epi-hmac:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: HMAC authentication (`epi-hmac xxx`)
+    Basic:
+      type: http
+      scheme: basic
+      description: HMAC credentials
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token
+x-refined-from:
+- optimizely-platform-optimizely-optimizely-graph-api-openapi.json
+- optimizely-platform-optimizely-swagger-openapi.json

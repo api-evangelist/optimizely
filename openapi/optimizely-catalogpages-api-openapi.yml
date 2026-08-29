@@ -1,0 +1,184 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Catalogpages API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Catalogpages
+paths:
+  /api/v1/catalogpages:
+    get:
+      tags:
+      - Catalogpages
+      operationId: CategoriesV1_GetAsync
+      parameters:
+      - name: path
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.CatalogPageModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.CatalogPageModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.CatalogPageModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.CatalogPageModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.CatalogPageModel'
+components:
+  schemas:
+    Insite.Catalog.WebApi.V1.ApiModels.CategoryModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        parentId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        shortDescription:
+          type: string
+        urlSegment:
+          type: string
+        smallImagePath:
+          type: string
+        largeImagePath:
+          type: string
+        imageAltText:
+          type: string
+        activateOn:
+          format: date-time
+          type: string
+        deactivateOn:
+          format: date-time
+          type: string
+        metaKeywords:
+          type: string
+        metaDescription:
+          type: string
+        htmlContent:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        isFeatured:
+          type: boolean
+        isDynamic:
+          type: boolean
+        subCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.CategoryModel'
+        path:
+          type: string
+        mobileBannerImageUrl:
+          type: string
+        mobilePrimaryText:
+          type: string
+        mobileSecondaryText:
+          type: string
+        mobileTextJustification:
+          type: string
+        mobileTextColor:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.BreadCrumbModel:
+      type: object
+      properties:
+        text:
+          type: string
+        url:
+          type: string
+        categoryId:
+          type: string
+    Insite.Catalog.WebApi.V1.ApiModels.CatalogPageModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        category:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.CategoryModel'
+        brandId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        productLineId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        productName:
+          type: string
+        title:
+          type: string
+        metaDescription:
+          type: string
+        metaKeywords:
+          type: string
+        canonicalPath:
+          type: string
+        displayPath:
+          type: string
+        alternateLanguageUrls:
+          type: object
+          additionalProperties:
+            type: string
+        isReplacementProduct:
+          type: boolean
+        breadCrumbs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.BreadCrumbModel'
+        obsoletePath:
+          type: boolean
+        needRedirect:
+          type: boolean
+        redirectUrl:
+          type: string
+        primaryImagePath:
+          type: string
+        openGraphTitle:
+          type: string
+        openGraphImage:
+          type: string
+        openGraphUrl:
+          type: string
+        structuredPageData:
+          type: string
+        enableStructuredPageData:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

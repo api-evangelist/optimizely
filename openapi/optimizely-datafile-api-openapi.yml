@@ -1,0 +1,62 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Agent Datafile API
+  description: Optimizely Agent is a stand-alone, open-source microservice that provides major benefits over using Optimizely SDKs in certain use cases. Its REST API offers consolidated and simplified endpoints for accessing all the functionality of Optimizely Feature Experimentation SDKs. Use this API the control experiments (such as a feature tests). For more info, see https://docs.developers.optimizely.com/experimentation/v4.0.0-full-stack/docs/optimizely-agent
+  termsOfService: https://www.optimizely.com/legal/terms/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.12.0
+security:
+- SdkKeyAuth: []
+- TokenAuth: []
+tags:
+- name: Datafile
+paths:
+  /v1/datafile:
+    get:
+      summary: Return the datafile for the given environment. If you need strict consistency, you can pass the datafile to other Optimizely instances. so that all initialize from exactly the same datafile version (rather than each fetching the datafile separately from the Optimizely CDN).
+      description: Returns the json datafile for the given environment.
+      operationId: getDatafile
+      responses:
+        '200':
+          description: Valid response
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Optimizely Datafile
+                contentMediaType: application/json
+        '401':
+          description: Unauthorized, invalid JWT
+          content:
+            application/json: {}
+        '403':
+          description: You do not have necessary permissions for the resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: false
+      tags:
+      - Datafile
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
+          type: string
+  securitySchemes:
+    SdkKeyAuth:
+      type: apiKey
+      name: X-Optimizely-SDK-Key
+      in: header
+    TokenAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

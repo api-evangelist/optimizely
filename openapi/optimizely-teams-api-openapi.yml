@@ -1,0 +1,290 @@
+openapi: 3.2.0
+info:
+  version: V3
+  title: Optimizely CMP Open API Documentation Teams API
+servers:
+- url: https://api.cmp.optimizely.com/v3
+  description: v3 version of Optimizely CMP Open API
+security:
+- OAuth2:
+  - openid
+  - profile
+  - offline_access
+tags:
+- name: Teams
+paths:
+  /teams:
+    get:
+      operationId: listTeams
+      tags:
+      - Teams
+      summary: GET /teams
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a list of teams.
+      parameters:
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of fetched teams
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of teams
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Team'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/teams?offset=10&page_size=10
+                required:
+                - data
+                - pagination
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /teams/{id}:
+    get:
+      operationId: getTeam
+      tags:
+      - Teams
+      summary: GET /teams/{id}
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a team. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the team
+        example: 5d7f910551b00a722e0418830cee6633
+      responses:
+        '200':
+          description: Fetched the team
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamWithUsers'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  schemas:
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
+    TeamWithUsers:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the team
+          example: 5d7f910551b00a722e0418830cee6633
+        name:
+          type: string
+          description: Name of the team
+          example: Sample Team
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the team
+              example: https://api.cmp.optimizely.com/v3/teams/5d7f910551b00a722e0418830cee6633
+          required:
+          - self
+        users:
+          type: array
+          description: List of users in the team
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the user
+                example: 5d7f910551b00a722e0418830cee6633
+              name:
+                type: string
+                description: Name of the user
+                example: John Doe
+              email:
+                type: string
+                description: Email address of the user
+                example: john.doe@example.com
+            required:
+            - id
+            - name
+            - email
+      required:
+      - id
+      - name
+      - links
+      - users
+    Team:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the team
+          example: 5d7f910551b00a722e0418830cee6633
+        name:
+          type: string
+          description: Name of the team
+          example: Sample Team
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the team
+              example: https://api.cmp.optimizely.com/v3/teams/5d7f910551b00a722e0418830cee6633
+          required:
+          - self
+      required:
+      - id
+      - name
+      - links
+    Pagination:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
+  responses:
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+  parameters:
+    offset:
+      name: offset
+      in: query
+      description: Starting index of results (zero indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 5
+    page_size:
+      name: page_size
+      in: query
+      description: Number of results to return per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+      example: 15
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/auth
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes:
+            openid: Grants the ability to receive a unique identifier for the user.
+            profile: Grants access to user profile information.
+            offline_access: Grants the ability to refresh access_token using the refresh token even when user is not present (not logged in).
+        clientCredentials:
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes: {}
+x-tagGroups:
+- name: API
+  tags:
+  - Uploader
+  - Library
+  - Labels
+  - Brand Compliance
+  - Tasks
+  - Task Step
+  - Campaigns
+  - Publishing
+  - Templates
+  - Users
+  - Work Requests
+  - Structured Contents
+  - Assets
+  - Milestones
+  - Teams
+  - Settings
+  - Workflows
+  - Fields
+  - Events

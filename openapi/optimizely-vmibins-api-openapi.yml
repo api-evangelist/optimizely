@@ -1,0 +1,86 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Vmi Bins API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: VmiBins
+paths:
+  /api/v1/vmiBins/count:
+    get:
+      tags:
+      - VmiBins
+      operationId: VmiBinsV1_GetCountAsync
+      parameters:
+      - name: parameter.isBelowMinimum
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: parameter.numberOfTimesMinQtyReached
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.numberOfPreviousOrders
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.numberOfVisits
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.vmiLocationId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinCountModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinCountModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinCountModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinCountModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinCountModel'
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Catalog.WebApi.V1.ApiModels.VmiBinCountModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        count:
+          format: int32
+          type: integer
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

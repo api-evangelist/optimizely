@@ -1,17 +1,15 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Optimizely Campaign REST Assets API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  title: Optimizely Assets API
   version: '1.0'
-  contact:
-    name: Optimizely Support
-    url: https://support.optimizely.com
-  termsOfService: https://www.optimizely.com/legal/terms/
+  description: 'Operations tagged Assets across 4 of this provider''s published API definitions: optimizely-campaign-openapi.yml, optimizely-campaign-optimizely-campaign-rest-api-openapi.json, optimizely-cmp-openapi.yml, optimizely-content-marketing-platform-optimizely-cmp-open-api-documentation-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.campaign.episerver.net/rest
   description: Optimizely Campaign Production Server
-security:
-- basicAuth: []
+- url: https://api.cmp.optimizely.com/v0
+  description: Optimizely CMP API Server
+- url: https://api.cmp.optimizely.com/v3
+  description: v3 version of Optimizely CMP Open API
 tags:
 - name: Assets
   description: Manage campaign assets such as images and media files.
@@ -36,6 +34,8 @@ paths:
                   $ref: '#/components/schemas/Asset'
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - basicAuth: []
     post:
       operationId: uploadAsset
       summary: Upload an asset
@@ -69,6 +69,225 @@ paths:
           description: Invalid request body
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - basicAuth: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+      description: Optimizely Campaign Production Server
+  /{clientId}/assets/images/count:
+    get:
+      tags:
+      - Assets
+      summary: Get the total number of images
+      operationId: count
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The total number was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCount'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestCount'
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/assets/images:
+    get:
+      tags:
+      - Assets
+      summary: Get information about all images
+      description: Get detailed information about all images, such as ID, name, URL, height and width in pixels. You can limit the number of retrieved images and set the starting point of the result list.
+      operationId: getAllImages
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        description: 'Starting point of the result list <p><i>Default value</i> : 0</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved images<p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: The images were retrieved successfully (empty result if none were found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestImageStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestImageStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Assets
+      summary: Upload an image
+      description: Upload an image either by specifying a file or URL.
+      operationId: createImage
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RestMultiPartRequestSchema'
+      responses:
+        '201':
+          description: The image was uploaded successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestImage'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestImage'
+        '400':
+          description: The parameters "name" or "url" are both provided or not provided, or the file name is missing. Alternatively, the image content type is not one of [image/jpeg, image/png, image/gif]
+        '500':
+          description: Error occurred while uploading the image.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/assets/images/{imageId}:
+    get:
+      tags:
+      - Assets
+      summary: Get information about an image
+      description: Get detailed information about an image, such as name, URL, height and width in pixels.
+      operationId: getImage
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: imageId
+        in: path
+        description: Image ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The image was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestImage'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestImage'
+        '404':
+          description: The image could not be found. Ensure that the required parameters such as "imageId" are correct and the image exists.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Assets
+      summary: Update the image name
+      operationId: updateImage
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: imageId
+        in: path
+        description: Image ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              required:
+              - name
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: New image name
+      responses:
+        '200':
+          description: New name of image was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestImage'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestImage'
+        '400':
+          description: The parameter "name" is missing.
+        '404':
+          description: The image could not be found. Ensure that the required parameters such as "imageId" are correct and the image exists.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Assets
+      summary: Delete an image
+      operationId: deleteImage
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: imageId
+        in: path
+        description: Image ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The image was deleted successfully.
+        '404':
+          description: The image could not be found. Ensure that the required parameters such as "imageId" are correct and the image exists.
+        '500':
+          description: Error occurred while deleting uploaded images.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
   /assets:
     get:
       operationId: listAssets
@@ -96,6 +315,8 @@ paths:
                     $ref: '#/components/schemas/Pagination'
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - oauth2: []
     post:
       operationId: createAsset
       summary: Create an asset
@@ -130,6 +351,11 @@ paths:
           description: Invalid request body
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - oauth2: []
+    servers:
+    - url: https://api.cmp.optimizely.com/v0
+      description: Optimizely CMP API Server
   /assets/{assetId}:
     get:
       operationId: getAsset
@@ -150,6 +376,8 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Asset not found
+      security:
+      - oauth2: []
     put:
       operationId: updateAsset
       summary: Update an asset
@@ -177,6 +405,8 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Asset not found
+      security:
+      - oauth2: []
     delete:
       operationId: deleteAsset
       summary: Delete an asset
@@ -192,23 +422,204 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Asset not found
+      security:
+      - oauth2: []
+    servers:
+    - url: https://api.cmp.optimizely.com/v0
+      description: Optimizely CMP API Server
+  /asset-urls/{asset_id}:
+    get:
+      operationId: getAssetUrl
+      tags:
+      - Assets
+      summary: GET /asset-urls/{asset_id}
+      description: Find URL of an asset by ID
+      parameters:
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+      responses:
+        '302':
+          description: Redirect to the discovered asset URL
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the discovered asset
+              example: https://api.cmp.optimizely.com/v3/raw-files/5fe4925ef8a9378056bf4e37
+            X-Resource-Location:
+              schema:
+                type: string
+                enum:
+                - library
+                - task
+              description: Location of the asset
+              example: library
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    servers:
+    - url: https://api.cmp.optimizely.com/v3
+      description: v3 version of Optimizely CMP Open API
 components:
   schemas:
-    AssetInput:
+    Asset:
       type: object
-      description: Input for updating an asset
+      description: A campaign asset such as an image or media file
       properties:
-        title:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the asset
+        name:
           type: string
-          description: Title of the asset
-        description:
+          description: Name of the asset
+        url:
           type: string
-          description: Description of the asset
-        labels:
+          format: uri
+          description: URL to access the asset
+        content_type:
+          type: string
+          description: MIME type of the asset
+        file_size:
+          type: integer
+          description: Size of the asset file in bytes
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the asset was created
+    RestMultiPartRequestSchema:
+      required:
+      - file
+      type: object
+      properties:
+        file:
+          type: string
+          description: file to be uploaded
+          format: binary
+        name:
+          type: string
+          description: name of the attachment
+    RestCount:
+      type: object
+      properties:
+        links:
           type: array
-          description: Labels to associate with the asset
           items:
-            type: string
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+        count:
+          type: integer
+          description: Total number
+          format: int64
+    RestImage:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Image ID
+          format: int64
+        owner:
+          type: string
+          description: Client ID
+        name:
+          type: string
+          description: Image name
+        url:
+          type: string
+          description: Image url
+        height:
+          type: integer
+          description: Image height
+          format: int32
+        width:
+          type: integer
+          description: Image width
+          format: int32
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestImageStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestImage'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     Asset_2:
       type: object
       description: A digital asset in the CMP library
@@ -272,32 +683,45 @@ components:
         offset:
           type: integer
           description: Current offset
-    Asset:
+    AssetInput:
       type: object
-      description: A campaign asset such as an image or media file
+      description: Input for updating an asset
       properties:
-        id:
-          type: integer
-          format: int64
-          description: Unique identifier for the asset
-        name:
+        title:
           type: string
-          description: Name of the asset
-        url:
+          description: Title of the asset
+        description:
           type: string
-          format: uri
-          description: URL to access the asset
-        content_type:
+          description: Description of the asset
+        labels:
+          type: array
+          description: Labels to associate with the asset
+          items:
+            type: string
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
           type: string
-          description: MIME type of the asset
-        file_size:
-          type: integer
-          description: Size of the asset file in bytes
-        created:
-          type: string
-          format: date-time
-          description: Timestamp when the asset was created
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
   parameters:
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
     offset:
       name: offset
       in: query
@@ -307,20 +731,6 @@ components:
         type: integer
         default: 0
         minimum: 0
-    assetId:
-      name: assetId
-      in: path
-      required: true
-      description: The unique identifier for the asset
-      schema:
-        type: string
-    clientId:
-      name: clientId
-      in: path
-      required: true
-      description: The unique identifier for the Optimizely Campaign client
-      schema:
-        type: string
     limit:
       name: limit
       in: query
@@ -331,11 +741,77 @@ components:
         default: 25
         minimum: 1
         maximum: 100
+    assetId:
+      name: assetId
+      in: path
+      required: true
+      description: The unique identifier for the asset
+      schema:
+        type: string
+  responses:
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
   securitySchemes:
     basicAuth:
       type: http
       scheme: basic
       description: HTTP Basic authentication using the Optimizely Campaign API credentials.
-externalDocs:
-  description: Optimizely Campaign REST API Documentation
-  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 authentication for the CMP API.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.cmp.optimizely.com/oauth/token
+          scopes: {}
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/auth
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes:
+            openid: Grants the ability to receive a unique identifier for the user.
+            profile: Grants access to user profile information.
+            offline_access: Grants the ability to refresh access_token using the refresh token even when user is not present (not logged in).
+        clientCredentials:
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes: {}
+x-refined-from:
+- optimizely-campaign-openapi.yml
+- optimizely-campaign-optimizely-campaign-rest-api-openapi.json
+- optimizely-cmp-openapi.yml
+- optimizely-content-marketing-platform-optimizely-cmp-open-api-documentation-openapi.json

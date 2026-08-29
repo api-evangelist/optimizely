@@ -1,0 +1,1077 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Sections API
+  version: '1.0'
+  description: 'Operations tagged sections across 2 of this provider''s published API definitions: optimizely-recommendations-public-api-spec-openapi.yaml, optimizely-web-experimentation-optimizely-api-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://{hostname}/1.0
+  description: Primary API server
+  variables:
+    hostname:
+      default: api.usea01.idio.episerver.net
+      enum:
+      - api.apac01.idio.episerver.net
+      - api.caea01.idio.episerver.net
+      - api.emea01.idio.episerver.net
+      - api.usea01.idio.episerver.net
+- url: https://api.optimizely.com/v2
+tags:
+- name: sections
+  description: Section management operations
+paths:
+  /sections/{id}:
+    get:
+      operationId: sectionGetMany
+      summary: Fetch section by ID
+      description: Retrieve detailed information about a specific section.
+      tags:
+      - sections
+      parameters:
+      - $ref: '#/components/parameters/sectionIDList'
+      responses:
+        '200':
+          description: Array of sections.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SectionList'
+        '404':
+          description: One or more of the sections do not exist.
+      security:
+      - key: []
+    patch:
+      operationId: sectionUpdate
+      summary: Update section
+      description: Update section attributes, such as title and description.
+      tags:
+      - sections
+      parameters:
+      - $ref: '#/components/parameters/sectionID'
+      requestBody:
+        required: true
+        description: Map of fields to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SectionPartial'
+      responses:
+        '200':
+          description: Section updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ID'
+        '404':
+          description: Section does not exist
+      security:
+      - key: []
+    servers:
+    - url: https://{hostname}/1.0
+      description: Primary API server
+      variables:
+        hostname:
+          default: api.usea01.idio.episerver.net
+          enum:
+          - api.apac01.idio.episerver.net
+          - api.caea01.idio.episerver.net
+          - api.emea01.idio.episerver.net
+          - api.usea01.idio.episerver.net
+  /sections/{id}/content:
+    parameters:
+    - $ref: '#/components/parameters/sectionID'
+    get:
+      operationId: sectionContentList
+      summary: List section content
+      description: Retrieve a paginated list of content items assigned to the specified section.
+      tags:
+      - sections
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/rpp'
+      - $ref: '#/components/parameters/topics'
+      responses:
+        '200':
+          $ref: '#/components/responses/ContentList'
+        '204':
+          description: Section exists but contains no content
+        '404':
+          description: Section does not exist
+      security:
+      - key: []
+    servers:
+    - url: https://{hostname}/1.0
+      description: Primary API server
+      variables:
+        hostname:
+          default: api.usea01.idio.episerver.net
+          enum:
+          - api.apac01.idio.episerver.net
+          - api.caea01.idio.episerver.net
+          - api.emea01.idio.episerver.net
+          - api.usea01.idio.episerver.net
+  /experiments/{experiment_id}/sections:
+    get:
+      description: Get a list of all Sections in a Multivariate Test
+      operationId: get_experiment_sections
+      parameters:
+      - $ref: '#/components/parameters/per_page'
+      - $ref: '#/components/parameters/page_2'
+      - description: The Experiment ID of the Multivariate Test you want to get Sections for
+        in: path
+        name: experiment_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Section'
+                type: array
+          description: Return Sections
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access the specified Experiment
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Experiment not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Read all the Sections in a Multivariate Test
+      tags:
+      - sections
+      x-release-state: beta
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    post:
+      description: Add a new Section to the Multivariate Test specified by `experiment_id`
+      operationId: create_section
+      parameters:
+      - description: The Experiment ID of the Multivariate Test you want to create a Section in
+        in: path
+        name: experiment_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Section'
+        description: A string in JSON format that includes all the fields to create a Section
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Section'
+          description: Section Created
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to create a Section in the specified Experiment
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Experiment not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Create a new Section in a Multivariate Test
+      tags:
+      - sections
+      x-release-state: beta
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
+  /experiments/{experiment_id}/sections/{section_id}:
+    delete:
+      description: Archive a Section by ID within the specified Multivariate Test
+      operationId: delete_section
+      parameters:
+      - description: The ID of the Section you want to archive within the given Experiment
+        in: path
+        name: section_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: The ID of the Multivariate Test the requested Section is part of
+        in: path
+        name: experiment_id
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully archived Section
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access the specified Section
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Archive a Section by ID
+      tags:
+      - sections
+      x-release-state: beta
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    get:
+      description: Get metadata for a single Multivariate Test Section
+      operationId: get_section
+      parameters:
+      - description: The ID of the Section you want to read
+        in: path
+        name: section_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: The ID of the Multivariate Test the requested Section is part of
+        in: path
+        name: experiment_id
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Section'
+          description: Return Section info
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access the specified Section
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Section or Experiment not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Read a Section of a Multivariate Test
+      tags:
+      - sections
+      x-release-state: beta
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    patch:
+      description: (Beta) Update a section by ID within the specified multivariate test.
+      operationId: update_section
+      parameters:
+      - description: The ID of the Section you want to update
+        in: path
+        name: section_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: The ID of the Multivariate Test the requested Section is part of
+        in: path
+        name: experiment_id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SectionUpdate'
+        description: A string in JSON format that includes all the fields to create a Section
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Section'
+          description: Successfully updated Section
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access the specified Section
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Section or Experiment not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Update a Section by ID
+      tags:
+      - sections
+      x-release-state: beta
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
+components:
+  responses:
+    ContentList:
+      description: A paginated list of content items, including metadata for navigation, such as total hits and page links.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ContentList'
+          example:
+            total_hits: 124
+            next_page: https://api.usea01.idio.episerver.net/1.0/content?page=2&rpp=10
+            previous_page: null
+            content:
+            - id: 987654
+              title: The Future of Enterprise Personalisation
+              abstract: How content recommendations drive engagement across digital channels.
+              featured: true
+              approved: approved
+              read: false
+              published: '2026-05-14T09:30:00Z'
+              original_url: https://www.example.com/blog/future-of-personalisation
+              link_url: https://www.example.com/blog/future-of-personalisation
+              full_details_url: https://api.usea01.idio.episerver.net/1.0/content/987654
+              main_image_url: https://images.example.com/987654/main.jpg
+              main_image:
+                width: 1200
+                height: 630
+              metadata:
+                language: en
+              source:
+                id: 55
+                title: Company Blog
+                full_details_url: https://api.usea01.idio.episerver.net/1.0/sources/55
+                display: full
+              author:
+                id: 21
+                title: Jordan Lee
+                full_details_url: https://api.usea01.idio.episerver.net/1.0/authors/21
+              topics:
+              - id: 301
+                title: Personalisation
+                full_details_url: https://api.usea01.idio.episerver.net/1.0/topics/301
+  parameters:
+    page:
+      name: page
+      in: query
+      description: Page number for pagination (1-based index).
+      schema:
+        type: integer
+        example: 2
+    rpp:
+      name: rpp
+      in: query
+      description: Results per page for pagination.
+      schema:
+        type: integer
+    sectionID:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier of the section.
+      schema:
+        type: integer
+        example: 42
+    sectionIDList:
+      name: id
+      in: path
+      required: true
+      description: Section IDs (csv)
+      style: simple
+      explode: false
+      schema:
+        type: array
+        uniqueItems: true
+        items:
+          type: integer
+    topics:
+      name: include_topics
+      in: query
+      description: Whether to include topic information in the response.
+      allowEmptyValue: true
+      schema:
+        type: boolean
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
+  schemas:
+    ContentTopic:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the topic.
+        title:
+          type: string
+          description: Topic title.
+        full_details_url:
+          type: string
+          format: url
+          description: API link to full topic details.
+    ContentItem:
+      allOf:
+      - $ref: '#/components/schemas/ContentItemMinimal'
+      - type: object
+        additionalProperties: false
+        required:
+        - id
+        - title
+        - abstract
+        - featured
+        - approved
+        - read
+        - published
+        - original_url
+        - metadata
+        - link_url
+        - full_details_url
+        - main_image_url
+        - main_image
+        - source
+        - author
+        properties:
+          id:
+            type: integer
+            description: Unique identifier of the content item.
+          metadata:
+            $ref: '#/components/schemas/ContentMetadata'
+          topics:
+            type: array
+            uniqueItems: true
+            description: Topic information associated with the content.
+            items:
+              $ref: '#/components/schemas/ContentTopic'
+          link_url:
+            type: string
+            format: url
+            description: URL to the live content link.
+          full_details_url:
+            type: string
+            format: url
+            description: API URL for full details of the content.
+          main_image_url:
+            type: string
+            format: url
+            description: URL to the main image of the content.
+          main_image:
+            $ref: '#/components/schemas/ContentMainImage'
+          source:
+            $ref: '#/components/schemas/ContentSource'
+          author:
+            $ref: '#/components/schemas/ContentAuthor'
+    ContentItemMinimal:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the content item.
+        abstract:
+          type: string
+          description: Short summary or abstract of the content.
+        featured:
+          type: boolean
+          description: Indicates whether the content is featured.
+        approved:
+          type: string
+          enum:
+          - approved
+          - unapproved
+          - binned
+          description: Approval status of the content.
+        read:
+          type: boolean
+          description: Whether the content is marked as read.
+        published:
+          type: string
+          format: date-time
+          description: Date and time when the content was published.
+        original_url:
+          type: string
+          format: url
+          description: Original source URL of the content.
+    List:
+      type: object
+      description: Base pagination metadata object.
+      additionalProperties: false
+      required:
+      - total_hits
+      properties:
+        total_hits:
+          type: integer
+          description: Total number of items matching the query.
+        next_page:
+          type: string
+          format: url
+          description: Link to the next page of results, if available.
+        previous_page:
+          type: string
+          format: url
+          description: Link to the previous page of results, if available.
+    SectionItem:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - content_url
+      properties:
+        id:
+          type: integer
+          example: 42
+        title:
+          type: string
+          example: Technology News
+        content_url:
+          type: string
+          format: url
+          example: https://api.usea01.idio.episerver.net/1.0/sections/42/content
+    ContentMainImage:
+      type: object
+      additionalProperties: false
+      required:
+      - width
+      - height
+      properties:
+        width:
+          type: integer
+          description: Image width in pixels.
+        height:
+          type: integer
+          description: Image height in pixels.
+    ContentAuthor:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the author.
+        title:
+          type: string
+          description: Name of the author.
+        full_details_url:
+          type: string
+          format: url
+          description: API URL for full author details.
+    ContentSource:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      - display
+      description: The source (origin) of the content.
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the source.
+        title:
+          type: string
+          description: Display name of the source.
+        full_details_url:
+          type: string
+          format: url
+          description: API URL for full source details.
+        display:
+          type: string
+          enum:
+          - full
+          - abstract
+          - link
+          description: How the source should be displayed.
+    ID:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          description: Unique identifier.
+          example: '12345'
+    ContentList:
+      description: A paginated list of content items with navigation metadata.
+      allOf:
+      - $ref: '#/components/schemas/List'
+      - type: object
+        additionalProperties: false
+        required:
+        - content
+        properties:
+          content:
+            type: array
+            description: The list of content items for the current page.
+            uniqueItems: true
+            items:
+              $ref: '#/components/schemas/ContentItem'
+    SectionPartial:
+      type: object
+      additionalProperties: false
+      description: Partial update schema for a section (used in PATCH requests).
+      properties:
+        title:
+          type: string
+          description: Updated title of the section.
+          example: Tech Updates
+        description:
+          type: string
+          description: Updated description for the section.
+          example: Updated description for technology section.
+        query:
+          type: string
+          description: Updated Lucene query string for the section.
+          example: category:AI AND language:en
+    ContentMetadata:
+      type: object
+      description: Metadata for a content item, such as language and tags.
+      properties:
+        language:
+          type: string
+          enum:
+          - de
+          - en
+          - es
+          - fr
+          - it
+          description: Language of the content.
+        tags:
+          type: object
+          description: Arbitrary namespaced tags associated with the content. Values may be strings or arrays of strings (for example, multiple authors).
+          additionalProperties: true
+    SectionList:
+      type: object
+      additionalProperties: false
+      required:
+      - sections
+      properties:
+        sections:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/SectionItem'
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    Action:
+      properties:
+        changes:
+          description: The list of changes to apply to the Page. If 'dependencies' is supplied in a Change within 'changes', each ID in 'dependencies' must also be in 'changes'.
+          items:
+            $ref: '#/components/schemas/Change'
+          type: array
+        page_id:
+          description: The ID of the Page to apply changes to
+          format: int64
+          type: integer
+        share_link:
+          description: The share link for the provided Variation and Page combination
+          externalDocs:
+            description: share link
+            url: https://help.optimizely.com/QA_Campaigns_and_Experiments/QA%3A_Share_draft_variations_or_experiences
+          format: url
+          readOnly: true
+          type: string
+      required:
+      - page_id
+      type: object
+    Variation:
+      properties:
+        actions:
+          description: A collection of changes to run for each page in an experiment. Only applicable to Optimizely X Web.
+          items:
+            $ref: '#/components/schemas/Action'
+          type: array
+        archived:
+          description: Whether the variation is archived
+          type: boolean
+        description:
+          description: A description of the variation.
+          type: string
+        feature_enabled:
+          description: For Feature Tests, indicates if the feature should be enabled for the variation
+          type: boolean
+        key:
+          description: Unique string identifier for this variation within the Experiment. Only applicable for Full Stack and Mobile projects.
+          example: blue_button_variation
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\-]+$
+          type: string
+        name:
+          description: The name of the variation. Required for Web Experiments and Personalization experiences. Not required for Full Stack Experiments.
+          example: Blue Button
+          type: string
+        status:
+          description: Current status of the variation
+          enum:
+          - active
+          - paused
+          - archived
+          type: string
+        variable_values:
+          additionalProperties:
+            type: string
+          description: For Feature Tests, the variable values for the variation represented as a map of Variable keys to their values.
+          type: object
+        variation_id:
+          description: The unique identifier for the variation
+          format: int64
+          readOnly: true
+          type: integer
+        weight:
+          description: The percentage of your visitors that should see this variation, measured in basis points. 100 basis points = 1% traffic. Variation weights must add up to 10000.
+          maximum: 10000
+          minimum: 0
+          type: integer
+      required:
+      - weight
+      type: object
+    SectionUpdate:
+      properties:
+        archived:
+          default: false
+          description: Whether or not the Section has been archived
+          type: boolean
+        description:
+          description: A short description of this Section
+          type: string
+        name:
+          description: The name of this Section
+          example: Headline Variations
+          type: string
+        variations:
+          items:
+            $ref: '#/components/schemas/Variation'
+          type: array
+      type: object
+    Section:
+      properties:
+        archived:
+          default: false
+          description: Whether or not the Section has been archived
+          type: boolean
+        description:
+          description: A short description of this Section
+          type: string
+        experiment_id:
+          description: The ID of the Multivariate Test this Section belongs to
+          type: integer
+        id:
+          description: The ID of this Section
+          type: integer
+        name:
+          description: The name of this Section
+          example: Headline Variations
+          type: string
+        project_id:
+          description: The ID of the project that this Section belongs to
+          type: integer
+        variations:
+          items:
+            $ref: '#/components/schemas/Variation'
+          type: array
+      required:
+      - variations
+      type: object
+    CSSAttribute:
+      properties:
+        background-color:
+          type: string
+        background-image:
+          type: string
+        border-color:
+          type: string
+        border-style:
+          type: string
+        border-width:
+          type: string
+        color:
+          type: string
+        font-family:
+          type: string
+        font-size:
+          type: string
+        font-weight:
+          type: string
+        height:
+          type: string
+        position:
+          type: string
+        width:
+          type: string
+      type: object
+    ChangeAttribute:
+      properties:
+        class:
+          description: Name of the class to set the element(s) matched by a selector to
+          example: intro
+          type: string
+        hide:
+          description: Whether or not to hide the element(s) matched by a selector
+          type: boolean
+        href:
+          description: Value of href attribute to add to element(s) matched by a selector
+          example: example.com
+          type: string
+        html:
+          description: Value of HTML attribute to add to element(s) matched by a selector
+          example: New Title
+          type: string
+        remove:
+          description: Whether or not to remove the element(s) matched by a selector
+          type: boolean
+        src:
+          description: Value of src attribute to add to element(s) matched by a selector
+          example: song.mp3
+          type: string
+        style:
+          description: Value of style attribute to add to element(s) matched by a selector
+          example: background-color:blue;
+          type: string
+        text:
+          description: Value of text attribute to add to the element(s) matched by a selector
+          example: Some nice message
+          type: string
+      type: object
+    Change:
+      properties:
+        allow_additional_redirect:
+          description: Whether or not to allow additional redirects after redirecting to destination. Required for changes of type 'redirect'
+          type: boolean
+        async:
+          description: Indicates whether or not to execute the change asyncronously. If true, src will be returned in the response. Otherwise, it will be not included.
+          type: boolean
+        attributes:
+          $ref: '#/components/schemas/ChangeAttribute'
+        config:
+          description: Configuration properties for the extension
+          example: '{"name": "Flash Sale Today!", "color": "blue"}'
+          type: object
+        css:
+          $ref: '#/components/schemas/CSSAttribute'
+        dependencies:
+          description: A list of dependent change IDs that must happen before this change
+          example:
+          - ad1f6acb-78f2-4653-b955-913abd777e16
+          - ad20a6dd-2083-4964-8ed2-f0dc7baef687
+          items:
+            format: uuid
+            type: string
+          type: array
+        destination:
+          description: URL to redirect to. Required for changes of type 'redirect'. `destination` and `destination_function` cannot be used at the same time
+          example: https://app.optimizely.com/
+          type: string
+        destination_function:
+          description: A function string to redirect to. Required for changes of type 'redirect'. `destination` and `destination_function` cannot be used at the same time
+          example: https://app.optimizely.com/
+          type: string
+        extension_id:
+          description: ID of the extension to insert. Required for changes of type 'extension'
+          readOnly: true
+          type: string
+        id:
+          description: The ID of the change
+          format: uuid
+          readOnly: true
+          type: string
+        name:
+          description: Name of the change
+          example: Setting button text
+          type: string
+        operator:
+          description: Where to instert HTML or image for types 'insert_html' and 'insert_image' with respect to the element(s) matched by 'selector'
+          example: after
+          type: string
+        preserve_parameters:
+          description: Whether or not to preserve parameters from original request when redirecting to new destination URL. Required for changes of type 'redirect'. For redirects using `destination_function`, `preserve_parameters` must be false.
+          type: boolean
+        rearrange:
+          description: A directive to place the DOM element(s) matched by 'selector' to the position of the element matched by 'insertSelector', with the relation specified by 'operator'. The supplied example moves element matched by 'selector' above the element of class .greyBox
+          example: '{"insertSelector": ".greyBox", "operator": "before"}'
+          type: object
+        selector:
+          description: CSS selector to determine where changes are applied. Required for changes of type 'attribute', 'insert_html', and 'insert_image'
+          example: a[href*="optimizely"]
+          type: string
+        src:
+          description: The path to the change payload on the CDN. Only present if 'async' is True.
+          readOnly: true
+          type: string
+        type:
+          description: 'The type of this change.
+
+            - Changes of type ''attribute'' have required fields ''selector'' and ''attributes''
+
+            - Changes of type ''custom_code'' have required field ''value''
+
+            - Changes of type ''custom_css'' have required field ''value''
+
+            - Changes of type ''extension'' have required field ''extension_id''
+
+            - Changes of type ''insert_html'' have required field ''selector''
+
+            - Changes of type ''insert_image'' have required field ''selector''
+
+            - Changes of type ''redirect'' have required fields ''destination'', ''preserve_parameters'', and ''allow_additional_redirect''
+
+            '
+          enum:
+          - attribute
+          - custom_code
+          - custom_css
+          - extension
+          - insert_html
+          - insert_image
+          - redirect
+          type: string
+        value:
+          description: The value for the change can be custom Javascript or CSS as a string. Required for changes of type 'custom_css' and 'custom_code'
+          example: window.someGlobalFunction();
+          type: string
+      required:
+      - type
+      type: object
+  securitySchemes:
+    key:
+      type: apiKey
+      in: query
+      name: key
+      description: API key required for authentication. Must be provided as a query parameter, for example, `?key=YOUR_API_KEY`.
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http
+x-refined-from:
+- optimizely-recommendations-public-api-spec-openapi.yaml
+- optimizely-web-experimentation-optimizely-api-openapi.json

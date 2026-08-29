@@ -1,0 +1,147 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Attribution API
+  version: '2.0'
+  description: Get a list of bucketing decisions for a visitor.
+servers:
+- url: https://api.optimizely.com/v2
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- description: Get a list of bucketing decisions for a visitor.
+  name: Attribution
+paths:
+  /attribution/{account_id}/visitor/{visitor_id}:
+    get:
+      description: Get a list of experiments within a project a visitor has been exposed to
+      operationId: get_bucketing_history
+      parameters:
+      - description: The unique identifier of the Optimizely Account
+        in: path
+        name: account_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: The Optimizely User ID of the visitor
+        in: path
+        name: visitor_id
+        required: true
+        schema:
+          type: string
+      - description: Start of the time interval (inclusive) used to filter the bucketing decisions. The time is formatted in ISO 8601.
+        in: query
+        name: start_time
+        schema:
+          format: date-time
+          type: string
+      - description: End of the time interval (inclusive) used to filter the bucketing decisions. The time is formatted in ISO 8601.
+        in: query
+        name: end_time
+        schema:
+          format: date-time
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BucketingInformation'
+          description: Return bucketing information
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access bucketing history information
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Get bucketing information for a visitor
+      tags:
+      - Attribution
+      x-release-state: alpha
+components:
+  schemas:
+    BucketingInformationItem:
+      properties:
+        campaign_id:
+          description: The unique identifier of the Campaign
+          example: 2056053765
+          format: int64
+          type: integer
+        experiment_id:
+          description: The unique identifier of the Experiment
+          example: 9387397797
+          format: int64
+          type: integer
+        is_holdback:
+          description: Is the visitor bucketed into a variation or a holdback
+          type: boolean
+        timestamp:
+          description: The timestamp of the bucketing decision on the client side
+          example: 1545871675000
+          format: int64
+          type: integer
+        variation_id:
+          description: The unique identifier of the Variation
+          example: 5042153527
+          format: int64
+          type: integer
+      type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    BucketingInformation:
+      properties:
+        account_id:
+          description: ID of the Account
+          example: 1000
+          format: int64
+          type: integer
+        bucketing_history:
+          description: Array of bucketing information items
+          items:
+            $ref: '#/components/schemas/BucketingInformationItem'
+          type: array
+        visitor_id:
+          description: The unique identifier of the visitor
+          example: fa74a14b-1f3a-463d-aa98-2f7124ee6fc3
+          format: uuid
+          readOnly: true
+          type: string
+      type: object
+  securitySchemes:
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http

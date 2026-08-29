@@ -1,0 +1,316 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Impressions Usage API
+  version: '2.0'
+servers:
+- url: https://api.optimizely.com/v2
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- name: Impressions Usage
+paths:
+  /billing/usage/{account_id}:
+    get:
+      description: Get Impressions Usage by account id
+      operationId: get_impressions_usage_request
+      parameters:
+      - $ref: '#/components/parameters/per_page'
+      - $ref: '#/components/parameters/page'
+      - description: The account ID of the customer
+        in: path
+        name: account_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: Start date of date range
+        in: query
+        name: usage_date_from
+        required: true
+        schema:
+          pattern: ^\d{4}-\d{2}-\d{2}$
+          type: string
+      - description: End date of date range
+        in: query
+        name: usage_date_to
+        required: true
+        schema:
+          pattern: ^\d{4}-\d{2}-\d{2}$
+          type: string
+      - description: The platform of the Project
+        explode: true
+        in: query
+        name: platforms
+        required: false
+        schema:
+          default:
+          - edge
+          - fullstack
+          - web
+          items:
+            enum:
+            - edge
+            - fullstack
+            - web
+            type: string
+          type: array
+      - description: Search by experiment_id, project_id.
+        in: query
+        name: query
+        required: false
+        schema:
+          default: ''
+          type: string
+      - description: The property to sort by.
+        in: query
+        name: sort
+        required: false
+        schema:
+          default: impression_count
+          items:
+            enum:
+            - impression_count
+            type: string
+          type: string
+      - description: The property to sort by.
+        in: query
+        name: order
+        required: false
+        schema:
+          default: desc
+          items:
+            enum:
+            - asc
+            - desc
+            type: string
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ImpressionsUsage'
+                type: array
+          description: Return Impression Usage info for account
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid ID
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to account
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Impression Usage not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Get Impressions Usage
+      tags:
+      - Impressions Usage
+      x-release-state: beta
+  /billing/usage/{account_id}/summary:
+    get:
+      description: Get Impressions Usage Summary by account id
+      operationId: get_impressions_usage_summary_request
+      parameters:
+      - description: The account ID of the customer
+        in: path
+        name: account_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImpressionsUsageSummary'
+          description: Return Impression Usage Summary for account
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid ID
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to account
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Impression Usage Summary not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Get Impressions Usage Summary
+      tags:
+      - Impressions Usage
+      x-release-state: beta
+components:
+  schemas:
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    ImpressionsUsageSummary:
+      properties:
+        allowance:
+          description: Total allowance purchased for the account.
+          example: 25000000
+          format: int64
+          type: integer
+        end_date:
+          description: Current subscription end date.
+          format: date
+          pattern: ^\d{4}-\d{2}-\d{2}
+          type: string
+        last_update_date:
+          description: Last impressions usage updated date.
+          format: date
+          pattern: ^\d{4}-\d{2}-\d{2}
+          type: string
+        start_date:
+          description: Current subscription start date.
+          format: date
+          pattern: ^\d{4}-\d{2}-\d{2}
+          type: string
+        usage:
+          description: Usage for the account.
+          example: 16360512
+          format: int64
+          type: integer
+        usage_percentage:
+          description: Utilised usage percentage.
+          example: 65
+          maximum: 100
+          minimum: 0
+          type: number
+      required:
+      - usage
+      - usage_percentage
+      - allowance
+      - start_date
+      - end_date
+      - last_update_date
+      type: object
+    ImpressionsUsage:
+      properties:
+        experiment_id:
+          description: The ID for the experiment.
+          example: 3239
+          format: int64
+          type: integer
+        experiment_name:
+          description: The Experiment name to display in the Optimizely app. Whitespaces and other non-alphanumeric characters allowed. Defaults to experiment key if left empty.
+          example: Renewable energy
+          type: string
+        experiment_status:
+          description: The status of the Experiment.
+          example: Running, Not started
+          type: string
+        impression_count:
+          description: The Impressions count at experiment level.
+          example: 322010712450
+          format: int64
+          type: integer
+        platform:
+          default: web
+          description: The platform of the Project
+          example: web, fullstack, edge
+          type: string
+        project_id:
+          description: The ID for the project.
+          example: 3094
+          format: int64
+          type: integer
+        project_name:
+          description: The name of the Project.
+          example: Landing Page Optimization
+          type: string
+      required:
+      - project_id
+      - project_name
+      - experiment_id
+      - experiment_name
+      - experiment_status
+      - impression_count
+      - platform
+      type: object
+  parameters:
+    page:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
+  securitySchemes:
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http

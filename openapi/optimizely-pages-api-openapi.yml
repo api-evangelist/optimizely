@@ -1,21 +1,362 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Optimizely Campaign REST Assets Pages API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  title: Optimizely Pages API
   version: '1.0'
-  contact:
-    name: Optimizely Support
-    url: https://support.optimizely.com
-  termsOfService: https://www.optimizely.com/legal/terms/
+  description: 'Operations tagged Pages across 3 of this provider''s published API definitions: optimizely-configured-commerce-admin-api-v1-openapi.json, optimizely-web-experimentation-openapi.yml, optimizely-web-experimentation-optimizely-api-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://api.campaign.episerver.net/rest
-  description: Optimizely Campaign Production Server
-security:
-- basicAuth: []
+- url: https://dogfood.commerce.insitesandbox.com
+- url: https://api.optimizely.com/v2
+  description: Optimizely REST API v2 Production Server
 tags:
 - name: Pages
-  description: Manage page definitions that specify which URLs or conditions trigger experiments.
 paths:
+  /api/v1/admin/Pages:
+    get:
+      tags:
+      - Pages
+      summary: Returns the EntitySet Pages
+      operationId: Pages_Get
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    post:
+      tags:
+      - Pages
+      summary: Post a new entity to EntitySet Pages
+      operationId: Pages_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.Page'
+        description: The entity to post
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/Pages({id}):
+    get:
+      tags:
+      - Pages
+      summary: Returns the entity with the key from Pages
+      operationId: Pages_GetById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    put:
+      tags:
+      - Pages
+      summary: Replace entity in EntitySet Pages
+      operationId: Pages_PutById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.Page'
+        description: The entity to put
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    delete:
+      tags:
+      - Pages
+      summary: Delete entity in EntitySet Pages
+      operationId: Pages_DeleteById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: If-Match
+        in: header
+        description: If-Match header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Pages
+      summary: Update entity in EntitySet Pages
+      operationId: Pages_PatchById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.Page'
+        description: The entity to patch
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/Pages/Default.Default():
+    get:
+      tags:
+      - Pages
+      summary: Call operation  Default
+      operationId: Pages_Default
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/pages/delete:
+    delete:
+      tags:
+      - Pages
+      operationId: Pages_DeleteRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/pages({key})/customproperties({custompropertyKey}):
+    get:
+      tags:
+      - Pages
+      operationId: Pages_GetCustomPropertyByKeyAndCustompropertykey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: custompropertyKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/pages({key})/pageversions({pageversionKey}):
+    get:
+      tags:
+      - Pages
+      operationId: Pages_GetPageVersionByKeyAndPageversionkey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: pageversionKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
   /pages:
     get:
       operationId: listPages
@@ -38,6 +379,8 @@ paths:
                   $ref: '#/components/schemas/Page'
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - bearerAuth: []
     post:
       operationId: createPage
       summary: Create a page
@@ -61,6 +404,11 @@ paths:
           description: Invalid request body
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.optimizely.com/v2
+      description: Optimizely REST API v2 Production Server
   /pages/{page_id}:
     get:
       operationId: getPage
@@ -81,6 +429,8 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Page not found
+      security:
+      - bearerAuth: []
     patch:
       operationId: updatePage
       summary: Update a page
@@ -108,6 +458,8 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Page not found
+      security:
+      - bearerAuth: []
     delete:
       operationId: deletePage
       summary: Delete a page
@@ -123,8 +475,59 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Page not found
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.optimizely.com/v2
+      description: Optimizely REST API v2 Production Server
 components:
   schemas:
+    Insite.Data.Entities.Page:
+      required:
+      - variantName
+      - allowedForPageType
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        nodeId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        ruleManagerId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        isDefaultVariant:
+          type: boolean
+        variantName:
+          maxLength: 50
+          minLength: 0
+          type: string
+        isShared:
+          type: boolean
+        layoutPageId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        allowedForPageType:
+          maxLength: 50
+          minLength: 0
+          type: string
+        templateHash:
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
     PageInput:
       type: object
       description: Input for creating or updating a page
@@ -193,30 +596,244 @@ components:
           type: string
           format: date-time
           description: Timestamp when the page was last modified
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    Page_2:
+      properties:
+        activation_code:
+          description: Stringified Javascript function that determines when the Page is activated. Only required when activation_type is 'polling' or 'callback'.
+          example: function callbackFn(activate, options) { activate(); }
+          type: string
+        activation_type:
+          description: 'Page activation type is a trigger that determines when the page is activated. Triggers tell Optimizely when to start checking whether certain conditions are true
+
+            ''Immediate'' activation mode activates the page as soon as the snippet loads.
+
+            ''Polling'' activation mode polls every 50ms until ''activation_code'' evaluates to True, then activates the page.
+
+            ''Callback'' activation mode activates the page when the event defined by ''activation_code'' is triggered.
+
+            ''Manual'' activation mode requires code within the subject app to explicitly trigger page activation.
+
+            ''DOM Changed'' sets the page to trigger when the DOM changes [Learn more](https://help.optimizely.com/Build_Campaigns_and_Experiments/Support_for_dynamic_websites%3A_Use_Optimizely_on_single_page_applications#Triggers).
+
+            ''URL Changed'' sets the page to trigger when the URL changes [Learn more](https://help.optimizely.com/Build_Campaigns_and_Experiments/Support_for_dynamic_websites%3A_Use_Optimizely_on_single_page_applications#Triggers).
+
+            '
+          enum:
+          - immediate
+          - manual
+          - polling
+          - callback
+          - dom_changed
+          - url_changed
+          example: callback
+          externalDocs:
+            description: Activation Types
+            url: https://help.optimizely.com/Build_Campaigns_and_Experiments/Conditional_activation_for_pages_in_Optimizely_X
+          type: string
+        archived:
+          default: false
+          description: Whether the Page has been archived
+          type: boolean
+        category:
+          default: other
+          description: The category this Page is grouped under
+          enum:
+          - article
+          - cart
+          - category
+          - checkout
+          - home
+          - landing_page
+          - pricing
+          - product_detail
+          - search_results
+          - other
+          type: string
+        conditions:
+          description: 'Stringified array of the conditions that activate the Page. The array contains Page Condition JSON dicts joined by "and" and "or".
+
+            Each individual Page Condition dict has format {"type": "url", "match_type": <match_type>, "value": <value>} where match_types are:
+
+            "simple" match type will match if "value" matches the hostname and path of the Page URL.
+
+            "exact" match type will match only an exact string match between "value" and the Page URL.
+
+            "substring" match type will match if "value" is a substring of the Page URL.
+
+            "regex" match type will match if "value" is a regular expression match for the Page URL.
+
+            '
+          example: '["and", {"type": "url", "match_type": "substring", "value": "optimize"}]'
+          externalDocs:
+            description: Conditions
+            url: https://help.optimizely.com/Build_Experiments/Set_up_pages%2C_events%2C_tags%2C_and_audiences#add_pages
+          type: string
+        created:
+          description: Date created
+          format: date-time
+          readOnly: true
+          type: string
+        edit_url:
+          description: URL of the Page
+          example: https://www.optimizely.com
+          type: string
+        id:
+          description: The unique identifier of the Page
+          example: 4000
+          format: int64
+          readOnly: true
+          type: integer
+        key:
+          description: Unique string identifier for this Page within the Project
+          example: home_page
+          maxLength: 500
+          pattern: ^[a-zA-Z0-9_]+$
+          type: string
+        last_modified:
+          description: Date last modified
+          format: date-time
+          readOnly: true
+          type: string
+        name:
+          description: Name of the Page
+          example: Home Page
+          type: string
+        page_type:
+          description: Type of Page
+          enum:
+          - single_url
+          - url_set
+          - global
+          type: string
+        project_id:
+          description: ID of the Page's Project
+          example: 1000
+          format: int64
+          type: integer
+        single_use:
+          description: Whether the Page is a single-use page created for URL targeting
+          readOnly: true
+          type: boolean
+      required:
+      - name
+      - project_id
+      - edit_url
+      type: object
+    PageUpdate:
+      properties:
+        activation_code:
+          description: Stringified Javascript function that determines when the Page is activated. Only required when activation_type is 'polling' or 'callback'.
+          type: string
+        activation_type:
+          description: 'Page activation type is a trigger that determines when the page is activated. Triggers tell Optimizely when to start checking whether certain conditions are true
+
+            ''Immediate'' activation mode activates the page as soon as the snippet loads.
+
+            ''Polling'' activation mode polls every 50ms until ''activation_code'' evaluates to True, then activates the page.
+
+            ''Callback'' activation mode activates the page when the event defined by ''activation_code'' is triggered.
+
+            ''Manual'' activation mode requires code within the subject app to explicitly trigger page activation.
+
+            ''DOM Changed'' sets the page to trigger when the DOM changes [Learn more](https://help.optimizely.com/Build_Campaigns_and_Experiments/Support_for_dynamic_websites%3A_Use_Optimizely_on_single_page_applications#Triggers).
+
+            ''URL Changed'' sets the page to trigger when the URL changes [Learn more](https://help.optimizely.com/Build_Campaigns_and_Experiments/Support_for_dynamic_websites%3A_Use_Optimizely_on_single_page_applications#Triggers).
+
+            '
+          enum:
+          - immediate
+          - manual
+          - polling
+          - callback
+          - dom_changed
+          - url_changed
+          externalDocs:
+            description: Activation Types
+            url: https://help.optimizely.com/Build_Campaigns_and_Experiments/Conditional_activation_for_pages_in_Optimizely_X
+          type: string
+        archived:
+          description: Whether the Page is archived
+          type: boolean
+        category:
+          description: The category this Page is grouped under
+          enum:
+          - article
+          - cart
+          - category
+          - checkout
+          - home
+          - landing_page
+          - pricing
+          - product_detail
+          - search_results
+          - other
+          type: string
+        conditions:
+          description: 'Stringified array of the conditions that activate the Page. The array contains Page Condition JSON dicts joined by "and" and "or".
+
+            Each individual Page Condition dict has format {"type": "url", "match_type": <match_type>, "value": <value>} where match_types are:
+
+            "simple" match type will match if "value" matches the hostname and path of the Page URL.
+
+            "exact" match type will match only an exact string match between "value" and the Page URL.
+
+            "substring" match type will match if "value" is a substring of the Page URL.
+
+            "regex" match type will match if "value" is a regular expression match for the Page URL.
+
+            '
+          example: '["and", {"type": "url", "match_type": "substring", "value": "optimize"}]'
+          externalDocs:
+            description: Conditions
+            url: https://help.optimizely.com/Build_Experiments/Set_up_pages%2C_events%2C_tags%2C_and_audiences#add_pages
+          type: string
+        edit_url:
+          description: URL of the Page
+          type: string
+        key:
+          description: Unique string identifier for this Page within the Project
+          example: home_page
+          maxLength: 500
+          pattern: ^[a-zA-Z0-9_]+$
+          type: string
+        name:
+          description: Page Name
+          example: Home Page
+          type: string
+        page_type:
+          description: Type of Page
+          enum:
+          - single_url
+          - url_set
+          - global
+          type: string
+      type: object
   parameters:
-    perPage:
-      name: per_page
-      in: query
-      required: false
-      description: Number of results per page
-      schema:
-        type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
-    pageId:
-      name: page_id
-      in: path
-      required: true
-      description: The unique identifier for the page
-      schema:
-        type: integer
-        format: int64
     projectIdQuery:
       name: project_id
       in: query
       required: true
       description: The unique identifier for the project to filter by
+      schema:
+        type: integer
+        format: int64
+    pageId:
+      name: page_id
+      in: path
+      required: true
+      description: The unique identifier for the page
       schema:
         type: integer
         format: int64
@@ -229,11 +846,61 @@ components:
         type: integer
         default: 1
         minimum: 1
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
   securitySchemes:
-    basicAuth:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query
+    bearerAuth:
       type: http
-      scheme: basic
-      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+      scheme: bearer
+      description: OAuth 2.0 Bearer token or personal access token generated from the Optimizely application settings.
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http
 externalDocs:
-  description: Optimizely Campaign REST API Documentation
-  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+  description: Optimizely Web Experimentation API Documentation
+  url: https://docs.developers.optimizely.com/web-experimentation/docs/rest-api-introduction
+x-refined-from:
+- optimizely-configured-commerce-admin-api-v1-openapi.json
+- optimizely-web-experimentation-openapi.yml
+- optimizely-web-experimentation-optimizely-api-openapi.json

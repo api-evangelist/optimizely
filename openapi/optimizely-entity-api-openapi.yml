@@ -1,0 +1,504 @@
+openapi: 3.2.0
+info:
+  title: Permission Service Entity API
+  summary: Permission service for Experimentation
+  description: <a href='https://github.com/optimizely/permission-service' target='_blank'>Github repository</a>
+  version: 0.0.1
+servers:
+- url: https://api.optimizely.com/permissions
+security:
+- BearerAuth: []
+tags:
+- name: Entity
+paths:
+  /users/{user_id}/projects/{project_id}/{entity_type}:
+    get:
+      tags:
+      - Entity
+      summary: Get User Permissions For Project Entity Type
+      operationId: get_user_permissions_for_project_entity_type_users__user_id__projects__project_id___entity_type__get
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: User Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Project Id
+      - name: entity_type
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityTypeInPath'
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          title: Per Page
+      - name: page_token
+        in: query
+        required: false
+        schema:
+          type: string
+          title: Page Token
+      - name: page_window
+        in: query
+        required: false
+        schema:
+          type: integer
+          title: Page Window
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPermissionsForEntityTypeResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /teams/{team_id}/projects/{project_id}/{entity_type}:
+    get:
+      tags:
+      - Entity
+      summary: Get Team Permissions For Project Entity Type
+      operationId: get_team_permissions_for_project_entity_type_teams__team_id__projects__project_id___entity_type__get
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Team Id
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Project Id
+      - name: entity_type
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityTypeInPath'
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          title: Per Page
+      - name: page_token
+        in: query
+        required: false
+        schema:
+          type: string
+          title: Page Token
+      - name: page_window
+        in: query
+        required: false
+        schema:
+          type: integer
+          title: Page Window
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamPermissionsForEntityTypeResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /projects/{project_id}/{entity_type}/{entity_id}:
+    get:
+      tags:
+      - Entity
+      summary: Get Entity Permissions
+      operationId: get_entity_permissions_projects__project_id___entity_type___entity_id__get
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Project Id
+      - name: entity_type
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityTypeInPath'
+      - name: entity_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Entity Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityPermissionsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - Entity
+      summary: Change Permissions
+      operationId: change_permissions_projects__project_id___entity_type___entity_id__patch
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Project Id
+      - name: entity_type
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityTypeInPath'
+      - name: entity_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Entity Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PatchOperation'
+              title: Operations
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    TeamPermissionsForEntityTypeResponse:
+      properties:
+        total:
+          type: integer
+          title: Total
+        total_pages:
+          type: integer
+          title: Total Pages
+        page:
+          type: integer
+          title: Page
+        first_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Url
+        last_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Url
+        next_url:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Next Url
+        prev_url:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Prev Url
+        items:
+          items:
+            $ref: '#/components/schemas/src__api__dtos__permissions__TeamPermissionsForEntityTypeResponse__ItemInfo'
+          type: array
+          title: Items
+      type: object
+      required:
+      - total
+      - total_pages
+      - page
+      - items
+      title: TeamPermissionsForEntityTypeResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    UserPermission:
+      properties:
+        role:
+          $ref: '#/components/schemas/EntityPermission'
+        role_inherited:
+          $ref: '#/components/schemas/EntityPermission'
+        first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Name
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Name
+        user_id:
+          type: string
+          title: User Id
+        email:
+          type: string
+          format: email
+          title: Email
+      type: object
+      required:
+      - role
+      - role_inherited
+      - first_name
+      - last_name
+      - user_id
+      - email
+      title: UserPermission
+    EntityPermission:
+      type: string
+      enum:
+      - admin
+      - publish
+      - toggle
+      - edit
+      - view
+      - none
+      - unknown
+      title: EntityPermission
+    OperationType:
+      type: string
+      enum:
+      - replace
+      - remove
+      title: OperationType
+    PatchOperation:
+      properties:
+        op:
+          $ref: '#/components/schemas/OperationType'
+        path:
+          type: string
+          title: Path
+        value:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Value
+      type: object
+      required:
+      - op
+      - path
+      title: PatchOperation
+      examples:
+      - op: replace
+        path: /users/user_abc/role
+        value: admin
+      - op: replace
+        path: /teams/12345/role
+        value: edit
+      - op: remove
+        path: /users/user_abc/role
+    src__api__dtos__permissions__TeamPermissionsForEntityTypeResponse__ItemInfo:
+      properties:
+        role:
+          type: string
+          title: Role
+        id:
+          type: integer
+          title: Id
+        key:
+          type: string
+          title: Key
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - role
+      - id
+      - name
+      title: ItemInfo
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    src__api__dtos__permissions__UserPermissionsForEntityTypeResponse__ItemInfo:
+      properties:
+        role:
+          type: string
+          title: Role
+        role_inherited:
+          type: string
+          title: Role Inherited
+        id:
+          type: integer
+          title: Id
+        key:
+          type: string
+          title: Key
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - role
+      - role_inherited
+      - id
+      - name
+      title: ItemInfo
+    UserPermissionsForEntityTypeResponse:
+      properties:
+        total:
+          type: integer
+          title: Total
+        total_pages:
+          type: integer
+          title: Total Pages
+        page:
+          type: integer
+          title: Page
+        first_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Url
+        last_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Url
+        next_url:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Next Url
+        prev_url:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Prev Url
+        items:
+          items:
+            $ref: '#/components/schemas/src__api__dtos__permissions__UserPermissionsForEntityTypeResponse__ItemInfo'
+          type: array
+          title: Items
+      type: object
+      required:
+      - total
+      - total_pages
+      - page
+      - items
+      title: UserPermissionsForEntityTypeResponse
+    EntityPermissionsResponse:
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/UserPermission'
+          type: array
+          title: Users
+        teams:
+          items:
+            $ref: '#/components/schemas/TeamPermission'
+          type: array
+          title: Teams
+      type: object
+      required:
+      - users
+      - teams
+      title: EntityPermissionsResponse
+    EntityTypeInPath:
+      type: string
+      enum:
+      - flags
+      - environments
+      - audiences
+      title: EntityTypeInPath
+    TeamPermission:
+      properties:
+        team_id:
+          type: string
+          title: Team Id
+        name:
+          type: string
+          title: Name
+        role:
+          type: string
+          title: Role
+        external_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: External Ref
+      type: object
+      required:
+      - team_id
+      - name
+      - role
+      - external_ref
+      title: TeamPermission
+  securitySchemes:
+    BearerAuth:
+      description: To get an API token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      type: http
+      scheme: bearer
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

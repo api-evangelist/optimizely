@@ -1,0 +1,125 @@
+openapi: 3.2.0
+info:
+  title: Optimizely 📜 Logs API
+  contact:
+    name: Documentation
+    url: https://cg.optimizely.com/
+  license:
+    name: ' '
+  version: '1.0'
+  description: 'Operations tagged 📜 Logs across 2 of this provider''s published API definitions: optimizely-platform-optimizely-optimizely-graph-api-openapi.json, optimizely-platform-optimizely-swagger-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://cg.optimizely.com
+- url: https://prod.cg.optimizely.com
+tags:
+- name: 📜 Logs
+paths:
+  /api/logs/request:
+    get:
+      operationId: get-RequestLogHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/RequestLog'
+                type: array
+      description: Get _incoming/outgoing_ request logs
+      summary: Get request logs
+      tags:
+      - 📜 Logs
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - in: query
+        name: page
+        required: false
+        schema:
+          format: double
+          type: number
+      - in: query
+        name: requestId
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: host
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: path
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: success
+        required: false
+        schema:
+          type: boolean
+    servers:
+    - url: https://cg.optimizely.com
+components:
+  schemas:
+    RequestLog:
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: string
+        instanceId:
+          type: string
+        status:
+          type: string
+        method:
+          type: string
+        host:
+          type: string
+        path:
+          type: string
+        operationType:
+          type: string
+        operationName:
+          type: string
+        message:
+          type: string
+        duration:
+          type: number
+          format: double
+        user:
+          type: string
+        success:
+          type: boolean
+          default: true
+      required:
+      - id
+      - createdAt
+      type: object
+      additionalProperties: false
+  securitySchemes:
+    epi-single:
+      type: apiKey
+      name: auth
+      in: query
+      description: Single key authentication
+    epi-hmac:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: HMAC authentication (`epi-hmac xxx`)
+    Basic:
+      type: http
+      scheme: basic
+      description: HMAC credentials
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token
+x-refined-from:
+- optimizely-platform-optimizely-optimizely-graph-api-openapi.json
+- optimizely-platform-optimizely-swagger-openapi.json

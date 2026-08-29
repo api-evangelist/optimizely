@@ -1,0 +1,1188 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Webhooks API
+  version: '1.0'
+  description: 'Operations tagged Webhooks across 4 of this provider''s published API definitions: optimizely-campaign-optimizely-campaign-rest-api-openapi.json, optimizely-platform-optimizely-optimizely-graph-api-openapi.json, optimizely-platform-optimizely-swagger-openapi.json, optimizely-web-experimentation-optimizely-api-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.campaign.episerver.net/rest
+- url: https://cg.optimizely.com
+- url: https://prod.cg.optimizely.com
+- url: https://api.optimizely.com/v2
+tags:
+- name: Webhooks
+  description: Manage webhooks
+paths:
+  /{clientId}/webhooks/{webhookId}/activate:
+    post:
+      tags:
+      - Webhooks
+      summary: Activate a webhook
+      description: Activate a webhook to start sending event data.
+      operationId: activateWebhook
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: webhookId
+        in: path
+        description: Webhook ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The webhook was activated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestWebhook'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestWebhook'
+        '400':
+          description: The webhook is already in status "activated".
+        '404':
+          description: The webhook could not be found. Ensure that the required parameters such as "webhookId" are correct and the webhook exists.
+        '409':
+          description: The webhook ID is not assigned to the current client.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/webhooks:
+    get:
+      tags:
+      - Webhooks
+      summary: Get information about all webhooks
+      description: Get detailed information about all webhooks, such as webhook ID, event data type and webhook status.
+      operationId: selectWebhooks
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sort
+        in: query
+        description: Sort result by specific criteria
+        schema:
+          type: string
+          default: CREATED
+          enum:
+          - ID
+          - MAILING_GROUP
+          - TYPE
+          - NAME
+          - TEMPLATE
+          - STATUS
+          - PAYLOAD_FORMAT
+          - TARGET_URL
+          - INTEGRATION_ID
+          - AUTHENTICATION
+          - DATA
+          - CREATED
+          - MODIFIED
+      - name: direction
+        in: query
+        description: Sort order
+        schema:
+          type: string
+          default: DESC
+          enum:
+          - ASC
+          - DESC
+      - name: offset
+        in: query
+        description: 'Starting point of the result list<p><i>Default value</i> : 0</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        description: 'Maximum number of webhooks<p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: The webhooks were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestWebhook'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestWebhook'
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Webhooks
+      summary: Create a webhook
+      operationId: createWebhook
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WebhookRequestData'
+      responses:
+        '201':
+          description: The webhook was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestWebhook'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestWebhook'
+        '400':
+          description: The webhook could not be created (either url, type or format was wrong).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestWebhook'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestWebhook'
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/webhooks/{webhookId}/deactivate:
+    post:
+      tags:
+      - Webhooks
+      summary: Deactivate a webhook
+      description: Deactivate a webhook to stop sending event data.
+      operationId: deactivateWebhook
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: webhookId
+        in: path
+        description: Webhook ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The webhook was deactivated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestWebhook'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestWebhook'
+        '400':
+          description: The webhook is not in status "activated".
+        '404':
+          description: The webhook could not be found. Ensure that the required parameters such as "webhookId" are correct and the webhook exists.
+        '409':
+          description: The webhook ID is not assigned to the current client.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/webhooks/{webhookId}:
+    put:
+      tags:
+      - Webhooks
+      summary: Update a webhook
+      operationId: updateWebhook
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: webhookId
+        in: path
+        description: Webhook ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WebhookRequestData'
+      responses:
+        '200':
+          description: The webhook was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestWebhook'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestWebhook'
+        '400':
+          description: The webhook "webhookId" cannot be updated
+        '404':
+          description: The webhook could not be found. Ensure that the required parameters such as "webhookId" are correct and the webhook exists.
+        '409':
+          description: The webhook ID is not assigned to the current client.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Webhooks
+      summary: Delete a webhook
+      operationId: deleteWebhook
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: webhookId
+        in: path
+        description: Webhook ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The webhook was deleted successfully.
+        '400':
+          description: The webhook could not be deleted as it is in status "activated". The webhook must be in status "deactivated".
+        '404':
+          description: The webhook could not be found. Ensure that the required parameters such as "webhookId" are correct and the webhook exists.
+        '409':
+          description: The webhook ID is not assigned to the current client.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/webhooks/{webhookId}/verify:
+    get:
+      tags:
+      - Webhooks
+      summary: Verify a webhook
+      description: Verify a webhook. The request is sent to the configured target URL to check if the webhook is ready to use. If successful, the value "200" is returned in the "httpStatusCode" field of the JSON response. In case of errors check the "responseBody" field.
+      operationId: verifyWebhook
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: webhookId
+        in: path
+        description: Webhook ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: mailingId
+        in: query
+        description: ID of a valid mailing (e.g. test mailing in Smart Campaigns). For blacklist webhooks any valid customer's mailing ID can be used.
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: numberOfEvents
+        in: query
+        description: Number of events to send (max. 100)
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+          default: 1
+      responses:
+        '200':
+          description: The webhook test request was executed successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestWebhookVerify'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestWebhookVerify'
+        '400':
+          description: The verification of the webhook is not supported for the provided type.
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /api/webhooks:
+    get:
+      operationId: list-WebhookHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Webhook'
+                type: array
+      description: List all registered webhooks
+      summary: List webhooks
+      tags:
+      - Webhooks
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters: []
+    post:
+      operationId: create-WebhookHandler
+      responses:
+        '204':
+          description: No content
+      description: 'Register a webhook and listen events respect to filter definition
+
+
+        ---
+
+
+        _(empty filter): listen all events_'
+      summary: Add webhook
+      tags:
+      - Webhooks
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookPayload'
+    servers:
+    - url: https://cg.optimizely.com
+  /api/webhooks/{id}:
+    delete:
+      operationId: delete-WebhookHandler
+      responses:
+        '204':
+          description: No content
+      description: Delete a registered webhook with `id`
+      summary: Delete webhook
+      tags:
+      - Webhooks
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    put:
+      operationId: update-WebhookHandler
+      responses:
+        '204':
+          description: No content
+      description: Update a registered webhook with `id`
+      summary: Update webhook
+      tags:
+      - Webhooks
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookPayload'
+    servers:
+    - url: https://cg.optimizely.com
+  /projects/{project_id}/webhooks:
+    get:
+      description: Get all of the Webhooks that have been created in a given Project
+      operationId: list_webhooks
+      parameters:
+      - $ref: '#/components/parameters/project_id'
+      - $ref: '#/components/parameters/per_page'
+      - $ref: '#/components/parameters/page_window'
+      - $ref: '#/components/parameters/page_token'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhooks'
+          description: Return all Webhooks in a specified Project
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request body supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have access to the specified Project
+      summary: Get Webhooks by Project
+      tags:
+      - Webhooks
+      x-release-state: beta
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    post:
+      description: Create a Webhook in a provided Project
+      operationId: create_webhook
+      parameters:
+      - $ref: '#/components/parameters/project_id'
+      requestBody:
+        $ref: '#/components/requestBodies/WebhookRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhook_2'
+          description: Return the created Webhook
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request body supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have access to the specified Project
+      summary: Create a Webhook
+      tags:
+      - Webhooks
+      x-release-state: beta
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
+  /webhooks/{webhook_id}:
+    delete:
+      description: Delete an Webhook
+      operationId: delete_webhook
+      parameters:
+      - $ref: '#/components/parameters/webhookId'
+      responses:
+        '204':
+          description: No content in the response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request body supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have access to the specified Webhook
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Webhook not found
+      summary: Delete a Webhook
+      tags:
+      - Webhooks
+      x-release-state: beta
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    get:
+      description: Get all the properties of a single Webhook
+      operationId: get_webhook
+      parameters:
+      - $ref: '#/components/parameters/webhook_id'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhook_2'
+          description: Return Webhook info
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request body supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have access to the specified Webhook
+      summary: Read a Webhook
+      tags:
+      - Webhooks
+      x-release-state: beta
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    patch:
+      description: Update a webhook by ID
+      operationId: update_webhook
+      parameters:
+      - $ref: '#/components/parameters/webhook_id'
+      requestBody:
+        $ref: '#/components/requestBodies/WebhookRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhook_2'
+          description: Return updated Webhook info
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request body supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have access to the specified Webhook
+      summary: Update a Webhook
+      tags:
+      - Webhooks
+      x-release-state: beta
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
+components:
+  schemas:
+    WebhookAuthentication:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+      description: Authentication method and attributes
+      discriminator:
+        propertyName: type
+    RestWebhook:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Webhook ID
+          format: int64
+        type:
+          type: string
+          description: Type of the event data
+          enum:
+          - open
+          - click
+          - sent
+          - bounce
+          - unsubscribe
+          - spamcomplaint
+          - webhooknode
+          - singleoptin
+          - confirmedoptin
+          - doubleoptin
+          - blocklist
+          - archived
+          - filteredbyblocklist
+        status:
+          type: string
+          description: Webhook status
+          enum:
+          - created
+          - activated
+          - deactivated
+          - deleted
+          - suspended
+        format:
+          type: string
+          description: Data format of the event data
+          enum:
+          - json
+        targetUrl:
+          type: string
+          description: Target URL
+        authentication:
+          $ref: '#/components/schemas/WebhookAuthentication'
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+    RestWebhookVerify:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Webhook ID
+          format: int64
+        httpStatusCode:
+          type: integer
+          description: HTTP status code
+          format: int32
+        responseBody:
+          type: string
+          description: Response body (if any)
+        numberOfEvents:
+          type: integer
+          description: Number of events sent to the target url
+          format: int32
+        targetUrl:
+          type: string
+          description: Target URL
+    WebhookRequestData:
+      required:
+      - format
+      - targetUrl
+      - type
+      type: object
+      properties:
+        basicAuthUsername:
+          type: string
+          description: User name for Basic HTTP Authentication. This parameter is deprecated and might be removed in the near future. Please use &lt;authentication&gt; instead.
+        basicAuthPassword:
+          type: string
+          description: Password for Basic HTTP Authentication. This parameter is deprecated and might be removed in the near future. Please use &lt;authentication&gt; instead.
+        type:
+          type: string
+          description: Event data type
+          enum:
+          - open
+          - click
+          - sent
+          - bounce
+          - unsubscribe
+          - spamcomplaint
+          - singleoptin
+          - confirmedoptin
+          - doubleoptin
+          - blocklist
+          - archive
+          - filteredbyblocklist
+        format:
+          type: string
+          description: Data format in which the event data is to be sent
+          enum:
+          - json
+        authentication:
+          type: string
+          description: 'Authentication method and attributes as json.<br>
+
+            Current types are:
+
+            <pre>
+
+            {"type":"none"}
+
+            </pre>
+
+            or
+
+            <pre>
+
+            {"type":"basicAuth","userName":"xxxxxxx","password":"xxxxxxx"}
+
+            </pre>
+
+            or
+
+            <pre>
+
+            {"type":"keyAuth","key":"Authorization","passphrase":"Bearer xxxxxxx"}
+
+            </pre>
+
+            '
+        targetUrl:
+          type: string
+          description: Target URL to which the event data is to be sent<p><b>Note:</b> The URL must be accessible and able to receive data via HTTP POST requests from the IP address 193.169.180.1 at any time. Use the current HTTPS version and standard port 443 for HTTPS connections.</p>
+    Webhook:
+      allOf:
+      - $ref: '#/components/schemas/WebhookPayload'
+      - properties:
+          preset:
+            $ref: '#/components/schemas/Preset'
+          id:
+            type: string
+        required:
+        - preset
+        - id
+        type: object
+    Partial_Record_string.OperationMap__:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/OperationMap'
+      type: object
+      description: Make all properties in T optional
+    WebhookPayload:
+      description: 'The `WebhookPayload` type represents the payload of a webhook request, which includes information
+
+        about the request, filters, and whether the webhook is disabled.'
+      properties:
+        disabled:
+          type: boolean
+        request:
+          $ref: '#/components/schemas/Request'
+        topics:
+          items:
+            type: string
+          type: array
+        filters:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/FilterMap'
+            type: array
+          - $ref: '#/components/schemas/FilterMap'
+      required:
+      - request
+      type: object
+      additionalProperties: false
+      example:
+        disabled: false
+        request:
+          url: https://webhook.site/191a5568-31fe-49ac-bde5-ed2f7dad6918
+          method: POST
+          headers:
+            test-header-key: test-header-value
+        topics:
+        - doc.*
+        filters:
+        - status:
+            in:
+            - Published
+            - Created
+    Request:
+      properties:
+        url:
+          type: string
+        method:
+          type: string
+        headers:
+          $ref: '#/components/schemas/Record_string.string_'
+      required:
+      - url
+      type: object
+      additionalProperties: false
+    Preset:
+      type: string
+      enum:
+      - legacy
+      - next
+    Record_string.string_:
+      properties: {}
+      additionalProperties:
+        type: string
+      type: object
+      description: Construct a type with a set of properties K of type T
+    FilterMap:
+      $ref: '#/components/schemas/Partial_Record_string.OperationMap__'
+    OperationMap:
+      properties:
+        in:
+          anyOf:
+          - type: string
+          - items:
+              type: string
+            type: array
+        eq:
+          type: string
+      type: object
+    WebhookPayload_2:
+      description: 'The `WebhookPayload` type represents the payload of a webhook request, which includes information
+
+        about the request, filters, and whether the webhook is disabled.'
+      properties:
+        disabled:
+          type: boolean
+        request:
+          $ref: '#/components/schemas/Request'
+        topics:
+          items:
+            type: string
+          type: array
+        filters:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/Partial_Record_string.OperationMap__'
+            type: array
+          - $ref: '#/components/schemas/Partial_Record_string.OperationMap__'
+      required:
+      - request
+      type: object
+      additionalProperties: false
+      example:
+        disabled: false
+        request:
+          url: https://webhook.site/191a5568-31fe-49ac-bde5-ed2f7dad6918
+          method: POST
+          headers:
+            test-header-key: test-header-value
+        topics:
+        - doc.*
+        filters:
+        - status:
+            in:
+            - Published
+            - Created
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    Webhook_2:
+      properties:
+        active:
+          description: Is Webhook active.
+          readOnly: true
+          type: boolean
+        created:
+          description: Created time.
+          readOnly: true
+          type: string
+        description:
+          description: A short description of the Webhook.
+          example: Webhook description
+          type: string
+        events:
+          description: List of events subscribed to the webhook.
+          items:
+            enum:
+            - project.datafile_updated
+            - project.snippet_updated
+            - project.attribute_created
+            - project.attribute_updated
+            - project.attribute_deleted
+            - project.attribute_archived
+            - project.audience_created
+            - project.audience_updated
+            - project.audience_archived
+            - project.environment_created
+            - project.environment_updated
+            - project.environment_archived
+            - project.event_created
+            - project.event_updated
+            - project.event_deleted
+            - project.event_archived
+            - project.flag_created
+            - project.flag_updated
+            - project.flag_deleted
+            - project.flag_archived
+            - project.project_setting_created
+            - project.project_setting_updated
+            - project.project_setting_deleted
+            - project.ruleset_created
+            - project.ruleset_updated
+            - project.ruleset_deleted
+            - project.rule_created
+            - project.rule_updated
+            - project.rule_deleted
+            - project.variation_created
+            - project.variation_updated
+            - project.variation_deleted
+            - project.variation_archived
+            - project.variable_created
+            - project.variable_updated
+            - project.variable_deleted
+            - project.group_created
+            - project.group_updated
+            - project.group_deleted
+            - project.group_archived
+            type: string
+          type: array
+        id:
+          description: ID of this Webhook
+          readOnly: true
+          type: string
+        last_modified:
+          description: Last modification time.
+          readOnly: true
+          type: string
+        name:
+          description: Name of the Webhook.
+          type: string
+        project_id:
+          description: ID of the project of the Environment.
+          type: integer
+        url:
+          description: Webhook URL
+          type: string
+      required:
+      - name
+      - project_id
+      - url
+      type: object
+    WebhookRequestBody:
+      description: Webhook request body
+      properties:
+        description:
+          description: A short description of the Webhook.
+          example: Webhook description
+          type: string
+        events:
+          description: List of events subscribed to the webhook.
+          items:
+            enum:
+            - project.datafile_updated
+            - project.snippet_updated
+            - project.attribute_created
+            - project.attribute_updated
+            - project.attribute_deleted
+            - project.attribute_archived
+            - project.audience_created
+            - project.audience_updated
+            - project.audience_archived
+            - project.environment_created
+            - project.environment_updated
+            - project.environment_archived
+            - project.event_created
+            - project.event_updated
+            - project.event_deleted
+            - project.event_archived
+            - project.flag_created
+            - project.flag_updated
+            - project.flag_deleted
+            - project.flag_archived
+            - project.project_setting_created
+            - project.project_setting_updated
+            - project.project_setting_deleted
+            - project.ruleset_created
+            - project.ruleset_updated
+            - project.ruleset_deleted
+            - project.rule_created
+            - project.rule_updated
+            - project.rule_deleted
+            - project.variation_created
+            - project.variation_updated
+            - project.variation_deleted
+            - project.variation_archived
+            - project.variable_created
+            - project.variable_updated
+            - project.variable_deleted
+            - project.group_created
+            - project.group_updated
+            - project.group_deleted
+            - project.group_archived
+            type: string
+          type: array
+        name:
+          description: Name of the Webhook.
+          type: string
+        url:
+          description: Webhook URL
+          type: string
+      required:
+      - description
+      - events
+      - name
+      - url
+      type: object
+    Webhooks:
+      description: List of webhooks.
+      items:
+        $ref: '#/components/schemas/Webhook_2'
+      type: array
+  parameters:
+    webhook_id:
+      description: The webhook identifier
+      example: 12345
+      in: path
+      name: webhook_id
+      required: true
+      schema:
+        type: integer
+    project_id:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    page_window:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
+    webhookId:
+      description: The webhook identifier
+      example: 123
+      in: path
+      name: webhook_id
+      required: true
+      schema:
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
+    page_token:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+  requestBodies:
+    WebhookRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WebhookRequestBody'
+      required: true
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+    epi-single:
+      type: apiKey
+      name: auth
+      in: query
+      description: Single key authentication
+    epi-hmac:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: HMAC authentication (`epi-hmac xxx`)
+    Basic:
+      type: http
+      scheme: basic
+      description: HMAC credentials
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http
+x-refined-from:
+- optimizely-campaign-optimizely-campaign-rest-api-openapi.json
+- optimizely-platform-optimizely-optimizely-graph-api-openapi.json
+- optimizely-platform-optimizely-swagger-openapi.json
+- optimizely-web-experimentation-optimizely-api-openapi.json

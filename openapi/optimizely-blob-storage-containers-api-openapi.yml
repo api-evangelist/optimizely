@@ -1,0 +1,283 @@
+openapi: 3.2.0
+info:
+  version: v1
+  title: Episerver Cloud Blob Storage Containers API
+  description: This document describes the functionality of the DXP Service Management Portal that can be invoked via REST API
+  contact:
+    name: Episerver AB
+    url: https://www.episerver.com
+    email: support@episerver.com
+servers:
+- url: https://paasportal.episerver.net
+tags:
+- name: Blob Storage Containers
+paths:
+  /api/v1.0/projects/{projectId}/environments/{environment}/storagecontainers:
+    get:
+      tags:
+      - Blob Storage Containers
+      summary: Get the list of blob storage containers for specified project Id and environment
+      operationId: BlobStorageContainersApi_GetBlobStorageContainers
+      parameters:
+      - name: projectId
+        in: path
+        description: Project Id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: environment
+        in: path
+        description: Environment Name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBlobStorageContainersApiResponse'
+              examples:
+                response:
+                  value:
+                    success: true
+                    errors: []
+                    result:
+                      projectId: c943975b-d468-4b85-8e62-5967b9eeeece
+                      environment: Preproduction
+                      storageContainers:
+                      - Blob-Storage-Container-1
+                      - Blob-Storage-Container-2
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Project Id is a required field.
+                    result: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Access is denied for project c943975b-d468-4b85-8e62-5967b9eeeece or environment Preproduction.
+                    result: null
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - 'There is no active project found for project id: c943975b-d468-4b85-8e62-5967b9eeeece.'
+                    result: null
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - An error occurred while processing the request; Try again later.
+                    result: null
+  /api/v1.0/projects/{projectId}/environments/{environment}/storagecontainers/{containerName}/saslink:
+    post:
+      tags:
+      - Blob Storage Containers
+      summary: 'Generate a new SAS link for the projectId, environment and containerName combination.
+
+        The generated link is valid for 24 hours by default if not requested by user (retention hours) otherwise.'
+      operationId: BlobStorageContainersApi_GenerateSasLink
+      parameters:
+      - name: projectId
+        in: path
+        description: Project identifier
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: environment
+        in: path
+        description: Name of the environment
+        required: true
+        schema:
+          type: string
+      - name: containerName
+        in: path
+        description: Name of the blob storage container
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateBlobContainerSasLinkRequestParameters'
+        description: Request parameters that includes RetentionHours
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateBlobContainerSasLinkApiResponse'
+              examples:
+                response:
+                  value:
+                    success: true
+                    errors: []
+                    result:
+                      projectId: c943975b-d468-4b85-8e62-5967b9eeeece
+                      environment: Preproduction
+                      containerName: deploymentpackages
+                      sasLink: https://codepackagesrepo.blob.core.windows.net/deploymentpackages
+                      expiresOn: '2021-03-05T06:13:29.1772593Z'
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Project Id is a required field.
+                    result: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Access is denied for project c943975b-d468-4b85-8e62-5967b9eeeece or environment Preproduction.
+                    result: null
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - 'There is no active project found for project id: c943975b-d468-4b85-8e62-5967b9eeeece.'
+                    result: null
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - An error occurred while processing the request; Try again later.
+                    result: null
+components:
+  schemas:
+    GenerateBlobContainerSasLinkApiResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/GenerateBlobContainerSasLinkResponse'
+        success:
+          type: boolean
+    GetBlobStorageContainersApiResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/GetBlobStorageContainersResponse'
+        success:
+          type: boolean
+    UnauthorizedApiErrorResponseExample:
+      type: object
+      properties: {}
+    NotFoundApiErrorResponseExample:
+      type: object
+      properties: {}
+    GetBlobStorageContainersResponse:
+      type: object
+      properties:
+        environment:
+          type: string
+        storageContainers:
+          type: array
+          items:
+            type: string
+        projectId:
+          format: uuid
+          type: string
+    GenerateBlobContainerSasLinkResponse:
+      type: object
+      properties:
+        environment:
+          type: string
+        containerName:
+          type: string
+        sasLink:
+          type: string
+        expiresOn:
+          format: date-time
+          type: string
+        projectId:
+          format: uuid
+          type: string
+    GenerateBlobContainerSasLinkRequestParameters:
+      type: object
+      properties:
+        retentionHours:
+          format: int32
+          type: integer
+      example:
+        retentionHours: 24
+    BadRequestApiErrorResponseExample:
+      type: object
+      properties: {}
+    InternalServerErrorApiErrorResponseExample:
+      type: object
+      properties: {}
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

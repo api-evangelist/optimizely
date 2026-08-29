@@ -1,0 +1,585 @@
+openapi: 3.2.0
+info:
+  description: 'This page documents how to use the Optimizely FX API.
+
+    With this API you can view and manage Feature Flags and all of their
+
+    related entities including Variables, Variations, Rules, and Reports.
+
+
+    The base URL is https://api.optimizely.com/flags/v1. Append any paths
+
+    listed in these docs onto that url in order to make requests to the API.'
+  title: Optimizely Feature Experimentation Variable Definitions API
+  version: 0.3.7
+  x-logo:
+    url: https://app.optimizely.com/static/img/rebrand/logo.svg
+servers:
+- url: https://api.optimizely.com/flags/v1/
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- description: APIs to interact with Variable Definitions
+  name: Variable Definitions
+paths:
+  /projects/{project_id}/flags/{flag_key}/variable_definitions:
+    get:
+      operationId: list_variable_definitions
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      - $ref: '#/components/parameters/perPage'
+      - $ref: '#/components/parameters/pageNumber'
+      - $ref: '#/components/parameters/pageToken'
+      - $ref: '#/components/parameters/pageWindow'
+      - description: 'Sort the Variable Definitions based on the attributes from left to right.
+
+          '
+        in: query
+        name: sort
+        schema:
+          items:
+            enum:
+            - key:asc
+            - key:desc
+            - type:asc
+            - type:desc
+            type: string
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariableDefinitions'
+          description: 'Successful retrieval of a page of Variable Definitions for a Flag.
+
+
+            The response includes RESTful JSON (https://restfuljson.org/) styled links and pagination metadata.
+
+            Objects in this API MAY include a url property for a link to itself and MAY append _url to properties for related links.
+
+            If a link is not present in the response, it indicates a user is not authorized to access the related resource.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+      summary: Fetch all variable definitions for flag.
+      tags:
+      - Variable Definitions
+    patch:
+      description: 'Update one or more Variable Definitions in a project using a json patch structure.
+
+
+        Properties that are readOnly that are present in the request body will be ignored as well as
+
+        unknown properties.
+
+        '
+      operationId: update_variable_definitions
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      requestBody:
+        content:
+          application/json-patch+json:
+            example:
+            - op: replace
+              path: /variable_definition_key/description
+              value: a new description
+            schema:
+              items:
+                $ref: '#/components/schemas/PatchRequestBody'
+              type: array
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariableDefinitions'
+          description: 'Successful update of one or more Variable Definitiona for a Flag.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '409':
+          $ref: '#/components/responses/ConflictResponse'
+      summary: Update Variable Definitions
+      tags:
+      - Variable Definitions
+    post:
+      description: 'Create Variable Definition
+
+        '
+      operationId: create_variable_definition
+      parameters:
+      - $ref: '#/components/parameters/flagKey'
+      - $ref: '#/components/parameters/projectId'
+      requestBody:
+        content:
+          application/json:
+            example:
+              default_value: my_default_str
+              description: some description
+              key: variable_definition_key
+              type: string
+            schema:
+              $ref: '#/components/schemas/VariableDefinition'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                default_value: my_default_str
+                description: some description
+                key: variable_definition_key
+                type: string
+              schema:
+                $ref: '#/components/schemas/VariableDefinition'
+          description: 'Create a variable definition
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '409':
+          $ref: '#/components/responses/ConflictResponse'
+      summary: Create Variable Definition
+      tags:
+      - Variable Definitions
+  /projects/{project_id}/flags/{flag_key}/variable_definitions/brainstorm:
+    post:
+      operationId: brainstorm_variable_definitions
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BrainstormVariablesChat'
+        description: Input data for AI to brainstorm variable definitions.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrainstormVariablesChat'
+          description: 'Successful AI brainstorming of variable definitions.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+      summary: Brainstorm variable definitions using AI.
+      tags:
+      - Variable Definitions
+  /projects/{project_id}/flags/{flag_key}/variable_definitions/{variable_definition_key}:
+    delete:
+      description: 'Permanently delete a Variable Definition for a Flag.
+
+        There will be no way to access this data after deletion.
+
+        '
+      operationId: delete_variable_definition
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      - $ref: '#/components/parameters/variableDefinitionKey'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+      summary: Delete a Variable Definition
+      tags:
+      - Variable Definitions
+    get:
+      operationId: fetch_variable_definition
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      - $ref: '#/components/parameters/variableDefinitionKey'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariableDefinition'
+          description: 'Successful retrieval of a single of Variable Definition for a Flag, and Variable Definition Key.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+      summary: Fetch a single variable definition by its key.
+      tags:
+      - Variable Definitions
+components:
+  schemas:
+    AudienceConditionsString:
+      description: A valid AudienceConditionsArray represented as a JSON string
+      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
+      type: string
+    PatchRequestBody:
+      description: A JSONPatch document as defined by RFC 6902
+      properties:
+        from:
+          description: A JSON Pointer to the resource attribute
+          type: string
+        op:
+          description: The operation to be performed
+          enum:
+          - add
+          - remove
+          - replace
+          - move
+          - copy
+          - test
+          type: string
+        path:
+          description: A JSON-Pointer to the resource or the resource attribute
+          type: string
+        value:
+          anyOf:
+          - type: object
+          - items:
+              type: string
+            type: array
+          - $ref: '#/components/schemas/AudienceConditions'
+          - type: string
+          - type: integer
+          - type: boolean
+          - items:
+              $ref: '#/components/schemas/SubMetric'
+            type: array
+          description: The value to be used within the operations.
+      required:
+      - op
+      - path
+      type: object
+    VariableDefinition:
+      properties:
+        default_value:
+          description: The default value for the Flag Variable Definition
+          example: '0.0'
+          type: string
+        description:
+          description: Additional context of the Flag Variable Definition
+          example: This variable is used to configure the amount used for computing the discount
+          type: string
+        key:
+          description: Unique string identifier for the Flag Variable Definition within the Flag
+          example: amount
+          type: string
+        revision:
+          description: Revision number for tracking changes
+          readOnly: true
+          type: integer
+        role:
+          description: Granular permission role
+          example: admin
+          readOnly: true
+          type: string
+        type:
+          description: The datatype for the Flag Variable Definition
+          enum:
+          - boolean
+          - string
+          - double
+          - integer
+          - json
+          example: double
+          type: string
+      required:
+      - key
+      - type
+      - default_value
+      type: object
+    SubMetric:
+      properties:
+        aggregator:
+          type: string
+        event_id:
+          type: integer
+        event_type:
+          type: string
+        field:
+          type:
+          - string
+          - 'null'
+        role:
+          enum:
+          - numerator
+          - denominator
+          type: string
+        scope:
+          type: string
+      type: object
+    AudienceConditionsArray:
+      example:
+      - or
+      - audience_id: 123
+      - - and
+        - audience_id: 456
+        - audience_id: 789
+      items:
+        anyOf:
+        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+          type: string
+        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
+          properties:
+            audience_id:
+              type: integer
+          required:
+          - audience_id
+          type: object
+        - $ref: '#/components/schemas/AudienceConditionsArray'
+          description: A nested AudienceConditionsArray
+          example:
+          - - and
+            - audience_id: 456
+            - audience_id: 789
+      type: array
+    VariableDefinitions:
+      properties:
+        count:
+          description: Number of Variables on the current page.
+          example: 1
+          type: integer
+        first_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to first page of Variables in a series.
+          example: '...'
+        items:
+          items:
+            $ref: '#/components/schemas/VariableDefinition'
+          type: array
+        last_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the last page of Variables in a series.
+          example: '...'
+        next_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: "List of links to next pages of Variables in a series.\n\n The first element in the array is the exact next page after the current record, etc.\n"
+          example: '...'
+        page:
+          description: Number of the current page. 1-index based.
+          example: 1
+          type: integer
+        prev_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: 'List of links to previous pages of Variables in a series.
+
+
+            The first element in the array is the exact previous page before the current record, etc.
+
+            '
+        total_count:
+          description: Total number of Variables for this series.
+          example: 1
+          type: integer
+        total_pages:
+          description: Total number of pages for this series.
+          example: 1
+          type: integer
+      type: object
+    BrainstormVariablesInteraction:
+      discriminator:
+        mapping:
+          error: '#/components/schemas/BrainstormError'
+          response: '#/components/schemas/BrainstormVariablesResponse'
+          user_chat: '#/components/schemas/BrainstormUserChat'
+        propertyName: type
+      type: object
+    AudienceConditions:
+      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
+      oneOf:
+      - $ref: '#/components/schemas/AudienceConditionsArray'
+      - $ref: '#/components/schemas/AudienceConditionsString'
+    BrainstormVariablesChat:
+      properties:
+        interactions:
+          description: A list of interactions including user chats and responses
+          items:
+            $ref: '#/components/schemas/BrainstormVariablesInteraction'
+          type: array
+      required:
+      - interactions
+      type: object
+    UrlValue:
+      description: A single url.
+      type: string
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
+      properties:
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
+      type: object
+    UrlList:
+      description: A list of urls.
+      items:
+        type: string
+      type: array
+  responses:
+    NoContentResponse:
+      description: No content in the response
+    ConflictResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Conflicting resource state with requested action
+    NotFoundResponse:
+      description: Not found. No content
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
+  parameters:
+    flagKey:
+      description: The Flag identifier
+      example: recurring_deposit
+      in: path
+      name: flag_key
+      required: true
+      schema:
+        type: string
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
+    variableDefinitionKey:
+      description: The Variable Definition identifier
+      example: my_str
+      in: path
+      name: variable_definition_key
+      required: true
+      schema:
+        type: string
+    pageNumber:
+      description: Bypass page_token to jump to specific page
+      in: query
+      name: page_number
+      schema:
+        format: int64
+        type: integer
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
+  securitySchemes:
+    BearerAuth:
+      description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      scheme: bearer
+      type: http
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Grants all access
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http

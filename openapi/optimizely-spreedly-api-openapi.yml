@@ -1,0 +1,81 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Spreedly API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Spreedly
+paths:
+  /api/v1/spreedly/config:
+    get:
+      tags:
+      - Spreedly
+      operationId: SpreedlyV1_Get
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+            text/json:
+              schema:
+                type: object
+            application/xml:
+              schema:
+                type: object
+            text/xml:
+              schema:
+                type: object
+            text/html:
+              schema:
+                type: object
+      security:
+      - access_token: []
+  /api/v1/spreedly/bnpl/redirect:
+    get:
+      tags:
+      - Spreedly
+      operationId: SpreedlyV1_BnplRedirect
+      parameters:
+      - name: parameters.cartId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: parameters.transaction_token
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+            text/json:
+              schema:
+                type: object
+            application/xml:
+              schema:
+                type: object
+            text/xml:
+              schema:
+                type: object
+            text/html:
+              schema:
+                type: object
+      security:
+      - access_token: []
+components:
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

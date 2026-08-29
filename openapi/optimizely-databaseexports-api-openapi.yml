@@ -1,0 +1,276 @@
+openapi: 3.2.0
+info:
+  version: v1
+  title: Episerver Cloud Database Exports API
+  description: This document describes the functionality of the DXP Service Management Portal that can be invoked via REST API
+  contact:
+    name: Episerver AB
+    url: https://www.episerver.com
+    email: support@episerver.com
+servers:
+- url: https://paasportal.episerver.net
+tags:
+- name: DatabaseExports
+paths:
+  /api/v1.0/projects/{projectId}/environments/{environment}/databases/{databaseName}/exports:
+    post:
+      tags:
+      - DatabaseExports
+      summary: Starts the database export process.
+      description: 'When export process is completed, returns a read-only Azure Blob Storage SAS URI of the exported database bacpac file.
+
+        By default, the bacpac file is retained for 24 hours unless otherwise the retention hour is overridden.'
+      operationId: DatabaseExportApi_ExportDatabase
+      parameters:
+      - name: projectId
+        in: path
+        description: Project Id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: environment
+        in: path
+        description: Environment Name
+        required: true
+        schema:
+          type: string
+      - name: databaseName
+        in: path
+        description: Database Name. Valid and accepted values are epicms/epicommerce
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartExportDatabaseRequestParameters'
+        description: Start export database request parameter
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportDatabaseResponse'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors: null
+                    result:
+                      id: 1b22aaf0-5e39-40d5-a0b9-fd15cbb38719
+                      projectId: ad5b41d1-8345-4038-a13e-f82bfe867b6f
+                      databaseName: epicms
+                      databaseDisplayName: epicms
+                      bacpacName: null
+                      environment: Production
+                      status: Started
+                      downloadLink: null
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Project Id is a required field.
+                    result: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Access is denied for project c943975b-d468-4b85-8e62-5967b9eeeece or environment Preproduction.
+                    result: null
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - 'There is no active project found for project id: c943975b-d468-4b85-8e62-5967b9eeeece.'
+                    result: null
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - An error occurred while processing the request; Try again later.
+                    result: null
+  /api/v1.0/projects/{projectId}/environments/{environment}/databases/{databaseName}/exports/{exportId}:
+    get:
+      tags:
+      - DatabaseExports
+      summary: Gets information about the database export process for the specified project and export.
+      operationId: DatabaseExportApi_GetExportDatabase
+      parameters:
+      - name: projectId
+        in: path
+        description: Project Id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: environment
+        in: path
+        description: Environment Name
+        required: true
+        schema:
+          type: string
+      - name: databaseName
+        in: path
+        description: Database Name
+        required: true
+        schema:
+          type: string
+      - name: exportId
+        in: path
+        description: Export Id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportDatabaseResponse'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors: null
+                    result:
+                      id: 1b22aaf0-5e39-40d5-a0b9-fd15cbb38719
+                      projectId: ad5b41d1-8345-4038-a13e-f82bfe867b6f
+                      databaseName: epicms
+                      databaseDisplayName: epicms
+                      bacpacName: null
+                      environment: Production
+                      status: Succeeded
+                      downloadLink: example.download.link
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Project Id is a required field.
+                    result: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Access is denied for project c943975b-d468-4b85-8e62-5967b9eeeece or environment Preproduction.
+                    result: null
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - 'There is no active project found for project id: c943975b-d468-4b85-8e62-5967b9eeeece.'
+                    result: null
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - An error occurred while processing the request; Try again later.
+                    result: null
+components:
+  schemas:
+    UnauthorizedApiErrorResponseExample:
+      type: object
+      properties: {}
+    NotFoundApiErrorResponseExample:
+      type: object
+      properties: {}
+    StartExportDatabaseRequestParameters:
+      type: object
+      properties:
+        retentionHours:
+          format: int32
+          type: integer
+      example:
+        retentionHours: 72
+    BadRequestApiErrorResponseExample:
+      type: object
+      properties: {}
+    ExportDatabaseResponse:
+      type: object
+      properties:
+        projectId:
+          format: uuid
+          type: string
+        databaseName:
+          type: string
+        databaseDisplayName:
+          type: string
+          readOnly: true
+        bacpacName:
+          type: string
+        environment:
+          type: string
+        status:
+          type: string
+        downloadLink:
+          type: string
+        id:
+          format: uuid
+          type: string
+    InternalServerErrorApiErrorResponseExample:
+      type: object
+      properties: {}
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

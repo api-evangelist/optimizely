@@ -1,0 +1,746 @@
+openapi: 3.2.0
+info:
+  version: V3
+  title: Optimizely CMP Open API Documentation Templates API
+servers:
+- url: https://api.cmp.optimizely.com/v3
+  description: v3 version of Optimizely CMP Open API
+security:
+- OAuth2:
+  - openid
+  - profile
+  - offline_access
+tags:
+- name: Templates
+paths:
+  /templates:
+    get:
+      operationId: listTemplates
+      tags:
+      - Templates
+      summary: GET /templates
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a list of templates.
+      parameters:
+      - name: search
+        in: query
+        schema:
+          type: string
+          description: Case insensitive search term to filter templates by their title
+        example: Kangaroo
+      - name: applicable_to
+        in: query
+        schema:
+          type: string
+          enum:
+          - work_request
+          - task_brief
+          - campaign_brief
+          description: Application criteria to filter by
+        example: work_request
+      - name: include_inactive
+        in: query
+        schema:
+          type: boolean
+          default: false
+          description: Indicate whether to include templates that are marked as inactive
+        example: true
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of fetched templates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateListResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /templates/{template_id}:
+    get:
+      operationId: getTemplate
+      tags:
+      - Templates
+      summary: GET /templates/{template_id}
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a template by ID. '
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the template
+        example: 9119a313057e401189407116fcd3aa24
+      responses:
+        '200':
+          description: Fetched template
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+              example:
+                id: 9119a313057e401189407116fcd3aa24
+                is_active: true
+                title: Sample Template Title
+                description: Sample Desciption
+                applicable_to:
+                - campaign_brief
+                - task_brief
+                - work_request
+                form_fields:
+                - identifier: attachment
+                  label: Attach a file...
+                  helper_text: Sample helper text
+                  is_required: false
+                  is_readonly: false
+                  sort_order: 0
+                  type: file
+                  type_specific_meta: null
+                  logic_rules:
+                  - condition:
+                      operator: any_of
+                      values:
+                      - 4a8b901e9fd911ecbefa0242ac160019
+                    action:
+                      target_field:
+                        identifier: 70ca0e8a954911ecb4be0242ac160014
+                      type: show_values
+                      values:
+                      - 73e05aa2b5d311eca17f0242ac160019
+                - identifier: 73e05aa2b54nda3c320242ac1d5291
+                  label: Select publish destination
+                  helper_text: Sample helper text
+                  is_required: true
+                  is_readonly: false
+                  sort_order: 1
+                  type: dropdown
+                  type_specific_meta:
+                    is_multi_select: false
+                    choices:
+                    - id: 62553abbb7def00b4e60ded5
+                      name: Sample Dropdown Field Choice
+                  logic_rules: []
+                - identifier: 73e05aa2b54nda3c320242ac1d5291
+                  label: Input value
+                  helper_text: Sample helper text
+                  is_required: false
+                  is_readonly: false
+                  sort_order: 2
+                  type: simple_number
+                  type_specific_meta:
+                    decimal_places: 3
+                    has_thousand_separator: false
+                  logic_rules: []
+                - identifier: 73e05aa2b54nda3c320242ac1d5291
+                  label: Input value
+                  helper_text: Sample helper text
+                  is_required: false
+                  is_readonly: false
+                  sort_order: 3
+                  type: percentage_number
+                  type_specific_meta:
+                    decimal_places: 3
+                  logic_rules: []
+                - identifier: 73e05aa2b54nda3c320242ac1d5291
+                  label: Input value
+                  helper_text: Sample helper text
+                  is_required: false
+                  is_readonly: false
+                  sort_order: 4
+                  type: currency_number
+                  type_specific_meta:
+                    decimal_places: 2
+                    currency_code: USD
+                    has_thousand_separator: true
+                  logic_rules: []
+                - identifier: 73e05aa2b54nda3c320242ac1d5291
+                  label: Input value
+                  helper_text: Sample helper text
+                  is_required: false
+                  is_readonly: false
+                  sort_order: 5
+                  type: richtext
+                  type_specific_meta: null
+                  logic_rules: []
+                - identifier: 73e05aa2b54nda3c320242ac1d5291
+                  label: Another section
+                  helper_text: Sample helper text
+                  is_required: false
+                  is_readonly: true
+                  sort_order: 5
+                  type: section
+                  type_specific_meta: null
+                  logic_rules: []
+                - identifier: 73e05aa2b54nda3c320242ac1d5291
+                  label: select value
+                  helper_text: Sample helper text
+                  is_required: false
+                  is_readonly: false
+                  sort_order: 7
+                  type: radio_button
+                  type_specific_meta:
+                    is_multi_select: false
+                    choices:
+                    - id: 62553abbb7def00b4e60ded5
+                      name: Sample MultiChoice Field Choice
+                  logic_rules: []
+                - identifier: 73e05aa2b54nda3c320242ac1d5291
+                  label: select value
+                  helper_text: Sample helper text
+                  is_required: false
+                  is_readonly: false
+                  sort_order: 8
+                  type: label
+                  type_specific_meta:
+                    is_multi_select: false
+                    choices:
+                    - id: 9119a313057e401189407116fcd3
+                      name: Sample Label
+                  logic_rules: []
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  schemas:
+    TemplateLogicRuleCondition:
+      type: object
+      additionalProperties: false
+      description: Condition of the rule
+      properties:
+        operator:
+          type: string
+          description: Operator of the condition
+          enum:
+          - any_of
+          - equal
+          - not_equal
+          example: any_of
+        values:
+          type: array
+          description: Values of the condition
+          items:
+            type: string
+            example: 4a8b901e9fd911ecbefa0242ac160019
+      required:
+      - operator
+      - values
+    TemplateChoiceFormField:
+      allOf:
+      - $ref: '#/components/schemas/BaseTemplateFormField'
+      - type: object
+        properties:
+          type_specific_meta:
+            type: object
+            description: Type-specific meta-information
+            properties:
+              is_multi_select:
+                type: boolean
+                description: Whether multiple selection is allowed
+                example: true
+              choices:
+                type: array
+                description: Choices for the field
+                items:
+                  $ref: '#/components/schemas/ResourceChoiceResponse'
+            required:
+            - is_multi_select
+            - choices
+          logic_rules:
+            $ref: '#/components/schemas/TemplateLogicRule'
+        required:
+        - type_specific_meta
+        - logic_rules
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
+    TemplateLogicRuleAction:
+      type: object
+      additionalProperties: false
+      description: Action to perform for the rule
+      properties:
+        target_field:
+          type: object
+          description: Target field for the action
+          properties:
+            identifier:
+              type: string
+              description: Identifier of the target field
+              example: 70ca0e8a954911ecb4be0242ac160014
+          required:
+          - identifier
+        type:
+          type: string
+          description: Type of the action
+          enum:
+          - jump_to
+          - show_values
+          example: show_values
+        values:
+          type: array
+          description: Values for the action
+          items:
+            type: string
+            example: 73e05aa2b5d311eca17f0242ac160019
+      required:
+      - target_field
+      - type
+      - values
+    TemplateSimpleNumberFormField:
+      allOf:
+      - $ref: '#/components/schemas/BaseTemplateFormField'
+      - type: object
+        properties:
+          type_specific_meta:
+            type: object
+            description: Type-specific meta-information
+            properties:
+              decimal_places:
+                type:
+                - integer
+                - 'null'
+                description: Decimal places allowed for the field
+                example: 2
+              has_thousand_separator:
+                type: boolean
+                description: Whether the field has thousand separators
+                example: true
+            required:
+            - decimal_places
+            - has_thousand_separator
+          logic_rules:
+            $ref: '#/components/schemas/TemplateLogicRule'
+        required:
+        - type_specific_meta
+        - logic_rules
+    TemplateDefaultFormField:
+      allOf:
+      - $ref: '#/components/schemas/BaseTemplateFormField'
+      - type: object
+        properties:
+          type_specific_meta:
+            type:
+            - object
+            - 'null'
+            enum:
+            - null
+            description: Type-specific meta-information
+            example: null
+          logic_rules:
+            $ref: '#/components/schemas/TemplateLogicRule'
+        required:
+        - type_specific_meta
+        - logic_rules
+    TemplateResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseTemplateResponse'
+      - type: object
+        properties:
+          form_fields:
+            type: array
+            description: List of form fields
+            items:
+              oneOf:
+              - $ref: '#/components/schemas/TemplateDefaultFormField'
+              - $ref: '#/components/schemas/TemplateCurrencyNumberFormField'
+              - $ref: '#/components/schemas/TemplateSimpleNumberFormField'
+              - $ref: '#/components/schemas/TemplatePercentageNumberFormField'
+              - $ref: '#/components/schemas/TemplateChoiceFormField'
+              - $ref: '#/components/schemas/TemplateInstructionFormField'
+              discriminator:
+                propertyName: type
+                mapping:
+                  brief: '#/components/schemas/TemplateDefaultFormField'
+                  checkbox: '#/components/schemas/TemplateChoiceFormField'
+                  currency_number: '#/components/schemas/TemplateCurrencyNumberFormField'
+                  date: '#/components/schemas/TemplateDefaultFormField'
+                  dropdown: '#/components/schemas/TemplateChoiceFormField'
+                  file: '#/components/schemas/TemplateDefaultFormField'
+                  instruction: '#/components/schemas/TemplateInstructionFormField'
+                  label: '#/components/schemas/TemplateChoiceFormField'
+                  radio_button: '#/components/schemas/TemplateChoiceFormField'
+                  text_area: '#/components/schemas/TemplateDefaultFormField'
+                  percentage_number: '#/components/schemas/TemplatePercentageNumberFormField'
+                  richtext: '#/components/schemas/TemplateDefaultFormField'
+                  section: '#/components/schemas/TemplateDefaultFormField'
+                  simple_number: '#/components/schemas/TemplateSimpleNumberFormField'
+                  text: '#/components/schemas/TemplateDefaultFormField'
+          links:
+            type: object
+            description: Meta links
+            properties:
+              self:
+                type: string
+                description: URL of the template
+                example: https://api.cmp.optimizely.com/v3/templates/9119a313057e401189407116fcd3aa24
+            required:
+            - self
+        required:
+        - form_fields
+        - links
+    Pagination:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
+    TemplateInstructionFormField:
+      allOf:
+      - $ref: '#/components/schemas/BaseTemplateFormField'
+      - type: object
+        properties:
+          type_specific_meta:
+            type: object
+            description: Type-specific meta-information
+            properties:
+              description:
+                type: string
+                description: Description of the field
+                example: just a message to inform something
+            required:
+            - description
+          logic_rules:
+            $ref: '#/components/schemas/TemplateLogicRule'
+        required:
+        - type_specific_meta
+        - logic_rules
+    TemplatePercentageNumberFormField:
+      allOf:
+      - $ref: '#/components/schemas/BaseTemplateFormField'
+      - type: object
+        properties:
+          type_specific_meta:
+            type: object
+            description: Type-specific meta-information
+            properties:
+              decimal_places:
+                type:
+                - integer
+                - 'null'
+                description: Decimal places allowed for the field
+                example: 2
+            required:
+            - decimal_places
+          logic_rules:
+            $ref: '#/components/schemas/TemplateLogicRule'
+        required:
+        - type_specific_meta
+        - logic_rules
+    TemplateCurrencyNumberFormField:
+      allOf:
+      - $ref: '#/components/schemas/BaseTemplateFormField'
+      - type: object
+        properties:
+          type_specific_meta:
+            type: object
+            description: Type-specific meta-information
+            properties:
+              decimal_places:
+                type:
+                - integer
+                - 'null'
+                description: Decimal places allowed for the field
+                example: 2
+              currency_code:
+                type: string
+                description: Currency code of the field
+                example: USD
+              has_thousand_separator:
+                type: boolean
+                description: Whether the field has thousand separators
+                example: true
+            required:
+            - decimal_places
+            - currency_code
+            - has_thousand_separator
+          logic_rules:
+            $ref: '#/components/schemas/TemplateLogicRule'
+        required:
+        - type_specific_meta
+        - logic_rules
+    ResourceChoiceResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the choice
+          example: 9119a313057e401189407116fcd3
+        name:
+          type: string
+          description: Name of the choice
+          example: Some choice
+      required:
+      - id
+      - name
+    TemplateListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          description: List of templates
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/BaseTemplateResponse'
+            - type: object
+              properties:
+                links:
+                  type: object
+                  description: Meta links
+                  properties:
+                    self:
+                      type: string
+                      description: URL of the template
+                      example: https://api.cmp.optimizely.com/v3/templates/9119a313057e401189407116fcd3aa24
+                  required:
+                  - self
+              required:
+              - links
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/Pagination'
+          - type: object
+            properties:
+              next:
+                type:
+                - string
+                - 'null'
+                example: https://api.cmp.optimizely.com/v3/templates?offset=10&page_size=10
+      required:
+      - data
+      - pagination
+    BaseTemplateFormField:
+      type: object
+      additionalProperties: false
+      properties:
+        identifier:
+          type: string
+          description: Identifier of the field
+          example: attachment
+        label:
+          type:
+          - string
+          - 'null'
+          description: Label of the field
+          example: Attach a file...
+        helper_text:
+          type:
+          - string
+          - 'null'
+          description: Helper text of the field
+          example: Sample helper text
+        is_required:
+          type: boolean
+          description: Required status of the field
+          example: false
+        is_readonly:
+          type: boolean
+          description: Specify if the field can be used to create any resource
+          example: false
+        is_protected:
+          type: boolean
+          description: True when this form field is read-only and only organization admins can modify it. Absent or false for editable fields.
+          example: false
+        sort_order:
+          type: integer
+          description: Sort order of the field
+          example: 0
+        type:
+          type: string
+          description: Type of the field
+          enum:
+          - brief
+          - checkbox
+          - currency_number
+          - date
+          - dropdown
+          - file
+          - instruction
+          - label
+          - percentage_number
+          - radio_button
+          - richtext
+          - section
+          - simple_number
+          - text
+          - text_area
+          example: label
+      required:
+      - identifier
+      - label
+      - helper_text
+      - is_required
+      - is_readonly
+      - sort_order
+      - type
+    TemplateLogicRule:
+      type: array
+      description: List of logic rules
+      items:
+        type: object
+        properties:
+          condition:
+            $ref: '#/components/schemas/TemplateLogicRuleCondition'
+          action:
+            $ref: '#/components/schemas/TemplateLogicRuleAction'
+        required:
+        - condition
+        - action
+    BaseTemplateResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          description: Unique identifier of the template
+          type: string
+          example: 9119a313057e401189407116fcd3aa24
+        is_active:
+          description: Active status of the template
+          type: boolean
+          example: true
+        title:
+          description: Title of the template
+          type: string
+          example: Sample Template Title
+        description:
+          description: Description of the template
+          type: string
+          example: Sample Desciption
+        applicable_to:
+          description: List of resources the template is applicable to
+          type: array
+          items:
+            type: string
+            enum:
+            - work_request
+            - task_brief
+            - campaign_brief
+            example: work_request
+      required:
+      - id
+      - is_active
+      - title
+      - description
+      - applicable_to
+  responses:
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+  parameters:
+    page_size:
+      name: page_size
+      in: query
+      description: Number of results to return per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+      example: 15
+    offset:
+      name: offset
+      in: query
+      description: Starting index of results (zero indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 5
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/auth
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes:
+            openid: Grants the ability to receive a unique identifier for the user.
+            profile: Grants access to user profile information.
+            offline_access: Grants the ability to refresh access_token using the refresh token even when user is not present (not logged in).
+        clientCredentials:
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes: {}
+x-tagGroups:
+- name: API
+  tags:
+  - Uploader
+  - Library
+  - Labels
+  - Brand Compliance
+  - Tasks
+  - Task Step
+  - Campaigns
+  - Publishing
+  - Templates
+  - Users
+  - Work Requests
+  - Structured Contents
+  - Assets
+  - Milestones
+  - Teams
+  - Settings
+  - Workflows
+  - Fields
+  - Events

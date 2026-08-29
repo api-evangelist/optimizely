@@ -1,17 +1,16 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Optimizely Campaign REST Assets Environments API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  title: Optimizely Environments API
+  x-refined-note:
+  - x-logo differs across the merged source definitions and was not carried
   version: '1.0'
-  contact:
-    name: Optimizely Support
-    url: https://support.optimizely.com
-  termsOfService: https://www.optimizely.com/legal/terms/
+  description: 'Operations tagged Environments across 3 of this provider''s published API definitions: optimizely-feature-experimentation-openapi.yml, optimizely-feature-experimentation-optimizely-feature-experimentation-api-openapi.json, optimizely-web-experimentation-optimizely-api-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://api.campaign.episerver.net/rest
-  description: Optimizely Campaign Production Server
-security:
-- basicAuth: []
+- url: https://api.optimizely.com/v2
+  description: Optimizely REST API v2 Management Server
+- url: https://api.optimizely.com/flags/v1
+  description: Optimizely Flags API v1 Server
+- url: https://api.optimizely.com/flags/v1/
 tags:
 - name: Environments
   description: Manage environments within a project for developing, staging, and deploying flag configurations.
@@ -36,6 +35,8 @@ paths:
                   $ref: '#/components/schemas/Environment'
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - bearerAuth: []
     post:
       operationId: createEnvironment
       summary: Create an environment
@@ -59,6 +60,13 @@ paths:
           description: Invalid request body
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.optimizely.com/v2
+      description: Optimizely REST API v2 Management Server
+    - url: https://api.optimizely.com/flags/v1
+      description: Optimizely Flags API v1 Server
   /environments/{environment_id}:
     get:
       operationId: getEnvironment
@@ -79,6 +87,8 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Environment not found
+      security:
+      - bearerAuth: []
     patch:
       operationId: updateEnvironment
       summary: Update an environment
@@ -106,16 +116,189 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Environment not found
+      security:
+      - bearerAuth: []
+    delete:
+      description: Archive an Environment
+      operationId: delete_environment
+      parameters:
+      - description: The ID of the Environment you'd like to archive
+        in: path
+        name: environment_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '204':
+          description: Successfully archived the Environment
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to archive this Environment
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid Environment ID supplied
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Archive an Environment
+      tags:
+      - Environments
+      x-release-state: beta
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.optimizely.com/v2
+      description: Optimizely REST API v2 Management Server
+    - url: https://api.optimizely.com/flags/v1
+      description: Optimizely Flags API v1 Server
+  /projects/{project_id}/environments:
+    get:
+      description: 'Get a list of Environments within a Project
+
+        You can use query parameters to filter/sort the response.
+
+        '
+      operationId: list_environments
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/perPage'
+      - $ref: '#/components/parameters/pageToken'
+      - $ref: '#/components/parameters/pageWindow'
+      - description: 'Filter the Environments by archived. An Environment can be either archived (archived=true) or unarchived (archived=false)
+
+          '
+        in: query
+        name: archived
+        required: false
+        schema:
+          type: boolean
+      - allowReserved: true
+        description: 'Sort the Environments based on the attributes from left to right.
+
+          '
+        in: query
+        name: sort
+        required: false
+        schema:
+          items:
+            enum:
+            - priority:asc
+            - priority:desc
+            type: string
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Environments'
+          description: 'Successful retrieval of a page of Environments.
+
+
+            The response includes RESTful JSON (https://restfuljson.org/) styled links and pagination metadata.
+
+            Objects in this API MAY include a url property for a link to itself and MAY append _url to properties for related links.
+
+            If a link is not present in the response, it indicates a user is not authorized to access the related resource.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+      summary: List Environments
+      tags:
+      - Environments
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/flags/v1/
+  /environments/{environment_id}/datafile:
+    get:
+      description: 'Get the datafile for an Environment.
+
+        The <a href="https://docs.developers.optimizely.com/full-stack/docs/example-datafile">Datafile</a> is a JSON
+
+        string that describes to the Full Stack SDK all the experiments and features running in a given environment and
+
+        dependent entities like audiences and attributes. Normally, you won''t need to interact
+
+        with the datafile directly. The SDK exposes methods that operate on it internally.
+
+        '
+      operationId: get_datafile
+      parameters:
+      - description: The Environment ID for the datafile you want to get.
+        in: path
+        name: environment_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: Return Datafile for the Environment specified
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access specified Environment
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Environment not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Read the datafile of an Environment
+      tags:
+      - Environments
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
 components:
   parameters:
-    environmentId:
-      name: environment_id
-      in: path
-      required: true
-      description: The unique identifier for the environment
-      schema:
-        type: integer
-        format: int64
     projectIdQuery:
       name: project_id
       in: query
@@ -124,20 +307,61 @@ components:
       schema:
         type: integer
         format: int64
+    environmentId:
+      name: environment_id
+      in: path
+      required: true
+      description: The unique identifier for the environment
+      schema:
+        type: integer
+        format: int64
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
+    page:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
   schemas:
-    EnvironmentInput:
-      type: object
-      description: Input for creating or updating an environment
-      properties:
-        key:
-          type: string
-          description: Unique key for the environment
-        name:
-          type: string
-          description: Human-readable name of the environment
-        is_primary:
-          type: boolean
-          description: Whether this is the primary environment
     Environment:
       type: object
       description: An environment within a project for managing flag configurations
@@ -170,11 +394,354 @@ components:
           type: string
           format: date-time
           description: Timestamp when the environment was created
+    EnvironmentInput:
+      type: object
+      description: Input for creating or updating an environment
+      properties:
+        key:
+          type: string
+          description: Unique key for the environment
+        name:
+          type: string
+          description: Human-readable name of the environment
+        is_primary:
+          type: boolean
+          description: Whether this is the primary environment
+    UrlValue:
+      description: A single url.
+      type: string
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
+      properties:
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
+      type: object
+    UrlList:
+      description: A list of urls.
+      items:
+        type: string
+      type: array
+    Environments:
+      properties:
+        count:
+          description: Number of Environments on the current page.
+          example: 2
+          type: integer
+        filter_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Url template like '.../{?filter}'
+          example: /projects/123/environments?archived=false
+        first_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to first page of Environments in a series.
+          example: /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
+        items:
+          items:
+            $ref: '#/components/schemas/Environment_2'
+          type: array
+        last_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the last page of Environments in a series.
+          example: /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#10
+        next_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: "List of links to next pages of Environments in a series.\n\n The first element in the array is the exact next page after the current record, etc.\n"
+          example:
+          - /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#6
+          - /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#7
+        page:
+          description: Number of the current page. 1-index based.
+          example: 5
+          type: integer
+        prev_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: 'List of links to previous pages of Environments in a series.
+
+
+            The first element in the array is the exact previous page before the current record, etc.
+
+            '
+          example:
+          - /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#4
+          - /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
+        reset_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the default pages of Environments
+          example: '...'
+        total_count:
+          description: Total number of Environments for this series.
+          example: 20
+          type: integer
+        total_pages:
+          description: Total number of pages for this series.
+          example: 10
+          type: integer
+        url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to self
+      required:
+      - url
+      - first_url
+      - last_url
+      - count
+      - page
+      - total_count
+      - total_pages
+      - items
+      type: object
+    Environment_2:
+      properties:
+        account_id:
+          description: The ID of the Account
+          format: int64
+          readOnly: true
+          type: integer
+        archived:
+          example: false
+          type: boolean
+        id:
+          description: The ID of the Environment
+          format: int64
+          readOnly: true
+          type: integer
+        key:
+          description: User-facing key to identify this Environment.
+          example: production
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\-]+$
+          type: string
+        name:
+          description: Name of the Environment.
+          example: Production
+          type: string
+        priority:
+          description: Integer representing the priority of the Environment. This is used for ordering in the UI.
+          example: 1
+          type: integer
+        project_id:
+          description: The ID of the Project this Flag belongs to
+          format: int64
+          readOnly: true
+          type: integer
+        revision:
+          description: Revision number for tracking changes
+          readOnly: true
+          type: integer
+        role:
+          description: Granular permission role
+          example: admin
+          readOnly: true
+          type: string
+      required:
+      - key
+      - name
+      - archived
+      - priority
+      - project_id
+      type: object
+    EnvironmentUpdate:
+      properties:
+        archived:
+          description: Boolean representing whether the Environment is archived.
+          example: false
+          type: boolean
+        description:
+          description: Text description of the Environment.
+          example: For testing purposes before deploying to Production
+          type: string
+        has_restricted_permissions:
+          default: false
+          description: Boolean representing whether starting experiments should be restricted to publishers and above in this Environment.
+          type: boolean
+        key:
+          description: Unique string identifier for this Environment within the Project.
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\-]+$
+          type: string
+        name:
+          description: Name of the Environment.
+          example: Staging
+          type: string
+        priority:
+          description: Integer representing the priority of the Environment. This is used for ordering in the UI.
+          example: 3
+          type: integer
+      type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    Environment_3:
+      properties:
+        archived:
+          description: Boolean representing whether the Environment is archived.
+          example: false
+          type: boolean
+        created:
+          description: Created time.
+          readOnly: true
+          type: string
+        datafile:
+          $ref: '#/components/schemas/Datafile'
+        description:
+          description: A short description of the Environment.
+          example: For testing purposes before deploying to Production
+          type: string
+        has_restricted_permissions:
+          default: false
+          description: Boolean representing whether starting experiments should be restricted to publishers and above in this Environment.
+          type: boolean
+        id:
+          description: ID of this Environment.
+          readOnly: true
+          type: integer
+        is_primary:
+          description: Boolean representing if this is the primary (default) Environment.
+          readOnly: true
+          type: boolean
+        key:
+          description: Unique string identifier for this Environment within the Project.
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\-]+$
+          type: string
+        last_modified:
+          description: Last modification time.
+          readOnly: true
+          type: string
+        name:
+          description: Name of the Environment.
+          example: Staging
+          type: string
+        priority:
+          description: Integer representing the priority of the Environment. This is used for ordering in the UI.
+          example: 3
+          type: integer
+        project_id:
+          description: ID of the project of the Environment.
+          type: integer
+      required:
+      - name
+      - project_id
+      - key
+      type: object
+    Datafile:
+      properties:
+        id:
+          description: ID of Datafile.
+          readOnly: true
+          type: integer
+        latest_file_size:
+          description: The current size in bytes of the Datafile.
+          readOnly: true
+          type: integer
+        other_urls:
+          description: List of other URLs where this Datafile is also available.
+          items:
+            format: url
+            type: string
+          readOnly: true
+          type: array
+        revision:
+          description: Current revision number.
+          readOnly: true
+          type: integer
+        sdk_key:
+          description: Unique key to identify this specific Environment and Datafile programmatically in our SDKs.
+          readOnly: true
+          type: string
+        url:
+          description: URL where this Datafile is available.
+          format: url
+          readOnly: true
+          type: string
+      type: object
+  responses:
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
   securitySchemes:
-    basicAuth:
+    bearerAuth:
       type: http
-      scheme: basic
-      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+      scheme: bearer
+      description: OAuth 2.0 Bearer token or personal access token for authentication.
+    BearerAuth:
+      description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      scheme: bearer
+      type: http
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Grants all access
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http
 externalDocs:
-  description: Optimizely Campaign REST API Documentation
-  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+  description: Optimizely Feature Experimentation API Documentation
+  url: https://docs.developers.optimizely.com/feature-experimentation/reference/feature-experimentation-api-overview
+x-refined-from:
+- optimizely-feature-experimentation-openapi.yml
+- optimizely-feature-experimentation-optimizely-feature-experimentation-api-openapi.json
+- optimizely-web-experimentation-optimizely-api-openapi.json

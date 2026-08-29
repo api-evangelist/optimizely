@@ -1,0 +1,529 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Invoices API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Invoices
+paths:
+  /api/v1/invoices:
+    get:
+      tags:
+      - Invoices
+      operationId: InvoicesV1_GetCollectionAsync
+      parameters:
+      - name: parameter.customerSequence
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: parameter.invoiceNumber
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: parameter.orderNumber
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: parameter.fromDate
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: parameter.toDate
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: parameter.showOpenOnly
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: parameter.statusCollection
+        in: query
+        required: false
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: parameter.invoiceTotalOperator
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: parameter.poNumber
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: parameter.terms
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: parameter.currentPage
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.sort
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceCollectionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceCollectionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceCollectionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceCollectionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceCollectionModel'
+      security:
+      - access_token: []
+  /api/v1/invoices/{invoiceId}:
+    get:
+      tags:
+      - Invoices
+      operationId: InvoicesV1_GetAsync
+      parameters:
+      - name: invoiceId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceModel'
+      security:
+      - access_token: []
+  /api/v1/invoices/shareinvoice:
+    post:
+      tags:
+      - Invoices
+      operationId: InvoicesV1_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Email.WebApi.V1.ApiModels.ShareEntityModel'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Email.WebApi.V1.ApiModels.ShareEntityModel'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Email.WebApi.V1.ApiModels.ShareEntityModel'
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Email.WebApi.V1.ApiModels.ShareEntityModel'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Insite.Email.WebApi.V1.ApiModels.ShareEntityModel'
+          text/html:
+            schema:
+              $ref: '#/components/schemas/Insite.Email.WebApi.V1.ApiModels.ShareEntityModel'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Email.WebApi.V1.ApiModels.ShareEntityModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Email.WebApi.V1.ApiModels.ShareEntityModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Email.WebApi.V1.ApiModels.ShareEntityModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Email.WebApi.V1.ApiModels.ShareEntityModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Email.WebApi.V1.ApiModels.ShareEntityModel'
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Core.WebApi.SortOptionModel:
+      type: object
+      properties:
+        displayName:
+          type: string
+        sortType:
+          type: string
+    Insite.Invoice.WebApi.V1.ApiModels.InvoiceCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        showErpOrderNumber:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Invoice.Services.Dtos.InvoiceHistoryTaxDto:
+      type: object
+      properties:
+        taxCode:
+          type: string
+        taxDescription:
+          type: string
+        taxRate:
+          format: decimal
+          type: number
+        taxAmount:
+          format: decimal
+          type: number
+        taxAmountDisplay:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+    Insite.Email.WebApi.V1.ApiModels.ShareEntityModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        emailTo:
+          type: string
+        emailFrom:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+        entityId:
+          type: string
+        entityName:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.WebApi.PaginationModel:
+      type: object
+      properties:
+        currentPage:
+          format: int32
+          type: integer
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        defaultPageSize:
+          format: int32
+          type: integer
+        totalItemCount:
+          format: int32
+          type: integer
+        numberOfPages:
+          format: int32
+          type: integer
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
+        sortType:
+          type: string
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
+          type: string
+    Insite.Invoice.WebApi.V1.ApiModels.InvoiceModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        invoiceNumber:
+          type: string
+        invoiceDate:
+          format: date-time
+          type: string
+        dueDate:
+          format: date-time
+          type: string
+        invoiceType:
+          type: string
+        customerNumber:
+          type: string
+        customerSequence:
+          type: string
+        customerPO:
+          type: string
+        status:
+          type: string
+        isOpen:
+          type: boolean
+        currencyCode:
+          type: string
+        terms:
+          type: string
+        shipCode:
+          type: string
+        salesperson:
+          type: string
+        btCompanyName:
+          type: string
+        btAddress1:
+          type: string
+        btAddress2:
+          type: string
+        billToCity:
+          type: string
+        billToState:
+          type: string
+        billToPostalCode:
+          type: string
+        btCountry:
+          type: string
+        stCompanyName:
+          type: string
+        stAddress1:
+          type: string
+        stAddress2:
+          type: string
+        shipToCity:
+          type: string
+        shipToState:
+          type: string
+        shipToPostalCode:
+          type: string
+        stCountry:
+          type: string
+        notes:
+          type: string
+        productTotal:
+          format: decimal
+          type: number
+        discountAmount:
+          format: decimal
+          type: number
+        shippingAndHandling:
+          format: decimal
+          type: number
+        otherCharges:
+          format: decimal
+          type: number
+        taxAmount:
+          format: decimal
+          type: number
+        invoiceTotal:
+          format: decimal
+          type: number
+        currentBalance:
+          format: decimal
+          type: number
+        invoiceLines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceLineModel'
+        invoiceHistoryTaxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Invoice.Services.Dtos.InvoiceHistoryTaxDto'
+        invoiceTotalDisplay:
+          type: string
+        productTotalDisplay:
+          type: string
+        discountAmountDisplay:
+          type: string
+        taxAmountDisplay:
+          type: string
+        shippingAndHandlingDisplay:
+          type: string
+        otherChargesDisplay:
+          type: string
+        currentBalanceDisplay:
+          type: string
+        orderTotalDisplay:
+          type: string
+        shipViaDescription:
+          type: string
+        customerVatNumber:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Invoice.WebApi.V1.ApiModels.InvoiceLineModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        productUri:
+          type: string
+        mediumImagePath:
+          type: string
+        altText:
+          type: string
+        productName:
+          type: string
+        manufacturerItem:
+          type: string
+        customerName:
+          type: string
+        shortDescription:
+          type: string
+        productERPNumber:
+          type: string
+        customerProductNumber:
+          type: string
+        lineType:
+          type: string
+        erpOrderNumber:
+          type: string
+        lineNumber:
+          type: string
+        releaseNumber:
+          format: decimal
+          type: number
+        linePOReference:
+          type: string
+        description:
+          type: string
+        warehouse:
+          type: string
+        notes:
+          type: string
+        qtyInvoiced:
+          format: decimal
+          type: number
+        unitOfMeasure:
+          type: string
+        unitPrice:
+          format: decimal
+          type: number
+        discountPercent:
+          format: decimal
+          type: number
+        discountAmount:
+          format: decimal
+          type: number
+        lineTotal:
+          format: decimal
+          type: number
+        shipmentNumber:
+          type: string
+        unitPriceDisplay:
+          type: string
+        discountAmountDisplay:
+          type: string
+        lineTotalDisplay:
+          type: string
+        taxRate:
+          format: decimal
+          type: number
+        taxAmount:
+          format: decimal
+          type: number
+        brand:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BrandDto'
+        netPriceWithVat:
+          format: decimal
+          type: number
+        netPriceWithVatDisplay:
+          type: string
+        unitPriceWithVat:
+          format: decimal
+          type: number
+        unitPriceWithVatDisplay:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.BrandDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        urlSegment:
+          type: string
+        logoSmallImagePath:
+          type: string
+        logoLargeImagePath:
+          type: string
+        logoImageAltText:
+          type: string
+        detailPagePath:
+          type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

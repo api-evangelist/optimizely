@@ -1,0 +1,714 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Coupon blocks API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Coupon blocks
+  description: Manage coupon blocks that organize coupon codes
+paths:
+  /{clientId}/couponblocks:
+    get:
+      tags:
+      - Coupon blocks
+      summary: Get information about all coupon blocks
+      description: Get detailed information about all coupon blocks, such as name, coupon source or if valid coupon codes are used for testing.
+      operationId: selectCouponBlocks
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved coupon blocks <p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: couponSource
+        in: query
+        description: Coupon source of the coupon block
+        required: true
+        schema:
+          type: string
+          enum:
+          - static
+          - generated
+          - ean13barcode
+          - twooffivebarcode
+          - code128barcode
+          - code128abarcode
+          - code128bbarcode
+          - code128cbarcode
+      responses:
+        '200':
+          description: The coupon blocks were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCouponBlockStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestCouponBlockStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Coupon blocks
+      summary: Create a new coupon block
+      description: Create a new coupon block and specify type, internal name and if it should use valid coupon codes.
+      operationId: createCouponBlock
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CouponBlockRequestData'
+      responses:
+        '201':
+          description: The coupon block was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCouponBlock'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestCouponBlock'
+      security:
+      - Authorization: []
+  /{clientId}/couponblocks/{couponBlockId}:
+    get:
+      tags:
+      - Coupon blocks
+      summary: Get information about a coupon block
+      description: Get detailed information about a coupon block, such as name, coupon source or if valid coupon codes are used for testing.
+      operationId: getCouponBlock
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: couponBlockId
+        in: path
+        description: Coupon block ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The coupon block was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCouponBlock'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestCouponBlock'
+        '404':
+          description: The coupon block could not be found. Ensure that the required parameters such as "couponBlockId" are correct and the coupon block exists.
+        '409':
+          description: The coupon block is not assigned to the indicated client. Ensure that "clientId" and "couponBlockId" are correct and that the "couponBlockId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Coupon blocks
+      summary: Delete a coupon block
+      operationId: deleteCouponBlock
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: couponBlockId
+        in: path
+        description: Coupon block ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The coupon block was deleted successfully.
+        '404':
+          description: The coupon block could not be found. Ensure that the required parameters such as "couponBlockId" are correct and the coupon block exists.
+        '409':
+          description: The coupon block is not assigned to the indicated client. Ensure that "clientId" and "couponBlockId" are correct and that the "couponBlockId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+  /{clientId}/couponblocks/{couponBlockId}/codes:
+    get:
+      tags:
+      - Coupon blocks
+      summary: Get information about coupon codes
+      description: Get detailed information about all unassigned coupon codes. You can limit the maximum number of retrieved coupon codes and sort the result by specific criteria. To get information about all assigned and/or used coupon codes, filter by recipient ID or mailing ID.
+      operationId: selectCouponCodes
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: offset
+        in: query
+        description: 'Starting point of the result list <p><i>Default value</i> : 0</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved coupon codes <p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: codeAssignment
+        in: query
+        description: 'The status of the coupon codes to be filtered. Possible values are: assigned, unassigned, all'
+        schema:
+          type: string
+          enum:
+          - ASSIGNED
+          - UNASSIGNED
+          - ALL
+      - name: mailingId
+        in: query
+        description: Mailing IDs to which the coupon codes are assigned
+        schema:
+          type: integer
+          format: int64
+      - name: recipientId
+        in: query
+        description: Recipient IDs to which the coupon codes are assigned
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Sort result by specific criteria
+        schema:
+          type: string
+          enum:
+          - CODE
+      - name: direction
+        in: query
+        description: Sort order
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+      - name: couponBlockId
+        in: path
+        description: Coupon block ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The coupon codes were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCouponCodeStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestCouponCodeStreamingCollection'
+        '400':
+          description: The "codeAssignment" parameter is provided simultaneously with the "mailingId" or the "recipientId", or the limit parameter is invalid. Change the limit to less than 10000.
+        '404':
+          description: The coupon block could not be found. Ensure that the required parameters such as "couponBlockId" are correct and the coupon block exists.
+        '409':
+          description: The coupon block is not assigned to the indicated client. Ensure that "clientId" and "couponBlockId" are correct and that the "couponBlockId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Coupon blocks
+      summary: Create a list of coupon codes
+      operationId: createCouponCodes
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: couponBlockId
+        in: path
+        description: Coupon block ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CouponCodeRequestData'
+      responses:
+        '201':
+          description: The coupon codes were created successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestCouponCode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestCouponCode'
+        '400':
+          description: The request parameters are invalid.
+        '404':
+          description: The coupon block could not be found. Ensure that the required parameters such as "couponBlockId" are correct and the coupon block exists.
+        '409':
+          description: The coupon block is not assigned to the indicated client. Ensure that "clientId" and "couponBlockId" are correct and that the "couponBlockId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Coupon blocks
+      summary: Delete coupon codes
+      operationId: deleteAllCouponCodes
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: codes
+        in: query
+        description: Coupon codes to be deleted
+        required: true
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: couponBlockId
+        in: path
+        description: Coupon block ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The coupon codes were deleted successfully.
+        '404':
+          description: The coupon block could not be found. Ensure that the required parameters such as "couponBlockId" are correct and the coupon block exists.
+        '409':
+          description: The coupon block is not assigned to the indicated client. Ensure that "clientId" and "couponBlockId" are correct and that the "couponBlockId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+  /{clientId}/couponblocks/{couponBlockId}/codes/{code}:
+    get:
+      tags:
+      - Coupon blocks
+      summary: Get information about a coupon code
+      description: Get detailed information about a coupon code, such as code, mailing assignment or recipient assignment.
+      operationId: getCouponCode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: code
+        in: path
+        description: Coupon code
+        required: true
+        schema:
+          type: string
+      - name: couponBlockId
+        in: path
+        description: Coupon block ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The coupon code was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCouponCode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestCouponCode'
+        '404':
+          description: The coupon code could not be found. Ensure that the required parameters such as "couponBlockId" are correct and the coupon code exists.
+        '409':
+          description: The coupon code is not assigned to the indicated client. Ensure that "clientId" and the coupon code are correct and that the "couponBlockId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Coupon blocks
+      summary: Invalidate a coupon code
+      description: Mark a coupon code as used.
+      operationId: markAsUsed
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: code
+        in: path
+        description: Coupon code
+        required: true
+        schema:
+          type: string
+      - name: couponBlockId
+        in: path
+        description: Coupon block ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The coupon code was invalidated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCouponCode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestCouponCode'
+        '404':
+          description: The coupon code could not be found. Ensure that the required parameters such as "couponBlockId" are correct and the coupon code exists.
+        '409':
+          description: The coupon code is not assigned to the indicated client. Ensure that "clientId" and the coupon code are correct and that the "couponBlockId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Coupon blocks
+      summary: Delete a coupon code
+      operationId: deleteCouponCode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: code
+        in: path
+        description: Coupon code
+        required: true
+        schema:
+          type: string
+      - name: couponBlockId
+        in: path
+        description: Coupon block ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The coupon code was deleted successfully.
+        '404':
+          description: The coupon code could not be found. Ensure that the required parameters such as "couponBlockId" are correct and the coupon code exists.
+        '409':
+          description: The coupon code is not assigned to the indicated client. Ensure that "clientId" and the coupon code are correct and that the "couponBlockId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+  /{clientId}/couponblocks/{couponBlockId}/assignedmailings:
+    get:
+      tags:
+      - Coupon blocks
+      summary: Get all mailing IDs a coupon block is assigned to
+      description: Get all mailing IDs to which a specified coupon block is assigned.
+      operationId: getAllAssignedMailings
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: couponBlockId
+        in: path
+        description: Coupon block ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The mailing IDs were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestAssignedMailings'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestAssignedMailings'
+        '404':
+          description: The coupon block could not be found. Ensure that the required parameters such as "couponBlockId" are correct and the coupon block exists.
+        '409':
+          description: The coupon block is not assigned to the indicated client. Ensure that "clientId" and "couponBlockId" are correct and that the "couponBlockId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+components:
+  schemas:
+    RestCouponCodeStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestCouponCode'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestCouponCode:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Coupon code
+        assignedMailing:
+          type: integer
+          description: Mailing assigned to the coupon code
+          format: int64
+        assignedRecipient:
+          type: string
+          description: Recipient assigned to the coupon code
+        assigned:
+          type: boolean
+          description: If true, the code of the coupon block is assigned to a mailing
+        used:
+          type: boolean
+          description: If true, the code of the coupon block was used
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+    RestCouponBlockCounter:
+      type: object
+      properties:
+        codeCount:
+          type: integer
+          description: Number of all coupon codes
+          format: int64
+        assigned:
+          type: integer
+          description: Number of all assigned coupon codes
+          format: int64
+        unassigned:
+          type: integer
+          description: Number of all available coupon codes
+          format: int64
+      description: Counter of coupon codes
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    CouponBlockRequestData:
+      required:
+      - couponSource
+      - name
+      type: object
+      properties:
+        couponSource:
+          type: string
+          description: Coupon source of the coupon block
+          enum:
+          - static
+          - generated
+          - ean13barcode
+          - twooffivebarcode
+          - code128barcode
+          - code128abarcode
+          - code128bbarcode
+          - code128cbarcode
+        useRealCodesForTestMails:
+          type: boolean
+          description: If true, valid codes for test mails are used
+        name:
+          type: string
+          description: Internal name of the coupon block
+    CouponCodeRequestData:
+      required:
+      - codes
+      type: object
+      properties:
+        codes:
+          type: array
+          description: List of coupon codes
+          items:
+            type: string
+            description: List of coupon codes
+    RestCouponBlockStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestCouponBlock'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestAssignedMailings:
+      type: object
+      properties:
+        mailingIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+    RestCouponBlock:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Coupon block ID
+          format: int64
+        name:
+          type: string
+          description: Coupon block name
+        couponSource:
+          type: string
+          description: Coupon source of the coupon block
+        useRealCodesForTestMails:
+          type: boolean
+          description: If true, valid codes for test mails are used
+        counter:
+          $ref: '#/components/schemas/RestCouponBlockCounter'
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

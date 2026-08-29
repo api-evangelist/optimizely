@@ -1,0 +1,63 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Brandalphabet API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Brandalphabet
+paths:
+  /api/v1/brandalphabet:
+    get:
+      tags:
+      - Brandalphabet
+      operationId: BrandAlphabetV1_GetAsync
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Brands.WebApi.V1.ApiModels.BrandAlphabetModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Brands.WebApi.V1.ApiModels.BrandAlphabetModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Brands.WebApi.V1.ApiModels.BrandAlphabetModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Brands.WebApi.V1.ApiModels.BrandAlphabetModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Brands.WebApi.V1.ApiModels.BrandAlphabetModel'
+components:
+  schemas:
+    Insite.Brands.WebApi.V1.ApiModels.BrandAlphabetLetterModel:
+      type: object
+      properties:
+        letter:
+          type: string
+        count:
+          format: int32
+          type: integer
+    Insite.Brands.WebApi.V1.ApiModels.BrandAlphabetModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        alphabet:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Brands.WebApi.V1.ApiModels.BrandAlphabetLetterModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

@@ -1,17 +1,13 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Optimizely Campaign REST Assets Attributes API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
-  version: '1.0'
-  contact:
-    name: Optimizely Support
-    url: https://support.optimizely.com
-  termsOfService: https://www.optimizely.com/legal/terms/
+  title: Optimizely Attributes API
+  version: '2.0'
+  description: 'Operations tagged Attributes across 3 of this provider''s published API definitions: optimizely-feature-experimentation-openapi.yml, optimizely-web-experimentation-openapi.yml, optimizely-web-experimentation-optimizely-api-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://api.campaign.episerver.net/rest
-  description: Optimizely Campaign Production Server
-security:
-- basicAuth: []
+- url: https://api.optimizely.com/v2
+  description: Optimizely REST API v2 Management Server
+- url: https://api.optimizely.com/flags/v1
+  description: Optimizely Flags API v1 Server
 tags:
 - name: Attributes
   description: Manage custom attributes used for audience targeting and segmentation.
@@ -38,17 +34,225 @@ paths:
                   $ref: '#/components/schemas/Attribute'
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - bearerAuth: []
+    post:
+      description: Create an Attribue
+      operationId: create_attribute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Attribute_3'
+        description: A string in JSON format that includes all the fields to create a new Attribute
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attribute_3'
+          description: Successfully created the Attribute
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request body content
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Create an Attribute
+      tags:
+      - Attributes
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.optimizely.com/v2
+      description: Optimizely REST API v2 Management Server
+    - url: https://api.optimizely.com/flags/v1
+      description: Optimizely Flags API v1 Server
+  /attributes/{attribute_id}:
+    delete:
+      description: Archive Attribute by ID
+      operationId: delete_attribute
+      parameters:
+      - description: The ID of the Attribute you'd like to archive
+        in: path
+        name: attribute_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '204':
+          description: Successfully archived Attribute
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to archive the specified Attribute.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Attribute not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Archive an Attribute
+      tags:
+      - Attributes
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    get:
+      description: Get Attribute by ID
+      operationId: get_attribute
+      parameters:
+      - description: The Attribute ID of the Attribute you want to get
+        in: path
+        name: attribute_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attribute_3'
+          description: Successfully retrieved Attribute
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access specified Attribute.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Attribute not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Read an Attribute
+      tags:
+      - Attributes
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    patch:
+      description: Update an Attribute by ID
+      operationId: update_attribute
+      parameters:
+      - description: The ID of the Attribute you'd like to update
+        in: path
+        name: attribute_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttributeUpdate'
+        description: A string in JSON format that includes all the fields you'd like to change for an Attribute
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attribute_3'
+          description: Successfully updated the Attribute
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request body content
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to update the specified Attribute.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Attribute not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Update an Attribute
+      tags:
+      - Attributes
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
 components:
   parameters:
-    page:
-      name: page
+    projectIdQuery:
+      name: project_id
       in: query
-      required: false
-      description: Page number for pagination
+      required: true
+      description: The unique identifier for the project to filter by
       schema:
         type: integer
-        default: 1
-        minimum: 1
+        format: int64
     perPage:
       name: per_page
       in: query
@@ -59,14 +263,34 @@ components:
         default: 25
         minimum: 1
         maximum: 100
-    projectIdQuery:
-      name: project_id
+    page:
+      name: page
       in: query
-      required: true
-      description: The unique identifier for the project to filter by
+      required: false
+      description: Page number for pagination
       schema:
         type: integer
-        format: int64
+        default: 1
+        minimum: 1
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
   schemas:
     Attribute:
       type: object
@@ -93,11 +317,127 @@ components:
           type: string
           format: date-time
           description: Timestamp when the attribute was last modified
+    Attribute_2:
+      type: object
+      description: A custom attribute for audience targeting and segmentation
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the attribute
+        project_id:
+          type: integer
+          format: int64
+          description: The project this attribute belongs to
+        name:
+          type: string
+          description: Human-readable name of the attribute
+        key:
+          type: string
+          description: Unique key for the attribute within the project
+        condition_type:
+          type: string
+          description: The type of condition this attribute supports
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the attribute was last modified
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    Attribute_3:
+      properties:
+        archived:
+          default: false
+          description: Whether or not the Attribute has been archived
+          type: boolean
+        condition_type:
+          default: custom_attribute
+          description: Whether this Attribute is a custom dimension or custom attribute. If this is a custom dimension, it belongs to an Optimizely Classic experiment and is read-only.
+          enum:
+          - custom_attribute
+          - custom_dimension
+          readOnly: true
+          type: string
+        description:
+          description: A short description of the Attribute
+          type: string
+        id:
+          description: The unique identifier for the Attribute
+          format: int64
+          readOnly: true
+          type: integer
+        key:
+          description: Unique string identifier for this Attribute within the project
+          example: subscriber_status
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\- .]+$
+          type: string
+        last_modified:
+          description: The last time the Attribute was modified
+          format: date-time
+          readOnly: true
+          type: string
+        name:
+          description: The name of the Attribute. For Full Stack projects, the name will be set to the value of the key.
+          example: Subscriber Status
+          type: string
+        project_id:
+          description: The ID of the project the Attribute belongs to
+          example: 17738411154
+          format: int64
+          type: integer
+      required:
+      - key
+      - project_id
+      type: object
+    AttributeUpdate:
+      properties:
+        archived:
+          default: false
+          description: Whether or not the Attribute has been archived
+          type: boolean
+        description:
+          description: A short description of the Attribute
+          type: string
+        key:
+          description: Unique string identifier for this Attribute within the project
+          example: subscriber_status
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\- .]+$
+          type: string
+        name:
+          description: The name of the Attribute
+          example: Subscriber Status
+          type: string
+      type: object
   securitySchemes:
-    basicAuth:
+    bearerAuth:
       type: http
-      scheme: basic
-      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
-externalDocs:
-  description: Optimizely Campaign REST API Documentation
-  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+      scheme: bearer
+      description: OAuth 2.0 Bearer token or personal access token for authentication.
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http
+x-refined-from:
+- optimizely-feature-experimentation-openapi.yml
+- optimizely-web-experimentation-openapi.yml
+- optimizely-web-experimentation-optimizely-api-openapi.json

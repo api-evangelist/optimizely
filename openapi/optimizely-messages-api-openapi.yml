@@ -1,0 +1,1433 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Messages API
+  version: '1.0'
+  description: 'Operations tagged Messages across 2 of this provider''s published API definitions: optimizely-configured-commerce-admin-api-v1-openapi.json, optimizely-configured-commerce-storefront-api-v1-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Messages
+paths:
+  /api/v1/admin/Messages:
+    get:
+      tags:
+      - Messages
+      summary: Returns the EntitySet Messages
+      operationId: Messages_Get
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    post:
+      tags:
+      - Messages
+      summary: Post a new entity to EntitySet Messages
+      operationId: Messages_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.Message'
+        description: The entity to post
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/Messages({id}):
+    get:
+      tags:
+      - Messages
+      summary: Returns the entity with the key from Messages
+      operationId: Messages_GetById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    put:
+      tags:
+      - Messages
+      summary: Replace entity in EntitySet Messages
+      operationId: Messages_PutById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.Message'
+        description: The entity to put
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    delete:
+      tags:
+      - Messages
+      summary: Delete entity in EntitySet Messages
+      operationId: Messages_DeleteById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: If-Match
+        in: header
+        description: If-Match header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Messages
+      summary: Update entity in EntitySet Messages
+      operationId: Messages_PatchById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.Message'
+        description: The entity to patch
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/Messages/Default.Default():
+    get:
+      tags:
+      - Messages
+      summary: Call operation  Default
+      operationId: Messages_Default
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/messages/delete:
+    delete:
+      tags:
+      - Messages
+      operationId: Messages_DeleteRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/messages({key})/customerorderchanges({customerorderchangeKey}):
+    get:
+      tags:
+      - Messages
+      operationId: Messages_GetCustomerOrderChangeByKeyAndCustomerorderchangekey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: customerorderchangeKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/messages({key})/customproperties({custompropertyKey}):
+    get:
+      tags:
+      - Messages
+      operationId: Messages_GetCustomPropertyByKeyAndCustompropertykey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: custompropertyKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/messages({key})/messageaudits({messageauditKey}):
+    get:
+      tags:
+      - Messages
+      operationId: Messages_GetMessageAuditByKeyAndMessageauditkey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: messageauditKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/messages({key})/messagestatuses({messagestatusKey}):
+    get:
+      tags:
+      - Messages
+      operationId: Messages_GetMessageStatusByKeyAndMessagestatuskey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: messagestatusKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/messages({key})/messagetargets({messagetargetKey}):
+    get:
+      tags:
+      - Messages
+      operationId: Messages_GetMessageTargetByKeyAndMessagetargetkey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: messagetargetKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/messages:
+    get:
+      tags:
+      - Messages
+      operationId: MessagesV1_GetCollectionAsync
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageCollectionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageCollectionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageCollectionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageCollectionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageCollectionModel'
+      security:
+      - access_token: []
+    post:
+      tags:
+      - Messages
+      operationId: MessagesV1_PostAsync
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageParameter'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageParameter'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageParameter'
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageParameter'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageParameter'
+          text/html:
+            schema:
+              $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageParameter'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/messages/{messageId}:
+    get:
+      tags:
+      - Messages
+      operationId: MessagesV1_GetAsync
+      parameters:
+      - name: messageId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Messages
+      operationId: MessagesV1_PatchAsync
+      parameters:
+      - name: messageId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+          text/html:
+            schema:
+              $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+components:
+  schemas:
+    Insite.Data.Entities.Message:
+      required:
+      - subject
+      - body
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        subject:
+          maxLength: 250
+          minLength: 0
+          type: string
+        dateToDisplay:
+          format: date-time
+          type: string
+        body:
+          type: string
+        dateToHide:
+          format: date-time
+          type: string
+        languageId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.FieldScoreModel:
+      type: object
+      properties:
+        name:
+          type: string
+        score:
+          format: float
+          type: number
+    Insite.Catalog.WebApi.V2.ApiModels.Product.TraitValueModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        value:
+          type: string
+        valueDisplay:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        isDefault:
+          type: boolean
+        swatchType:
+          type: string
+        swatchImageValue:
+          type: string
+        swatchColorValue:
+          type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ProductLineModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ConfigurationModel:
+      type: object
+      properties:
+        configSections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.ConfigSectionModel'
+        hasDefaults:
+          type: boolean
+        isKit:
+          type: boolean
+    Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeTypeModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        label:
+          type: string
+        isFilter:
+          type: boolean
+        isComparable:
+          type: boolean
+        isSearchable:
+          type: boolean
+        includeOnProduct:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        attributeValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeValueModel'
+    Insite.Catalog.WebApi.V2.ApiModels.Product.SectionOptionModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          format: decimal
+          type: number
+        selected:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        quantity:
+          format: decimal
+          type: number
+        cantBuy:
+          type: boolean
+    Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeValueModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        value:
+          type: string
+        valueDisplay:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ContentModel:
+      type: object
+      properties:
+        htmlContent:
+          type: string
+        pageTitle:
+          type: string
+        metaDescription:
+          type: string
+        metaKeywords:
+          type: string
+        openGraphTitle:
+          type: string
+        openGraphUrl:
+          type: string
+        openGraphImage:
+          type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.DocumentModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        description:
+          type: string
+        filePath:
+          type: string
+        documentType:
+          type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.BrandModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        urlSegment:
+          type: string
+        logoSmallImagePath:
+          type: string
+        logoLargeImagePath:
+          type: string
+        logoImageAltText:
+          type: string
+        detailPagePath:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ConfigSectionModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sectionName:
+          type: string
+        label:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        sectionOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.SectionOptionModel'
+    Insite.Message.WebApi.V1.ApiModels.MessageModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        body:
+          type: string
+        subject:
+          type: string
+        dateToDisplay:
+          format: date-time
+          type: string
+        isRead:
+          type: boolean
+        displayName:
+          type: string
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.CustomerOrderChangeModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.DetailModel:
+      type: object
+      properties:
+        name:
+          type: string
+        modelNumber:
+          type: string
+        sku:
+          type: string
+        upcCode:
+          type: string
+        unspsc:
+          type: string
+        productCode:
+          type: string
+        priceCode:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        multipleSaleQty:
+          format: int32
+          type: integer
+        canBackOrder:
+          type: boolean
+        roundingRule:
+          type: string
+        replacementProductId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        isHazardousGood:
+          type: boolean
+        hasMsds:
+          type: boolean
+        isSpecialOrder:
+          type: boolean
+        isGiftCard:
+          type: boolean
+        isSubscription:
+          type: boolean
+        subscription:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.ProductSubscriptionModel'
+        allowAnyGiftCardAmount:
+          type: boolean
+        taxCode1:
+          type: string
+        taxCode2:
+          type: string
+        taxCategory:
+          type: string
+        vatCodeId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        shippingClassification:
+          type: string
+        shippingLength:
+          format: decimal
+          type: number
+        shippingWidth:
+          format: decimal
+          type: number
+        shippingHeight:
+          format: decimal
+          type: number
+        shippingWeight:
+          format: decimal
+          type: number
+        configuration:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.ConfigurationModel'
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ProductSubscriptionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        subscriptionCyclePeriod:
+          type: string
+        subscriptionPeriodsPerCycle:
+          format: int32
+          type: integer
+        subscriptionTotalCycles:
+          format: int32
+          type: integer
+        subscriptionAllMonths:
+          type: boolean
+        subscriptionJanuary:
+          type: boolean
+        subscriptionFebruary:
+          type: boolean
+        subscriptionMarch:
+          type: boolean
+        subscriptionApril:
+          type: boolean
+        subscriptionMay:
+          type: boolean
+        subscriptionJune:
+          type: boolean
+        subscriptionJuly:
+          type: boolean
+        subscriptionAugust:
+          type: boolean
+        subscriptionSeptember:
+          type: boolean
+        subscriptionOctober:
+          type: boolean
+        subscriptionNovember:
+          type: boolean
+        subscriptionDecember:
+          type: boolean
+        subscriptionAddToInitialOrder:
+          type: boolean
+        subscriptionFixedPrice:
+          type: boolean
+        subscriptionShipViaId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.BadgeModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        tagName:
+          type: string
+        badgeStyle:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        badgeType:
+          type: string
+        displayOnProductImages:
+          type: boolean
+        displayOnBadgeWidget:
+          type: boolean
+        displayText:
+          type: string
+        textColorHexCode:
+          type: string
+        badgeColorHexCode:
+          type: string
+        largeImageBadgePath:
+          type: string
+        largeImageTextSize:
+          type: string
+        largeImagePlacement:
+          type: string
+        otherImageBadgePath:
+          type: string
+        otherImageTextSize:
+          type: string
+        otherImagePlacement:
+          type: string
+        imageAltText:
+          type: string
+        detailWidgetBadgeSize:
+          type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ImageModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sortOrder:
+          format: int32
+          type: integer
+        name:
+          type: string
+        imageType:
+          type: string
+        smallImagePath:
+          type: string
+        mediumImagePath:
+          type: string
+        largeImagePath:
+          type: string
+        imageAltText:
+          type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ScoreExplanationModel:
+      type: object
+      properties:
+        totalBoost:
+          format: float
+          type: number
+        aggregateFieldScores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.FieldScoreModel'
+        detailedFieldScores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.FieldScoreDetailedModel'
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ProductModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        productNumber:
+          type: string
+        customerProductNumber:
+          type: string
+        customerUnitOfMeasure:
+          type: string
+        productTitle:
+          type: string
+        urlSegment:
+          type: string
+        canonicalUrl:
+          type: string
+        displayUrl:
+          type: string
+        manufacturerItem:
+          type: string
+        packDescription:
+          type: string
+        unitListPrice:
+          format: decimal
+          type: number
+        unitListPriceDisplay:
+          type: string
+        priceFacet:
+          format: int32
+          type: integer
+        smallImagePath:
+          type: string
+        mediumImagePath:
+          type: string
+        largeImagePath:
+          type: string
+        imageAltText:
+          type: string
+        isDiscontinued:
+          type: boolean
+        quoteRequired:
+          type: boolean
+        minimumOrderQty:
+          format: int32
+          type: integer
+        isSponsored:
+          type: boolean
+        trackInventory:
+          type: boolean
+        configurationType:
+          type: string
+        canConfigure:
+          type: boolean
+        canAddToCart:
+          type: boolean
+        canAddToWishlist:
+          type: boolean
+        canShowPrice:
+          type: boolean
+        canShowUnitOfMeasure:
+          type: boolean
+        isVariantParent:
+          type: boolean
+        variantTypeId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        defaultChildProductId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        salePriceLabel:
+          type: string
+        cantBuy:
+          type: boolean
+        allowZeroPricing:
+          type: boolean
+        brand:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.BrandModel'
+        productLine:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.ProductLineModel'
+        unitOfMeasures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.UnitOfMeasureModel'
+        score:
+          format: double
+          type: number
+        scoreExplanation:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.ScoreExplanationModel'
+        detail:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.DetailModel'
+        content:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.ContentModel'
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.ImageModel'
+        badges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.BadgeModel'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.DocumentModel'
+        specifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.SpecificationModel'
+        warehouses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.WarehouseModel'
+        attributeTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeTypeModel'
+        variantTraits:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.VariantTraitModel'
+        childTraitValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.ChildTraitValueModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.FieldScoreDetailedModel:
+      type: object
+      properties:
+        name:
+          type: string
+        score:
+          format: float
+          type: number
+        boost:
+          format: float
+          type: number
+        matchText:
+          type: string
+        termFrequencyNormalized:
+          format: float
+          type: number
+        inverseDocumentFrequency:
+          format: float
+          type: number
+        scoreUsed:
+          type: boolean
+    Insite.Message.WebApi.V1.ApiModels.CustomerOrderChangeModel:
+      type: object
+      properties:
+        type:
+          type: string
+        product:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.ProductModel'
+        unitOfMeasure:
+          type: string
+        oldValue:
+          type: string
+        oldValueDisplay:
+          type: string
+        newValue:
+          type: string
+        newValueDisplay:
+          type: string
+        oldProductPrice:
+          format: double
+          type: number
+        oldProductPriceDisplay:
+          type: string
+        newProductPrice:
+          format: double
+          type: number
+        newProductPriceDisplay:
+          type: string
+    Insite.Message.WebApi.V1.ApiModels.MessageCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Message.WebApi.V1.ApiModels.MessageModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ChildTraitValueModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        styleTraitId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        value:
+          type: string
+        valueDisplay:
+          type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.UnitOfMeasureModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        unitOfMeasure:
+          type: string
+        unitOfMeasureDisplay:
+          type: string
+        description:
+          type: string
+        qtyPerBaseUnitOfMeasure:
+          format: decimal
+          type: number
+        roundingRule:
+          type: string
+        isDefault:
+          type: boolean
+    Insite.Message.WebApi.V1.ApiModels.MessageParameter:
+      type: object
+      properties:
+        customerOrderId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        toUserProfileId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        subject:
+          type: string
+        message:
+          type: string
+        process:
+          type: string
+        toUserProfileName:
+          type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.WarehouseModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        description:
+          type: string
+        qtyAvailable:
+          format: decimal
+          type: number
+    Insite.Catalog.WebApi.V2.ApiModels.Product.SpecificationModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        nameDisplay:
+          type: string
+        description:
+          type: string
+        value:
+          type: string
+        htmlContent:
+          type: string
+        sortOrder:
+          format: decimal
+          type: number
+    Insite.Catalog.WebApi.V2.ApiModels.Product.VariantTraitModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        nameDisplay:
+          type: string
+        unselectedValue:
+          type: string
+        displayType:
+          type: string
+        numberOfSwatchesVisible:
+          format: int32
+          type: integer
+        displayTextWithSwatch:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        traitValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.TraitValueModel'
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query
+x-refined-from:
+- optimizely-configured-commerce-admin-api-v1-openapi.json
+- optimizely-configured-commerce-storefront-api-v1-openapi.json

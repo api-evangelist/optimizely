@@ -1,0 +1,95 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Agent Track API
+  description: Optimizely Agent is a stand-alone, open-source microservice that provides major benefits over using Optimizely SDKs in certain use cases. Its REST API offers consolidated and simplified endpoints for accessing all the functionality of Optimizely Feature Experimentation SDKs. Use this API the control experiments (such as a feature tests). For more info, see https://docs.developers.optimizely.com/experimentation/v4.0.0-full-stack/docs/optimizely-agent
+  termsOfService: https://www.optimizely.com/legal/terms/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.12.0
+security:
+- SdkKeyAuth: []
+- TokenAuth: []
+tags:
+- name: Track
+paths:
+  /v1/track:
+    post:
+      summary: Track event for the given user.
+      description: Send event and user details to Optimizely analytics backend, so you can see metrics for an experiment. You can view metrics either on your Results page or as a data export.
+      operationId: trackEvent
+      parameters:
+      - name: eventKey
+        in: query
+        description: Key of the event we're tracking
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackContext'
+        required: true
+      responses:
+        '200':
+          description: Valid response, event received
+          content:
+            application/json: {}
+        '400':
+          description: Missing required parameters
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized, invalid JWT
+          content:
+            application/json: {}
+        '403':
+          description: You do not have necessary permissions for the resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Forbidden'
+      deprecated: false
+      tags:
+      - Track
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
+          type: string
+    TrackContext:
+      title: TrackContext
+      type: object
+      properties:
+        eventTags:
+          type: object
+        userId:
+          type: string
+        userAttributes:
+          type: object
+  responses:
+    Forbidden:
+      description: You do not have necessary permissions for the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    SdkKeyAuth:
+      type: apiKey
+      name: X-Optimizely-SDK-Key
+      in: header
+    TokenAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

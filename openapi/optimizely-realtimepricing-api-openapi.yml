@@ -1,0 +1,254 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Realtimepricing API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Realtimepricing
+paths:
+  /api/v1/realtimepricing:
+    post:
+      tags:
+      - Realtimepricing
+      operationId: RealTimePricingV1_PostAsync
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimePricing.WebApi.V1.ApiModels.RealTimePricingParameter'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimePricing.WebApi.V1.ApiModels.RealTimePricingParameter'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimePricing.WebApi.V1.ApiModels.RealTimePricingParameter'
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimePricing.WebApi.V1.ApiModels.RealTimePricingParameter'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimePricing.WebApi.V1.ApiModels.RealTimePricingParameter'
+          text/html:
+            schema:
+              $ref: '#/components/schemas/Insite.RealTimePricing.WebApi.V1.ApiModels.RealTimePricingParameter'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimePricing.WebApi.V1.ApiModels.RealTimePricingModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimePricing.WebApi.V1.ApiModels.RealTimePricingModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimePricing.WebApi.V1.ApiModels.RealTimePricingModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimePricing.WebApi.V1.ApiModels.RealTimePricingModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.RealTimePricing.WebApi.V1.ApiModels.RealTimePricingModel'
+components:
+  schemas:
+    Insite.Core.Plugins.Pricing.ProductPriceParameter:
+      type: object
+      properties:
+        productId:
+          type: string
+        unitOfMeasure:
+          type: string
+        qtyOrdered:
+          format: decimal
+          type: number
+        configuration:
+          type: array
+          items:
+            format: uuid
+            type: string
+            example: 00000000-0000-0000-0000-000000000000
+        properties:
+          type: string
+          additionalProperties:
+            type: string
+        isValid:
+          type: boolean
+        validationMessage:
+          type: string
+    Insite.RealTimePricing.WebApi.V1.ApiModels.RealTimePricingParameter:
+      type: object
+      properties:
+        productPriceParameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceParameter'
+    Insite.RealTimePricing.WebApi.V1.ApiModels.RealTimePricingModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        realTimePricingResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.Plugins.Pricing.ProductPriceDto:
+      type: object
+      properties:
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        isOnSale:
+          type: boolean
+        requiresRealTimePrice:
+          type: boolean
+        additionalResults:
+          type: object
+          additionalProperties:
+            type: string
+        unitCost:
+          format: decimal
+          type: number
+        unitCostDisplay:
+          type: string
+        unitListPrice:
+          format: decimal
+          type: number
+        unitListPriceDisplay:
+          type: string
+        extendedUnitListPrice:
+          format: decimal
+          type: number
+        extendedUnitListPriceDisplay:
+          type: string
+        unitRegularPrice:
+          format: decimal
+          type: number
+        unitRegularPriceDisplay:
+          type: string
+        extendedUnitRegularPrice:
+          format: decimal
+          type: number
+        extendedUnitRegularPriceDisplay:
+          type: string
+        unitNetPrice:
+          format: decimal
+          type: number
+        unitNetPriceDisplay:
+          type: string
+        extendedUnitNetPrice:
+          format: decimal
+          type: number
+        extendedUnitNetPriceDisplay:
+          type: string
+        unitOfMeasure:
+          type: string
+        vatRate:
+          format: decimal
+          type: number
+        vatAmount:
+          format: decimal
+          type: number
+        vatAmountDisplay:
+          type: string
+        unitListBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        unitRegularBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        regularPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        regularPriceDisplay:
+          type: string
+          readOnly: true
+        extendedRegularPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        extendedRegularPriceDisplay:
+          type: string
+          readOnly: true
+        actualPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        actualPriceDisplay:
+          type: string
+          readOnly: true
+        extendedActualPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        extendedActualPriceDisplay:
+          type: string
+          readOnly: true
+        regularBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+          readOnly: true
+        actualBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+          readOnly: true
+        unitListPriceWithVat:
+          format: decimal
+          type: number
+        unitListPriceWithVatDisplay:
+          type: string
+        extendedUnitListPriceWithVat:
+          format: decimal
+          type: number
+        extendedUnitListPriceWithVatDisplay:
+          type: string
+        unitRegularPriceWithVat:
+          format: decimal
+          type: number
+        unitRegularPriceWithVatDisplay:
+          type: string
+        extendedUnitRegularPriceWithVat:
+          format: decimal
+          type: number
+        extendedUnitRegularPriceWithVatDisplay:
+          type: string
+        vatMinusExtendedUnitRegularPrice:
+          format: decimal
+          type: number
+    Insite.Core.Plugins.Pricing.BreakPriceDto:
+      type: object
+      properties:
+        breakQty:
+          format: decimal
+          type: number
+        breakPrice:
+          format: decimal
+          type: number
+        breakPriceDisplay:
+          type: string
+        savingsMessage:
+          type: string
+        breakPriceWithVat:
+          format: decimal
+          type: number
+        breakPriceWithVatDisplay:
+          type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

@@ -1,0 +1,295 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Change History API
+  version: '2.0'
+  description: Get a list of changes by project.
+servers:
+- url: https://api.optimizely.com/v2
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- description: Get a list of changes by project.
+  name: Change History
+paths:
+  /changes:
+    get:
+      description: Get a list of changes for a given project using optional filters.
+      operationId: list_change_history
+      parameters:
+      - description: ID of the Project you want to list changes for.
+        in: query
+        name: project_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: A specific Change ID to filter by. Can be specified multiple times to include multiple specific changes.
+        explode: true
+        in: query
+        name: id
+        required: false
+        schema:
+          items:
+            format: int64
+            type: integer
+          type: array
+      - description: Start of the time interval (inclusive) to list changes. The time is formatted in ISO 8601.
+        in: query
+        name: start_time
+        required: false
+        schema:
+          format: date-time
+          type: string
+      - description: End of the time interval (exclusive) to look for changes. The time is formatted in ISO 8601.
+        in: query
+        name: end_time
+        required: false
+        schema:
+          format: date-time
+          type: string
+      - description: Email of the user who made the change. Can be specified multiple times to include changes from multiple users.
+        explode: true
+        in: query
+        name: user
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+      - description: 'The type of the entity. The entity_type must be one of the following : attribute, audience, campaign, environment, event, experiment, extension, feature, flag, group, list_attribute, metrics, page, project, report, rule, ruleset, section, tag, variation, variable, permission, team. Can be specified multiple times to include changes for multiple entity types.'
+        explode: true
+        in: query
+        name: entity_type
+        required: false
+        schema:
+          items:
+            enum:
+            - attribute
+            - audience
+            - campaign
+            - custom_field
+            - environment
+            - event
+            - experiment
+            - extension
+            - feature
+            - flag
+            - group
+            - list_attribute
+            - metrics
+            - page
+            - project
+            - report
+            - rule
+            - ruleset
+            - section
+            - tag
+            - variation
+            - variable
+            - permission
+            - team
+            - metric
+            - metric_set
+            - experiment:a/b
+            - experiment:multiarmed_bandit
+            - experiment:multivariate
+            - experiment:personalization
+            type: string
+          type: array
+      - description: The source of the change (UI or API)
+        in: query
+        name: source
+        required: false
+        schema:
+          type: string
+      - description: 'Colon (:) delimited string containing the entity_type and entity_id of the entity wanted. The entity_type must be one of the following : attribute, audience, campaign, environment, event, experiment, extension, feature, flag, group, list_attribute, metrics, page, project, report, rule, ruleset, section, tag, variation, variable, permission e.g. ruleset:123, experiment:123. Can be specified multiple times to filter changes to a specific set of entities.'
+        explode: true
+        in: query
+        name: entity
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+      - $ref: '#/components/parameters/per_page'
+      - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ChangeHistoryChange'
+                type: array
+          description: Returns changes.
+      summary: Retrieve changes for a project.
+      tags:
+      - Change History
+components:
+  schemas:
+    User:
+      properties:
+        display_name:
+          description: Display name of the user, most commonly the Optimizely user's email.
+          type:
+          - string
+          - 'null'
+        email:
+          description: Email of the user.
+          type: string
+        first_name:
+          description: First name of the user.
+          type:
+          - string
+          - 'null'
+        id:
+          description: ID of the user.
+          type: string
+        last_name:
+          description: Last name of the user.
+          type:
+          - string
+          - 'null'
+        profile_image_url:
+          description: URL to the user profile image.
+          type:
+          - string
+          - 'null'
+      required:
+      - email
+      - id
+      type: object
+    ChangeRevision:
+      properties:
+        current:
+          $ref: '#/components/schemas/Revision'
+        previous:
+          $ref: '#/components/schemas/Revision'
+      type: object
+    Entity:
+      properties:
+        api_url:
+          description: Generated URL to access the entity by using the public API.
+          format: url
+          type: string
+        id:
+          description: ID of the entity.
+          format: int64
+          type: integer
+        name:
+          description: Name of the entity.
+          type: string
+        sub_type:
+          description: Optional field for entities that have sub_types (projects, experiments, extensions, pages, etc)
+          type: string
+        type:
+          description: Type of the entity as defined by the public API.
+          type: string
+        ui_url:
+          description: Generated URL to access the entity using Optimizely UI.
+          format: url
+          type: string
+      type: object
+    ChangeHistoryChange:
+      properties:
+        change_type:
+          description: Action performed on the entity.
+          enum:
+          - archive
+          - create
+          - update
+          - delete
+          - publish
+          type: string
+        changes:
+          description: List of change details.
+          items:
+            $ref: '#/components/schemas/ChangeDetail'
+          type: array
+        created:
+          description: Created time of the current revision. Format is ISO 8601.
+          format: date-time
+          type: string
+        entity:
+          $ref: '#/components/schemas/Entity'
+        id:
+          description: ID of the change.
+          format: int64
+          type: integer
+        project_id:
+          description: ID of the project related to the entity.
+          format: int64
+          type: integer
+        revisions:
+          $ref: '#/components/schemas/ChangeRevision'
+        source:
+          description: Origin of the current revision.
+          enum:
+          - ui
+          - api
+          type: string
+        summary:
+          description: Short human readable description of the change.
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - project_id
+      type: object
+    Revision:
+      properties:
+        id:
+          description: Reference to a revision of the entity.
+          type:
+          - integer
+          - 'null'
+      type: object
+    ChangeDetail:
+      properties:
+        after:
+          description: Value of the property after modification.
+        before:
+          description: Value of the property before modification.
+        description:
+          description: Human readable description of the change.
+          type: string
+        property:
+          description: The name of the property modified.
+          type: string
+      type: object
+  parameters:
+    page:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
+  securitySchemes:
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http

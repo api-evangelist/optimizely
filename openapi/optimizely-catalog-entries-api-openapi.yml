@@ -1,17 +1,21 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Optimizely Campaign REST Assets Catalog Entries API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  title: Optimizely Commerce Service Catalog Entries API
+  description: The Optimizely Commerce Service API provides RESTful access to Optimizely's e-commerce platform capabilities. It enables developers to manage product catalogs, catalog entries, catalog nodes, orders, customers, and inventory programmatically. The API supports integration with external commerce systems and enables building custom storefronts and order management workflows on top of the Optimizely Commerce platform.
   version: '1.0'
   contact:
     name: Optimizely Support
     url: https://support.optimizely.com
   termsOfService: https://www.optimizely.com/legal/terms/
 servers:
-- url: https://api.campaign.episerver.net/rest
-  description: Optimizely Campaign Production Server
+- url: '{siteUrl}/episerverapi'
+  description: Optimizely Commerce Service API endpoint
+  variables:
+    siteUrl:
+      default: https://www.example.com
+      description: The base URL of the Optimizely Commerce site
 security:
-- basicAuth: []
+- bearerAuth: []
 tags:
 - name: Catalog Entries
   description: Manage catalog entries including products, variants, packages, and bundles.
@@ -198,10 +202,10 @@ components:
       schema:
         type: string
   securitySchemes:
-    basicAuth:
+    bearerAuth:
       type: http
-      scheme: basic
-      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
+      scheme: bearer
+      description: Bearer token for authenticated Commerce Service API access.
 externalDocs:
-  description: Optimizely Campaign REST API Documentation
-  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+  description: Optimizely Commerce Service API Documentation
+  url: https://docs.developers.optimizely.com/commerce-connect/v1.3.0-service-api-developer-guide/docs/optimizely-service-api

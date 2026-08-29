@@ -1,0 +1,935 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Reports API
+  x-refined-note:
+  - x-logo differs across the merged source definitions and was not carried
+  version: '1.0'
+  description: 'Operations tagged Reports across 2 of this provider''s published API definitions: optimizely-feature-experimentation-optimizely-feature-experimentation-api-openapi.json, optimizely-web-experimentation-optimizely-api-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.optimizely.com/flags/v1/
+- url: https://api.optimizely.com/v2
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- description: APIs to interact with Reports
+  name: Reports
+paths:
+  /projects/{project_id}/environments/{environment_key}/reports:
+    get:
+      description: 'Get a list of Reports for a specific Environment of a project
+
+
+        You can use query parameters to filter/sort the response.
+
+        '
+      operationId: list_reports
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/environmentKey'
+      - $ref: '#/components/parameters/perPage'
+      - $ref: '#/components/parameters/pageToken'
+      - $ref: '#/components/parameters/pageWindow'
+      - allowReserved: true
+        description: 'Sort the Reports based on the attributes from left to right.
+
+          '
+        in: query
+        name: sort
+        required: false
+        schema:
+          items:
+            enum:
+            - name:asc
+            - name:desc
+            - key:asc
+            - key:desc
+            - created_time:asc
+            - created_time:desc
+            - updated_time:asc
+            - updated_time:desc
+            type: string
+          type: array
+      - description: 'Filter the Reports by archived field status. A Report can be either archived (archived=true) or unarchived (archived=false)
+
+          '
+        in: query
+        name: archived
+        required: false
+        schema:
+          type: boolean
+      - description: 'Filter the Reports by name, key, or description substring
+
+          '
+        in: query
+        name: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reports'
+          description: 'Successful retrieval of a page of Reports.
+
+
+            The response includes RESTful JSON (https://restfuljson.org/) styled links and pagination metadata.
+
+            Objects in this API MAY include a url property for a link to itself and MAY append _url to properties for related links.
+
+            If a link is not present in the response, it indicates a user is not authorized to access the related resource.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+      summary: List Reports
+      tags:
+      - Reports
+    servers:
+    - url: https://api.optimizely.com/flags/v1/
+  /projects/{project_id}/environments/{environment_key}/reports/archived:
+    post:
+      description: 'Archive one or more Reports in an Environment of a Project.
+
+
+        This operation corresponds to the `archive_url` in a Reports response.
+
+        '
+      operationId: archive_reports
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/environmentKey'
+      requestBody:
+        content:
+          application/json:
+            example:
+              keys:
+              - landing_page_callout_N6JU6FJ2YiMdujucr6R6uf
+            schema:
+              $ref: '#/components/schemas/BulkOperationsRequestBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                landing_page_callout_N6JU6FJ2YiMdujucr6R6uf:
+                  archived: true
+                  created_time: '2021-02-03 19:57:31.418350+00:00'
+                  delete_url: /projects/23004/environments/development/reports/landing_page_callout_kK2mpgdxRMRRXx6dZkFLsB
+                  description: null
+                  fetch_flag_url: /projects/23004/flags/recurring_deposit
+                  fetch_results_api_url: https://api.develrc-app.optimizely.com/experiments/9000000010001/results
+                  fetch_results_ui_url: https://app.optimizely.test/v2/projects/23004/results/9000000010001/experiments/9000000010001
+                  flag_key: recurring_deposit
+                  flag_name: Recurring Deposit
+                  flag_state: unarchived
+                  id: 1
+                  key: landing_page_callout_N6JU6FJ2YiMdujucr6R6uf
+                  name: Landing Page Callout
+                  reset_results_url: /projects/23004/environments/development/reports/landing_page_callout_kK2mpgdxRMRRXx6dZkFLsB/reset-results
+                  rule_key: landing_page_callout
+                  rule_name: Landing Page Callout
+                  rule_state: enabled
+                  start_time: '2021-02-03 21:52:58.603598+00:00'
+                  type: a/b
+                  unarchive_url: /projects/23004/environments/development/reports/unarchived
+                  updated_time: '2021-02-03 21:53:01.735777+00:00'
+                  url: /projects/23004/environments/development/reports/landing_page_callout_kK2mpgdxRMRRXx6dZkFLsB
+                  urn: reports.flags.optimizely.com::1
+              schema:
+                $ref: '#/components/schemas/ReportMap'
+          description: 'Successful archive of Reports.
+
+
+            The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+            link is not present in the response, it indicates a user is not authorized to access
+
+            the related resource.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '409':
+          $ref: '#/components/responses/ConflictResponse'
+      summary: Archive Reports
+      tags:
+      - Reports
+    servers:
+    - url: https://api.optimizely.com/flags/v1/
+  /projects/{project_id}/environments/{environment_key}/reports/unarchived:
+    post:
+      description: 'Unarchive one or more Reports in an Environment of a Project.
+
+
+        This operation corresponds to the `unarchive_url` in a Reports response.
+
+        '
+      operationId: unarchive_reports
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/environmentKey'
+      requestBody:
+        content:
+          application/json:
+            example:
+              keys:
+              - landing_page_callout_N6JU6FJ2YiMdujucr6R6uf
+            schema:
+              $ref: '#/components/schemas/BulkOperationsRequestBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                landing_page_callout_N6JU6FJ2YiMdujucr6R6uf:
+                  archived: false
+                  created_time: '2021-02-03 19:57:31.418350+00:00'
+                  delete_url: /projects/23004/environments/development/reports/landing_page_callout_kK2mpgdxRMRRXx6dZkFLsB
+                  description: null
+                  fetch_flag_url: /projects/23004/flags/recurring_deposit
+                  fetch_results_api_url: https://api.develrc-app.optimizely.com/experiments/9000000010001/results
+                  fetch_results_ui_url: https://app.optimizely.test/v2/projects/23004/results/9000000010001/experiments/9000000010001
+                  flag_key: recurring_deposit
+                  flag_name: Recurring Deposit
+                  flag_state: unarchived
+                  id: 1
+                  key: landing_page_callout_N6JU6FJ2YiMdujucr6R6uf
+                  name: Landing Page Callout
+                  reset_results_url: /projects/23004/environments/development/reports/landing_page_callout_kK2mpgdxRMRRXx6dZkFLsB/reset-results
+                  rule_key: landing_page_callout
+                  rule_name: Landing Page Callout
+                  rule_state: enabled
+                  start_time: '2021-02-03 21:52:58.603598+00:00'
+                  type: a/b
+                  unarchive_url: /projects/23004/environments/development/reports/unarchived
+                  updated_time: '2021-02-03 21:53:01.735777+00:00'
+                  url: /projects/23004/environments/development/reports/landing_page_callout_kK2mpgdxRMRRXx6dZkFLsB
+                  urn: reports.flags.optimizely.com::1
+              schema:
+                $ref: '#/components/schemas/ReportMap'
+          description: 'Successful unarchive of Reports.
+
+
+            The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+            link is not present in the response, it indicates a user is not authorized to access
+
+            the related resource.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '409':
+          $ref: '#/components/responses/ConflictResponse'
+      summary: Unarchive Reports
+      tags:
+      - Reports
+    servers:
+    - url: https://api.optimizely.com/flags/v1/
+  /projects/{project_id}/environments/{environment_key}/reports/{report_key}:
+    delete:
+      description: 'Permanently delete a Report by key in an Environment of a project
+
+
+        There will be no way to access this data after deletion. If you want to
+
+        stop seeing a Report without deleting it permanently, try archiving
+
+        instead.
+
+        '
+      operationId: delete_report
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/environmentKey'
+      - $ref: '#/components/parameters/reportKey'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+      summary: Delete a Report
+      tags:
+      - Reports
+    get:
+      description: 'Fetch a single Report in an Environment of a Project by its key.
+
+
+        This operation corresponds to the `fetch_report_url` in a Report response.
+
+        '
+      operationId: fetch_report
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/environmentKey'
+      - $ref: '#/components/parameters/reportKey'
+      responses:
+        '200':
+          $ref: '#/components/responses/ReportSuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+      summary: Fetch a Single Report
+      tags:
+      - Reports
+    servers:
+    - url: https://api.optimizely.com/flags/v1/
+  /projects/{project_id}/environments/{environment_key}/reports/{report_key}/reset-results:
+    post:
+      description: 'Resetting the results for a Report will clear all the current results and results will be calculated from this point onwards.
+
+        Use caution with this operation as there will be no way to access any previous results.
+
+        '
+      operationId: reset_results
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/environmentKey'
+      - $ref: '#/components/parameters/reportKey'
+      responses:
+        '200':
+          $ref: '#/components/responses/ReportSuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+      summary: Reset the results for a Report
+      tags:
+      - Reports
+    servers:
+    - url: https://api.optimizely.com/flags/v1/
+  /experiments/{experiment_id}/report:
+    get:
+      description: Gets the outcome of the experiment as inferred by the Optimizely system upon the evaluation of variations that may or may not have reached statistical significance.
+      operationId: get_experiment_report
+      parameters:
+      - description: The ID for the Experiment you want to generate reports for
+        in: path
+        name: experiment_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: The ID of the variation to use as the baseline to compare against other variations. Defaults to the first variation if not provided. For an experience in a personalization campaign, the value can also be the string 'holdback'.
+        in: query
+        name: baseline_variation_id
+        schema:
+          format: int64
+          type: string
+      - description: The start time of the time interval (beginning time included) used to calculate the results over. If unspecified, defaults to the time that the Experiment was first activated. The start time will be rounded the smallest time modulo 5 minutes larger or equal to start_time.
+        in: query
+        name: start_time
+        schema:
+          format: date-time
+          type: string
+      - description: The end of the time interval (end time excluded) used to calculate results over. If unspecified, defaults to the current time if the Experiment is still running, otherwise defaults to the time the experiment was last active. The end time will be rounded to the largest time modulo 5 minutes smaller or equal to end_time. The end_time in the response may be earlier than requested if fresher results are not available yet. In this case, the results will continue to calculate in the background and subsequent requests will eventually return the full results.
+        in: query
+        name: end_time
+        schema:
+          format: date-time
+          type: string
+      - $ref: '#/components/parameters/browser_segment'
+      - $ref: '#/components/parameters/device_segment'
+      - $ref: '#/components/parameters/source_segment'
+      - $ref: '#/components/parameters/attribute_id_segment'
+      - $ref: '#/components/parameters/attribute_value_segment'
+      - $ref: '#/components/parameters/segment_conditions'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentResultsReport'
+          description: Return Experiment Result's Report
+        '202':
+          description: The results request has been received but has not yet finished processing. Wait a bit and try again.
+        '204':
+          description: There are no results data for this Experiment yet. Make sure the Experiment is started and try again later
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Get Experiment Result's Report
+      tags:
+      - Reports
+      x-release-state: alpha
+    servers:
+    - url: https://api.optimizely.com/v2
+components:
+  responses:
+    NoContentResponse:
+      description: No content in the response
+    ConflictResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Conflicting resource state with requested action
+    NotFoundResponse:
+      description: Not found. No content
+    ReportSuccessResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Report'
+      description: 'Successful retrieval of a Report.
+
+
+        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+        link is not present in the response, it indicates a user is not authorized to access
+
+        the related resource.
+
+        '
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
+  schemas:
+    Report:
+      description: Report with results for the active rule for a flag in a project.
+      properties:
+        archive_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to archive this Report
+          example: '...'
+          readOnly: true
+        archived:
+          description: Indicates if the Report is archived or not
+          example: false
+          type: boolean
+        created_time:
+          description: Timestamp when the Report is created
+          example: '2019-05-08T00:00:00.000Z'
+          format: date-time
+          readOnly: true
+          type: string
+        delete_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to delete this Report
+          example: '...'
+          readOnly: true
+        description:
+          description: Additional context of the Report
+          example: Detailed context about the report is here.
+          type: string
+        distribution_mode:
+          description: Type of rule distribution
+          enum:
+          - manual
+          - stats_accelerator
+          readOnly: true
+          type: string
+        end_time:
+          description: Timestamp until when the Report is computed
+          example: '2019-05-08T00:00:00.000Z'
+          format: date-time
+          readOnly: true
+          type: string
+        fetch_flag_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to flag url to which this report belongs to
+          example: '...'
+          readOnly: true
+        fetch_results_api_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the results API associated with this Report
+          example: '...'
+          readOnly: true
+        fetch_results_ui_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the results UI associated with this Report
+          example: '...'
+          readOnly: true
+        flag_key:
+          description: The Key of the Flag this report belongs to
+          example: recurring_deposit
+          readOnly: true
+          type: string
+        flag_name:
+          description: The Name of the Flag this report belongs to
+          example: Recurring Deposit
+          readOnly: true
+          type: string
+        id:
+          description: System generated Unique ID of the Report
+          example: 45633910
+          readOnly: true
+          type: integer
+        key:
+          description: User-facing Unique identifier of the Report. Same as rule key with report ID appended.
+          example: paid_users-45633910
+          readOnly: true
+          type: string
+        layer_experiment_id:
+          description: Experiment ID or Layer Experiment of a rule
+          readOnly: true
+          type: integer
+        name:
+          description: User-facing name of the Report. Same as rule name.
+          example: Paid Users
+          type: string
+        primary_metric:
+          description: The first metric in the list of metrics.
+          example: conversion_rate
+          readOnly: true
+          type: string
+        reset_results_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to reset results associated with this Report
+          example: '...'
+          readOnly: true
+        revision:
+          description: Revision number for tracking changes
+          readOnly: true
+          type: integer
+        role:
+          description: Granular permission role
+          example: admin
+          readOnly: true
+          type: string
+        rule_description:
+          description: The description of the Rule this report belongs to
+          example: Paid Users description
+          readOnly: true
+          type: string
+        rule_key:
+          description: The Key of the Rule this report belongs to
+          example: paid_users
+          readOnly: true
+          type: string
+        rule_name:
+          description: The Name of the Rule this report belongs to
+          example: Paid Users
+          readOnly: true
+          type: string
+        rule_state:
+          description: State of the Rule this report belong to
+          example: deleted
+          readOnly: true
+          type: string
+        start_time:
+          description: Timestamp from when the Report is computed
+          example: '2019-05-08T00:00:00.000Z'
+          format: date-time
+          readOnly: true
+          type: string
+        type:
+          description: Type of report.
+          enum:
+          - a/b
+          - multi_armed_bandit
+          example: a/b
+          readOnly: true
+          type: string
+        unarchive_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to unarchive this Report
+          example: '...'
+          readOnly: true
+        updated_time:
+          description: Timestamp when the Report is last updated
+          example: '2019-05-08T00:00:00.000Z'
+          format: date-time
+          readOnly: true
+          type: string
+        url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to self
+          example: '...'
+          readOnly: true
+        urn:
+          description: The URN for the Report
+          example: reports.flag.optimizely.com::45633910
+          readOnly: true
+          type: string
+      required:
+      - id
+      - urn
+      - key
+      - name
+      - flag_key
+      - rule_key
+      - type
+      - created_time
+      - updated_time
+      - url
+      type: object
+    BulkOperationsRequestBody:
+      properties:
+        keys:
+          description: The list of resource keys to perform the desired operation
+          items:
+            type: string
+          type: array
+      type: object
+    ReportMap:
+      additionalProperties:
+        $ref: '#/components/schemas/Report'
+      description: Map of reports that include report key as key and report payload as value.
+      type: object
+    Reports:
+      description: Summary of the Reports for Flags in a project
+      properties:
+        count:
+          description: Number of Reports on the current page.
+          example: 1
+          type: integer
+        fetch_report_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'A url template to be used to find a particular Report.
+
+            '
+          example: '...'
+        filter_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the default page of Reports with filter '.../{?filter}'
+          example: '...'
+        first_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to first page of Reports in a series.
+          example: '...'
+        items:
+          items:
+            $ref: '#/components/schemas/Report'
+          type: array
+        last_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the last page of Reports in a series.
+          example: '...'
+        next_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: "List of links to next pages of Reports in a series.\n\n The first element in the array is the exact next page after the current record, etc.\n"
+          example: '...'
+        page:
+          description: Number of the current page. 1-index based.
+          example: 1
+          type: integer
+        prev_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: 'List of links to previous pages of Reports in a series.
+
+
+            The first element in the array is the exact previous page before the current record, etc.
+
+            '
+          example: '...'
+        reset_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the default page of Reports
+          example: '...'
+        sort_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the default page of Reports with sort '.../{?sort}'
+          example: '...'
+        total_count:
+          description: Total number of Reports.
+          example: 1
+          type: integer
+        total_pages:
+          description: Total number of pages for this series.
+          example: 1
+          type: integer
+        url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to self
+          example: '...'
+      required:
+      - url
+      - first_url
+      - last_url
+      - count
+      - page
+      - total_count
+      - total_pages
+      - items
+      type: object
+    UrlValue:
+      description: A single url.
+      type: string
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
+      properties:
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
+      type: object
+    UrlList:
+      description: A list of urls.
+      items:
+        type: string
+      type: array
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    ExperimentResultsReport:
+      properties:
+        end_time:
+          description: End of the time interval (exclusive) used to generate the report. The time is formatted in ISO 8601.
+          format: date-time
+          readOnly: true
+          type: string
+        experiment_id:
+          description: The unique identifier for the Experiment for which the report is to be generated.
+          example: 3000
+          format: int64
+          type: integer
+        inferred_outcome:
+          description: Outcome of the experiment as inferred by the Optimizely system upon the evaluation of variations that may or may not have reached statistical significance.
+          enum:
+          - win
+          - loss
+          - inconclusive
+          readOnly: true
+          type: string
+        start_time:
+          description: Start of the time interval (inclusive) used to generate the reports. The time is formatted in ISO 8601.
+          format: date-time
+          type: string
+      type: object
+  parameters:
+    environmentKey:
+      description: The Environment identifier
+      example: production
+      in: path
+      name: environment_key
+      required: true
+      schema:
+        type: string
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
+    reportKey:
+      description: The Report identifier. Get the key from the List Reports endpoint (key is not displayed in the Optimizely app)
+      example: paid_users_45633910
+      in: path
+      name: report_key
+      required: true
+      schema:
+        type: string
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
+    device_segment:
+      description: Device to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, source, attribute_id, attribute_value].
+      in: query
+      name: device
+      schema:
+        enum:
+        - desktop
+        - ipad
+        - iphone
+        - mobile
+        - tablet
+        type: string
+    attribute_id_segment:
+      description: 'ID of the attribute to segment results by. Requests containing attribute_id will return the results for all visitors that have attribute_value for the attribute represented by attribute_id. If present, the attribute_value parameter must also be present, and it cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
+
+        '
+      in: query
+      name: attribute_id
+      schema:
+        format: int64
+        type: integer
+    browser_segment:
+      description: Browser to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [device, source, attribute_id, attribute_value].
+      in: query
+      name: browser
+      schema:
+        enum:
+        - firefox
+        - chrome
+        - internet_explorer
+        - opera
+        - safari
+        type: string
+    segment_conditions:
+      description: '(BETA) A string representation of a JSON Segment Conditions Expression. This parameter can be either URL-escaped stringified JSON or Base64-encoded stringified JSON using URL-safe alphabet (preferred).
+
+        Segment Conditions Expressions consist of Logical Expressions and Match Expressions.
+
+        Logical Expressions are represented as an array of the format [<operator>, <expression>...], where the supported operators are "and", "or" and "not".
+
+        Match Expressions are represented as an object of the format {"attribute_id": <attribute_id>, "attribute_value": <value>[, "match_type": <match_type>]}, where supported values for match_type are "exact" match type will match only an exact string match between "value" string and the attribute value. "substring" match type will match if "value" is a substring of the attribute value. "prefix" match type will match if "value" is a string prefix of the attribute value. "regex" match type will match if "value" is a regular expression match for the attribute value. The default match_type is "exact".
+
+        '
+      in: query
+      name: segment_conditions
+      schema:
+        type: string
+    source_segment:
+      description: 'Source to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, device, attribute_id, attribute_value].
+
+        Campaign: Contains users that arrive on a URL containing a ''utm_campaign,'' ''utm_source,'' ''gclid,'' or ''otm_source'' query parameter. If the URL contains one of these parameters, the visitor will count as "Campaign" traffic even if they arrived through search.
+
+        Direct:  Includes all users who do not have any external referrer in their URL.
+
+        Referral: Includes all users that come from another URL that doesn''t count as Campaign.
+
+        '
+      in: query
+      name: source
+      schema:
+        enum:
+        - campaign
+        - direct
+        - referral
+        - search
+        type: string
+    attribute_value_segment:
+      description: 'UTF-8 encoded value correlating to attribute_id. If present, the attribute_id parameter must also be present. This parameter also requires attribute_id to be set, and cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
+
+        '
+      in: query
+      name: attribute_value
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      scheme: bearer
+      type: http
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Grants all access
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http
+x-refined-from:
+- optimizely-feature-experimentation-optimizely-feature-experimentation-api-openapi.json
+- optimizely-web-experimentation-optimizely-api-openapi.json

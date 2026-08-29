@@ -1,0 +1,494 @@
+openapi: 3.2.0
+info:
+  version: V3
+  title: Optimizely CMP Open API Documentation Brand Compliance API
+servers:
+- url: https://api.cmp.optimizely.com/v3
+  description: v3 version of Optimizely CMP Open API
+security:
+- OAuth2:
+  - openid
+  - profile
+  - offline_access
+tags:
+- name: Brand Compliance
+paths:
+  /tasks/{task_id}/assets/{asset_id}/drafts/{draft_id}/brand-compliance:
+    get:
+      operationId: getTaskAssetDraftBrandCompliance
+      tags:
+      - Brand Compliance
+      summary: GET /tasks/{task_id}/assets/{asset_id}/drafts/{draft_id}/brand-compliance
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get the brand compliance details of a draft of an asset of a task.
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the task
+        example: 5f857f30e1c4a2038d6179e9
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5d7f910551b00a722e0418830cee6631
+      - name: draft_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the draft or `latest`. `latest` refers to the most recent draft of the asset within the task.
+        examples:
+          example1:
+            value: latest
+            summary: Set the value to "latest" to fetch the brand compliance details of the latest draft
+          example2:
+            value: 6706efc7828cd6aaedbc0434139cd3e1
+            summary: Set a unique identifier of a draft
+      responses:
+        '200':
+          description: Brand compliance details of the asset draft
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskAssetDraftBrandComplianceResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: updateTaskAssetDraftBrandCompliance
+      tags:
+      - Brand Compliance
+      summary: PUT /tasks/{task_id}/assets/{asset_id}/drafts/{draft_id}/brand-compliance
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Update the brand compliance details of a draft of an asset of a task.
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the task
+        example: 5f857f30e1c4a2038d6179e9
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the asset
+        example: 5d7f910551b00a722e0418830cee6631
+      - name: draft_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the draft or `latest`. `latest` refers to the most recent draft of the asset within the task.
+        examples:
+          example1:
+            value: latest
+            summary: Set the value to "latest" to update the brand compliance details of the latest draft
+          example2:
+            value: 6706efc7828cd6aaedbc0434139cd3e1
+            summary: Set a unique identifier of a draft
+      requestBody:
+        description: Payload to update the brand compliance
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskAssetDraftBrandComplianceRequest'
+      responses:
+        '200':
+          description: Brand compliance details of the asset draft
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskAssetDraftBrandComplianceResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /brand-compliance/categories:
+    get:
+      operationId: listBrandComplianceCategories
+      tags:
+      - Brand Compliance
+      summary: GET /brand-compliance/categories
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a list of brand compliance categories.
+      parameters:
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of fetched brand compliance categories
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of brand compliance categories
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BrandComplianceCategoriesResponse'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/brand-compliance/categories?offset=10&page_size=10
+                required:
+                - data
+                - pagination
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+components:
+  schemas:
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
+    TaskAssetDraftBrandComplianceRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          description: Brand compliance status of the draft
+          example: approved
+          enum:
+          - approved
+          - declined
+          - not_reviewed
+        categories:
+          type: array
+          description: List of compliance categories
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the category
+                example: 66dd74f41a335b59cd98915b
+              status:
+                type:
+                - string
+                - 'null'
+                description: Brand compliance status of the category
+                example: compliant
+                enum:
+                - compliant
+                - not compliant
+                - not applicable
+                - null
+              notes:
+                type:
+                - string
+                - 'null'
+                description: Notes left by the reviewer for the category
+                example: Look's good
+              criteria:
+                type: array
+                description: List of criteria
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      description: Unique identifier of the criterion
+                      example: 66dd74f41a335b59cd98915c
+                    description:
+                      type:
+                      - string
+                      - 'null'
+                      description: Description of the criterion
+                      example: For all CMYK, RGB and HTML breakdowns, please refer to the full Colour Policy guideline
+                    selected:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Whether the criterion is selected or not
+                      example: true
+                  required:
+                  - id
+                  - description
+                  - selected
+            required:
+            - id
+            - status
+            - notes
+            - criteria
+      required:
+      - status
+      - categories
+    TaskAssetDraftBrandComplianceResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          description: Brand compliance status of the draft
+          example: approved
+          enum:
+          - approved
+          - declined
+          - not_reviewed
+        reviewed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time of when the draft was reviewed, in ISO 8601 UTC format
+          example: '2020-10-06T13:15:30Z'
+        reviewed_by:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the user who reviewed the draft
+          example: 66d837c62373533177b59db3
+        categories:
+          type: array
+          description: List of compliance categories
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the category
+                example: 66dd74f41a335b59cd98915b
+              name:
+                type: string
+                description: Name of the category
+                example: Category-1
+              status:
+                type:
+                - string
+                - 'null'
+                description: Brand compliance status of the category
+                example: compliant
+                enum:
+                - compliant
+                - not compliant
+                - not applicable
+                - null
+              notes:
+                type:
+                - string
+                - 'null'
+                description: Notes left by the reviewer for the category
+                example: Look's good
+              criteria:
+                type: array
+                description: List of criteria
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      description: Unique identifier of the criterion
+                      example: 66dd74f41a335b59cd98915c
+                    name:
+                      type: string
+                      description: Name of the criterion
+                      example: Sub-category-1A
+                    description:
+                      type:
+                      - string
+                      - 'null'
+                      description: Description of the criterion
+                      example: For all CMYK, RGB and HTML breakdowns, please refer to the full Colour Policy guideline
+                    selected:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Whether the criterion is selected or not
+                      example: true
+                  required:
+                  - id
+                  - name
+                  - description
+                  - selected
+            required:
+            - id
+            - name
+            - status
+            - notes
+            - criteria
+      required:
+      - status
+      - reviewed_at
+      - reviewed_by
+      - categories
+    Pagination:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
+    BrandComplianceCategoriesResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the category
+          example: 66cebe190bc97e0151eecdda
+        name:
+          type: string
+          description: Name of the category
+          example: Category-1
+        criteria:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the criteria
+                example: 66cebe190bc97e0151eecddb
+              name:
+                type: string
+                description: Name of the criteria
+                example: Sub-category-1A
+              description:
+                type: string
+                description: Details about the criteria
+                example: Description-1A
+            required:
+            - id
+      required:
+      - id
+      - criteria
+  responses:
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+  parameters:
+    offset:
+      name: offset
+      in: query
+      description: Starting index of results (zero indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 5
+    page_size:
+      name: page_size
+      in: query
+      description: Number of results to return per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+      example: 15
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/auth
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes:
+            openid: Grants the ability to receive a unique identifier for the user.
+            profile: Grants access to user profile information.
+            offline_access: Grants the ability to refresh access_token using the refresh token even when user is not present (not logged in).
+        clientCredentials:
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes: {}
+x-tagGroups:
+- name: API
+  tags:
+  - Uploader
+  - Library
+  - Labels
+  - Brand Compliance
+  - Tasks
+  - Task Step
+  - Campaigns
+  - Publishing
+  - Templates
+  - Users
+  - Work Requests
+  - Structured Contents
+  - Assets
+  - Milestones
+  - Teams
+  - Settings
+  - Workflows
+  - Fields
+  - Events

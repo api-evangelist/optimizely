@@ -1,0 +1,193 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Flags Scheduling Change Approvals API
+  version: 1.0.0
+  description: "This page documents how to use Optimizely Flags Scheduling API. These APIs allow you to turn a flag on/off, turn a \nrule on/off, change the traffic allocation of a rule and change the audience conditions of a rule.\n"
+  x-logo:
+    url: https://app.optimizely.com/static/img/rebrand/logo.svg
+servers:
+- url: http://localhost:3002/
+  description: Local server
+- url: https://api.app.optimizely.com/flags-scheduling
+  description: Production server
+tags:
+- name: Change Approvals
+  description: APIs to interact with approval of flag changes
+paths:
+  /projects/{project_id}/environments/{environment_id}/preferences:
+    get:
+      tags:
+      - Change Approvals
+      operationId: get_environment_approval_settings
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvironmentApprovalSettingsResponse'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                details: Not authenticated
+                status: 401
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      parameters:
+      - description: The id of the project for which the schedule is set.
+        required: true
+        schema:
+          title: Project Id
+          type: integer
+          description: The id of the project for which the schedule is set.
+        name: project_id
+        in: path
+      - description: The id of the project for which the schedule is set.
+        required: true
+        schema:
+          title: Environment Id
+          type: integer
+          description: The id of the environment for which the schedule is set.
+        name: environment_id
+        in: path
+components:
+  schemas:
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - details
+      - status
+      type: object
+      properties:
+        details:
+          title: Details
+          type: string
+          description: Details of Error.
+        status:
+          title: Status
+          type: integer
+          description: Status code of the response.
+          example: 400
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+        status:
+          title: Status
+          type: integer
+          description: Status code of the response.
+          example: 422
+    ApproversResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          description: The user id of the approver user
+        email:
+          type: string
+          description: The email of the approver user
+      required:
+      - user_id
+      - email
+    ValidationError:
+      title: ValidationError
+      required:
+      - loc
+      - msg
+      - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          description: Path to the invalid value
+        msg:
+          title: Message
+          type: string
+          description: Error message
+        type:
+          title: Error Type
+          type: string
+          description: Error type
+    EnvironmentApprovalSettingsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the schedule
+        project_id:
+          type: integer
+          description: The project id where the environment belongs
+        environment_id:
+          type: integer
+          description: The environment id where action is happening
+        entity_type:
+          type: string
+          description: The setting's entity type
+        require_approval_on_new_entities:
+          type: boolean
+          description: Denotes approval required status for new entities
+        default_preferences:
+          type: object
+          additionalProperties:
+            type: boolean
+          description: Default rules related with environment approval setting
+        notification_recipients:
+          type: array
+          items:
+            type: string
+          description: List of notification recipients associated with the environment approval settings
+        approvers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApproversResponse'
+          description: List of approvers
+        entities:
+          type: array
+          items:
+            type: object
+            description: Related entity approval settings
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the settings are created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the settings are updated
+      required:
+      - id
+      - project_id
+      - environment_id
+      - entity_type
+      - require_approval_on_new_entities
+      - notification_recipients
+      - approvers
+      - entities
+      - created_at
+      - updated_at
+  securitySchemes:
+    BearerAuth:
+      description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      type: http
+      scheme: bearer
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

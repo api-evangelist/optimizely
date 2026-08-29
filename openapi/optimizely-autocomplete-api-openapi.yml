@@ -1,0 +1,307 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Autocomplete API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Autocomplete
+paths:
+  /api/v1/autocomplete:
+    get:
+      tags:
+      - Autocomplete
+      operationId: AutocompleteV1_GetAsync
+      parameters:
+      - name: autocompleteParameter.query
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: autocompleteParameter.categoryEnabled
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: autocompleteParameter.contentEnabled
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: autocompleteParameter.productEnabled
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: autocompleteParameter.brandEnabled
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: autocompleteParameter.spireContent
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: autocompleteParameter.relevancy
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteModel'
+  /api/v1/autocomplete/products:
+    get:
+      tags:
+      - Autocomplete
+      operationId: ProductsV1_GetAutoCompleteAsync
+      parameters:
+      - name: model.query
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: model.categoryId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: model.maximumResults
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteProductCollectionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteProductCollectionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteProductCollectionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteProductCollectionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteProductCollectionModel'
+      deprecated: true
+components:
+  schemas:
+    Insite.Catalog.WebApi.V1.ApiModels.AutocompleteCompletionResultModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        suggestion:
+          type: string
+        attributeResults:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteAttributeResultsModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.AutocompleteProductCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteProductModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.ProductAutocompleteItemModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        manufacturerItemNumber:
+          type: string
+        name:
+          type: string
+        isNameCustomerOverride:
+          type: boolean
+        erpNumber:
+          type: string
+        brandName:
+          type: string
+        brandDetailPagePath:
+          type: string
+        styleParentId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        image:
+          type: string
+        subtitle:
+          type: string
+        title:
+          type: string
+        url:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.AutocompleteProductModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        erpNumber:
+          type: string
+        shortDescription:
+          type: string
+        productDetailUrl:
+          type: string
+        smallImagePath:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.BrandAutocompleteModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        productLineName:
+          type: string
+        productLineId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        image:
+          type: string
+        subtitle:
+          type: string
+        title:
+          type: string
+        url:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.AutocompleteModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteItemModel'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.ProductAutocompleteItemModel'
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteItemModel'
+        brands:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.BrandAutocompleteModel'
+        isRetailSearchCompletionResults:
+          type: boolean
+        attributionToken:
+          type: string
+        completionResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteCompletionResultModel'
+        attributeResults:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteAttributeResultsModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.AutocompleteItemModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        image:
+          type: string
+        subtitle:
+          type: string
+        title:
+          type: string
+        url:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.AutocompleteAttributeResultsModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteItemModel'
+        brands:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteItemModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

@@ -1,0 +1,569 @@
+openapi: 3.2.0
+info:
+  title: Optimizely 🏆 Pinned Results API
+  contact:
+    name: Documentation
+    url: https://cg.optimizely.com/
+  license:
+    name: ' '
+  version: '1.0'
+  description: 'Operations tagged 🏆 Pinned Results across 2 of this provider''s published API definitions: optimizely-platform-optimizely-optimizely-graph-api-openapi.json, optimizely-platform-optimizely-swagger-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://cg.optimizely.com
+- url: https://prod.cg.optimizely.com
+tags:
+- name: 🏆 Pinned Results
+paths:
+  /api/pinned/collections:
+    get:
+      operationId: list-PinnedCollectionHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PinnedCollectionResult'
+                type: array
+      description: Get pinned collections
+      summary: Get pinned collection(s)
+      tags:
+      - 🏆 Pinned Results
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - in: query
+        name: page
+        required: false
+        schema:
+          format: double
+          type: number
+    post:
+      operationId: create-PinnedCollectionHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PinnedCollectionResult'
+      description: Register a pinned collection
+      summary: Register a pinned collection
+      tags:
+      - 🏆 Pinned Results
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PinnedCollectionPayload'
+    servers:
+    - url: https://cg.optimizely.com
+  /api/pinned/collections/{collectionId}:
+    get:
+      operationId: get-PinnedCollectionHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PinnedCollectionResult'
+      description: Get collection by Id
+      summary: Get pinned collection by Id
+      tags:
+      - 🏆 Pinned Results
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: Pinned collection id
+        in: path
+        name: collectionId
+        required: true
+        schema:
+          type: string
+    put:
+      operationId: update-PinnedCollectionHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PinnedCollectionResult'
+      description: Update pinned collection by Id
+      summary: Update a pinned collection
+      tags:
+      - 🏆 Pinned Results
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - in: path
+        name: collectionId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Partial_PinnedCollectionPayload_'
+    delete:
+      operationId: delete-PinnedCollectionHandler
+      responses:
+        '204':
+          description: No content
+      description: Delete pinned collection by Id
+      summary: Delete a pinned collection
+      tags:
+      - 🏆 Pinned Results
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - in: path
+        name: collectionId
+        required: true
+        schema:
+          type: string
+    servers:
+    - url: https://cg.optimizely.com
+  /api/pinned/collections/{collectionId}/items:
+    get:
+      operationId: list-PinnedItemHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PinnedItemResult'
+                type: array
+      description: Get list of pinned items by given pinned collection id
+      summary: Get list of pinned items by collection id
+      tags:
+      - 🏆 Pinned Results
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: pinned collection id
+        in: path
+        name: collectionId
+        required: true
+        schema:
+          type: string
+      - description: Limit items
+        in: query
+        name: limit
+        required: false
+        schema:
+          format: double
+          type: number
+      - description: From offset number
+        in: query
+        name: offset
+        required: false
+        schema:
+          format: double
+          type: number
+      - description: Phrase to be filtered
+        in: query
+        name: phrase
+        required: false
+        schema:
+          type: string
+      - description: The sort field, default direction is ASC. Add a minus/dash symbol for DESC (example "-phrase"). Default value created_at DESC.
+        in: query
+        name: sort
+        required: false
+        schema:
+          type: string
+    post:
+      operationId: create-PinnedItemHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PinnedItemResult'
+      description: Create a new pinned item, collectionId must be created before creating pinned item
+      summary: Create a new pinned item
+      tags:
+      - 🏆 Pinned Results
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: pinned collection id
+        in: path
+        name: collectionId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PinnedItemPayload'
+    delete:
+      operationId: clear-PinnedItemHandler
+      responses:
+        '204':
+          description: No content
+      description: Clear pinned items in collection
+      summary: Clear pinned items in collection
+      tags:
+      - 🏆 Pinned Results
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: pinned collection id
+        in: path
+        name: collectionId
+        required: true
+        schema:
+          type: string
+    servers:
+    - url: https://cg.optimizely.com
+  /api/pinned/collections/{collectionId}/items/{id}:
+    get:
+      operationId: get-PinnedItemHandler
+      responses:
+        '200':
+          description: PinnedItemResult
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PinnedItemResult'
+      description: Get single pinned item by id
+      summary: Get pinned item by id
+      tags:
+      - 🏆 Pinned Results
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: pinned collection id
+        in: path
+        name: collectionId
+        required: true
+        schema:
+          type: string
+      - description: pinned id (id)
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    put:
+      operationId: update-PinnedItemHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PinnedItemResult'
+      description: Update a single pinned item
+      summary: Update a pinned item
+      tags:
+      - 🏆 Pinned Results
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: pinned collection id
+        in: path
+        name: collectionId
+        required: true
+        schema:
+          type: string
+      - description: pinned id (id)
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PinnedItemPayload'
+    delete:
+      operationId: delete-PinnedItemHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PinnedItemResult'
+      description: Remove single pinned item
+      summary: Remove pinned item
+      tags:
+      - 🏆 Pinned Results
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: pinned collection id
+        in: path
+        name: collectionId
+        required: true
+        schema:
+          type: string
+      - description: pinned id (id)
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    servers:
+    - url: https://cg.optimizely.com
+  /api/pinned/results:
+    post:
+      operationId: match-PinnedItemHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PinnedItemResult'
+                type: array
+      description: Get pinned results by matching phrases
+      summary: Get pinned results
+      tags:
+      - 🏆 Pinned Results
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PinnedResultMatchParams'
+    servers:
+    - url: https://cg.optimizely.com
+components:
+  schemas:
+    PinnedResultMatchParams:
+      properties:
+        phrase:
+          type: string
+        collectionIds:
+          items:
+            type: string
+          type: array
+        collectionKeys:
+          items:
+            type: string
+          type: array
+        languages:
+          items:
+            type:
+            - string
+            - 'null'
+          type:
+          - array
+          - 'null'
+        onlyActive:
+          type: boolean
+        limit:
+          type: number
+          format: double
+      required:
+      - phrase
+      type: object
+      additionalProperties: false
+    PinnedCollectionResult:
+      properties:
+        title:
+          type: string
+        key:
+          type: string
+        isActive:
+          type: boolean
+          default: false
+        id:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+      - title
+      - key
+      - id
+      - createdAt
+      - updatedAt
+      type: object
+      additionalProperties: false
+    PinnedItemPayload:
+      properties:
+        phrases:
+          type: string
+          description: Phrase or keyword to match
+        targetKey:
+          type: string
+          description: Document id to pin
+        language:
+          type:
+          - string
+          - 'null'
+          description: 'Language code (e.g. `en`, `fr`, `de`, etc.)
+
+
+            - `null` value means the pinned item is applicable to all languages
+
+
+            - Empty string (`""`) value is for NEUTRAL locale'
+          default: null
+        priority:
+          type: number
+          format: double
+          description: 'Priority of the pinned item (lower number means lower priority)
+
+
+            - Default value is `1000`
+
+
+            - Example: `1`, `10`, `100`, etc.'
+          default: 1000
+        isActive:
+          type: boolean
+          default: true
+      required:
+      - phrases
+      - targetKey
+      type: object
+      additionalProperties: false
+    PinnedCollectionPayload:
+      properties:
+        title:
+          type: string
+        key:
+          type: string
+        isActive:
+          type: boolean
+          default: false
+      required:
+      - title
+      - key
+      type: object
+      additionalProperties: false
+    PinnedItemResult:
+      properties:
+        phrases:
+          type: string
+          description: Phrase or keyword to match
+        targetKey:
+          type: string
+          description: Document id to pin
+        language:
+          type:
+          - string
+          - 'null'
+          description: 'Language code (e.g. `en`, `fr`, `de`, etc.)
+
+
+            - `null` value means the pinned item is applicable to all languages
+
+
+            - Empty string (`""`) value is for NEUTRAL locale'
+          default: null
+        priority:
+          type: number
+          format: double
+          description: 'Priority of the pinned item (lower number means lower priority)
+
+
+            - Default value is `1000`
+
+
+            - Example: `1`, `10`, `100`, etc.'
+          default: 1000
+        isActive:
+          type: boolean
+          default: true
+        id:
+          type: string
+        collectionId:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+      - phrases
+      - targetKey
+      - id
+      - collectionId
+      - createdAt
+      - updatedAt
+      type: object
+      additionalProperties: false
+    Partial_PinnedCollectionPayload_:
+      properties:
+        title:
+          type: string
+        key:
+          type: string
+        isActive:
+          type: boolean
+          default: false
+      type: object
+      description: Make all properties in T optional
+  securitySchemes:
+    epi-single:
+      type: apiKey
+      name: auth
+      in: query
+      description: Single key authentication
+    epi-hmac:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: HMAC authentication (`epi-hmac xxx`)
+    Basic:
+      type: http
+      scheme: basic
+      description: HMAC credentials
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token
+x-refined-from:
+- optimizely-platform-optimizely-optimizely-graph-api-openapi.json
+- optimizely-platform-optimizely-swagger-openapi.json

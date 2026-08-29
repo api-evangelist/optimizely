@@ -1,0 +1,173 @@
+openapi: 3.2.0
+info:
+  title: Optimizely 🏆 BestBets API
+  contact:
+    name: Documentation
+    url: https://cg.optimizely.com/
+  license:
+    name: ' '
+  version: '1.0'
+  description: 'Operations tagged 🏆 BestBets across 2 of this provider''s published API definitions: optimizely-platform-optimizely-optimizely-graph-api-openapi.json, optimizely-platform-optimizely-swagger-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://cg.optimizely.com
+- url: https://prod.cg.optimizely.com
+tags:
+- name: 🏆 BestBets
+paths:
+  /api/bestbets/collection:
+    get:
+      operationId: get-BestBetCollectionHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/BestBetCollectionResult'
+                type: array
+      description: Get all bestbet collections or get by Id
+      summary: Get bestbet collection(s)
+      tags:
+      - 🏆 BestBets
+      deprecated: true
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - in: query
+        name: id
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: page
+        required: false
+        schema:
+          format: double
+          type: number
+    post:
+      operationId: create-BestBetCollectionHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BestBetCollectionResult'
+      description: Register a bestbet collection
+      summary: Register a bestbet collection
+      tags:
+      - 🏆 BestBets
+      deprecated: true
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BestBetCollectionPayload'
+    servers:
+    - url: https://cg.optimizely.com
+  /api/bestbets/collection/{id}:
+    put:
+      operationId: update-BestBetCollectionHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BestBetCollectionResult'
+      description: Update bestbet collection by Id
+      summary: Update a bestbet collection
+      tags:
+      - 🏆 BestBets
+      deprecated: true
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BestBetCollectionPayload'
+    delete:
+      operationId: delete-BestBetCollectionHandler
+      responses:
+        '204':
+          description: No content
+      description: Delete bestbet by Id
+      summary: Delete a bestbet collection
+      tags:
+      - 🏆 BestBets
+      deprecated: true
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    servers:
+    - url: https://cg.optimizely.com
+components:
+  schemas:
+    BestBetCollectionPayload:
+      properties:
+        title:
+          type: string
+      required:
+      - title
+      type: object
+      additionalProperties: false
+    BestBetCollectionResult:
+      properties:
+        title:
+          type: string
+        id:
+          type: string
+      required:
+      - title
+      - id
+      type: object
+      additionalProperties: false
+  securitySchemes:
+    epi-single:
+      type: apiKey
+      name: auth
+      in: query
+      description: Single key authentication
+    epi-hmac:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: HMAC authentication (`epi-hmac xxx`)
+    Basic:
+      type: http
+      scheme: basic
+      description: HMAC credentials
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token
+x-refined-from:
+- optimizely-platform-optimizely-optimizely-graph-api-openapi.json
+- optimizely-platform-optimizely-swagger-openapi.json

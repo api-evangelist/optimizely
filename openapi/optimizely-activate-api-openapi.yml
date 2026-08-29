@@ -1,0 +1,157 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Agent Activate API
+  description: Optimizely Agent is a stand-alone, open-source microservice that provides major benefits over using Optimizely SDKs in certain use cases. Its REST API offers consolidated and simplified endpoints for accessing all the functionality of Optimizely Feature Experimentation SDKs. Use this API the control experiments (such as a feature tests). For more info, see https://docs.developers.optimizely.com/experimentation/v4.0.0-full-stack/docs/optimizely-agent
+  termsOfService: https://www.optimizely.com/legal/terms/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.12.0
+security:
+- SdkKeyAuth: []
+- TokenAuth: []
+tags:
+- name: Activate
+paths:
+  /v1/activate:
+    post:
+      summary: Activate selected features and experiments for the given user.
+      description: Returns Optimizely's decision about which features and experiments a given user is exposed to. Optionally sends an impression event to the Optimizely analytics backend for any decision made for an experiment. This endpoint consolidates key functionality from the Feature Experimentation SDKs into one convenient call.
+      operationId: activate
+      parameters:
+      - name: featureKey
+        in: query
+        description: Key for the Optimizely Feature
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: experimentKey
+        in: query
+        description: Key for the Optimizely Experiment
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: disableTracking
+        in: query
+        description: Setting to true will disable impression tracking for experiments.
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      - name: type
+        in: query
+        description: Limit the decisions to either experiment or features
+        style: form
+        explode: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/Type'
+          - description: Limit the decisions to either experiment or features
+      - name: enabled
+        in: query
+        description: Filter the activation response to return only enabled decisions.
+        style: form
+        explode: true
+        schema:
+          type: boolean
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivateContext'
+        required: true
+      responses:
+        '200':
+          description: Valid response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Decision'
+                description: ''
+                contentMediaType: application/json
+        '400':
+          description: Bad request, invalid parameters
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized, invalid JWT
+          content:
+            application/json: {}
+        '403':
+          description: You do not have necessary permissions for the resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Forbidden'
+      deprecated: false
+      tags:
+      - Activate
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
+          type: string
+    ActivateContext:
+      title: ActivateContext
+      type: object
+      properties:
+        userId:
+          type: string
+        userAttributes:
+          type: object
+    Decision:
+      title: Decision
+      type: object
+      properties:
+        featureKey:
+          type: string
+        experimentKey:
+          type: string
+        variationKey:
+          type: string
+        type:
+          $ref: '#/components/schemas/Type'
+        enabled:
+          type: boolean
+        variables:
+          type: object
+        error:
+          type: string
+    Type:
+      title: Type
+      enum:
+      - feature
+      - experiment
+      - ''
+      type: string
+  responses:
+    Forbidden:
+      description: You do not have necessary permissions for the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    SdkKeyAuth:
+      type: apiKey
+      name: X-Optimizely-SDK-Key
+      in: header
+    TokenAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

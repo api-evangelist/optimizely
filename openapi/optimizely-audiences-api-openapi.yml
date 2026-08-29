@@ -1,17 +1,13 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Optimizely Campaign REST Assets Audiences API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
-  version: '1.0'
-  contact:
-    name: Optimizely Support
-    url: https://support.optimizely.com
-  termsOfService: https://www.optimizely.com/legal/terms/
+  title: Optimizely Audiences API
+  version: '2.0'
+  description: 'Operations tagged Audiences across 3 of this provider''s published API definitions: optimizely-feature-experimentation-openapi.yml, optimizely-web-experimentation-openapi.yml, optimizely-web-experimentation-optimizely-api-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://api.campaign.episerver.net/rest
-  description: Optimizely Campaign Production Server
-security:
-- basicAuth: []
+- url: https://api.optimizely.com/v2
+  description: Optimizely REST API v2 Management Server
+- url: https://api.optimizely.com/flags/v1
+  description: Optimizely Flags API v1 Server
 tags:
 - name: Audiences
   description: Create and manage audience segments for targeting experiments and rollouts.
@@ -38,6 +34,8 @@ paths:
                   $ref: '#/components/schemas/Audience'
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - bearerAuth: []
     post:
       operationId: createAudience
       summary: Create an audience
@@ -61,6 +59,13 @@ paths:
           description: Invalid request body
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.optimizely.com/v2
+      description: Optimizely REST API v2 Management Server
+    - url: https://api.optimizely.com/flags/v1
+      description: Optimizely Flags API v1 Server
   /audiences/{audience_id}:
     get:
       operationId: getAudience
@@ -81,6 +86,8 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Audience not found
+      security:
+      - bearerAuth: []
     patch:
       operationId: updateAudience
       summary: Update an audience
@@ -108,18 +115,23 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Audience not found
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.optimizely.com/v2
+      description: Optimizely REST API v2 Management Server
+    - url: https://api.optimizely.com/flags/v1
+      description: Optimizely Flags API v1 Server
 components:
   parameters:
-    perPage:
-      name: per_page
-      in: query
-      required: false
-      description: Number of results per page
+    audienceId:
+      name: audience_id
+      in: path
+      required: true
+      description: The unique identifier for the audience
       schema:
         type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
+        format: int64
     projectIdQuery:
       name: project_id
       in: query
@@ -137,32 +149,36 @@ components:
         type: integer
         default: 1
         minimum: 1
-    audienceId:
-      name: audience_id
-      in: path
-      required: true
-      description: The unique identifier for the audience
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
       schema:
         type: integer
-        format: int64
+        default: 25
+        minimum: 1
+        maximum: 100
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
   schemas:
-    AudienceInput:
-      type: object
-      description: Input for creating or updating an audience
-      properties:
-        project_id:
-          type: integer
-          format: int64
-          description: The project this audience belongs to
-        name:
-          type: string
-          description: Human-readable name of the audience
-        description:
-          type: string
-          description: Description of the audience
-        conditions:
-          type: string
-          description: JSON-encoded audience conditions
     Audience:
       type: object
       description: An audience segment for targeting
@@ -192,11 +208,190 @@ components:
           type: string
           format: date-time
           description: Timestamp when the audience was last modified
+    AudienceInput:
+      type: object
+      description: Input for creating or updating an audience
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this audience belongs to
+        name:
+          type: string
+          description: Human-readable name of the audience
+        description:
+          type: string
+          description: Description of the audience
+        conditions:
+          type: string
+          description: JSON-encoded audience conditions
+    Audience_2:
+      type: object
+      description: An audience segment for experiment targeting
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the audience
+        project_id:
+          type: integer
+          format: int64
+          description: The project this audience belongs to
+        name:
+          type: string
+          description: Human-readable name of the audience
+        description:
+          type: string
+          description: Description of the audience criteria
+        conditions:
+          type: string
+          description: JSON-encoded audience conditions
+        is_classic:
+          type: boolean
+          description: Whether this is a classic audience
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when the audience was created
+        last_modified:
+          type: string
+          format: date-time
+          description: Timestamp when the audience was last modified
+    AudienceInput_2:
+      type: object
+      description: Input for creating or updating an audience
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this audience belongs to
+        name:
+          type: string
+          description: Human-readable name of the audience
+        description:
+          type: string
+          description: Description of the audience criteria
+        conditions:
+          type: string
+          description: JSON-encoded audience conditions
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    Audience_3:
+      properties:
+        archived:
+          default: false
+          description: Whether the Audience has been archived
+          type: boolean
+        conditions:
+          description: A string defining the targeting rules for an Audience
+          example: '["and", {"type": "language", "value": "es"}, {"type": "location", "value": "US-CA-SANFRANCISCO"}]'
+          externalDocs:
+            description: targeting rules for an Audience
+            url: https://developers.optimizely.com/x/rest/guides/conditions/
+          type: string
+        created:
+          description: The time the Audience was initially created
+          format: date-time
+          readOnly: true
+          type: string
+        description:
+          description: A short description of the Audience
+          example: People that speak spanish and are in San Francisco
+          type: string
+        experiment_count:
+          description: Number of experiments by audience_id
+          example: 123
+          format: int64
+          readOnly: true
+          type: integer
+        for_journey:
+          default: false
+          description: Whether the Audience has been part of journey or not
+          type: boolean
+        id:
+          description: The unique identifier for the Audience
+          example: 5000
+          format: int64
+          readOnly: true
+          type: integer
+        is_classic:
+          description: Whether or not Audience is a classic Audience. If true, the Audience is only compatible with classic Experiments. Otherwise, the Audience may be used in Optimizely X Campaigns.
+          type: boolean
+        last_modified:
+          description: The last time the Audience was modified
+          format: date-time
+          readOnly: true
+          type: string
+        name:
+          description: The name of the Audience
+          example: Spanish speaking San Franciscans
+          type: string
+        project_id:
+          description: The ID of the Project the Audience was created in
+          example: 1000
+          format: int64
+          type: integer
+        segmentation:
+          default: false
+          description: True if the Audience is available for segmentation on the results page (Audiences can only be used for segmentation in Optimizely Classic). Set to False if you intend to use this Audience only in Optimizely X. Note that a maximum of 10 Audiences can have segmentation set to True in any given Optimizely Classic project.
+          externalDocs:
+            description: segmentation
+            url: https://help.optimizely.com/Analyze_Results/The_Results_page#segmenting
+          type: boolean
+      required:
+      - project_id
+      type: object
+    AudienceUpdate:
+      properties:
+        archived:
+          description: True if the Audience has been archived
+          type: boolean
+        conditions:
+          description: A string defining the targeting rules for an Audience
+          type: string
+        description:
+          description: A short description of the Audience
+          type: string
+        for_journey:
+          default: false
+          description: Whether the Audience has been part of journey or not
+          type: boolean
+        name:
+          description: The name of the Audience
+          example: Spanish speaking San Franciscans
+          type: string
+        segmentation:
+          description: True if the Audience is available for segmentation on the results page (Enterprise plans only)
+          type: boolean
+      type: object
   securitySchemes:
-    basicAuth:
+    bearerAuth:
       type: http
-      scheme: basic
-      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
-externalDocs:
-  description: Optimizely Campaign REST API Documentation
-  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+      scheme: bearer
+      description: OAuth 2.0 Bearer token or personal access token for authentication.
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http
+x-refined-from:
+- optimizely-feature-experimentation-openapi.yml
+- optimizely-web-experimentation-openapi.yml
+- optimizely-web-experimentation-optimizely-api-openapi.json

@@ -1,0 +1,91 @@
+openapi: 3.2.0
+info:
+  title: Optimizely 🔒 OIDC API
+  contact:
+    name: Documentation
+    url: https://cg.optimizely.com/
+  license:
+    name: ' '
+  version: '1.0'
+  description: 'Operations tagged 🔒 OIDC across 2 of this provider''s published API definitions: optimizely-platform-optimizely-optimizely-graph-api-openapi.json, optimizely-platform-optimizely-swagger-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://cg.optimizely.com
+- url: https://prod.cg.optimizely.com
+tags:
+- name: 🔒 OIDC
+paths:
+  /api/config/oidc:
+    put:
+      operationId: upsert-OidcConfigHandler
+      responses:
+        '204':
+          description: No content
+      description: Enable OIDC support for the current account
+      summary: Upsert OIDC config
+      tags:
+      - 🔒 OIDC
+      security:
+      - epi-hmac: []
+      - Basic: []
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenClaims'
+    delete:
+      operationId: delete-OidcConfigHandler
+      responses:
+        '204':
+          description: No content
+      description: Delete OIDC config for the current account
+      summary: Delete OIDC config
+      tags:
+      - 🔒 OIDC
+      security:
+      - epi-hmac: []
+      - Basic: []
+      parameters: []
+    servers:
+    - url: https://cg.optimizely.com
+components:
+  schemas:
+    TokenClaims:
+      properties:
+        audience:
+          anyOf:
+          - type: string
+          - items:
+              type: string
+            type: array
+        issuer:
+          type: string
+      required:
+      - audience
+      - issuer
+      type: object
+      additionalProperties: false
+  securitySchemes:
+    epi-single:
+      type: apiKey
+      name: auth
+      in: query
+      description: Single key authentication
+    epi-hmac:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: HMAC authentication (`epi-hmac xxx`)
+    Basic:
+      type: http
+      scheme: basic
+      description: HMAC credentials
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token
+x-refined-from:
+- optimizely-platform-optimizely-optimizely-graph-api-openapi.json
+- optimizely-platform-optimizely-swagger-openapi.json

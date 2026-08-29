@@ -1,0 +1,634 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Subject Access Requests API
+  version: '2.0'
+  description: Manage information about Subject Access Requests (includes GDPR)
+servers:
+- url: https://api.optimizely.com/v2
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- description: Manage information about Subject Access Requests (includes GDPR)
+  name: Subject Access Requests
+paths:
+  /internal-subject-access-requests:
+    get:
+      description: Get a list of Subject Access Requests by data source and status
+      operationId: list_sar_requests_by_team
+      parameters:
+      - $ref: '#/components/parameters/per_page'
+      - $ref: '#/components/parameters/page'
+      - description: Name of the source for which to retrieve the Subject Access Requests
+        in: query
+        name: data_source
+        required: true
+        schema:
+          enum:
+          - app_backend
+          - app_backend_infra
+          - data_platform
+          - datawarehouse
+          - external_systems
+          - optimizely
+          - optimizely_on_optimizely
+          - program_management
+          - security
+          - business_systems
+          - marketing
+          - tse
+          type: string
+      - description: Filter request by status
+        in: query
+        name: status
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SubjectAccessRequestInternal'
+                type: array
+          description: Return Subject Access Request information
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid or missing query parameters
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: List Subject Access Requests by data source and status
+      tags:
+      - Subject Access Requests
+      x-release-state: alpha
+  /internal-subject-access-requests/{request_id}:
+    patch:
+      description: Update a Subject Access Request by ID
+      operationId: update_sar_request
+      parameters:
+      - description: The ID of the Subject Access Request to be updated.
+        in: path
+        name: request_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/SubjectAccessRequestUpdate'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectAccessRequestInternal'
+          description: Return the updated Subject Access Request
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid ID or request body
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to edit the specified Subject Access Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Subject Access Request not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Update a Subject Access Request
+      tags:
+      - Subject Access Requests
+      x-release-state: alpha
+    post:
+      description: Update a Subject Access Request by ID
+      operationId: update_sar_request_by_post
+      parameters:
+      - description: The ID of the Subject Access Request to be updated.
+        in: path
+        name: request_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/SubjectAccessRequestUpdate'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectAccessRequestInternal'
+          description: Return the updated Subject Access Request
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid ID or request body
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to edit the specified Subject Access Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Subject Access Request not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Update a Subject Access Request
+      tags:
+      - Subject Access Requests
+      x-release-state: alpha
+  /subject-access-requests:
+    get:
+      description: Fetch Subject Access Requests submitted from your account
+      operationId: list_sar_requests_by_account
+      parameters:
+      - $ref: '#/components/parameters/per_page'
+      - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SubjectAccessRequest'
+                type: array
+          description: Return Subject Access Request info
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid ID supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access the specified subject access request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Subject Access Request not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: List Subject Access Requests
+      tags:
+      - Subject Access Requests
+    post:
+      description: Create a Subject Access Request
+      operationId: create_sar_request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubjectAccessRequest'
+        description: A JSON string containing the fields needed to create a subject access request.
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectAccessRequest'
+          description: Return the created SubjectAccessRequest
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid request body content
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to create a Subject Access Request for the specified account
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Create a Subject Access Request
+      tags:
+      - Subject Access Requests
+  /subject-access-requests/{request_id}:
+    get:
+      description: Get Subject Access Requests by request id
+      operationId: get_sar_request
+      parameters:
+      - description: The ID of the Subject Access Request
+        in: path
+        name: request_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectAccessRequest'
+          description: Return Subject Access Request info
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid ID
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to access the specified subject access request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Subject Access Request not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Get Subject Access Request
+      tags:
+      - Subject Access Requests
+components:
+  requestBodies:
+    SubjectAccessRequestUpdate:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SubjectAccessRequestUpdate'
+      description: A JSON string containing the Subject Access Request fields to be updated.
+      required: true
+  schemas:
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    SubjectAccessRequestInternal:
+      properties:
+        account_id:
+          description: Admin account id
+          format: int64
+          readOnly: true
+          type: integer
+        completed_at_time:
+          description: Time when the request was completed
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        data_source:
+          description: Subject Access Request Data Source
+          enum:
+          - app_backend
+          - app_backend_infra
+          - data_platform
+          - datawarehouse
+          - external_systems
+          - optimizely
+          - optimizely_on_optimizely
+          - program_management
+          - security
+          - business_systems
+          - marketing
+          - tse
+          example: optimizely
+          type: string
+        data_type:
+          description: Subject Access Request Data Type
+          enum:
+          - user
+          - visitor
+          example: user
+          type: string
+        expired_at_time:
+          description: Time when the url expires (7 days from the completed_at_time)
+          format: date-time
+          readOnly: true
+          type: string
+        export_location:
+          description: The location to which the data will be exported.
+          example: s3://{bucket-name}/{account_id}/{parent_sar_id}/{sar_id}
+          readOnly: true
+          type: string
+        id:
+          description: Subject Access Request ID
+          example: 12345
+          format: int64
+          readOnly: true
+          type: integer
+        identifier:
+          description: Subject Access Request Identifier
+          example: test@optimizely.com
+          type: string
+        identifier_type:
+          description: Subject Access Request Identifier Type
+          enum:
+          - email
+          - optimizely_end_user_id
+          - dcp_id
+          - fullstack_id
+          - other
+          example: email
+          type: string
+        parent_request_id:
+          description: Parent Subject Access Request id
+          example: 12345
+          format: int64
+          readOnly: true
+          type: integer
+        processing_started_time:
+          description: Time when the processing of the request started
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        request_type:
+          description: Subject Access Request Request Type
+          enum:
+          - access
+          - delete
+          example: access
+          type: string
+        requested_at_time:
+          description: Time when the request was submitted
+          format: date-time
+          readOnly: true
+          type: string
+        sla_deadline_time:
+          description: Time by which the request must be deleted
+          format: date-time
+          readOnly: true
+          type: string
+        status:
+          description: Status of the Subject Access Request
+          enum:
+          - pending
+          - processing
+          - completed
+          - failure
+          example: pending
+          readOnly: true
+          type: string
+      required:
+      - data_type
+      - data_source
+      - identifier
+      - identifier_type
+      - request_type
+      type: object
+    SubjectAccessRequestUpdate:
+      properties:
+        completed_at_time:
+          description: Time when the request was completed
+          format: date-time
+          type:
+          - string
+          - 'null'
+        export_location:
+          description: s3 path to the Subject Access Request's ZIP file in the optimizely-sar-prod bucket
+          example: s3://optimizely-sar-prod/{admin_account_id}-{parent_request_id}.zip
+          type: string
+        processing_started_time:
+          description: Time when the processing of the request started
+          format: date-time
+          type:
+          - string
+          - 'null'
+        status:
+          description: Status of the Subject Access Request
+          enum:
+          - pending
+          - processing
+          - completed
+          - failure
+          example: processing
+          type: string
+      required:
+      - status
+      type: object
+    SubjectAccessRequest:
+      properties:
+        account_id:
+          description: The Account ID for the account the Subject Access Request will be executed.
+          example: 12345
+          format: int64
+          readOnly: true
+          type: integer
+        completed_at_time:
+          description: The time when the request was completed.
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        data_type:
+          description: "<p>The type of data to be accessed or deleted. The two options are:</p>\n\n<ul>\n    <li><code>user</code> - End users (also known as <em>Collaborators</em>) that are added to the accounts of our customers. A user can be a <a href=\"https://help.optimizely.com/Set_Up_Optimizely/Manage_collaborators_in_Optimizely_X\" rel=\"internal\"><u>collaborator</u></a> on multiple accounts.</li>\n    <li><code>visitor</code> - Visitors who visit or use our customers’ websites, apps and other digital products. Optimizely stores visitor data to calculate experiment results and to tailor content.</li>\n</ul>\n"
+          enum:
+          - user
+          - visitor
+          example: user
+          type: string
+        expired_at_time:
+          description: Time when the url expires (7 days from the completed_at_time)
+          format: date-time
+          readOnly: true
+          type: string
+        export_location:
+          description: The location to which the data will be exported. The data will be made accessible in a AWS S3 bucket.
+          example: https://s3-us-west-2.amazonaws.com/optimizely-sar-prod/{account-id}-{request_id}.zip
+          readOnly: true
+          type: string
+        id:
+          description: The Subject Access Request ID.
+          example: 12345
+          format: int64
+          readOnly: true
+          type: integer
+        identifier:
+          description: The identifier value that you would like us to use when searching. If <code>user</code> was selected in the previous step, the identifier will be the email address for the User.
+          example: test@optimizely.com
+          maxLength: 355
+          type: string
+        identifier_type:
+          description: "<p>User data is identified by the email address used to create the end user account. The endpoint only accepts the <code>email</code> datatype if you selected <code>user</code> for <strong>Datatype</strong>.<br>\n<br>\nIf you selected <code>visitor</code> for <strong>data_type</strong>, you can select 5 options for personal identifier types:</p>\n\n<ul>\n    <li>\n    <p><code>dcp_id</code> - Any ID used to identify targeting records in Optimizely.</p>\n    </li>\n    <li>\n    <p><code>email</code> - The email address of a visitor.</p>\n    </li>\n    <li>\n    <p><code>fullstack_id</code> - The unique identifier used for Full Stack experiments.</p>\n    </li>\n    <li>\n    <p><code>optimizely_end_user_id</code> - An Optimizely generated user cookie.</p>\n    </li>\n    <li>\n    <p><code>other</code> -&nbsp;Any other identifier that was uploaded to Optimizely.</p>\n    </li>\n</ul>\n"
+          enum:
+          - email
+          - optimizely_end_user_id
+          - dcp_id
+          - fullstack_id
+          - other
+          example: email
+          type: string
+        processing_started_time:
+          description: The time when the processing of the Subject Access Request started.
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        request_type:
+          description: '<code>delete</code> - Removes all data within an account that is associated to the identifier defined in the identifier field.
+
+            <br>
+
+            <code>access</code> - Finds all data stored in Optimizely systems associated to the identifier defined in the identifier field and exports it to an AWS S3 bucket for you to access.
+
+            '
+          enum:
+          - access
+          - delete
+          example: access
+          type: string
+        requested_at_time:
+          description: The time when the Subject Access Request was submitted.
+          format: date-time
+          readOnly: true
+          type: string
+        sla_deadline_time:
+          description: The time by which the Subject Access Request must be completed.
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        status:
+          description: The status of the Subject Access Request.
+          enum:
+          - pending
+          - processing
+          - completed
+          - failure
+          example: pending
+          readOnly: true
+          type: string
+      required:
+      - data_type
+      - identifier
+      - identifier_type
+      - request_type
+      type: object
+  parameters:
+    page:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
+  securitySchemes:
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http

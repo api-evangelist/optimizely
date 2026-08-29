@@ -1,0 +1,473 @@
+openapi: 3.2.0
+info:
+  title: Optimizely 📖 Definition ( v3 ) API
+  contact:
+    name: Documentation
+    url: https://cg.optimizely.com/
+  license:
+    name: ' '
+  version: '1.0'
+  description: 'Operations tagged 📖 Definition ( v3 ) across 2 of this provider''s published API definitions: optimizely-platform-optimizely-optimizely-graph-api-openapi.json, optimizely-platform-optimizely-swagger-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://cg.optimizely.com
+- url: https://prod.cg.optimizely.com
+tags:
+- name: 📖 Definition ( v3 )
+paths:
+  /api/content/v3/sources:
+    get:
+      operationId: get-ContentV3SourceHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SourceInfoMap'
+      description: Get `id`, `label`, `description` and `languages` fields of the source
+      summary: Get source metadata
+      tags:
+      - 📖 Definition ( v3 )
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: 'The id of the source _(optional)_
+
+          - _(empty): all sources_
+
+          - _**default**: only default source_
+
+          - _**src1**:  only src1_'
+        in: query
+        name: id
+        required: false
+        schema:
+          type: string
+      - description: 'The slot of the source _(optional)_
+
+          - _(empty): old slot_
+
+          - _**new**: new slot_'
+        in: query
+        name: slot
+        required: false
+        schema:
+          $ref: '#/components/schemas/Slot'
+    delete:
+      operationId: delete-ContentV3SourceHandler
+      responses:
+        '200':
+          description: Source is deleted successfully
+        '404':
+          description: Source is not found
+      description: Delete content _types / data_ of the source
+      summary: Delete source
+      tags:
+      - 📖 Definition ( v3 )
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: 'The id of the source
+
+          - _(empty): all sources_
+
+          - _**default**: only default source_
+
+          - _**src1**:  only src1_'
+        in: query
+        name: id
+        required: false
+        schema:
+          type: string
+      - description: 'Delete mode
+
+
+          | mode         | description             | types       | data        |
+
+          | --           | --                      | --          | --          |
+
+          | _(empty)_    | _delete types and data_ | _(delete)_  | _(delete)_  |
+
+          | _**types**_  | _delete only types_     | _(delete)_  |             |
+
+          | _**data**_   | _delete only data_      |             | _(delete)_  |
+
+          | _**reset**_  | _reset data_            | _(delete)_  | _(reset)_   |'
+        in: query
+        name: mode
+        required: false
+        schema:
+          $ref: '#/components/schemas/DeleteMode'
+      - description: 'The slot of the source _(optional)_
+
+          - _(empty): old slot_
+
+          - _**new**: new slot_'
+        in: query
+        name: slot
+        required: false
+        schema:
+          $ref: '#/components/schemas/Slot'
+    post:
+      operationId: post-ContentV3SourceHandler
+      responses:
+        '204':
+          description: No content
+      description: Update `label`, `description` fields of the source
+      summary: Update source metadata
+      tags:
+      - 📖 Definition ( v3 )
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: The id of the source
+        in: query
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: 'The slot of the source _(optional)_
+
+          - _(empty): old slot_
+
+          - _**new**: new slot_'
+        in: query
+        name: slot
+        required: false
+        schema:
+          $ref: '#/components/schemas/Slot'
+      requestBody:
+        description: The new metadata source
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SourceMetadata'
+              description: The new metadata source
+    servers:
+    - url: https://cg.optimizely.com
+  /api/content/v3/types:
+    get:
+      operationId: get-ContentV3TypeHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentSource_V3'
+      description: Get content types of the source
+      summary: Get content types
+      tags:
+      - 📖 Definition ( v3 )
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: The id of the source
+        in: query
+        name: id
+        required: false
+        schema:
+          default: default
+          type: string
+    post:
+      operationId: post-ContentV3TypeHandler
+      responses:
+        '204':
+          description: No content
+      description: Update content types of the source partially
+      summary: Partial content type update
+      tags:
+      - 📖 Definition ( v3 )
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: The id of the source
+        in: query
+        name: id
+        required: false
+        schema:
+          default: default
+          type: string
+      requestBody:
+        description: Content type definitions
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentSource_V3'
+              description: Content type definitions
+    put:
+      operationId: put-ContentV3TypeHandler
+      responses:
+        '204':
+          description: No content
+      description: Update content types of the source (overwrite all)
+      summary: Full content type update
+      tags:
+      - 📖 Definition ( v3 )
+      security:
+      - epi-hmac: []
+      - Bearer: []
+      - Basic: []
+      parameters:
+      - description: The id of the source
+        in: query
+        name: id
+        required: false
+        schema:
+          default: default
+          type: string
+      requestBody:
+        description: Content type definitions
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentSource_V3'
+              description: Content type definitions
+    servers:
+    - url: https://cg.optimizely.com
+components:
+  schemas:
+    Slot:
+      enum:
+      - new
+      - old
+      type: string
+    PropertyType_V3:
+      properties:
+        base:
+          type: string
+        abstract:
+          type: boolean
+        properties:
+          properties: {}
+          additionalProperties:
+            $ref: '#/components/schemas/Property_V3'
+          type: object
+      type: object
+      additionalProperties: false
+    ContentType_V3:
+      properties:
+        contentType:
+          items:
+            type: string
+          type: array
+        properties:
+          properties: {}
+          additionalProperties:
+            $ref: '#/components/schemas/ContentTypeProperty_V3'
+          type: object
+        displayName:
+          $ref: '#/components/schemas/Optional_string_'
+        sortOrder:
+          type: number
+          format: double
+        description:
+          $ref: '#/components/schemas/Optional_string_'
+        base:
+          type: string
+        abstract:
+          type: boolean
+      required:
+      - contentType
+      type: object
+      additionalProperties: false
+    DeleteMode:
+      enum:
+      - types
+      - data
+      - reset
+      type: string
+    LinkMap:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/LinkConfig'
+      type: object
+    Optional_string_:
+      type:
+      - string
+      - 'null'
+    SourceInfo:
+      properties:
+        languages:
+          items:
+            type: string
+          type: array
+        description:
+          type: string
+        label:
+          type: string
+        id:
+          type: string
+      required:
+      - languages
+      - description
+      - label
+      - id
+      type: object
+    Property_V3:
+      properties:
+        type:
+          type: string
+        searchable:
+          type: boolean
+        index:
+          type: boolean
+        ref:
+          $ref: '#/components/schemas/FieldRef'
+      required:
+      - type
+      type: object
+      additionalProperties: false
+    SourceInfoMap:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/SourceInfo'
+      type: object
+      example:
+        default:
+          id: default
+          label: default
+          description: ''
+          languages:
+          - en
+    ContentTypeMap_V3:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/ContentType_V3'
+      type: object
+    ContentSource_V3:
+      properties:
+        preset:
+          $ref: '#/components/schemas/Preset'
+        useTypedFieldNames:
+          type: boolean
+        description:
+          $ref: '#/components/schemas/Optional_string_'
+        label:
+          $ref: '#/components/schemas/Optional_string_'
+        links:
+          $ref: '#/components/schemas/LinkMap'
+        propertyTypes:
+          $ref: '#/components/schemas/PropertyTypeMap_V3'
+        contentTypes:
+          $ref: '#/components/schemas/ContentTypeMap_V3'
+        languages:
+          items:
+            type: string
+          type: array
+          default: []
+      type: object
+      additionalProperties: false
+      example:
+        label: Weather Forecast
+        description: The description of source
+        languages:
+        - en
+        links: {}
+        contentTypes:
+          Weather:
+            contentType: []
+            properties:
+              Location:
+                type: Location
+              Description:
+                type: String
+              Temperature:
+                type: Int
+        propertyTypes:
+          Location:
+            properties:
+              Latitude:
+                type: Float
+              Longitude:
+                type: Float
+    PropertyTypeMap_V3:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/PropertyType_V3'
+      type: object
+    LinkConfig:
+      properties:
+        to:
+          type: string
+        from:
+          type: string
+      required:
+      - to
+      - from
+      type: object
+    FieldRef:
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+      type: object
+    ContentTypeProperty_V3:
+      properties:
+        type:
+          type: string
+        searchable:
+          type: boolean
+        index:
+          type: boolean
+        ref:
+          $ref: '#/components/schemas/FieldRef'
+        helpText:
+          $ref: '#/components/schemas/Optional_string_'
+      required:
+      - type
+      type: object
+      additionalProperties: false
+    Preset:
+      type: string
+      enum:
+      - legacy
+      - next
+    SourceMetadata:
+      properties:
+        label:
+          type: string
+        description:
+          type: string
+      required:
+      - label
+      - description
+      type: object
+      additionalProperties: false
+  securitySchemes:
+    epi-single:
+      type: apiKey
+      name: auth
+      in: query
+      description: Single key authentication
+    epi-hmac:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: HMAC authentication (`epi-hmac xxx`)
+    Basic:
+      type: http
+      scheme: basic
+      description: HMAC credentials
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token
+x-refined-from:
+- optimizely-platform-optimizely-optimizely-graph-api-openapi.json
+- optimizely-platform-optimizely-swagger-openapi.json

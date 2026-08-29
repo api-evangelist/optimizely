@@ -1,0 +1,1232 @@
+openapi: 3.2.0
+info:
+  description: 'This page documents how to use the Optimizely FX API.
+
+    With this API you can view and manage Feature Flags and all of their
+
+    related entities including Variables, Variations, Rules, and Reports.
+
+
+    The base URL is https://api.optimizely.com/flags/v1. Append any paths
+
+    listed in these docs onto that url in order to make requests to the API.'
+  title: Optimizely Feature Experimentation Variations API
+  version: 0.3.7
+  x-logo:
+    url: https://app.optimizely.com/static/img/rebrand/logo.svg
+servers:
+- url: https://api.optimizely.com/flags/v1/
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- description: APIs to interact with Variations
+  name: Variations
+paths:
+  /projects/{project_id}/flags/{flag_key}/variations:
+    get:
+      description: 'Get a list of Variations for a specific Flag in a Project
+
+
+        You can use query parameters to filter/sort the response.
+
+        '
+      operationId: list_variations
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      - $ref: '#/components/parameters/perPage'
+      - $ref: '#/components/parameters/pageToken'
+      - $ref: '#/components/parameters/pageWindow'
+      - allowReserved: true
+        description: 'Sort the Variations based on the attributes from left to right.
+
+          '
+        in: query
+        name: sort
+        required: false
+        schema:
+          items:
+            enum:
+            - name:asc
+            - name:desc
+            - key:asc
+            - key:desc
+            - created_time:asc
+            - created_time:desc
+            - updated_time:asc
+            - updated_time:desc
+            type: string
+          type: array
+      - description: 'Filter the Variations for a Flag by archived field status. A Variation for a Flag can be either archived (archived=true) or unarchived (archived=false)
+
+          '
+        in: query
+        name: archived
+        required: false
+        schema:
+          type: boolean
+      - description: 'Filter the Variations for a Flag by enabled field status. A Variation for a Flag can be either enabled (enabled=true) or disabled (enabled=false)
+
+          '
+        in: query
+        name: enabled
+        required: false
+        schema:
+          type: boolean
+      - description: 'Filter the Variations for a Flag by whether the variation is used (in_use=true) or not (in_use=false) in rules.
+
+          '
+        in: query
+        name: in_use
+        required: false
+        schema:
+          type: boolean
+      - description: 'Filter the Variations for a Flag by name, key, or
+
+          description substring
+
+          '
+        in: query
+        name: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Variations'
+          description: 'Successful retrieval of a page of Variations for a Flag.
+
+
+            The response includes RESTful JSON (https://restfuljson.org/) styled links and pagination metadata.
+
+            Objects in this API MAY include a url property for a link to itself and MAY append _url to properties for related links.
+
+            If a link is not present in the response, it indicates a user is not authorized to access the related resource.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+      summary: List Variations
+      tags:
+      - Variations
+    patch:
+      description: 'Update one or more Variations for a specific Flag in a project using a JSON patch structure.
+
+        '
+      operationId: update_variations
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      requestBody:
+        content:
+          application/json-patch+json:
+            example:
+            - op: replace
+              path: /high_discount/variables/amount/value
+              value: 15
+            schema:
+              items:
+                $ref: '#/components/schemas/PatchRequestBody'
+              type: array
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                high_discount:
+                  archive_url: '...'
+                  archived: true
+                  created_time: '2019-05-08 00:00:00+00:00'
+                  delete_url: '...'
+                  description: Use this to provide high discounts
+                  enabled: true
+                  environment_usage_count:
+                    development: 2
+                    production: 3
+                  fetch_flag_url: '...'
+                  flag_key: recurring_deposit
+                  id: 45633995
+                  key: high_discount
+                  name: High Discount
+                  unarchive_url: '...'
+                  update_url: '...'
+                  updated_time: '2019-05-08 00:00:00+00:00'
+                  url: '...'
+                  urn: variations.flag.optimizely.com::45633995
+                  variables:
+                    advanced:
+                      key: advanced
+                      type: json
+                      value: "{\n\t\"hello\": 123\n}"
+                    amount:
+                      key: amount
+                      type: double
+                      value: 15
+                    message:
+                      key: message
+                      type: string
+                      value: Enjoy!!
+                low_discount:
+                  low_discount:
+                    archive_url: '...'
+                    archived: false
+                    created_time: '2019-05-08 00:00:00+00:00'
+                    delete_url: '...'
+                    description: Use this to provide low discounts
+                    enabled: true
+                    environment_usage_count:
+                      development: 2
+                      production: 3
+                    fetch_flag_url: '...'
+                    flag_key: recurring_deposit
+                    id: 45633995
+                    key: low_discount
+                    name: Low Discount
+                    unarchive_url: '...'
+                    update_url: '...'
+                    updated_time: '2019-05-08 00:00:00+00:00'
+                    url: '...'
+                    urn: variations.flag.optimizely.com::45633995
+                    variables:
+                      advanced:
+                        key: advanced
+                        type: json
+                        value: "{\n\t\"hello\": 123\n}"
+                      amount:
+                        key: amount
+                        type: double
+                        value: 2
+                      message:
+                        key: message
+                        type: string
+                        value: Enjoy!!
+              schema:
+                $ref: '#/components/schemas/VariationMap'
+          description: 'Successful update of Variations for a Flag.
+
+            Response is a dictionary of variation_key (key) and Variation for a Flag (value)
+
+
+            The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+            link is not present in the response, it indicates a user is not authorized to access
+
+            the related resource.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '409':
+          $ref: '#/components/responses/ConflictResponse'
+      summary: Update Variations
+      tags:
+      - Variations
+    post:
+      description: 'Creates a new Variation for a specific Flag in a project.
+
+
+        This operation corresponds to the `create_url` in a Variations response.
+
+
+        Required properties must be present in the request body.
+
+        '
+      operationId: create_variation
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      requestBody:
+        $ref: '#/components/requestBodies/VariationRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/VariationSuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+      summary: Create a New Variation
+      tags:
+      - Variations
+  /projects/{project_id}/flags/{flag_key}/variations/archived:
+    post:
+      description: 'Archive one or more Variations for a Flag.
+
+
+        This operation corresponds to the `archive_url` in a Variations response.
+
+        '
+      operationId: archive_variations
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      requestBody:
+        content:
+          application/json:
+            example:
+              keys:
+              - high_discount
+            schema:
+              $ref: '#/components/schemas/BulkOperationsRequestBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                high_discount:
+                  archive_url: '...'
+                  archived: true
+                  created_time: '2019-05-08 00:00:00+00:00'
+                  delete_url: '...'
+                  description: Use this to provide high discounts
+                  enabled: true
+                  environment_usage_count:
+                    development: 2
+                    production: 3
+                  fetch_flag_url: '...'
+                  flag_key: recurring_deposit
+                  id: 45633995
+                  key: high_discount
+                  name: High Discount
+                  unarchive_url: '...'
+                  update_url: '...'
+                  updated_time: '2019-05-08 00:00:00+00:00'
+                  url: '...'
+                  urn: variations.flag.optimizely.com::45633995
+                  variables:
+                    advanced:
+                      key: advanced
+                      type: json
+                      value: "{\n\t\"hello\": 123\n}"
+                    amount:
+                      key: amount
+                      type: double
+                      value: 10
+                    message:
+                      key: message
+                      type: string
+                      value: Enjoy!!
+                low_discount:
+                  low_discount:
+                    archive_url: '...'
+                    archived: false
+                    created_time: '2019-05-08 00:00:00+00:00'
+                    delete_url: '...'
+                    description: Use this to provide low discounts
+                    enabled: true
+                    environment_usage_count:
+                      development: 2
+                      production: 3
+                    fetch_flag_url: '...'
+                    flag_key: recurring_deposit
+                    id: 45633995
+                    key: low_discount
+                    name: Low Discount
+                    unarchive_url: '...'
+                    update_url: '...'
+                    updated_time: '2019-05-08 00:00:00+00:00'
+                    url: '...'
+                    urn: variations.flag.optimizely.com::45633995
+                    variables:
+                      advanced:
+                        key: advanced
+                        type: json
+                        value: "{\n\t\"hello\": 123\n}"
+                      amount:
+                        key: amount
+                        type: double
+                        value: 2
+                      message:
+                        key: message
+                        type: string
+                        value: Enjoy!!
+              schema:
+                $ref: '#/components/schemas/VariationMap'
+          description: 'Successful archive of a Variations.
+
+            Response is a dictionary of variation_key (key) and Variation for a Flag (value)
+
+
+            The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+            link is not present in the response, it indicates a user is not authorized to access
+
+            the related resource.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '409':
+          $ref: '#/components/responses/ConflictResponse'
+      summary: Archive Variations
+      tags:
+      - Variations
+  /projects/{project_id}/flags/{flag_key}/variations/brainstorm:
+    post:
+      operationId: brainstorm_variations
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BrainstormVariationsChat'
+        description: Input data for AI to brainstorm variations.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrainstormVariationsChat'
+          description: 'Successful AI brainstorming of variations.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+      summary: Brainstorm variations definitions using AI.
+      tags:
+      - Variations
+  /projects/{project_id}/flags/{flag_key}/variations/unarchived:
+    post:
+      description: 'Unarchive one or more Variations for a Flag.
+
+
+        This operation corresponds to the `unarchive_url` in a Variations response.
+
+        '
+      operationId: unarchive_variations
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      requestBody:
+        content:
+          application/json:
+            example:
+              keys:
+              - high_discount
+            schema:
+              $ref: '#/components/schemas/BulkOperationsRequestBody'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                high_discount:
+                  archive_url: '...'
+                  archived: false
+                  created_time: '2019-05-08 00:00:00+00:00'
+                  delete_url: '...'
+                  description: Use this to provide high discounts
+                  enabled: true
+                  environment_usage_count:
+                    development: 2
+                    production: 3
+                  fetch_flag_url: '...'
+                  flag_key: recurring_deposit
+                  id: 45633995
+                  key: high_discount
+                  name: High Discount
+                  unarchive_url: '...'
+                  update_url: '...'
+                  updated_time: '2019-05-08 00:00:00+00:00'
+                  url: '...'
+                  urn: variations.flag.optimizely.com::45633995
+                  variables:
+                    advanced:
+                      key: advanced
+                      type: json
+                      value: "{\n\t\"hello\": 123\n}"
+                    amount:
+                      key: amount
+                      type: double
+                      value: 10
+                    message:
+                      key: message
+                      type: string
+                      value: Enjoy!!
+                low_discount:
+                  low_discount:
+                    archive_url: '...'
+                    archived: false
+                    created_time: '2019-05-08 00:00:00+00:00'
+                    delete_url: '...'
+                    description: Use this to provide low discounts
+                    enabled: true
+                    environment_usage_count:
+                      development: 2
+                      production: 3
+                    fetch_flag_url: '...'
+                    flag_key: recurring_deposit
+                    id: 45633995
+                    key: low_discount
+                    name: Low Discount
+                    unarchive_url: '...'
+                    update_url: '...'
+                    updated_time: '2019-05-08 00:00:00+00:00'
+                    url: '...'
+                    urn: variations.flag.optimizely.com::45633995
+                    variables:
+                      advanced:
+                        key: advanced
+                        type: json
+                        value: "{\n\t\"hello\": 123\n}"
+                      amount:
+                        key: amount
+                        type: double
+                        value: 2
+                      message:
+                        key: message
+                        type: string
+                        value: Enjoy!!
+              schema:
+                $ref: '#/components/schemas/VariationMap'
+          description: 'Successful unarchive of Variations.
+
+            Response is a dictionary of variation_key (key) and Variation for a Flag (value)
+
+
+            The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+            link is not present in the response, it indicates a user is not authorized to access
+
+            the related resource.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '409':
+          $ref: '#/components/responses/ConflictResponse'
+      summary: Unarchive Variations
+      tags:
+      - Variations
+  /projects/{project_id}/flags/{flag_key}/variations/{variation_key}:
+    delete:
+      description: 'Permanently delete a Variation for a Flag.
+
+
+        There will be no way to access this data after deletion. If you want to
+
+        stop seeing a Variation without deleting it permanently, try archiving
+
+        instead.
+
+        '
+      operationId: delete_variation
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      - $ref: '#/components/parameters/variationKey'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+      summary: Delete a Variation
+      tags:
+      - Variations
+    get:
+      description: 'Fetch a single Variation for a Flag by its key.
+
+
+        This operation corresponds to the `fetch_variation_url` in a Variations response.
+
+        '
+      operationId: fetch_variation
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/flagKey'
+      - $ref: '#/components/parameters/variationKey'
+      responses:
+        '200':
+          $ref: '#/components/responses/VariationSuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+      summary: Fetch a Single Variation
+      tags:
+      - Variations
+components:
+  responses:
+    VariationSuccessResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Variation'
+      description: 'Successful retrieval, creation or update of a Variation for a Flag.
+
+
+        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+        link is not present in the response, it indicates a user is not authorized to access
+
+        the related resource.
+
+        '
+    NoContentResponse:
+      description: No content in the response
+    ConflictResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Conflicting resource state with requested action
+    NotFoundResponse:
+      description: Not found. No content
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
+  schemas:
+    AudienceConditionsString:
+      description: A valid AudienceConditionsArray represented as a JSON string
+      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
+      type: string
+    PatchRequestBody:
+      description: A JSONPatch document as defined by RFC 6902
+      properties:
+        from:
+          description: A JSON Pointer to the resource attribute
+          type: string
+        op:
+          description: The operation to be performed
+          enum:
+          - add
+          - remove
+          - replace
+          - move
+          - copy
+          - test
+          type: string
+        path:
+          description: A JSON-Pointer to the resource or the resource attribute
+          type: string
+        value:
+          anyOf:
+          - type: object
+          - items:
+              type: string
+            type: array
+          - $ref: '#/components/schemas/AudienceConditions'
+          - type: string
+          - type: integer
+          - type: boolean
+          - items:
+              $ref: '#/components/schemas/SubMetric'
+            type: array
+          description: The value to be used within the operations.
+      required:
+      - op
+      - path
+      type: object
+    AudienceConditionsArray:
+      example:
+      - or
+      - audience_id: 123
+      - - and
+        - audience_id: 456
+        - audience_id: 789
+      items:
+        anyOf:
+        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+          type: string
+        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
+          properties:
+            audience_id:
+              type: integer
+          required:
+          - audience_id
+          type: object
+        - $ref: '#/components/schemas/AudienceConditionsArray'
+          description: A nested AudienceConditionsArray
+          example:
+          - - and
+            - audience_id: 456
+            - audience_id: 789
+      type: array
+    SubMetric:
+      properties:
+        aggregator:
+          type: string
+        event_id:
+          type: integer
+        event_type:
+          type: string
+        field:
+          type:
+          - string
+          - 'null'
+        role:
+          enum:
+          - numerator
+          - denominator
+          type: string
+        scope:
+          type: string
+      type: object
+    BrainstormVariationsChat:
+      properties:
+        interactions:
+          description: A list of interactions including user chats and responses
+          items:
+            $ref: '#/components/schemas/BrainstormVariablesInteraction'
+          type: array
+      required:
+      - interactions
+      type: object
+    BulkOperationsRequestBody:
+      properties:
+        keys:
+          description: The list of resource keys to perform the desired operation
+          items:
+            type: string
+          type: array
+      type: object
+    Variations:
+      properties:
+        count:
+          description: Number of Variations on the current page.
+          example: 1
+          type: integer
+        create_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Url template to create Variation for a Flag
+          example: '...'
+        fetch_variation_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'A url template to be used to find a particular Variation.
+
+            '
+          example: '...'
+        filter_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the default page of Variations with filter '.../{?filter}'
+          example: '...'
+        first_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to first page of Variations in a series.
+          example: '...'
+        items:
+          example:
+          - archive_url: '...'
+            archived: false
+            created_time: '2019-05-08T00:00:00.000Z'
+            delete_url: '...'
+            description: Use this to provide high discounts
+            enabled: true
+            environment_usage_count:
+              development: 2
+              production: 3
+            fetch_flag_url: '...'
+            flag_key: recurring_deposit
+            id: 45633995
+            key: high_discount
+            name: High Discount
+            unarchive_url: '...'
+            update_url: '...'
+            updated_time: '2019-05-08T00:00:00.000Z'
+            url: '...'
+            urn: variations.flag.optimizely.com::45633995
+            variables:
+              advanced:
+                key: advanced
+                type: json
+                value: "{\n\t\"hello\": 123\n}"
+              amount:
+                key: amount
+                type: double
+                value: '10.0'
+              message:
+                key: message
+                type: string
+                value: Enjoy!!
+          - archive_url: '...'
+            archived: false
+            created_time: '2019-05-08T00:00:00.000Z'
+            delete_url: '...'
+            description: Use this to provide low discounts
+            enabled: true
+            environment_usage_count:
+              development: 2
+              production: 3
+            fetch_flag_url: '...'
+            flag_key: recurring_deposit
+            id: 45633996
+            key: low_discount
+            name: Low Discount
+            unarchive_url: '...'
+            update_url: '...'
+            updated_time: '2019-05-08T00:00:00.000Z'
+            url: '...'
+            urn: variations.flag.optimizely.com::45633995
+            variables:
+              advanced:
+                key: advanced
+                type: json
+                value: "{\n\t\"hello\": 123\n}"
+              amount:
+                key: amount
+                type: double
+                value: '5.0'
+              message:
+                key: message
+                type: string
+                value: Enjoy!!
+          items:
+            $ref: '#/components/schemas/Variation'
+          type: array
+        last_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the last page of Variations in a series.
+          example: '...'
+        next_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: "List of links to next pages of Variations in a series.\n\n The first element in the array is the exact next page after the current record, etc.\n"
+          example: '...'
+        page:
+          description: Number of the current page. 1-index based.
+          example: 1
+          type: integer
+        prev_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: 'List of links to previous pages of Variations in a series.
+
+
+            The first element in the array is the exact previous page before the current record, etc.
+
+            '
+          example: '...'
+        reset_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the default page of Variations
+          example: '...'
+        sort_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the default page of Variations with sort '.../{?sort}'
+          example: '...'
+        total_count:
+          description: Total number of Variations for this series.
+          example: 1
+          type: integer
+        total_pages:
+          description: Total number of pages for this series.
+          example: 1
+          type: integer
+        url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to self
+          example: '...'
+      required:
+      - url
+      - first_url
+      - last_url
+      - count
+      - page
+      - total_count
+      - total_pages
+      - items
+      type: object
+    BrainstormVariablesInteraction:
+      discriminator:
+        mapping:
+          error: '#/components/schemas/BrainstormError'
+          response: '#/components/schemas/BrainstormVariablesResponse'
+          user_chat: '#/components/schemas/BrainstormUserChat'
+        propertyName: type
+      type: object
+    Variation:
+      example:
+        archive_url: '...'
+        archived: false
+        created_time: '2019-05-08T00:00:00.000Z'
+        delete_url: '...'
+        description: Use this to provide high discounts
+        enabled: true
+        environment_usage_count:
+          development: 2
+          production: 3
+        fetch_flag_url: '...'
+        flag_key: recurring_deposit
+        id: 45633995
+        key: high_discount
+        name: High Discount
+        revision: 1
+        unarchive_url: '...'
+        update_url: '...'
+        updated_time: '2019-05-08T00:00:00.000Z'
+        url: '...'
+        urn: variations.flag.optimizely.com::45633995
+        variables:
+          advanced:
+            key: advanced
+            type: json
+            value: "{\n\t\"hello\": 123\n}"
+          amount:
+            key: amount
+            type: double
+            value: '10.0'
+          message:
+            key: message
+            type: string
+            value: Enjoy!!
+      properties:
+        archive_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to archive this Variation
+          readOnly: true
+        archived:
+          description: Indicates if the Variation is archived or not
+          type: boolean
+        created_time:
+          description: Timestamp when the Variation is created
+          format: date-time
+          readOnly: true
+          type: string
+        delete_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to delete this Variation
+          readOnly: true
+        description:
+          description: Additional context of the Variation
+          type: string
+        enabled:
+          description: Indicates if the Variation is enabled or not
+          readOnly: true
+          type: boolean
+        environment_usage_count:
+          additionalProperties:
+            format: int32
+            type: integer
+          description: Map of rule/ruleset count associated with the variation in each environment that includes environment key as key and count as value
+          example:
+            development: 15
+            production: 20
+          readOnly: true
+          type: object
+        fetch_flag_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to flag url of this variation
+          readOnly: true
+        flag_key:
+          description: The Key of the Flag this Variation belongs to
+          type: string
+        id:
+          description: System generated Unique ID of the Variation
+          readOnly: true
+          type: integer
+        in_use:
+          description: Indicates if the Variation is in use by a rule or a ruleset
+          readOnly: true
+          type: boolean
+        key:
+          description: User-facing Unique identifier of the Variation
+          type: string
+        name:
+          description: User-facing name of the Variation
+          type: string
+        revision:
+          description: Revision number for tracking changes
+          readOnly: true
+          type: integer
+        role:
+          description: Granular permission role
+          example: admin
+          readOnly: true
+          type: string
+        unarchive_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to unarchive this Variation
+          readOnly: true
+        update_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to update this Variation
+          readOnly: true
+        updated_time:
+          description: Timestamp when the Variation is updated
+          format: date-time
+          readOnly: true
+          type: string
+        url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to self
+          readOnly: true
+        urn:
+          description: The URN for the Variation
+          readOnly: true
+          type: string
+        variables:
+          additionalProperties:
+            $ref: '#/components/schemas/VariableValue'
+          description: Map of flag variables that include variable key and value
+          type: object
+      required:
+      - id
+      - urn
+      - key
+      - name
+      - flag_key
+      - created_time
+      - updated_time
+      - url
+      type: object
+    AudienceConditions:
+      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
+      oneOf:
+      - $ref: '#/components/schemas/AudienceConditionsArray'
+      - $ref: '#/components/schemas/AudienceConditionsString'
+    VariableValue:
+      properties:
+        is_default:
+          description: True if the value is currently set to the default_value for the variable definition
+          example: true
+          type: boolean
+        key:
+          description: Unique string identifier for the Variable within the Flag
+          example: amount
+          readOnly: true
+          type: string
+        revision:
+          description: Revision number for tracking changes
+          readOnly: true
+          type: integer
+        type:
+          description: The datatype for the Variable
+          enum:
+          - boolean
+          - string
+          - double
+          - integer
+          - json
+          example: double
+          readOnly: true
+          type: string
+        value:
+          description: The value for the Variable
+          example: '0.0'
+          type: string
+      required:
+      - value
+      type: object
+    VariationRequestBody:
+      properties:
+        description:
+          description: Additional context of the Variation
+          example: Use this to provide high discounts
+          type: string
+        key:
+          description: User-facing Unique identifier of the Variation
+          example: high_discount
+          type: string
+        name:
+          description: User-facing name of the Variation
+          example: High Discount
+          type: string
+        variables:
+          additionalProperties:
+            $ref: '#/components/schemas/VariableValue'
+          description: Map of flag variables that include variable key and value
+          example:
+            advanced:
+              value: "{\n\t\"hello\": 123\n}"
+            amount:
+              value: '10.0'
+            message:
+              value: Enjoy!!
+          type: object
+      required:
+      - key
+      - name
+      type: object
+    UrlValue:
+      description: A single url.
+      type: string
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
+      properties:
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
+      type: object
+    VariationMap:
+      additionalProperties:
+        $ref: '#/components/schemas/Variation'
+      description: Map of variations that include variation key as key and variation payload as value.
+      type: object
+    UrlList:
+      description: A list of urls.
+      items:
+        type: string
+      type: array
+  parameters:
+    flagKey:
+      description: The Flag identifier
+      example: recurring_deposit
+      in: path
+      name: flag_key
+      required: true
+      schema:
+        type: string
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
+    variationKey:
+      description: The Variation identifier
+      example: high_discount
+      in: path
+      name: variation_key
+      required: true
+      schema:
+        type: string
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
+  requestBodies:
+    VariationRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VariationRequestBody'
+      required: true
+  securitySchemes:
+    BearerAuth:
+      description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      scheme: bearer
+      type: http
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Grants all access
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http

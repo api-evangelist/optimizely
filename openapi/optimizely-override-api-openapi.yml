@@ -1,0 +1,109 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Agent Override API
+  description: Optimizely Agent is a stand-alone, open-source microservice that provides major benefits over using Optimizely SDKs in certain use cases. Its REST API offers consolidated and simplified endpoints for accessing all the functionality of Optimizely Feature Experimentation SDKs. Use this API the control experiments (such as a feature tests). For more info, see https://docs.developers.optimizely.com/experimentation/v4.0.0-full-stack/docs/optimizely-agent
+  termsOfService: https://www.optimizely.com/legal/terms/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.12.0
+security:
+- SdkKeyAuth: []
+- TokenAuth: []
+tags:
+- name: Override
+paths:
+  /v1/override:
+    post:
+      summary: Override an experiment decision for a user
+      description: For debugging or testing. Overrides an experiment and variation decision for a given user, in local memory only. Do not use this endpoint for production overrides.
+      operationId: override
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OverrideContext'
+        required: true
+      responses:
+        '200':
+          description: Valid response
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Override'
+                description: ''
+                contentMediaType: application/json
+        '400':
+          description: Invalid payload
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized, invalid JWT
+          content:
+            application/json: {}
+        '403':
+          description: You do not have necessary permissions for the resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Forbidden'
+      deprecated: false
+      tags:
+      - Override
+components:
+  responses:
+    Forbidden:
+      description: You do not have necessary permissions for the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
+          type: string
+    Override:
+      title: Override
+      type: object
+      properties:
+        userId:
+          type: string
+        experimentKey:
+          type: string
+        variationKey:
+          type: string
+        prevVariationKey:
+          type: string
+        messages:
+          type: array
+          items:
+            type: string
+          description: ''
+    OverrideContext:
+      title: OverrideContext
+      type: object
+      properties:
+        userId:
+          type: string
+        experimentKey:
+          type: string
+        variationKey:
+          type: string
+  securitySchemes:
+    SdkKeyAuth:
+      type: apiKey
+      name: X-Optimizely-SDK-Key
+      in: header
+    TokenAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

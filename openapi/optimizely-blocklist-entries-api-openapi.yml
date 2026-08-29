@@ -1,0 +1,395 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Blocklist entries API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Blocklist entries
+  description: Manage recipients on the blocklist
+paths:
+  /{clientId}/blacklistentries/blacklisted:
+    get:
+      tags:
+      - Blocklist entries
+      summary: Check whether an address is blocklisted
+      operationId: blacklisted
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: address
+        in: query
+        description: Address to be checked
+        schema:
+          type: string
+      responses:
+        '200':
+          description: true/false as result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestBlacklistedEntry'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestBlacklistedEntry'
+      security:
+      - Authorization: []
+  /{clientId}/blacklistentries/count:
+    get:
+      tags:
+      - Blocklist entries
+      summary: Get the total number of blocklist entries
+      description: Get the total number of blocklist entries. You can choose whether to include or exclude parent clients.
+      operationId: count_2
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: includeParent
+        in: query
+        description: 'Include parent clients in the counting<p><i>Default value</i> : false</p>'
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: The number of blocklist entries was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCount'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestCount'
+      security:
+      - Authorization: []
+  /{clientId}/blacklistentries:
+    get:
+      tags:
+      - Blocklist entries
+      summary: Get information about all blocklist entries
+      description: Get detailed information about all blocklist entries, such as pattern, reason or creation date. You can limit the maximum number of retrieved blocklist entries and sort the result by specific criteria.
+      operationId: findAllBlacklistEntries
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        description: 'Starting point of the result list <p><i>Default value</i> : 0</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved blocklist entries<p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: pattern
+        in: query
+        description: Matching pattern
+        schema:
+          type: array
+          items:
+            type: string
+      - name: reason
+        in: query
+        description: Matching reason
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+          description: Sort result by specific criteria
+          default: created
+          enum:
+          - pattern
+          - reason
+          - created
+          - modified
+      - name: direction
+        in: query
+        description: Sort order
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+      responses:
+        '200':
+          description: The blocklist entries were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestBlacklistEntryStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestBlacklistEntryStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Blocklist entries
+      summary: Create a blocklist entry
+      description: Create a blocklist entry. You can specify a reason for blocklisting.
+      operationId: createBlacklistEntry
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BlacklistEntryRequestData'
+      responses:
+        '201':
+          description: The blocklist entry was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestBlacklistEntry'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestBlacklistEntry'
+        '400':
+          description: A required value for the entry is not provided. Check for the blocklist entry pattern and add it to the request.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Blocklist entries
+      summary: Delete multiple blocklist entries
+      operationId: deleteBlacklistEntries
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: entries
+        in: query
+        description: List of blocklist entry patterns<p><b>Note:</b> If the blocklist entry pattern contains special characters, the pattern must be URL-encoded. For example, use the code %2f for a forward slash (/), %252f for a double slash (//), %2B for a plus sign (+) etc.</p>
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '204':
+          description: The deletion was initiated successfully.
+        '400':
+          description: The list of entries is not provided or the number of entries has exceeded the limit. Provide an array with blocklist entries or limit the number of entries to a maximum of 1000.
+      security:
+      - Authorization: []
+  /{clientId}/blacklistentries/{entry}:
+    get:
+      tags:
+      - Blocklist entries
+      summary: Get information about a blocklist entry
+      description: Get detailed information about a blocklist entry, such as pattern, reason for blocklisting or creation date.
+      operationId: getBlacklistEntry
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: entry
+        in: path
+        description: Blocklist entry pattern<p><b>Note:</b> If the blocklist entry pattern contains special characters, the pattern must be URL-encoded. For example, use the code %2f for a forward slash (/), %252f for a double slash (//), %2B for a plus sign (+) etc.</p>
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The blocklist entry was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestBlacklistEntry'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestBlacklistEntry'
+        '404':
+          description: The blocklist entry could not be found. Ensure that the required parameters such as "entry" are correct and the blocklist entry exists.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Blocklist entries
+      summary: Delete a blocklist entry
+      operationId: deleteBlacklistEntry
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: entry
+        in: path
+        description: Blocklist entry pattern<p><b>Note:</b> If the blocklist entry pattern contains special characters, the pattern must be URL-encoded. For example, use the code %2f for a forward slash (/), %252f for a double slash (//), %2B for a plus sign (+) etc.</p>
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: The blocklist entry was deleted successfully.
+        '404':
+          description: The blocklist entry could not be found. Ensure that the required parameter is correct and the blocklist entry exists.
+      security:
+      - Authorization: []
+components:
+  schemas:
+    RestCount:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+        count:
+          type: integer
+          description: Total number
+          format: int64
+    RestBlacklistEntry:
+      type: object
+      properties:
+        mailingGroupId:
+          type: integer
+          description: Client ID
+          format: int64
+        pattern:
+          type: string
+          description: Pattern for all mailing addresses that push into the blocklist
+        reason:
+          type: string
+          description: Reason for adding a pattern into the blocklist
+        created:
+          type: string
+          description: Date and time of creation
+          format: date-time
+        modified:
+          type: string
+          description: Date and time of modification
+          format: date-time
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    RestBlacklistedEntry:
+      type: object
+      properties:
+        blacklisted:
+          type: boolean
+          description: If true, the entry is blocklisted
+        pattern:
+          type: string
+          description: Address pattern
+    BlacklistEntryRequestData:
+      required:
+      - entry
+      type: object
+      properties:
+        reason:
+          type: string
+          description: Reason for creating a blocklist entry
+        entry:
+          type: string
+          description: Pattern of the blocklist entry. You can use * for multiple character matching or ? for single character matching. If this characters should be matched as literals they need to be escaped with a backslash (\* or \?)
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestBlacklistEntryStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestBlacklistEntry'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

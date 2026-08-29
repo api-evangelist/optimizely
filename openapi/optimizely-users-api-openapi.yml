@@ -1,0 +1,1080 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Users API
+  version: '1.0'
+  description: 'Operations tagged Users across 3 of this provider''s published API definitions: optimizely-campaign-optimizely-campaign-rest-api-openapi.json, optimizely-content-marketing-platform-optimizely-cmp-open-api-documentation-openapi.json, optimizely-recommendations-public-api-spec-openapi.yaml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.campaign.episerver.net/rest
+- url: https://api.cmp.optimizely.com/v3
+  description: v3 version of Optimizely CMP Open API
+- url: https://{hostname}/1.0
+  description: Primary API server
+  variables:
+    hostname:
+      default: api.usea01.idio.episerver.net
+      enum:
+      - api.apac01.idio.episerver.net
+      - api.caea01.idio.episerver.net
+      - api.emea01.idio.episerver.net
+      - api.usea01.idio.episerver.net
+tags:
+- name: Users
+  description: User Management
+paths:
+  /{clientId}/users/authenticated:
+    get:
+      tags:
+      - Users
+      summary: Get basic information of an authenticated user.
+      operationId: getAuthenticatedUser
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The user is properly authenticated to use this client. The body contains a description of the authenticated user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticatedUser'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/AuthenticatedUser'
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /{clientId}/users/rotatepassword:
+    post:
+      tags:
+      - Users
+      summary: Rotate a password. Please be aware that after rotation it can take some minutes until the new password can be used.
+      operationId: rotatePassword
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequestData'
+      responses:
+        '202':
+          description: The request for password rotation was accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestUser'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestUser'
+        '400':
+          description: The password could not be rotated (incomplete or wrong request).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestUser'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestUser'
+      security:
+      - Authorization: []
+    servers:
+    - url: https://api.campaign.episerver.net/rest
+  /userlist:
+    get:
+      operationId: listUsers
+      tags:
+      - Users
+      summary: GET /userlist
+      description: Get list of users.
+      parameters:
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    servers:
+    - url: https://api.cmp.optimizely.com/v3
+      description: v3 version of Optimizely CMP Open API
+  /users:
+    get:
+      operationId: findUserByEmail
+      tags:
+      - Users
+      summary: GET /users
+      description: Find a user by email address
+      parameters:
+      - name: email
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Email address of the user
+        example: john.doe@example.com
+      responses:
+        '302':
+          description: Redirect to the discovered user
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the discovered user
+              example: https://api.cmp.optimizely.com/v3/users/5fe4925ef8a9378056bf4e37
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    post:
+      operationId: userCreate
+      summary: Create a new user
+      description: Create a new user. Only 'identifiers' and 'additional_info' fields are supported.
+      tags:
+      - Users
+      requestBody:
+        required: true
+        description: A user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPartial'
+      responses:
+        '201':
+          description: User created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserStub'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    servers:
+    - url: https://api.cmp.optimizely.com/v3
+      description: v3 version of Optimizely CMP Open API
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags:
+      - Users
+      summary: GET /users/{id}
+      description: Get a user
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the user
+        example: 5fe4925ef8a9378056bf4e37
+      responses:
+        '200':
+          description: Fetched user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    parameters:
+    - $ref: '#/components/parameters/userID'
+    put:
+      operationId: userUpdate
+      summary: Update user
+      description: Update an existing user. Only 'identifiers' and 'additional_info' fields are supported.
+      tags:
+      - Users
+      requestBody:
+        required: true
+        description: A user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPartial'
+      responses:
+        '200':
+          description: User updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                message: User 1 updated successfully
+        '404':
+          description: User does not exist
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    delete:
+      operationId: userDelete
+      summary: Delete user
+      description: Permanently delete the specified user.
+      tags:
+      - Users
+      responses:
+        '200':
+          description: Deletion successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                message: User 1 deleted successfully
+        '404':
+          description: User does not exist
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    servers:
+    - url: https://api.cmp.optimizely.com/v3
+      description: v3 version of Optimizely CMP Open API
+  /users/{id}/content:
+    parameters:
+    - $ref: '#/components/parameters/userID'
+    get:
+      operationId: userContentList
+      summary: Fetch personalised content
+      description: Paginated list of personalised content ordered by relevance to the specified user.
+      tags:
+      - Users
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/rpp'
+      - $ref: '#/components/parameters/topics'
+      - $ref: '#/components/parameters/no_fallback'
+      - $ref: '#/components/parameters/record'
+      responses:
+        '200':
+          $ref: '#/components/responses/UserContentList'
+        '204':
+          description: No content in system
+        '404':
+          description: User does not exist
+      security:
+      - key: []
+    servers:
+    - url: https://{hostname}/1.0
+      description: Primary API server
+      variables:
+        hostname:
+          default: api.usea01.idio.episerver.net
+          enum:
+          - api.apac01.idio.episerver.net
+          - api.caea01.idio.episerver.net
+          - api.emea01.idio.episerver.net
+          - api.usea01.idio.episerver.net
+  /users/{id}/content/_filter:
+    parameters:
+    - $ref: '#/components/parameters/userID'
+    post:
+      operationId: userContentSearch
+      summary: Search user content
+      description: Paginated list of content matching a Lucene query ordered by relevance to the user.
+      tags:
+      - Users
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/rpp'
+      - $ref: '#/components/parameters/topics'
+      requestBody:
+        required: true
+        description: Lucene query
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/UserContentList'
+        '204':
+          description: No content matching query
+        '404':
+          description: User does not exist
+      security:
+      - key: []
+    servers:
+    - url: https://{hostname}/1.0
+      description: Primary API server
+      variables:
+        hostname:
+          default: api.usea01.idio.episerver.net
+          enum:
+          - api.apac01.idio.episerver.net
+          - api.caea01.idio.episerver.net
+          - api.emea01.idio.episerver.net
+          - api.usea01.idio.episerver.net
+components:
+  schemas:
+    UserRequestData:
+      required:
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+          description: Campaign user name
+        password:
+          type: string
+          description: New password
+    AuthenticatedUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: User id
+          format: int64
+        username:
+          type: string
+          description: User name
+        email:
+          type: string
+          description: User email
+    RestUser:
+      type: object
+      properties:
+        userName:
+          type: string
+          description: User Name
+        lastPasswordChange:
+          type: string
+          description: Date of last password change
+          format: date-time
+    UserListResponseItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the user
+          example: 5fe4925ef8a9378056bf4e37
+        first_name:
+          type: string
+          description: First name of the user
+          example: John
+        last_name:
+          type: string
+          description: Last name of the user
+          example: Doe
+        full_name:
+          type: string
+          description: Full name of the user
+          example: John Doe
+        image_url:
+          type:
+          - string
+          - 'null'
+          description: URL of the profile picture of the user - null if the user has not provided an image
+          example: https://images.cmp.optimizely.com/6a485f72ba424f9397c71ddf0cfb8f59
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the user
+              example: https://api.cmp.optimizely.com/v3/users/5fe4925ef8a9378056bf4e37
+          required:
+          - self
+        roles:
+          type: array
+          description: List of roles assigned to the user
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              name:
+                type: string
+                description: Name of the role
+                example: Creator
+            required:
+            - name
+      required:
+      - id
+      - roles
+      - first_name
+      - last_name
+      - full_name
+      - image_url
+      - links
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
+    UserResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the user
+          example: 5fe4925ef8a9378056bf4e37
+        first_name:
+          type: string
+          description: First name of the user
+          example: John
+        last_name:
+          type: string
+          description: Last name of the user
+          example: Doe
+        full_name:
+          type: string
+          description: Full name of the user
+          example: John Doe
+        email:
+          type:
+          - string
+          - 'null'
+          description: Email of the user – null unless the application is configured to expose the user email
+          example: john.doe@example.com
+        image_url:
+          type:
+          - string
+          - 'null'
+          description: URL of the profile picture of the user – null if the user has not provided an image
+          example: https://images.cmp.optimizely.com/6a485f72ba424f9397c71ddf0cfb8f59
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the user
+              example: https://api.cmp.optimizely.com/v3/users/5fe4925ef8a9378056bf4e37
+      required:
+      - id
+      - first_name
+      - last_name
+      - full_name
+      - email
+      - image_url
+    UserListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          description: List of users
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/UserListResponseItem'
+            - type: object
+              properties:
+                links:
+                  type: object
+                  description: Meta links
+                  properties:
+                    self:
+                      type: string
+                      description: URL of the user
+                      example: https://api.cmp.optimizely.com/v3/users/9119a313057e401189407116fcd3aa24
+                  required:
+                  - self
+              required:
+              - links
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/Pagination'
+          - type: object
+            properties:
+              next:
+                type:
+                - string
+                - 'null'
+                example: https://api.cmp.optimizely.com/v3/users?offset=10&page_size=10
+      required:
+      - data
+      - pagination
+    Pagination:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
+    UserContentList:
+      allOf:
+      - $ref: '#/components/schemas/ContentList'
+      - type: object
+        additionalProperties: false
+        required:
+        - model
+        - group
+        properties:
+          recommendation_id:
+            type: string
+            format: uuid
+            description: Unique identifier for the recommendation set.
+          model:
+            type: boolean
+            description: Indicates whether a recommendation model was applied.
+          group:
+            type: string
+            enum:
+            - control
+            - test
+            description: A/B test group identifier.
+    UserCore:
+      type: object
+      additionalProperties: false
+      required:
+      - email
+      properties:
+        first_name:
+          type: string
+          description: First name of the user.
+          example: Jordan
+        last_name:
+          type: string
+          description: Last name of the user.
+          example: Lee
+        email:
+          type: string
+          format: email
+          description: User's email address.
+          example: jordan.lee@example.com
+        service_credentials:
+          $ref: '#/components/schemas/ServiceCredentials'
+        additional_info:
+          $ref: '#/components/schemas/Map'
+        identifiers:
+          $ref: '#/components/schemas/Map'
+    ContentTopic:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the topic.
+        title:
+          type: string
+          description: Topic title.
+        full_details_url:
+          type: string
+          format: url
+          description: API link to full topic details.
+    ContentItem:
+      allOf:
+      - $ref: '#/components/schemas/ContentItemMinimal'
+      - type: object
+        additionalProperties: false
+        required:
+        - id
+        - title
+        - abstract
+        - featured
+        - approved
+        - read
+        - published
+        - original_url
+        - metadata
+        - link_url
+        - full_details_url
+        - main_image_url
+        - main_image
+        - source
+        - author
+        properties:
+          id:
+            type: integer
+            description: Unique identifier of the content item.
+          metadata:
+            $ref: '#/components/schemas/ContentMetadata'
+          topics:
+            type: array
+            uniqueItems: true
+            description: Topic information associated with the content.
+            items:
+              $ref: '#/components/schemas/ContentTopic'
+          link_url:
+            type: string
+            format: url
+            description: URL to the live content link.
+          full_details_url:
+            type: string
+            format: url
+            description: API URL for full details of the content.
+          main_image_url:
+            type: string
+            format: url
+            description: URL to the main image of the content.
+          main_image:
+            $ref: '#/components/schemas/ContentMainImage'
+          source:
+            $ref: '#/components/schemas/ContentSource'
+          author:
+            $ref: '#/components/schemas/ContentAuthor'
+    UserPartial:
+      allOf:
+      - $ref: '#/components/schemas/UserCore'
+      - type: object
+        additionalProperties: false
+    UserStub:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - full_details_url
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the user.
+          example: 301
+        full_details_url:
+          type: string
+          format: url
+          description: API URL to fetch full user details.
+          example: https://api.usea01.idio.episerver.net/1.0/users/301
+    ContentItemMinimal:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the content item.
+        abstract:
+          type: string
+          description: Short summary or abstract of the content.
+        featured:
+          type: boolean
+          description: Indicates whether the content is featured.
+        approved:
+          type: string
+          enum:
+          - approved
+          - unapproved
+          - binned
+          description: Approval status of the content.
+        read:
+          type: boolean
+          description: Whether the content is marked as read.
+        published:
+          type: string
+          format: date-time
+          description: Date and time when the content was published.
+        original_url:
+          type: string
+          format: url
+          description: Original source URL of the content.
+    List:
+      type: object
+      description: Base pagination metadata object.
+      additionalProperties: false
+      required:
+      - total_hits
+      properties:
+        total_hits:
+          type: integer
+          description: Total number of items matching the query.
+        next_page:
+          type: string
+          format: url
+          description: Link to the next page of results, if available.
+        previous_page:
+          type: string
+          format: url
+          description: Link to the previous page of results, if available.
+    ServiceCredential:
+      type: object
+      additionalProperties: false
+      required:
+      - service
+      properties:
+        service:
+          type: string
+          enum:
+          - facebook
+          - twitter
+          - linkedin
+          description: The third-party service this credential belongs to.
+      discriminator:
+        propertyName: service
+    ContentMainImage:
+      type: object
+      additionalProperties: false
+      required:
+      - width
+      - height
+      properties:
+        width:
+          type: integer
+          description: Image width in pixels.
+        height:
+          type: integer
+          description: Image height in pixels.
+    Map:
+      type: object
+      additionalProperties:
+        type: string
+    Message:
+      type: object
+      additionalProperties: false
+      required:
+      - message
+      description: Generic message response object returned by the API.
+      properties:
+        message:
+          type: string
+          description: The message content.
+          example: User updated successfully.
+    ContentAuthor:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the author.
+        title:
+          type: string
+          description: Name of the author.
+        full_details_url:
+          type: string
+          format: url
+          description: API URL for full author details.
+    ContentSource:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      - display
+      description: The source (origin) of the content.
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the source.
+        title:
+          type: string
+          description: Display name of the source.
+        full_details_url:
+          type: string
+          format: url
+          description: API URL for full source details.
+        display:
+          type: string
+          enum:
+          - full
+          - abstract
+          - link
+          description: How the source should be displayed.
+    ContentList:
+      description: A paginated list of content items with navigation metadata.
+      allOf:
+      - $ref: '#/components/schemas/List'
+      - type: object
+        additionalProperties: false
+        required:
+        - content
+        properties:
+          content:
+            type: array
+            description: The list of content items for the current page.
+            uniqueItems: true
+            items:
+              $ref: '#/components/schemas/ContentItem'
+    User:
+      allOf:
+      - $ref: '#/components/schemas/UserCore'
+      - type: object
+        additionalProperties: false
+        required:
+        - first_name
+        - last_name
+        - name
+        - service_credentials
+        - additional_info
+        - identifiers
+        properties:
+          name:
+            type: string
+            description: Full name of the user.
+            example: Jordan Lee
+    ContentQuery:
+      type: object
+      additionalProperties: false
+      required:
+      - query
+      description: Object containing a Lucene query string used to search or filter content.
+      properties:
+        query:
+          type: string
+          description: Lucene query string. Use the platform's Lucene dialect for advanced filtering.
+          example: title:AI AND language:en
+    ContentMetadata:
+      type: object
+      description: Metadata for a content item, such as language and tags.
+      properties:
+        language:
+          type: string
+          enum:
+          - de
+          - en
+          - es
+          - fr
+          - it
+          description: Language of the content.
+        tags:
+          type: object
+          description: Arbitrary namespaced tags associated with the content. Values may be strings or arrays of strings (for example, multiple authors).
+          additionalProperties: true
+    ServiceCredentials:
+      type: array
+      uniqueItems: true
+      items:
+        $ref: '#/components/schemas/ServiceCredential'
+  responses:
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+    UserContentList:
+      description: A list of content accompanied by metadata for navigation and recommendation tracking.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserContentList'
+          example:
+            total_hits: 42
+            next_page: https://api.usea01.idio.episerver.net/1.0/users/1234/content?page=2&rpp=10
+            previous_page: null
+            recommendation_id: 8f14e45f-ceea-467a-9575-6c1e3d2a7b9c
+            model: true
+            group: test
+            content:
+            - id: 987654
+              title: The Future of Enterprise Personalisation
+              abstract: How content recommendations drive engagement across digital channels.
+              featured: true
+              approved: approved
+              read: false
+              published: '2026-05-14T09:30:00Z'
+              original_url: https://www.example.com/blog/future-of-personalisation
+              link_url: https://www.example.com/blog/future-of-personalisation
+              full_details_url: https://api.usea01.idio.episerver.net/1.0/content/987654
+              main_image_url: https://images.example.com/987654/main.jpg
+              main_image:
+                width: 1200
+                height: 630
+              metadata:
+                language: en
+              source:
+                id: 55
+                title: Company Blog
+                full_details_url: https://api.usea01.idio.episerver.net/1.0/sources/55
+                display: full
+              author:
+                id: 21
+                title: Jordan Lee
+                full_details_url: https://api.usea01.idio.episerver.net/1.0/authors/21
+              topics:
+              - id: 301
+                title: Personalisation
+                full_details_url: https://api.usea01.idio.episerver.net/1.0/topics/301
+  parameters:
+    offset:
+      name: offset
+      in: query
+      description: Starting index of results (zero indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 5
+    page_size:
+      name: page_size
+      in: query
+      description: Number of results to return per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+      example: 15
+    page:
+      name: page
+      in: query
+      description: Page number for pagination (1-based index).
+      schema:
+        type: integer
+        example: 2
+    rpp:
+      name: rpp
+      in: query
+      description: Results per page for pagination.
+      schema:
+        type: integer
+    userID:
+      name: id
+      in: path
+      required: true
+      description: User identifier (numeric ID or 'identifier:value' format).
+      schema:
+        type: string
+        example: email:john.doe@example.com
+    record:
+      name: record
+      in: query
+      description: Recommendation tracking method
+      schema:
+        type: string
+        enum:
+        - 'true'
+        - 'false'
+        - pending
+    no_fallback:
+      name: no_fallback
+      in: query
+      description: Avoid generic response
+      allowEmptyValue: true
+      schema:
+        type: boolean
+    topics:
+      name: include_topics
+      in: query
+      description: Whether to include topic information in the response.
+      allowEmptyValue: true
+      schema:
+        type: boolean
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/auth
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes:
+            openid: Grants the ability to receive a unique identifier for the user.
+            profile: Grants access to user profile information.
+            offline_access: Grants the ability to refresh access_token using the refresh token even when user is not present (not logged in).
+        clientCredentials:
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes: {}
+    key:
+      type: apiKey
+      in: query
+      name: key
+      description: API key required for authentication. Must be provided as a query parameter, for example, `?key=YOUR_API_KEY`.
+x-refined-from:
+- optimizely-campaign-optimizely-campaign-rest-api-openapi.json
+- optimizely-content-marketing-platform-optimizely-cmp-open-api-documentation-openapi.json
+- optimizely-recommendations-public-api-spec-openapi.yaml

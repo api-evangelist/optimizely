@@ -1,0 +1,83 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Mobilecontent API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Mobilecontent
+paths:
+  /api/v1/mobilecontent/{PageName}:
+    get:
+      tags:
+      - Mobilecontent
+      operationId: MobileAppV1_GetMobileContentAsync
+      parameters:
+      - name: PageName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: mobileContentParameter.pageName
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.MobileApp.WebApi.V1.ApiModels.MobileContentModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.MobileApp.WebApi.V1.ApiModels.MobileContentModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.MobileApp.WebApi.V1.ApiModels.MobileContentModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.MobileApp.WebApi.V1.ApiModels.MobileContentModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.MobileApp.WebApi.V1.ApiModels.MobileContentModel'
+components:
+  schemas:
+    Insite.MobileApp.Services.Dtos.MobilePageDto:
+      type: object
+      properties: {}
+    Insite.MobileApp.Services.Dtos.MobileWidgetDto:
+      type: object
+      properties:
+        contentKey:
+          format: int32
+          type: integer
+        class:
+          type: string
+        childWidgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.MobileApp.Services.Dtos.MobileWidgetDto'
+    Insite.MobileApp.WebApi.V1.ApiModels.MobileContentModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        page:
+          $ref: '#/components/schemas/Insite.MobileApp.Services.Dtos.MobilePageDto'
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.MobileApp.Services.Dtos.MobileWidgetDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

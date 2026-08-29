@@ -1,0 +1,92 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Agent Save API
+  description: Optimizely Agent is a stand-alone, open-source microservice that provides major benefits over using Optimizely SDKs in certain use cases. Its REST API offers consolidated and simplified endpoints for accessing all the functionality of Optimizely Feature Experimentation SDKs. Use this API the control experiments (such as a feature tests). For more info, see https://docs.developers.optimizely.com/experimentation/v4.0.0-full-stack/docs/optimizely-agent
+  termsOfService: https://www.optimizely.com/legal/terms/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.12.0
+security:
+- SdkKeyAuth: []
+- TokenAuth: []
+tags:
+- name: Save
+paths:
+  /v1/save:
+    post:
+      summary: Save saves user profile.
+      description: Saves user profile for a user.
+      operationId: save
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveContext'
+        required: true
+      responses:
+        '200':
+          description: Valid response, Profile saved.
+        '400':
+          description: Missing required parameters
+        '401':
+          description: Unauthorized, invalid JWT
+        '403':
+          description: You do not have necessary permissions for the resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Forbidden'
+        '500':
+          description: User Profile Service not found
+      deprecated: false
+      tags:
+      - Save
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
+          type: string
+    ExperimentBucketMap:
+      title: ExperimentBucketMap
+      type: object
+      properties:
+        your_experiment_id:
+          $ref: '#/components/schemas/YourExperimentId'
+    SaveContext:
+      title: SaveContext
+      type: object
+      properties:
+        experimentBucketMap:
+          $ref: '#/components/schemas/ExperimentBucketMap'
+        userId:
+          type: string
+    YourExperimentId:
+      title: YourExperimentId
+      type: object
+      properties:
+        variation_id:
+          type: string
+  responses:
+    Forbidden:
+      description: You do not have necessary permissions for the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    SdkKeyAuth:
+      type: apiKey
+      name: X-Optimizely-SDK-Key
+      in: header
+    TokenAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

@@ -1,0 +1,281 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Opt-in processes API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Opt-in processes
+  description: View, update and create opt-in processes
+paths:
+  /{clientId}/optinprocesses:
+    get:
+      tags:
+      - Opt-in processes
+      summary: Get information about all opt-in processes
+      description: Get detailed information about all opt-in processes, such as type, title or creation date.
+      operationId: selectOptinProcesses
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        description: 'Starting point of the result list <p><i>Default value</i> : 0</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved opt-in processes <p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: hasMailing
+        in: query
+        description: Get all opt-in processes associated with a mailing
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: The opt-in processes were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestOptinProcessStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestOptinProcessStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Opt-in processes
+      summary: Create an opt-in process
+      description: Create an opt-in process. You can specify name, type or registration page.
+      operationId: createOptinProcess
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OptinProcessRequestData'
+      responses:
+        '201':
+          description: The opt-in process was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestOptinProcess'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestOptinProcess'
+        '404':
+          description: The confirmation mailing could not be found. Ensure that the required parameters such as "confirmationMailingId" are correct and the confirmation mailing exists.
+      security:
+      - Authorization: []
+  /{clientId}/optinprocesses/{optinProcessId}:
+    get:
+      tags:
+      - Opt-in processes
+      summary: Get information about an opt-in process
+      description: Get detailed information about an opt-in process, such as type, title or creation date.
+      operationId: getOptinProcess
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: optinProcessId
+        in: path
+        description: Opt-in process ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The opt-in process was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestOptinProcess'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestOptinProcess'
+        '409':
+          description: The indicated opt-in process is not assigned to the indicated client. Ensure that "clientId" and "optinProcessId" are correct and that the "optinProcessId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Opt-in processes
+      summary: Update an opt-in process
+      description: Update information of an opt-in process, such as name, description or type.
+      operationId: updateOptinProcess
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: optinProcessId
+        in: path
+        description: Opt-in process ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OptinProcessRequestData'
+      responses:
+        '200':
+          description: The opt-in process was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestOptinProcess'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestOptinProcess'
+      security:
+      - Authorization: []
+components:
+  schemas:
+    RestOptinProcessStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestOptinProcess'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    OptinProcessRequestData:
+      required:
+      - name
+      - type
+      type: object
+      properties:
+        confirmationMailingId:
+          type: integer
+          description: ID of the mailing that is used for the opt-in process (only opt-in processes of type "confirmed" or "double")
+          format: int64
+        confirmationUrl:
+          type: string
+          description: URL of the confirmation page to which the recipient is directed to complete the registration process (only opt-in processes of type "double")
+        name:
+          type: string
+          description: Internal name of the opt-in process
+        type:
+          type: string
+          description: Type of the opt-in process
+          enum:
+          - single
+          - confirmed
+          - double
+        description:
+          type: string
+          description: Internal description of the opt-in process
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestOptinProcess:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the opt-in process
+          format: int64
+        name:
+          type: string
+          description: Name of the opt-in process
+        description:
+          type: string
+          description: Description of the opt-in process
+        type:
+          type: string
+          description: Type of the opt-in process
+        confirmationMailingId:
+          type: integer
+          description: ID of the mailing that sends the confirmation email (only opt-in processes of the type "double" or "confirmed")
+          format: int64
+        confirmationUrl:
+          type: string
+          description: Confirmation URL of the opt-in process (only opt-in processes of the type "double")
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

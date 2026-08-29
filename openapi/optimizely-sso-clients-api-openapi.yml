@@ -1,0 +1,230 @@
+openapi: 3.2.0
+info:
+  version: admin-v1
+  title: Admin API V1 Sso Clients API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Sso Clients
+paths:
+  /api/v1/admin/SsoClients:
+    get:
+      tags:
+      - Sso Clients
+      summary: Returns the EntitySet SsoClients
+      operationId: SsoClients_Get
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+    post:
+      tags:
+      - Sso Clients
+      summary: Post a new entity to EntitySet SsoClients
+      operationId: SsoClients_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Core.Security.SsoClientDto'
+        description: The entity to post
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+  /api/v1/admin/SsoClients('{clientId}'):
+    get:
+      tags:
+      - Sso Clients
+      summary: Returns the entity with the key from SsoClients
+      operationId: SsoClients_GetByClientid
+      parameters:
+      - name: clientId
+        in: path
+        description: 'key: clientId'
+        required: true
+        schema:
+          type: string
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+    delete:
+      tags:
+      - Sso Clients
+      summary: Delete entity in EntitySet SsoClients
+      operationId: SsoClients_DeleteByClientid
+      parameters:
+      - name: clientId
+        in: path
+        description: 'key: clientId'
+        required: true
+        schema:
+          type: string
+      - name: If-Match
+        in: header
+        description: If-Match header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+    patch:
+      tags:
+      - Sso Clients
+      summary: Update entity in EntitySet SsoClients
+      operationId: SsoClients_PatchByClientid
+      parameters:
+      - name: clientId
+        in: path
+        description: 'key: clientId'
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Core.Security.SsoClientDto'
+        description: The entity to patch
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+components:
+  schemas:
+    Insite.Core.Security.SsoClientDto:
+      type: object
+      properties:
+        clientId:
+          type: string
+        clientName:
+          type: string
+        flow:
+          format: int32
+          type: integer
+        enabled:
+          type: boolean
+        requireConsent:
+          type: boolean
+        includeAdminScope:
+          type: boolean
+        includeStorefrontScope:
+          type: boolean
+        accessTokenLifetime:
+          format: int32
+          type: integer
+        identityTokenLifetime:
+          format: int32
+          type: integer
+        authorizationCodeLifetime:
+          format: int32
+          type: integer
+        allowRefreshTokens:
+          type: boolean
+        absoluteRefreshTokenLifetime:
+          format: int32
+          type: integer
+        slidingRefreshTokenLifetime:
+          format: int32
+          type: integer
+        hasClientSecret:
+          type: boolean
+        clientSecret:
+          type: string
+        redirectUris:
+          type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

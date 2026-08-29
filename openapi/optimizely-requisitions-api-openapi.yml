@@ -1,0 +1,764 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Requisitions API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Requisitions
+paths:
+  /api/v1/requisitions:
+    get:
+      tags:
+      - Requisitions
+      operationId: RequisitionsV1_GetCollectionAsync
+      parameters:
+      - name: parameter.currentPage
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.recalculatePrice
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionCollectionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionCollectionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionCollectionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionCollectionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionCollectionModel'
+      security:
+      - access_token: []
+  /api/v1/requisitions/{requisitionId}:
+    get:
+      tags:
+      - Requisitions
+      operationId: RequisitionsV1_GetAsync
+      parameters:
+      - name: requisitionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+      security:
+      - access_token: []
+  /api/v1/requisitions/{RequisitionId}/requisitionlines:
+    get:
+      tags:
+      - Requisitions
+      operationId: RequisitionLinesV1_GetCollectionAsync
+      parameters:
+      - name: RequisitionId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: parameter.requisitionId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: parameter.page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.sort
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineCollectionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineCollectionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineCollectionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineCollectionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineCollectionModel'
+      security:
+      - access_token: []
+  /api/v1/requisitions/{requisitionId}/requisitionlines/{requisitionLineId}:
+    get:
+      tags:
+      - Requisitions
+      operationId: RequisitionLinesV1_GetAsync
+      parameters:
+      - name: requisitionId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: requisitionLineId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
+      security:
+      - access_token: []
+    delete:
+      tags:
+      - Requisitions
+      operationId: RequisitionLinesV1_DeleteAsync
+      parameters:
+      - name: requisitionId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: requisitionLineId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Requisitions
+      operationId: RequisitionLinesV1_PatchAsync
+      parameters:
+      - name: requisitionId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: requisitionLineId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
+          text/html:
+            schema:
+              $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Cart.Services.Dtos.SectionOptionDto:
+      type: object
+      properties:
+        sectionOptionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sectionName:
+          type: string
+        optionName:
+          type: string
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        cantBuy:
+          type: boolean
+        quantity:
+          format: decimal
+          type: number
+    Insite.Core.WebApi.SortOptionModel:
+      type: object
+      properties:
+        displayName:
+          type: string
+        sortType:
+          type: string
+    Insite.Catalog.Services.Dtos.ProductSubscriptionDto:
+      type: object
+      properties:
+        subscriptionAddToInitialOrder:
+          type: boolean
+        subscriptionAllMonths:
+          type: boolean
+        subscriptionApril:
+          type: boolean
+        subscriptionAugust:
+          type: boolean
+        subscriptionCyclePeriod:
+          type: string
+        subscriptionDecember:
+          type: boolean
+        subscriptionFebruary:
+          type: boolean
+        subscriptionFixedPrice:
+          type: boolean
+        subscriptionJanuary:
+          type: boolean
+        subscriptionJuly:
+          type: boolean
+        subscriptionJune:
+          type: boolean
+        subscriptionMarch:
+          type: boolean
+        subscriptionMay:
+          type: boolean
+        subscriptionNovember:
+          type: boolean
+        subscriptionOctober:
+          type: boolean
+        subscriptionPeriodsPerCycle:
+          format: int32
+          type: integer
+        subscriptionSeptember:
+          type: boolean
+        subscriptionShipViaId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        subscriptionTotalCycles:
+          format: int32
+          type: integer
+    Insite.Core.WebApi.PaginationModel:
+      type: object
+      properties:
+        currentPage:
+          format: int32
+          type: integer
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        defaultPageSize:
+          format: int32
+          type: integer
+        totalItemCount:
+          format: int32
+          type: integer
+        numberOfPages:
+          format: int32
+          type: integer
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
+        sortType:
+          type: string
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
+          type: string
+    Insite.Core.Plugins.Pricing.ProductPriceDto:
+      type: object
+      properties:
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        isOnSale:
+          type: boolean
+        requiresRealTimePrice:
+          type: boolean
+        additionalResults:
+          type: object
+          additionalProperties:
+            type: string
+        unitCost:
+          format: decimal
+          type: number
+        unitCostDisplay:
+          type: string
+        unitListPrice:
+          format: decimal
+          type: number
+        unitListPriceDisplay:
+          type: string
+        extendedUnitListPrice:
+          format: decimal
+          type: number
+        extendedUnitListPriceDisplay:
+          type: string
+        unitRegularPrice:
+          format: decimal
+          type: number
+        unitRegularPriceDisplay:
+          type: string
+        extendedUnitRegularPrice:
+          format: decimal
+          type: number
+        extendedUnitRegularPriceDisplay:
+          type: string
+        unitNetPrice:
+          format: decimal
+          type: number
+        unitNetPriceDisplay:
+          type: string
+        extendedUnitNetPrice:
+          format: decimal
+          type: number
+        extendedUnitNetPriceDisplay:
+          type: string
+        unitOfMeasure:
+          type: string
+        vatRate:
+          format: decimal
+          type: number
+        vatAmount:
+          format: decimal
+          type: number
+        vatAmountDisplay:
+          type: string
+        unitListBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        unitRegularBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        regularPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        regularPriceDisplay:
+          type: string
+          readOnly: true
+        extendedRegularPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        extendedRegularPriceDisplay:
+          type: string
+          readOnly: true
+        actualPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        actualPriceDisplay:
+          type: string
+          readOnly: true
+        extendedActualPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        extendedActualPriceDisplay:
+          type: string
+          readOnly: true
+        regularBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+          readOnly: true
+        actualBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+          readOnly: true
+        unitListPriceWithVat:
+          format: decimal
+          type: number
+        unitListPriceWithVatDisplay:
+          type: string
+        extendedUnitListPriceWithVat:
+          format: decimal
+          type: number
+        extendedUnitListPriceWithVatDisplay:
+          type: string
+        unitRegularPriceWithVat:
+          format: decimal
+          type: number
+        unitRegularPriceWithVatDisplay:
+          type: string
+        extendedUnitRegularPriceWithVat:
+          format: decimal
+          type: number
+        extendedUnitRegularPriceWithVatDisplay:
+          type: string
+        vatMinusExtendedUnitRegularPrice:
+          format: decimal
+          type: number
+    Insite.Catalog.Services.Dtos.AvailabilityDto:
+      type: object
+      properties:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
+          type: string
+        requiresRealTimeInventory:
+          type: boolean
+    Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel:
+      required:
+      - productId
+      - qtyOrdered
+      type: object
+      properties:
+        uri:
+          type: string
+        requisitionLinesUri:
+          type: string
+        isApproved:
+          type: boolean
+        requisitionLineCollection:
+          $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineCollectionModel'
+        productUri:
+          type: string
+        id:
+          type: string
+        line:
+          format: int32
+          type: integer
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        requisitionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        smallImagePath:
+          type: string
+        altText:
+          type: string
+        productName:
+          type: string
+        manufacturerItem:
+          type: string
+        customerName:
+          type: string
+        shortDescription:
+          type: string
+        erpNumber:
+          type: string
+        unitOfMeasure:
+          type: string
+        unitOfMeasureDisplay:
+          type: string
+        unitOfMeasureDescription:
+          type: string
+        baseUnitOfMeasure:
+          type: string
+        baseUnitOfMeasureDisplay:
+          type: string
+        qtyPerBaseUnitOfMeasure:
+          format: decimal
+          type: number
+        costCode:
+          type: string
+        notes:
+          type: string
+        qtyOrdered:
+          format: double
+          type: number
+        qtyLeft:
+          format: decimal
+          type: number
+        pricing:
+          $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
+        isPromotionItem:
+          type: boolean
+        isDiscounted:
+          type: boolean
+        isConfigured:
+          type: boolean
+        isFixedConfiguration:
+          type: boolean
+        quoteRequired:
+          type: boolean
+        breakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        sectionOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Cart.Services.Dtos.SectionOptionDto'
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+        qtyOnHand:
+          format: decimal
+          type: number
+        canAddToCart:
+          type: boolean
+        isQtyAdjusted:
+          type: boolean
+        hasInsufficientInventory:
+          type: boolean
+        canBackOrder:
+          type: boolean
+        trackInventory:
+          type: boolean
+        salePriceLabel:
+          type: string
+        cantBuy:
+          type: boolean
+        isSubscription:
+          type: boolean
+        productSubscription:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductSubscriptionDto'
+        isRestricted:
+          type: boolean
+        canAddToWishlist:
+          type: boolean
+        isActive:
+          type: boolean
+        brand:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BrandDto'
+        vmiBinId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        isDiscontinued:
+          type: boolean
+        allowZeroPricing:
+          type: boolean
+        parentProductErpNumber:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Requisition.WebApi.V1.ApiModels.RequisitionCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        requisitions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        costCode:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        userName:
+          type: string
+        orderDate:
+          format: date-time
+          type: string
+        qtyOrdered:
+          format: decimal
+          type: number
+        brand:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BrandDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.Plugins.Pricing.BreakPriceDto:
+      type: object
+      properties:
+        breakQty:
+          format: decimal
+          type: number
+        breakPrice:
+          format: decimal
+          type: number
+        breakPriceDisplay:
+          type: string
+        savingsMessage:
+          type: string
+        breakPriceWithVat:
+          format: decimal
+          type: number
+        breakPriceWithVatDisplay:
+          type: string
+    Insite.Catalog.Services.Dtos.BrandDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        urlSegment:
+          type: string
+        logoSmallImagePath:
+          type: string
+        logoLargeImagePath:
+          type: string
+        logoImageAltText:
+          type: string
+        detailPagePath:
+          type: string
+    Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        requisitionLines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

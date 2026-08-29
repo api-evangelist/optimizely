@@ -1,0 +1,734 @@
+openapi: 3.2.0
+info:
+  version: v1
+  title: Episerver Cloud Deployments API
+  description: This document describes the functionality of the DXP Service Management Portal that can be invoked via REST API
+  contact:
+    name: Episerver AB
+    url: https://www.episerver.com
+    email: support@episerver.com
+servers:
+- url: https://paasportal.episerver.net
+tags:
+- name: Deployments
+paths:
+  /api/v1.0/projects/{projectId}/packages/location:
+    get:
+      tags:
+      - Deployments
+      summary: Retrieves deployment package upload location
+      description: 'Returned path is a write-only Azure Blob Storage SAS URI. Deployment package(s) should be uploaded here before starting deployment.
+
+        The SAS URI will be usable for 24 hours, then a new location must be retrieved.'
+      operationId: UploadPackageApi_GetUploadPackageLocation
+      parameters:
+      - name: projectId
+        in: path
+        description: Project ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadPackageLocationResponse'
+              examples:
+                response:
+                  value:
+                    success: true
+                    errors: []
+                    result:
+                      location: https://episite.blob.core.windows.net/packages
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - An error occurred
+                    result: null
+  /api/v1.0/projects/{projectId}/deployments/{deploymentId}/reset:
+    post:
+      tags:
+      - Deployments
+      summary: Reset or Complete reset a specified deployment.
+      description: 'Operation is available after start deployment has finished during the verification stage or reset-verification stage of the deployment.
+
+        This will abort deployment and reset the staging slot to allow for a new deployment.
+
+        This will also complete the on-going reset progress if maintenance mode was applied for the deployment.'
+      operationId: ResetCodeDeploymentApi_ResetCodeDeployment
+      parameters:
+      - name: projectId
+        in: path
+        description: Project ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: deploymentId
+        in: path
+        description: Deployment ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetDeploymentRequestParameters'
+        description: The reset deployment parameters
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetDeploymentResponse'
+              examples:
+                response:
+                  value:
+                    success: true
+                    errors: []
+                    result:
+                      id: a9d75c10-56a1-4d1a-b58d-fe9e9b8dfd00
+                      projectId: a695406b-f24f-4d82-908a-aaa4009e514f
+                      status: AwaitingVerification
+                      startTime: '2019-10-29T08:00:00Z'
+                      endTime: null
+                      percentComplete: 100
+                      validationLinks:
+                      - https://episite.dxcloud.episerver.net/
+                      deploymentWarnings: []
+                      deploymentErrors: []
+                      parameters: null
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Project Id is a required field.
+                    result: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Access is denied for project c943975b-d468-4b85-8e62-5967b9eeeece or environment Preproduction.
+                    result: null
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - 'There is no active project found for project id: c943975b-d468-4b85-8e62-5967b9eeeece.'
+                    result: null
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - An error occurred while processing the request; Try again later.
+                    result: null
+  /api/v1.0/projects/{projectId}/deployments/{deploymentId}:
+    get:
+      tags:
+      - Deployments
+      summary: Get deployment details.
+      operationId: GetDeploymentDetailsApi_GetDeploymentDetails
+      parameters:
+      - name: projectId
+        in: path
+        description: Project ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: deploymentId
+        in: path
+        description: Deployment ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentDetailsResponse'
+              examples:
+                response:
+                  value:
+                    success: true
+                    errors: []
+                    result:
+                      id: a9d75c10-56a1-4d1a-b58d-fe9e9b8dfd00
+                      projectId: a695406b-f24f-4d82-908a-aaa4009e514f
+                      status: Succeeded
+                      startTime: '2019-10-29T08:00:00Z'
+                      endTime: null
+                      percentComplete: 100
+                      validationLinks:
+                      - https://episite.dxcloud.episerver.net/
+                      deploymentWarnings: []
+                      deploymentErrors: []
+                      parameters: null
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Project Id is a required field.
+                    result: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Access is denied for project c943975b-d468-4b85-8e62-5967b9eeeece or environment Preproduction.
+                    result: null
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - 'There is no active project found for project id: c943975b-d468-4b85-8e62-5967b9eeeece.'
+                    result: null
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - An error occurred while processing the request; Try again later.
+                    result: null
+  /api/v1.0/projects/{projectId}/deployments/{deploymentId}/complete:
+    post:
+      tags:
+      - Deployments
+      summary: Complete specified deployment.
+      description: 'Operation is available only after start deployment has finished during the verification stage of the deployment.
+
+        This will complete deployment and swap it into the production slot.'
+      operationId: CompleteCodeDeploymentApi_CompleteCodeDeployment
+      parameters:
+      - name: projectId
+        in: path
+        description: Project ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: deploymentId
+        in: path
+        description: Deployment ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompleteDeploymentResponse'
+              examples:
+                response:
+                  value:
+                    success: true
+                    errors: []
+                    result:
+                      id: a9d75c10-56a1-4d1a-b58d-fe9e9b8dfd00
+                      projectId: a695406b-f24f-4d82-908a-aaa4009e514f
+                      status: AwaitingVerification
+                      startTime: '2019-10-29T08:00:00Z'
+                      endTime: null
+                      percentComplete: 100
+                      validationLinks:
+                      - https://episite.dxcloud.episerver.net/
+                      deploymentWarnings: []
+                      deploymentErrors: []
+                      parameters: null
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Project Id is a required field.
+                    result: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Access is denied for project c943975b-d468-4b85-8e62-5967b9eeeece or environment Preproduction.
+                    result: null
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - 'There is no active project found for project id: c943975b-d468-4b85-8e62-5967b9eeeece.'
+                    result: null
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - An error occurred while processing the request; Try again later.
+                    result: null
+  /api/v1.0/projects/{projectId}/deployments:
+    get:
+      tags:
+      - Deployments
+      summary: Gets a list of deployments for specified project.
+      operationId: DeploymentApi_GetDeploymentList
+      parameters:
+      - name: projectId
+        in: path
+        description: Project ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentListResponse'
+              examples:
+                response:
+                  value:
+                    success: true
+                    errors: null
+                    result:
+                    - id: a9d75c10-56a1-4d1a-b58d-fe9e9b8dfd00
+                      projectId: a695406b-f24f-4d82-908a-aaa4009e514f
+                      status: Succeeded
+                      startTime: '2019-10-29T08:00:00Z'
+                      endTime: null
+                      percentComplete: 100
+                      validationLinks:
+                      - https://episite.dxcloud.episerver.net/
+                      deploymentWarnings: []
+                      deploymentErrors: []
+                      parameters: null
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Project Id is a required field.
+                    result: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Access is denied for project c943975b-d468-4b85-8e62-5967b9eeeece or environment Preproduction.
+                    result: null
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - 'There is no active project found for project id: c943975b-d468-4b85-8e62-5967b9eeeece.'
+                    result: null
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - An error occurred while processing the request; Try again later.
+                    result: null
+    post:
+      tags:
+      - Deployments
+      summary: Starts deployment to target environment.
+      description: Deployment can use either deployment package or environment as source.
+      operationId: DeploymentApi_StartCodeDeployment
+      parameters:
+      - name: projectId
+        in: path
+        description: Project ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartCodeDeploymentRequestParameters'
+        description: Request parameters
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartDeploymentResponse'
+              examples:
+                response:
+                  value:
+                    success: true
+                    errors: []
+                    result:
+                      id: a9d75c10-56a1-4d1a-b58d-fe9e9b8dfd00
+                      projectId: a695406b-f24f-4d82-908a-aaa4009e514f
+                      status: InProgress
+                      startTime: '2019-10-29T08:00:00Z'
+                      endTime: null
+                      percentComplete: 10
+                      validationLinks:
+                      - https://episite.dxcloud.episerver.net/
+                      deploymentWarnings: []
+                      deploymentErrors: []
+                      parameters: null
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Project Id is a required field.
+                    result: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - Access is denied for project c943975b-d468-4b85-8e62-5967b9eeeece or environment Preproduction.
+                    result: null
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - 'There is no active project found for project id: c943975b-d468-4b85-8e62-5967b9eeeece.'
+                    result: null
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorApiErrorResponseExample'
+              examples:
+                response:
+                  value:
+                    success: false
+                    errors:
+                    - An error occurred while processing the request; Try again later.
+                    result: null
+components:
+  schemas:
+    UploadPackageLocationResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/PackageLocationResultModel'
+        success:
+          type: boolean
+    PackageLocationResultModel:
+      type: object
+      properties:
+        location:
+          type: string
+    InternalServerErrorApiErrorResponseExample:
+      type: object
+      properties: {}
+    DeploymentListResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeploymentApiResponseModel'
+        success:
+          type: boolean
+    UnauthorizedApiErrorResponseExample:
+      type: object
+      properties: {}
+    ApiErrorResponseExample:
+      type: object
+      properties: {}
+    NotFoundApiErrorResponseExample:
+      type: object
+      properties: {}
+    StartDeploymentResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/DeploymentApiResponseModel'
+        success:
+          type: boolean
+    CompleteDeploymentResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/DeploymentApiResponseModel'
+        success:
+          type: boolean
+    DeploymentDetailsResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/DeploymentApiResponseModel'
+        success:
+          type: boolean
+    DeploymentApiResponseModel:
+      type: object
+      properties:
+        projectId:
+          format: uuid
+          type: string
+        status:
+          type: string
+        startTime:
+          format: date-time
+          type: string
+        endTime:
+          format: date-time
+          type: string
+        percentComplete:
+          format: int32
+          type: integer
+        validationLinks:
+          type: array
+          items:
+            type: string
+        deploymentWarnings:
+          type: array
+          items:
+            type: string
+        deploymentErrors:
+          type: array
+          items:
+            type: string
+        parameters:
+          $ref: '#/components/schemas/CodeDeploymentRequest'
+        id:
+          format: uuid
+          type: string
+    BadRequestApiErrorResponseExample:
+      type: object
+      properties: {}
+    StartCodeDeploymentRequestParameters:
+      type: object
+      properties:
+        sourceApps:
+          type: array
+          items:
+            type: string
+        targetEnvironment:
+          type: string
+        maintenancePage:
+          type: boolean
+        includeBlob:
+          type: boolean
+        includeDb:
+          type: boolean
+        directDeploy:
+          type: boolean
+        packages:
+          type: array
+          items:
+            type: string
+        zeroDowntimeMode:
+          type: string
+        sourceEnvironment:
+          type: string
+      example:
+        targetEnvironment: Preproduction
+        maintenancePage: true
+        includeBlob: false
+        includeDb: false
+        directDeploy: false
+        packages:
+        - site.cms.app.1.0.0.nupkg
+        zeroDowntimeMode: ReadOnly
+    CodeDeploymentRequest:
+      type: object
+      properties:
+        maintenancePage:
+          type: boolean
+        zeroDowntimeMode:
+          type: string
+        targetEnvironment:
+          type: string
+    ResetDeploymentRequestParameters:
+      type: object
+      properties:
+        validateBeforeSwap:
+          type: boolean
+        complete:
+          type: boolean
+        resetWithDbRollback:
+          type: boolean
+      example:
+        resetWithDbRollback: true
+        validateBeforeSwap: true
+        complete: false
+    ResetDeploymentResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/DeploymentApiResponseModel'
+        success:
+          type: boolean
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

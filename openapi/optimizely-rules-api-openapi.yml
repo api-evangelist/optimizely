@@ -1,0 +1,1021 @@
+openapi: 3.2.0
+info:
+  description: 'This page documents how to use the Optimizely FX API.
+
+    With this API you can view and manage Feature Flags and all of their
+
+    related entities including Variables, Variations, Rules, and Reports.
+
+
+    The base URL is https://api.optimizely.com/flags/v1. Append any paths
+
+    listed in these docs onto that url in order to make requests to the API.'
+  title: Optimizely Feature Experimentation Rules API
+  version: 0.3.7
+  x-logo:
+    url: https://app.optimizely.com/static/img/rebrand/logo.svg
+servers:
+- url: https://api.optimizely.com/flags/v1/
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- description: APIs to interact with Rules
+  name: Rules
+paths:
+  /projects/{project_id}/environments/{environment_key}/rule/{rule_key}/holdouts:
+    parameters:
+    - $ref: '#/components/parameters/projectId'
+    - $ref: '#/components/parameters/environmentKey'
+    - $ref: '#/components/parameters/ruleKey'
+    get:
+      description: 'Fetch a list of holdouts for a specific rule_key
+
+        '
+      operationId: fetch_holdouts_by_rule_key
+      responses:
+        '200':
+          $ref: '#/components/responses/HoldoutsListSuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+      summary: Fetch holdouts for a specific rule_key
+      tags:
+      - Rules
+  /projects/{project_id}/flags/{flag_key}/environments/{environment_key}/rules/{rule_key}:
+    parameters:
+    - $ref: '#/components/parameters/projectId'
+    - $ref: '#/components/parameters/flagKey'
+    - $ref: '#/components/parameters/environmentKey'
+    - $ref: '#/components/parameters/ruleKey'
+    get:
+      description: 'Fetch a Rule for a Ruleset in a specific Environment of a project.
+
+        '
+      operationId: fetch_rule
+      responses:
+        '200':
+          $ref: '#/components/responses/RuleSuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+      summary: Fetch the Rule for a Ruleset in an Environment
+      tags:
+      - Rules
+  /projects/{project_id}/rules:
+    get:
+      description: 'Get a list of Rules within a Project
+
+
+        You can use query parameters to filter/sort the response.
+
+        '
+      operationId: list_all_rules_in_project
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/perPage'
+      - $ref: '#/components/parameters/pageToken'
+      - $ref: '#/components/parameters/pageWindow'
+      - description: 'Filter the rules by rule type. A rule type can be A/B test, MAB etc.,
+
+          '
+        in: query
+        name: rule_types
+        required: false
+        schema:
+          type: string
+      - description: 'Filter the Rules by Environment. An Environment can be development, production etc.,
+
+          '
+        in: query
+        name: environments
+        required: false
+        schema:
+          type: string
+      - description: 'Filter the Environments by archived. An Environment can be either archived (archived=true) or unarchived (archived=false)
+
+          '
+        in: query
+        name: archived
+        required: false
+        schema:
+          type: boolean
+      - allowReserved: true
+        description: 'Sort the Environments based on the attributes from left to right.
+
+          '
+        in: query
+        name: sort
+        required: false
+        schema:
+          items:
+            enum:
+            - name:asc
+            - name:desc
+            - key:asc
+            - key:desc
+            - created_time:asc
+            - created_time:desc
+            - updated_time:asc
+            - updated_time:desc
+            type: string
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rules'
+          description: 'Successful retrieval of a page of rules.
+
+
+            The response includes RESTful JSON (https://restfuljson.org/) styled links and pagination metadata.
+
+            Objects in this API MAY include a url property for a link to itself and MAY append _url to properties for related links.
+
+            If a link is not present in the response, it indicates a user is not authorized to access the related resource.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+      summary: List Rules
+      tags:
+      - Rules
+  /projects/{project_id}/rules/{experiment_id}:
+    parameters:
+    - $ref: '#/components/parameters/projectId'
+    - $ref: '#/components/parameters/experimentId'
+    get:
+      description: 'Fetch a Rule for a specific experiment_id
+
+        '
+      operationId: fetch_rule_by_experiment_id
+      responses:
+        '200':
+          $ref: '#/components/responses/RuleSuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+      summary: Fetch a Rule for a specific experiment_id
+      tags:
+      - Rules
+components:
+  schemas:
+    Rules:
+      properties:
+        count:
+          description: Number of Rules on the current page.
+          example: 2
+          type: integer
+        items:
+          items:
+            $ref: '#/components/schemas/Rule'
+          type: array
+        page:
+          description: Number of the current page. 1-index based.
+          example: 5
+          type: integer
+        total_count:
+          description: Total number of Rules for this series.
+          example: 20
+          type: integer
+        total_pages:
+          description: Total number of pages for this series.
+          example: 10
+          type: integer
+        url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to self
+      required:
+      - url
+      - count
+      - page
+      - total_count
+      - total_pages
+      - items
+      type: object
+    Holdout:
+      description: 'Represents a holdout experiment that reserves a portion of traffic to measure the impact of feature flags and experiments.
+
+
+        Holdouts help establish control groups by excluding a percentage of users from seeing any experiments, allowing you to measure the overall impact of your experimentation program against a baseline.
+
+        '
+      example:
+        archived: false
+        audience_conditions:
+        - or
+        - audience_id: 5340810295
+        created_by_user_email: user@company.com
+        created_time: '2023-12-15T10:00:00.000Z'
+        description: Holdout group to measure the overall impact of our growth experiments throughout the year
+        environment_key: production
+        holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+        id: 12345
+        key: annual_growth_holdout
+        metrics:
+        - aggregator: unique
+          display_title: Conversion Rate
+          scope: visitor
+          winning_direction: increasing
+        name: Annual Growth Control Group
+        project_id: 98765
+        revision: 3
+        scope: global
+        scope_type: exclude
+        start_time: '2024-01-01T00:00:00.000Z'
+        status: running
+        traffic_allocation: 1000
+        updated_time: '2024-01-01T10:00:00.000Z'
+        urn: holdout.flag.optimizely.com::12345
+      properties:
+        archived:
+          description: 'Whether the holdout is archived. Archived holdouts are hidden from normal views
+
+            but retain their historical data and configuration.
+
+            '
+          example: false
+          type: boolean
+        audience_conditions:
+          description: 'Defines which audiences this holdout applies to. If omitted, the holdout applies to all users.
+
+            Uses logical operators like ''and'', ''or'', ''not'' to combine multiple audience conditions.
+
+            '
+          externalDocs:
+            description: Audience conditions structure documentation
+            url: https://developers.optimizely.com/x/rest/guides/conditions/
+          items:
+            example:
+            - or
+            - audience_id: 5340810295
+            - audience_id: 1234567890
+          type: array
+        audience_ids:
+          deprecated: true
+          description: 'DEPRECATED: Use audience_conditions instead. List of audience IDs that this holdout applies to.
+
+            This field is maintained for backward compatibility.
+
+            '
+          example:
+          - 5340810295
+          - 1234567890
+          items:
+            type: integer
+          type: array
+        created_by_user_email:
+          description: Email address of the user who created the holdout.
+          example: user@company.com
+          readOnly: true
+          type: string
+        created_time:
+          description: Timestamp when the holdout was originally created.
+          example: '2023-12-15T10:00:00.000Z'
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        description:
+          description: 'Optional detailed description explaining the purpose and context of this holdout.
+
+            Helps team members understand what this holdout is measuring.
+
+            '
+          example: Holdout group to measure the overall impact of our growth experiments throughout the year
+          maxLength: 1000
+          type: string
+        end_time:
+          description: 'Timestamp when the holdout finished or will finish.
+
+            Null for holdouts that are still running or have no defined end time.
+
+            '
+          example: '2024-12-31T23:59:59.000Z'
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        environment_key:
+          description: 'The environment where this holdout is active (e.g., ''production'', ''staging'').
+
+            The holdout only affects traffic in this specific environment.
+
+            '
+          example: production
+          type: string
+        holdout_results_api_token:
+          description: 'API token for accessing holdout results and analytics data.
+
+            This token is dynamically generated for each API response and provides
+
+            secure access to holdout-specific results endpoints.
+
+            '
+          example: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+          readOnly: true
+          type: string
+        id:
+          description: System-generated unique identifier for the holdout.
+          example: 12345
+          readOnly: true
+          type: integer
+        key:
+          description: 'Unique user-defined identifier for the holdout within the project.
+
+            Must contain only alphanumeric characters, underscores, and hyphens.
+
+            '
+          example: annual_growth_holdout
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\-]+$
+          type: string
+        metrics:
+          description: 'List of metrics being tracked and analyzed for this holdout.
+
+            These metrics help measure the impact of experiments on the control group.
+
+            '
+          example:
+          - aggregator: unique
+            display_title: Conversion Rate
+            scope: visitor
+            winning_direction: increasing
+          - aggregator: sum
+            display_title: Revenue per Visitor
+            field: revenue
+            scope: visitor
+            winning_direction: increasing
+          items:
+            $ref: '#/components/schemas/Metric'
+          type: array
+        name:
+          description: Human-readable name for the holdout displayed in the UI.
+          example: Annual Growth Control Group
+          maxLength: 255
+          type: string
+        project_id:
+          description: The unique identifier of the project this holdout belongs to.
+          example: 98765
+          format: int64
+          readOnly: true
+          type: integer
+        revision:
+          description: 'Revision number that increments with each change to the holdout.
+
+            Used for tracking modifications and ensuring data consistency.
+
+            '
+          example: 3
+          readOnly: true
+          type: integer
+        scope:
+          description: 'Defines the scope of the holdout:
+
+            - ''global'': Affects all experiments across the entire project
+
+            - ''local'': Affects only specific experiments or flags
+
+            '
+          enum:
+          - global
+          - local
+          example: global
+          type: string
+        scope_type:
+          description: 'Defines how the holdout scope is applied:
+
+            - ''exclude'': Users in holdout are excluded from seeing experiments (most common)
+
+            - ''include'': Users in holdout are included in experiments (less common)
+
+            '
+          enum:
+          - exclude
+          - include
+          example: exclude
+          type: string
+        start_time:
+          description: 'Timestamp when the holdout became or will become active.
+
+            When the holdout starts affecting traffic allocation.
+
+            '
+          example: '2024-01-01T00:00:00.000Z'
+          format: date-time
+          type: string
+        status:
+          description: 'Current operational status of the holdout:
+
+            - ''draft'': Holdout is configured but not yet active
+
+            - ''running'': Holdout is currently active and affecting traffic
+
+            - ''concluded'': Holdout has finished and is no longer active
+
+            '
+          enum:
+          - draft
+          - running
+          - concluded
+          example: running
+          type: string
+        traffic_allocation:
+          description: 'Percentage of traffic allocated to this holdout, expressed in basis points (1/100th of a percent).
+
+            For example: 100 = 1%, 1000 = 10%, 5000 = 50%. The remaining traffic sees experiments normally.
+
+            '
+          example: 1000
+          maximum: 10000
+          minimum: 0
+          type: integer
+        updated_time:
+          description: Timestamp when the holdout was last modified.
+          example: '2024-01-01T10:00:00.000Z'
+          format: date-time
+          readOnly: true
+          type: string
+        urn:
+          description: Universal Resource Name (URN) for the holdout, used for global identification.
+          example: holdout.flag.optimizely.com::12345
+          readOnly: true
+          type: string
+      required:
+      - id
+      - name
+      - key
+      type: object
+    SubMetric:
+      properties:
+        aggregator:
+          type: string
+        event_id:
+          type: integer
+        event_type:
+          type: string
+        field:
+          type:
+          - string
+          - 'null'
+        role:
+          enum:
+          - numerator
+          - denominator
+          type: string
+        scope:
+          type: string
+      type: object
+    HoldoutsList:
+      description: "A simple array of holdout objects without pagination metadata.\n\nUsed by endpoints that return a basic list of holdouts, such as when fetching \nholdouts associated with a specific rule. This is the non-paginated variant.\n"
+      example:
+      - environment_key: production
+        holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+        id: 12345
+        key: growth_experiment_holdout
+        name: Q4 Growth Experiment Control
+        status: running
+      - environment_key: production
+        holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+        id: 12346
+        key: checkout_flow_holdout
+        name: Checkout Flow Holdout Group
+        status: draft
+      items:
+        $ref: '#/components/schemas/Holdout'
+      type: array
+    Metric:
+      properties:
+        aggregator:
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
+          enum:
+          - unique
+          - count
+          - sum
+          - ratio
+          type: string
+        display_title:
+          description: An optional title for the unique metric configuration. If not provided, the event name will be used.
+          type: string
+        display_unit:
+          description: An optional name for the unit of the unique metric configuration.
+          type: string
+        event_id:
+          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
+          example: 32334454244
+          format: int64
+          type: integer
+        event_properties:
+          properties:
+            filter:
+              properties:
+                combine_operator:
+                  enum:
+                  - or
+                  - and
+                  type: string
+                conditions:
+                  items:
+                    $ref: '#/components/schemas/EventPropertyCondition'
+              type: object
+          type: object
+        event_type:
+          type: string
+        field:
+          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
+          enum:
+          - revenue
+          - value
+          type:
+          - string
+          - 'null'
+        id:
+          description: A unique identifier for the metric configuration.
+          type: string
+        metrics:
+          items:
+            $ref: '#/components/schemas/SubMetric'
+            type: object
+          type: array
+        project_id:
+          description: A unique identifier for the project associated with the metric.
+          type: integer
+        scope:
+          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
+          enum:
+          - session
+          - visitor
+          - event
+          type: string
+        visibility:
+          description: The visibility of the metric.
+          enum:
+          - account
+          - experiment
+          - project
+          type: string
+        winning_direction:
+          description: The winning direction of this metric
+          enum:
+          - increasing
+          - decreasing
+          type: string
+      required:
+      - winning_direction
+      - aggregator
+      type: object
+    RuleVariation:
+      example:
+        key: high_discount
+        name: High Discount
+        percentage_included: 10000
+      properties:
+        id:
+          description: Id of the RuleVariation
+          readOnly: true
+          type: integer
+        key:
+          description: User-facing Unique identifier of the Variation
+          type: string
+        name:
+          description: User-facing name of the Variation
+          type: string
+        percentage_included:
+          default: 0
+          description: The percentage of the designated audiences that should get this variation, measured in basis points. 100 basis points = 1% traffic
+          maximum: 10000
+          minimum: 0
+          type: integer
+        revision:
+          description: Revision number for tracking changes
+          readOnly: true
+          type: integer
+        variation_id:
+          description: Id of variation
+          type: integer
+      required:
+      - key
+      type: object
+    Rule:
+      description: Configuration which contains audiences, metrics and variations.
+      properties:
+        allow_list:
+          additionalProperties:
+            $ref: '#/components/schemas/RuleAllowList'
+          description: User and Variation to force in the experiment
+          type: object
+        archived:
+          default: false
+          description: Indicates if the rule is archived or not.
+          type: boolean
+        audience_conditions:
+          description: The audiences that should see this rule. To target everyone, use the string "everyone" or omit this field. Multiple audiences can be combined with "and" or "or" using the same structure as audience conditions.
+          externalDocs:
+            description: same structure as audience conditions
+            url: https://developers.optimizely.com/x/rest/guides/conditions/
+          items:
+            example:
+            - or
+            - audience_id: 5340810295
+          type: array
+        baseline_variation_id:
+          description: The id of the baseline variation, the original version of an experiment(e.g. control group) against which variations are compared.
+          type: integer
+        comment:
+          description: comment on conclusion of rule.
+          type: string
+        created_time:
+          description: Timestamp when the Rule is created
+          example: '2019-05-08T00:00:00.000Z'
+          format: date-time
+          readOnly: true
+          type: string
+        deployed_td_rule_audience_conditions:
+          description: The audiences that should see this deployed Targeted delivery rule.
+          items:
+            example:
+            - or
+            - audience_id: 5340810295
+          type: array
+        deployed_td_rule_key:
+          description: deployed_td_rule_key on conclusion of rule.
+          type: string
+        deployed_td_rule_percentage_included:
+          default: 0
+          description: The percentage of the designated audiences that should get the new targeted delevery rule, measured in basis points. 100 basis points = 1% traffic
+          maximum: 10000
+          minimum: 0
+          type: integer
+        deployed_variation_key:
+          description: deployed_variation_key on conclusion of rule.
+          type: string
+        description:
+          description: Additional context of the Rule
+          example: This rule is used for delivery an experience to paid users
+          type: string
+        distribution_mode:
+          description: Type of rule distribution. Only a/b experiment can show distribution_mode field in the response
+          enum:
+          - manual
+          - stats_accelerator
+          type: string
+        enabled:
+          default: true
+          description: Indicates if the rule is enabled or not in an environment.
+          type: boolean
+        environment_key:
+          description: User-facing Environment identifier
+          readOnly: true
+          type: string
+        environment_name:
+          description: The name of the Environment
+          readOnly: true
+          type: string
+        fetch_results_ui_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: A url to be used to find a particular Results page. This field is optional and returned only if rule has results
+          readOnly: true
+        flag_key:
+          description: User-facing Unique identifier of the Flag.
+          readOnly: true
+          type: string
+        flag_name:
+          description: The name of the Flag
+          readOnly: true
+          type: string
+        group_id:
+          description: Group id
+          type: string
+        group_remaining_traffic_allocation:
+          description: Total remaining traffic allocation of the mutual exclusion group that this rule is in. This field is returned only if rule is has mutex group and user has mutex permissions
+          readOnly: true
+          type: integer
+        group_rule:
+          $ref: '#/components/schemas/RuleGroupRule'
+          description: The Group information of this rule belongs to. This field is returned only if rule is has mutex group and user has mutex permissions
+        id:
+          example: 45633994
+          readOnly: true
+          type: integer
+        key:
+          example: paid_users
+          type: string
+        layer_experiment_id:
+          example: 9000000013579
+          type: integer
+        layer_id:
+          example: 9000000013569
+          type: integer
+        metrics:
+          description: List of metrics that are evaluated for the decision rules.
+          items:
+            $ref: '#/components/schemas/Metric'
+          type: array
+        name:
+          example: Paid Users
+          type: string
+        outcome:
+          description: outcome of rule.
+          enum:
+          - positive
+          - negative
+          - inconclusive
+          type: string
+        percentage_included:
+          default: 0
+          description: The percentage of the designated audiences that should get the decision rule, measured in basis points. 100 basis points = 1% traffic
+          maximum: 10000
+          minimum: 0
+          type: integer
+        status:
+          description: status of rule. Status will change to 'Running' when Ruleset is 'Running'.
+          enum:
+          - draft
+          - running
+          - paused
+          - concluded
+          type: string
+        type:
+          description: Type of rule.
+          enum:
+          - targeted_delivery
+          - a/b
+          - multi_armed_bandit
+          type: string
+        updated_time:
+          description: Timestamp when the Rule is updated
+          example: '2019-05-08T00:00:00.000Z'
+          format: date-time
+          readOnly: true
+          type: string
+        urn:
+          description: The URN for the Rule
+          example: rules.flags.optimizely.com::45633910
+          readOnly: true
+          type: string
+        variations:
+          additionalProperties:
+            $ref: '#/components/schemas/RuleVariation'
+          description: Map of variations by variation key.
+          type: object
+      required:
+      - key
+      - name
+      - type
+      type: object
+    RuleAllowList:
+      example:
+        user_id: xyz123
+        variation:
+          key: false
+          name: false
+      properties:
+        user_id:
+          description: User identifier
+          type: string
+        variation:
+          description: Variations to be added to user (key and name)
+          properties:
+            key:
+              type: string
+            name:
+              type: string
+          type: object
+      required:
+      - user_id
+      - variation
+      type: object
+    UrlValue:
+      description: A single url.
+      type: string
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
+      properties:
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
+      type: object
+    EventPropertyCondition:
+      properties:
+        name:
+          type: string
+        operator:
+          enum:
+          - equal_to
+          - not_equal_to
+          - greater_than
+          - greater_than_or_equal_to
+          - less_than
+          - less_than_or_equal_to
+          - contains
+          - does_not_contain
+          type: string
+        type:
+          enum:
+          - string
+          - number
+          - boolean
+          type: string
+        value:
+          type: string
+      required:
+      - name
+      - type
+      - value
+      - operator
+      type: object
+    RuleGroupRule:
+      example:
+        id: 73915
+        name: My Group
+        traffic_allocation: 5000
+      properties:
+        group_id:
+          description: Group id
+          type: integer
+        group_name:
+          description: Name of the Group
+          readOnly: true
+          type: string
+        traffic_allocation:
+          description: The traffic allocation for the GroupRule
+          maximum: 10000
+          minimum: 0
+          type: integer
+      required:
+      - group_id
+      type: object
+  parameters:
+    flagKey:
+      description: The Flag identifier
+      example: recurring_deposit
+      in: path
+      name: flag_key
+      required: true
+      schema:
+        type: string
+    environmentKey:
+      description: The Environment identifier
+      example: production
+      in: path
+      name: environment_key
+      required: true
+      schema:
+        type: string
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
+    ruleKey:
+      description: The Rule identifier
+      example: rule_key
+      in: path
+      name: rule_key
+      required: true
+      schema:
+        type: string
+    experimentId:
+      description: Experiment Id
+      example: 12345
+      in: path
+      name: experiment_id
+      required: true
+      schema:
+        type: integer
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
+  responses:
+    NotFoundResponse:
+      description: Not found. No content
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
+    HoldoutsListSuccessResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HoldoutsList'
+      description: 'Successful retrieval of a list of holdouts.
+
+
+        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+        link is not present in the response, it indicates a user is not authorized to access
+
+        the related resource.
+
+        '
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
+    RuleSuccessResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Rule'
+      description: 'Successful retrieval of a Rule.
+
+        '
+  securitySchemes:
+    BearerAuth:
+      description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      scheme: bearer
+      type: http
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Grants all access
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http

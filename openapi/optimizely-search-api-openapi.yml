@@ -1,0 +1,402 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Search API
+  version: '1.0'
+  description: 'Operations tagged Search across 2 of this provider''s published API definitions: optimizely-configured-commerce-storefront-api-v1-openapi.json, optimizely-web-experimentation-optimizely-api-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+- url: https://api.optimizely.com/v2
+tags:
+- name: Search
+paths:
+  /api/v1/search/redirect:
+    get:
+      tags:
+      - Search
+      operationId: Search_Get
+      parameters:
+      - name: term
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.SearchRedirectModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.SearchRedirectModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.SearchRedirectModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.SearchRedirectModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.SearchRedirectModel'
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /search:
+    get:
+      description: Search for entities in your account by text string
+      operationId: get_search_results
+      parameters:
+      - $ref: '#/components/parameters/per_page'
+      - $ref: '#/components/parameters/page'
+      - description: The text to search for.
+        in: query
+        name: query
+        required: true
+        schema:
+          type: string
+      - description: Filters search results by Project ID. Specifying multiple Project IDs will search across all specified projects.
+        explode: true
+        in: query
+        name: project_id
+        schema:
+          items:
+            format: int64
+            type: integer
+          type: array
+      - description: Filters search results by entity type. Specifying multiple types will search across all types specified.
+        explode: true
+        in: query
+        name: type
+        schema:
+          items:
+            enum:
+            - experiment
+            - campaign
+            - feature
+            - audience
+            - page
+            - event
+            - flag
+            - rule
+            - project
+            - extension
+            type: string
+          type: array
+      - description: Filters search results by experiment, rule or campaign types. Specifying multiple types will search across all types specified.
+        explode: true
+        in: query
+        name: type_expand
+        schema:
+          items:
+            type: string
+          type: array
+      - description: Filters search results by project type. Specifying multiple types will search across all types specified.
+        explode: true
+        in: query
+        name: project_type
+        schema:
+          items:
+            type: string
+          type: array
+      - description: Include the project name with the search result
+        explode: false
+        in: query
+        name: expand
+        schema:
+          items:
+            enum:
+            - project_name
+            - experiment_type
+            - feature_key
+            - feature_name
+            type: string
+          type: array
+        style: form
+      - description: Whether or not to include archived entities in the search results. If this parameter is not provided it will default to false and no archived entities will be included.
+        in: query
+        name: archived
+        required: false
+        schema:
+          default: false
+          type: boolean
+      - description: Whether or not to perform full document search for the given search keyword. If this parameter is not provided it will default to false.
+        in: query
+        name: fullsearch
+        required: false
+        schema:
+          default: false
+          type: boolean
+      - description: Filters search results by the current status of the entity if it has one. Works for Experiments and Campaigns, and it may work for others. Specifying multiple statuses will search for entities with ANY of those statuses.
+        explode: false
+        in: query
+        name: status
+        required: false
+        schema:
+          items:
+            enum:
+            - running
+            - paused
+            - archived
+            - not_started
+            - campaign_paused
+            - concluded
+            type: string
+          type: array
+        style: form
+      - description: The property to sort by.
+        in: query
+        name: sort
+        required: false
+        schema:
+          items:
+            enum:
+            - id
+            - name
+            - status
+            - created
+            - last_modified
+            - experiment_type
+            type: string
+          type: string
+      - description: The property to sort by.
+        in: query
+        name: order
+        required: false
+        schema:
+          items:
+            enum:
+            - asc
+            - desc
+            type: string
+          type: string
+      - description: Filters search result by environment_key when applicable
+        in: query
+        name: environment_key
+        required: false
+        schema:
+          type: string
+      - description: Filters search result by audience_id when applicable
+        explode: true
+        in: query
+        name: audience_id
+        schema:
+          items:
+            format: int64
+            type: integer
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SearchResult'
+                type: array
+          description: Return search results
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You do not have permission to search the specified Account or Project
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Search
+      tags:
+      - Search
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
+components:
+  schemas:
+    Insite.Catalog.WebApi.V1.ApiModels.SearchRedirectModel:
+      type: object
+      properties:
+        term:
+          type: string
+        uri:
+          type: string
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    SearchResult:
+      properties:
+        archived:
+          description: Whether or not the entity is archived.
+          example: 'False'
+          type: boolean
+        audience_ids:
+          description: A list of Audience IDs used in the Experiment
+          items:
+            format: int64
+            type: integer
+          type: array
+        campaign_type:
+          description: Type of campaing.
+          example: personalization
+          type: string
+        created:
+          description: The time that the entity was created.
+          format: date-time
+          type: string
+        description:
+          description: Description for the entity if it has one.
+          example: Test out the hero image on the home page
+          type: string
+        enabled:
+          description: Wheter or not the environment is enabled or not
+          example: 'False'
+          type: boolean
+        environment_key:
+          description: The environment key of a given rule
+          example: development
+          type: string
+        experiment_count:
+          description: Number of experiments by audience_id
+          example: 123
+          type: integer
+        experiment_type:
+          description: The type of experiment
+          example: a/b
+          type: string
+        feature_key:
+          description: The feature flag key
+          example: my_feature_flag
+          type: string
+        feature_name:
+          description: The feature flag name to display in the Optimizely app. Whitespaces and other non-alphanumeric characters allowed. Defaults to feature key if left empty.
+          example: the user search feature
+          type: string
+        flag_key:
+          description: The Flag key
+          example: my_flag_key
+          type: string
+        group_id:
+          description: The id of the group that the rule belongs to.
+          example: 123
+          type: integer
+        id:
+          description: ID of the entity
+          readOnly: true
+          type: integer
+        key:
+          description: Key of the entity.
+          example: hero_image_test
+          type: string
+        last_modified:
+          description: The time that the entity was last modified.
+          format: date-time
+          type: string
+        name:
+          description: Name of the entity. This value will be the 'key' of the entity if there is no name.
+          example: Hero Image Test
+          type: string
+        page_id:
+          description: The Page ID associated with an Event
+          format: int64
+          type: integer
+        project_id:
+          description: ID of the project that contains the entity (if applicable)
+          type: integer
+        project_name:
+          description: Name of the project that contains the entity (if applicable)
+          type: string
+        rule_type:
+          description: Type of rule.
+          example: a/b
+          type: string
+        ruleset_enabled:
+          description: Wheter or not the a rule is enabled in a ruleset
+          example: 'False'
+          type: boolean
+        status:
+          description: The current status for the entity if it has one.
+          example: running
+          type: string
+        type:
+          description: Type of the entity.
+          enum:
+          - experiment
+          - campaign
+          - feature
+          - audience
+          - page
+          - event
+          - flag
+          - rule
+          - extension
+          example: experiment
+          type: string
+        updated_time:
+          description: The time that the flag entity was last modified.
+          format: date-time
+          type: string
+        variation_specific:
+          description: Whether or not an event is variation specific
+          example: false
+          type: boolean
+      type: object
+  parameters:
+    page:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http
+x-refined-from:
+- optimizely-configured-commerce-storefront-api-v1-openapi.json
+- optimizely-web-experimentation-optimizely-api-openapi.json

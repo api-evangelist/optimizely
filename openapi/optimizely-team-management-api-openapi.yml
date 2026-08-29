@@ -1,0 +1,438 @@
+openapi: 3.2.0
+info:
+  title: Permission Service Team Management API
+  summary: Permission service for Experimentation
+  description: <a href='https://github.com/optimizely/permission-service' target='_blank'>Github repository</a>
+  version: 0.0.1
+servers:
+- url: https://api.optimizely.com/permissions
+security:
+- BearerAuth: []
+tags:
+- name: Team Management
+paths:
+  /accounts/{account_id}/teams:
+    get:
+      tags:
+      - Team Management
+      summary: Get Teams
+      description: Get all teams for an account
+      operationId: get_teams_accounts__account_id__teams_get
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Account Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamInfo'
+                title: Response Get Teams Accounts  Account Id  Teams Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - Team Management
+      summary: Create Team
+      description: Create a new team.
+      operationId: create_team_accounts__account_id__teams_post
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Account Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamCreateRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamCreateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /accounts/{account_id}/teams/{team_id}:
+    delete:
+      tags:
+      - Team Management
+      summary: Delete Team
+      description: Delete a team.
+      operationId: delete_team_accounts__account_id__teams__team_id__delete
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Account Id
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Team Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamUpdateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - Team Management
+      summary: Get Team Info
+      description: Get team info.
+      operationId: get_team_info_accounts__account_id__teams__team_id__get
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Account Id
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Team Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamInfoResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - Team Management
+      summary: Update Team
+      description: Update an existing team's information.
+      operationId: update_team_info_accounts__account_id__teams__team_id__patch
+      parameters:
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Account Id
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Team Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamUpdateRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamUpdateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    TeamUpdateResponse:
+      properties:
+        message:
+          type: string
+          title: Message
+      type: object
+      required:
+      - message
+      title: TeamUpdateResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    TeamUser:
+      properties:
+        id:
+          type: string
+          title: Id
+        first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Name
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Name
+        email:
+          anyOf:
+          - type: string
+            format: email
+          - type: 'null'
+          title: Email
+        org_role:
+          $ref: '#/components/schemas/AccountRole'
+        created:
+          type: string
+          format: date-time
+          title: Created
+      type: object
+      required:
+      - id
+      - first_name
+      - last_name
+      - email
+      - org_role
+      - created
+      title: TeamUser
+    TeamInfoResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        account_id:
+          type: integer
+          title: Account Id
+        external_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: External Ref
+        created:
+          type: string
+          format: date-time
+          title: Created
+        last_modified:
+          type: string
+          format: date-time
+          title: Last Modified
+        members_count:
+          type: integer
+          title: Members Count
+        members:
+          items:
+            $ref: '#/components/schemas/TeamUser'
+          type: array
+          title: Members
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - account_id
+      - external_ref
+      - created
+      - last_modified
+      - members_count
+      - members
+      title: TeamInfoResponse
+    TeamInfo:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        account_id:
+          type: integer
+          title: Account Id
+        external_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: External Ref
+        created:
+          type: string
+          format: date-time
+          title: Created
+        last_modified:
+          type: string
+          format: date-time
+          title: Last Modified
+        members_count:
+          type: integer
+          title: Members Count
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - account_id
+      - external_ref
+      - created
+      - last_modified
+      - members_count
+      title: TeamInfo
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    TeamCreateResponse:
+      properties:
+        message:
+          type: string
+          title: Message
+        team_id:
+          type: string
+          title: Team Id
+      type: object
+      required:
+      - message
+      - team_id
+      title: TeamCreateResponse
+    TeamCreateRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        external_ref:
+          anyOf:
+          - type: string
+            maxLength: 4096
+          - type: 'null'
+          title: External Ref
+        members:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Members
+      type: object
+      required:
+      - name
+      title: TeamCreateRequest
+    TeamUpdateRequest:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        external_ref:
+          anyOf:
+          - type: string
+            maxLength: 4096
+          - type: 'null'
+          title: External Ref
+        members_added:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Members Added
+        members_removed:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Members Removed
+      type: object
+      required:
+      - name
+      title: TeamUpdateRequest
+    AccountRole:
+      type: string
+      enum:
+      - Administrator
+      - Project Creator
+      - User
+      title: AccountRole
+  securitySchemes:
+    BearerAuth:
+      description: To get an API token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      type: http
+      scheme: bearer
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

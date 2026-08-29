@@ -1,0 +1,335 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Batch sending API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Batch sending
+  description: Create and send messages as batches to recipients segmented in separate platform
+paths:
+  /{clientId}/sending/batches/{sendingBatchId}:
+    get:
+      tags:
+      - Batch sending
+      summary: Get information about a sending batch
+      description: Get detailed information about a sending batch, such as id, campaign, recipient list and state.
+      operationId: getSendingBatch
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: number
+      - name: sendingBatchId
+        in: path
+        description: Sending Batch ID
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          description: The sending batch was retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSendingBatch'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSendingBatch'
+        '404':
+          description: The sending batch could not be found. Ensure that the required parameter is correct and the sending batch entry exists.
+      security:
+      - Authorization: []
+    put:
+      tags:
+      - Batch sending
+      summary: Persist chunked recipients
+      description: Transfer recipients that will be used for the sending batch.
+      operationId: addRecipients_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: number
+      - name: sendingBatchId
+        in: path
+        description: Sending Batch ID
+        required: true
+        schema:
+          type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipientsChunkRequestData'
+        required: true
+      responses:
+        '200':
+          description: Chunk with the number of pre-validated recipients.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestChunk'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestChunk'
+        '400':
+          description: <ul><li>the request data is not provided</li><li>chunk value is not alphanumeric (with '-' and '_' accepted) or not limited with 250 characters</li></ul>
+        '404':
+          description: The sending batch could not be found. Ensure that the required parameter is correct and the sending batch entry exists.
+        '409':
+          description: The sending batch is already sent.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Batch sending
+      summary: Send campaign to the chunked recipients
+      description: Imports the recipients (chunked recipients can be provided with this call as well) and starts the campaign. The sending batch is marked as finished afterwards.
+      operationId: importRecipientsAndSendBatch
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: number
+      - name: sendingBatchId
+        in: path
+        description: Sending Batch ID
+        required: true
+        schema:
+          type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipientsChunkRequestData'
+      responses:
+        '202':
+          description: The import of recipients is initiated, the campaign will be started after import is finished.
+        '400':
+          description: Chunk value is not alphanumeric (with '-' and '_' accepted) or not limited with 250 characters.
+        '404':
+          description: The sending batch could not be found. Ensure that the required parameter is correct and the sending batch entry exists.
+        '409':
+          description: <ul><li>the sending batch is already sent</li><li>the sending batch has no chunks</li><li>associated campaign is invalid</li></ul>
+      security:
+      - Authorization: []
+  /{clientId}/sending/batches:
+    get:
+      tags:
+      - Batch sending
+      summary: Get information about all sending batches
+      description: Get detailed information about all sending batches, such as id, campaign, recipient list and state.
+      operationId: selectSendingBatches
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: number
+      - name: offset
+        in: query
+        description: 'Starting point of the result list <p><i>Default value</i> : 0</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved sending batches <p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: The sending batches were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSendingBatchStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSendingBatchStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Batch sending
+      summary: Prepares new sending batch
+      description: Creates a new sending batch based on configured campaign parameters and the next available recipient list from the pool.
+      operationId: prepareNewBatch
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: number
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PrepareSendingBatchRequest'
+      responses:
+        '201':
+          description: The batch was prepared successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSendingBatch'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSendingBatch'
+        '400':
+          description: <ul><li>the values for required parameters [campaign/campaignAction] are not provided</li><li>provided campaign value is not a number or not recognized</li><li>referenced campaign is not a master campaign</li><li>campaignAction is not recognized</li><li>tag contains unsupported characters</li></ul>
+        '409':
+          description: <ul><li>referenced campaign for use is already finished</li><li>Recipient List Pool is not properly configured for the client</li></ul>
+      security:
+      - Authorization: []
+components:
+  schemas:
+    RestSendingBatch:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Batch ID
+          format: int64
+        campaignId:
+          type: integer
+          description: Campaign ID
+          format: int64
+        recipientListId:
+          type: integer
+          description: Recipient list ID
+          format: int64
+        tag:
+          type: string
+          description: Tag
+        chunks:
+          type: array
+          description: Chunks
+          items:
+            type: string
+            description: Chunks
+        state:
+          type: string
+          description: State
+          enum:
+          - initiated
+          - has_recipients
+          - sent
+          - invalid
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    PrepareSendingBatchRequest:
+      required:
+      - campaign
+      - campaignAction
+      type: object
+      properties:
+        campaign:
+          type: string
+          description: Campaign definition based on the value of campaignAction
+        campaignAction:
+          type: string
+          description: Campaign action
+          enum:
+          - use
+          - copy
+        tag:
+          type: string
+          description: Tag reference
+    RestSendingBatchStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestSendingBatch'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RecipientsChunkRequestData:
+      type: object
+      properties:
+        chunk:
+          type: string
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    Recipient:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties:
+            type: object
+        id:
+          type: string
+    RestChunk:
+      type: object
+      properties:
+        chunk:
+          type: string
+        count:
+          type: integer
+          format: int32
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

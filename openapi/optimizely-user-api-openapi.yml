@@ -1,0 +1,200 @@
+openapi: 3.2.0
+info:
+  title: Optimizely User API
+  version: '2.0'
+  description: User related information for the current account
+servers:
+- url: https://api.optimizely.com/v2
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- description: User related information for the current account
+  name: User
+paths:
+  /me:
+    get:
+      description: Get current User information
+      operationId: get_me
+      parameters:
+      - description: Flag indicator to request features enabled for this user
+        in: query
+        name: include_features
+        required: false
+        schema:
+          default: false
+          type: boolean
+      - description: Expand the response to include any of current_account.features, accounts, or project_roles by providing a comma-delimited string or multiple expand paramters.
+        explode: false
+        in: query
+        name: expand
+        required: false
+        schema:
+          default: []
+          items:
+            type: string
+          type: array
+        style: form
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: Return current User, Account, and Project role information
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Get current User information
+      tags:
+      - User
+      x-release-state: alpha
+components:
+  schemas:
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    ProjectRole:
+      properties:
+        invitation_status:
+          enum:
+          - pending
+          readOnly: true
+          type: string
+        project_id:
+          description: The unique identifier of the Project
+          format: int64
+          readOnly: true
+          type: integer
+        role:
+          enum:
+          - administrator
+          - viewer
+          - restricted_editor
+          - editor
+          - restricted_publisher
+          - publisher
+          - project_owner
+          readOnly: true
+          type: string
+      type: object
+    AccountFeature:
+      properties:
+        feature_id:
+          type: string
+        sources:
+          items:
+            $ref: '#/components/schemas/AccountFeatureSource'
+          type: array
+      type: object
+    Account:
+      properties:
+        id:
+          description: The unique identifier of the Account
+          format: int64
+          readOnly: true
+          type: integer
+        name:
+          description: The name of the Account
+          readOnly: true
+          type: string
+      type: object
+    AccountFeatureSource:
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+      type: object
+    CurrentAccount:
+      properties:
+        features:
+          additionalProperties:
+            $ref: '#/components/schemas/AccountFeature'
+          description: The available features for the Account
+          readOnly: true
+          type: object
+        id:
+          description: The unique identifier of the Account
+          format: int64
+          readOnly: true
+          type: integer
+      type: object
+    UserProfile:
+      properties:
+        email:
+          description: User's email
+          format: email
+          type: string
+        first_name:
+          default: ''
+          description: User's first name
+          type: string
+        last_name:
+          default: ''
+          description: User's last name
+          type: string
+        profile_image:
+          default: ''
+          description: User's profile image URL
+          format: url
+          type: string
+      type: object
+    Me:
+      properties:
+        accounts:
+          description: List of Accounts this user can access
+          items:
+            $ref: '#/components/schemas/Account'
+          readOnly: true
+          type: array
+        current_account:
+          $ref: '#/components/schemas/CurrentAccount'
+        id:
+          description: The unique identifier of the current User
+          example: fa74a14b-1f3a-463d-aa98-2f7124ee6fc3
+          format: uuid
+          readOnly: true
+          type: string
+        profile:
+          $ref: '#/components/schemas/UserProfile'
+        project_roles:
+          description: List of Project IDs in the current Account with the current User's role information
+          items:
+            $ref: '#/components/schemas/ProjectRole'
+          readOnly: true
+          type: array
+      type: object
+  securitySchemes:
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http

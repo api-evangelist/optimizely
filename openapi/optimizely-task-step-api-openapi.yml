@@ -1,0 +1,291 @@
+openapi: 3.2.0
+info:
+  version: V3
+  title: Optimizely CMP Open API Documentation Task Step API
+servers:
+- url: https://api.cmp.optimizely.com/v3
+  description: v3 version of Optimizely CMP Open API
+security:
+- OAuth2:
+  - openid
+  - profile
+  - offline_access
+tags:
+- name: Task Step
+paths:
+  /tasks/{task_id}/steps/{step_id}:
+    patch:
+      operationId: updateTaskStep
+      tags:
+      - Task Step
+      summary: PATCH /tasks/{task_id}/steps/{step_id}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Update a step in a task
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the task
+        example: 7d7f910551b00a722e0418830cee6612
+      - name: step_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the step
+        example: 897f910551b00a722e0418830cee6612
+      requestBody:
+        description: Payload to update the step
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskStepRequest'
+            examples:
+              due_at:
+                summary: Update the due date of the step
+                value:
+                  due_at: '2025-10-06T13:00:00Z'
+      responses:
+        '200':
+          description: The updated step object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskStep'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+components:
+  schemas:
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
+    TaskStep:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the step
+          example: 6d7f910551b00a722e0418830cee5564
+        title:
+          type: string
+          description: Title of the step
+          example: Sample step
+        is_completed:
+          type: boolean
+          description: Determines whether the step is completed in Optimizely CMP
+          example: false
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the step
+          example: Description of the step
+        due_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Due date and time of the step containing the substep,  in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2020-10-06T13:15:30Z'
+        sub_steps:
+          type: array
+          description: Substeps of the step
+          items:
+            $ref: '#/components/schemas/TaskSubStep'
+      required:
+      - id
+      - title
+      - is_completed
+      - description
+      - due_at
+      - sub_steps
+    TaskSubStep:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the substep
+          example: 9c7f910551b00a722e0418830cee2564
+        title:
+          type: string
+          description: Title of the substep
+          example: Sample step
+        assignee_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the assignee of the step containing the substep
+          example: 5fdf31d57f0d0e362e2b5908
+        assignee_type:
+          type: string
+          enum:
+          - user
+          - team
+          description: Type of the assignee of the step containing the substep.
+          example: user
+        is_completed:
+          type: boolean
+          description: Determines whether the substep is completed in Optimizely CMP
+          example: false
+        is_in_progress:
+          type: boolean
+          description: Determines whether the substep is In Progress in Optimizely CMP
+          example: false
+        is_skipped:
+          type: boolean
+          description: Determines whether the substep is skipped in Optimizely CMP
+          example: false
+        is_external:
+          type: boolean
+          description: Determines whether the substep is external in Optimizely CMP
+          example: true
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the substep
+              example: https://api.cmp.optimizely.com/v3/tasks/5d7f910551b00a722e0418830cee5534/steps/6d7f910551b00a722e0418830cee5564/sub-steps/9c7f910551b00a722e0418830cee2564
+            task:
+              type: string
+              description: URL of the task
+              example: https://api.cmp.optimizely.com/v3/tasks/5d7f910551b00a722e0418830cee5534
+            external_work:
+              type:
+              - string
+              - 'null'
+              description: URL of the external work associated with substep if substep is external in _Optimizely CMP_
+              example: https://api.cmp.optimizely.com/v3/tasks/5d7f910551b00a722e0418830cee5534/steps/6d7f910551b00a722e0418830cee5564/sub-steps/9c7f910551b00a722e0418830cee2564/external-work
+            assignee:
+              type:
+              - string
+              - 'null'
+              description: Assignee of the step containing the substep
+              example: https://api.cmp.optimizely.com/v3/users/5fdf31d57f0d0e362e2b5908
+          required:
+          - self
+          - task
+          - external_work
+      required:
+      - id
+      - title
+      - assignee_id
+      - assignee_type
+      - is_completed
+      - is_in_progress
+      - is_skipped
+      - is_external
+      - links
+    TaskStepRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        due_at:
+          type: string
+          format: date-time
+          description: 'Due date and time of the task step, in ISO 8601 UTC format (2020-02-10T10:40:45Z). Point to note: in the CMP web interface, a popup is shown while updating a step''s due date to inform the user of temporal or sequential constraints based on the due date of other steps. However, this API will update the step''s due date while superceding any validation for the workflow.'
+          example: '2025-10-06T13:00:00Z'
+  responses:
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+    UnprocessableEntity:
+      description: Unprocessable entity error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource cannot be processed
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/auth
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes:
+            openid: Grants the ability to receive a unique identifier for the user.
+            profile: Grants access to user profile information.
+            offline_access: Grants the ability to refresh access_token using the refresh token even when user is not present (not logged in).
+        clientCredentials:
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes: {}
+x-tagGroups:
+- name: API
+  tags:
+  - Uploader
+  - Library
+  - Labels
+  - Brand Compliance
+  - Tasks
+  - Task Step
+  - Campaigns
+  - Publishing
+  - Templates
+  - Users
+  - Work Requests
+  - Structured Contents
+  - Assets
+  - Milestones
+  - Teams
+  - Settings
+  - Workflows
+  - Fields
+  - Events

@@ -1,0 +1,307 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Mail archive API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Mail archive
+  description: Get archived mailings
+paths:
+  /{clientId}/mailarchive/{bmMailId}:
+    get:
+      tags:
+      - Mail archive
+      summary: Get information about an archived mailing
+      description: Get detailed information about an archived mailing, such as mailing type, mailingToUser ID and the date and time of creation.
+      operationId: getArchivedMailMetaData
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: bmMailId
+        in: path
+        description: Encoded mail ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The information about the archived mailing was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestArchiveMail'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestArchiveMail'
+        '400':
+          description: The bmMailId is invalidly encoded.
+        '404':
+          description: The bmMailId could not be found in the mail archive.
+        '409':
+          description: The indicated bmMailId is not assigned to the indicated client. Ensure that "clientId" and "bmMailId" are correct and that "bmMailId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+  /{clientId}/mailarchive:
+    get:
+      tags:
+      - Mail archive
+      summary: Get information about all archived mailings
+      description: Get detailed information about all archived mailings, such as mailing type, mailingToUser ID and the date and time of creation.
+      operationId: selectArchiveMails
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: from
+        in: query
+        description: Time filter to select archived mails created from date. DateTimeFormat 2021-11-07 17:43:01. UTC Timezone will be used to parse the parameter
+        schema:
+          type: string
+      - name: bmMailIds
+        in: query
+        description: Collection of encoded mail IDs
+        schema:
+          type: array
+          items:
+            type: string
+      - name: optinStatus
+        in: query
+        description: Double Opt-in status (Only for confirmation archived mails)
+        schema:
+          type: string
+          enum:
+          - non_confirmed
+          - confirmed
+      - name: mailingId
+        in: query
+        description: Mailing ID of archived mail
+        schema:
+          type: integer
+          format: int64
+      - name: recipientId
+        in: query
+        description: Recipient ID (usually the email address)
+        schema:
+          type: string
+      - name: mailingTypes
+        in: query
+        description: Collection of mailingTypes. Supported mailingTypes [event, transaction, confirmation, campaign]
+        schema:
+          type: string
+      - name: recipientAddress
+        in: query
+        description: Recipient address (usually the email address)
+        schema:
+          type: string
+      - name: until
+        in: query
+        description: Time filter to select archived mails created until date. DateTimeFormat 2021-11-07 17:43:01. UTC Timezone will be used to parse the parameter
+        schema:
+          type: string
+      - name: next-cursor
+        in: header
+        description: Cursor to retrieve next batch. Cursor is going to expire after 10 minutes.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The information about the archived mailing was retrieved successfully.
+          headers:
+            next-cursor:
+              description: Cursor to retrieve next batch. Cursor is going to be expired after 10 minutes.
+              style: simple
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestArchiveMail'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestArchiveMail'
+        '204':
+          description: Archived mailings could not be found.
+        '400':
+          description: Invalid request or 'next-cursor' is expired. Make sure you requested no more than 10000 results.
+      security:
+      - Authorization: []
+  /{clientId}/mailarchive/{bmMailId}/content:
+    get:
+      tags:
+      - Mail archive
+      summary: Get the content of an archived mailing
+      description: Get the content of an archived mailing. You can retrieve the content as EML or HTML file, and optionally compress the mailing to save space.
+      operationId: getArchivedMailContent
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: mailFormat
+        in: query
+        description: 'File type of the retrieved mailing<p><i>Default value</i> : EML</p>'
+        schema:
+          type: string
+          enum:
+          - EML
+          - HTML
+      - name: compressed
+        in: query
+        description: 'Compress the mailing to save space<p><i>Default value</i> : false</p>'
+        schema:
+          type: boolean
+      - name: bmMailId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The archived mailing was retrieved successfully.
+          content:
+            application/octet-stream:
+              schema:
+                type: object
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: object
+        '400':
+          description: The bmMailId is invalidly encoded.
+        '404':
+          description: The bmMailId could not be found in the mail archive.
+        '409':
+          description: The indicated bmMailId is not assigned to the indicated client. Ensure that "clientId" and "bmMailId" are correct and that "bmMailId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+  /{clientId}/mailarchive/content:
+    get:
+      tags:
+      - Mail archive
+      summary: Get compressed file with archived mailing contents
+      description: Get compressed file with archived mailing contents.
+      operationId: selectArchivedMailContents
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: from
+        in: query
+        description: Time filter to select archived mails created from date. DateTimeFormat 2021-11-07 17:43:01. UTC Timezone will be used to parse the parameter
+        schema:
+          type: string
+      - name: bmMailIds
+        in: query
+        description: Collection of encoded mail IDs
+        schema:
+          type: array
+          items:
+            type: string
+      - name: optinStatus
+        in: query
+        description: Double Opt-in status (Only for confirmation archived mails)
+        schema:
+          type: string
+          enum:
+          - non_confirmed
+          - confirmed
+      - name: mailingId
+        in: query
+        description: Mailing ID of archived mail
+        schema:
+          type: integer
+          format: int64
+      - name: recipientId
+        in: query
+        description: Recipient ID (usually the email address)
+        schema:
+          type: string
+      - name: mailingTypes
+        in: query
+        description: Collection of mailingTypes. Supported mailingTypes [event, transaction, confirmation, campaign]
+        schema:
+          type: string
+      - name: recipientAddress
+        in: query
+        description: Recipient address (usually the email address)
+        schema:
+          type: string
+      - name: until
+        in: query
+        description: Time filter to select archived mails created until date. DateTimeFormat 2021-11-07 17:43:01. UTC Timezone will be used to parse the parameter
+        schema:
+          type: string
+      - name: next-cursor
+        in: header
+        description: Cursor to retrieve next batch. Cursor is going to expire after 10 minutes.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The compressed file with archived mailing contents was retrieved successfully.
+          headers:
+            next-cursor:
+              description: Cursor to retrieve next batch. Cursor is going to be expired after 10 minutes.
+              style: simple
+              schema:
+                type: integer
+          content:
+            application/octet-stream:
+              schema:
+                type: object
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: object
+        '204':
+          description: Archived mailings could not be found.
+        '400':
+          description: Invalid request or 'next-cursor' is expired.
+      security:
+      - Authorization: []
+components:
+  schemas:
+    RestArchiveMail:
+      type: object
+      properties:
+        mailingGroupId:
+          type: integer
+          description: Client ID
+          format: int64
+        mailingType:
+          type: string
+          description: Mailing type
+        mailingToUserId:
+          type: integer
+          description: MailingToUser ID
+          format: int64
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: Metadata
+          description: Metadata
+        created:
+          type: string
+          description: Date and time of creation
+          format: date-time
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

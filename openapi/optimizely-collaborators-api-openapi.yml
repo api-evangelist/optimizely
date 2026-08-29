@@ -1,0 +1,223 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Collaborators API
+  version: '2.0'
+servers:
+- url: https://api.optimizely.com/v2
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- name: Collaborators
+paths:
+  /collaborators:
+    get:
+      description: List all the Collaborators on your account, or filter by project_id to list Collaborators on a specific project
+      operationId: list_collaborators
+      parameters:
+      - description: Return Collaborators who have permissions on all specified projects.
+        explode: true
+        in: query
+        name: project_id
+        required: false
+        schema:
+          items:
+            format: int64
+            type: integer
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CollaboratorEntry'
+                type: array
+          description: Return Collaborators
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: List Collaborators
+      tags:
+      - Collaborators
+      x-release-state: alpha
+    post:
+      description: Invite collaborators to specific projects on an account
+      operationId: create_collaborators
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/CollaboratorEntry'
+              type: array
+        description: A string in JSON format which is an array of all the Collaborators to invite, with an array of project roles for each Collaborator.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CollaboratorEntry'
+                type: array
+          description: Return Collaborators
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid ID or request body supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Invite Collaborators
+      tags:
+      - Collaborators
+      x-release-state: alpha
+  /invitations:
+    get:
+      description: List Collaborators who are yet to accept the invitations.
+      operationId: list_invitations
+      parameters:
+      - description: Return users who have been invited to the specified set of projects.
+        explode: true
+        in: query
+        name: project_id
+        required: false
+        schema:
+          items:
+            format: int64
+            type: integer
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CollaboratorEntry'
+                type: array
+          description: Return pending collaborators
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: List Collaborators who have not yet accepted the invitations
+      tags:
+      - Collaborators
+      x-release-state: alpha
+components:
+  schemas:
+    UserProfile:
+      properties:
+        email:
+          description: User's email
+          format: email
+          type: string
+        first_name:
+          default: ''
+          description: User's first name
+          type: string
+        last_name:
+          default: ''
+          description: User's last name
+          type: string
+        profile_image:
+          default: ''
+          description: User's profile image URL
+          format: url
+          type: string
+      type: object
+    CollaboratorEntry:
+      properties:
+        id:
+          description: The unique identifier of the user
+          example: fa74a14b-1f3a-463d-aa98-2f7124ee6fc3
+          format: uuid
+          readOnly: true
+          type: string
+        profile:
+          $ref: '#/components/schemas/UserProfile'
+        project_roles:
+          items:
+            $ref: '#/components/schemas/ProjectRole'
+          type: array
+      type: object
+    ProjectRole:
+      properties:
+        invitation_status:
+          enum:
+          - pending
+          readOnly: true
+          type: string
+        project_id:
+          description: The unique identifier of the Project
+          format: int64
+          readOnly: true
+          type: integer
+        role:
+          enum:
+          - administrator
+          - viewer
+          - restricted_editor
+          - editor
+          - restricted_publisher
+          - publisher
+          - project_owner
+          readOnly: true
+          type: string
+      type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+  securitySchemes:
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Full access to your account
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http

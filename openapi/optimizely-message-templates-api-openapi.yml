@@ -1,0 +1,449 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Message templates API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Message templates
+  description: Manage message templates
+paths:
+  /{clientId}/messagetemplates:
+    get:
+      tags:
+      - Message templates
+      summary: Get information about all message templates
+      description: Get detailed information about all message templates, such as format, subject, reply-to address or creation date. You can filter for messages in a folder or limit the number of retrieved message templates.
+      operationId: selectMessageTemplates
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        description: 'Starting point of the result list <p><i>Default value</i> : 0</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved message templates <p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: sort
+        in: query
+        description: Sort result by specific criteria
+        schema:
+          type: string
+          default: created
+          enum:
+          - id
+          - name
+          - contentId
+          - contentTemplate
+          - mediaType
+          - created
+          - createdBy
+          - modified
+          - modifiedBy
+      - name: folderId
+        in: query
+        description: Filter message templates assigned to a folder
+        schema:
+          type: integer
+          format: int64
+      - name: direction
+        in: query
+        description: Sort order
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+      responses:
+        '200':
+          description: The message templates were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMessageTemplateStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMessageTemplateStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Message templates
+      summary: Create or copy a message template
+      description: 'Create or copy a message template. You can specify the sender address, the subject for target groups or reset the reply-to address. <b>Note</b>: One of the following request parameters is required: cmsContentTemplateId, mailingId, messageTemplateIdForCreate, messageTemplateIdForCopy.'
+      operationId: createOrCopyMessageTemplate
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MessageTemplateRequestData'
+      responses:
+        '201':
+          description: The message template was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMessageTemplate'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMessageTemplate'
+      security:
+      - Authorization: []
+  /{clientId}/messagetemplates/{messageTemplateId}:
+    get:
+      tags:
+      - Message templates
+      summary: Get information about a message template
+      description: Get detailed information about a message template, such as reply-to address, subject, format or creation date.
+      operationId: getMessageTemplate
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: messageTemplateId
+        in: path
+        description: Message template ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The message template was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMessageTemplate'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMessageTemplate'
+        '409':
+          description: The indicated message template is not assigned to the indicated client. Ensure that "clientId" and "messageTemplateId" are correct and that the "messageTemplateId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Message templates
+      summary: Update a message template
+      description: Update information of a message template, such as name or subject.
+      operationId: updateMessageTemplate
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: messageTemplateId
+        in: path
+        description: Message template ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MessageTemplateRequestData'
+      responses:
+        '200':
+          description: The message template was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMessageTemplate'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMessageTemplate'
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Message templates
+      summary: Delete a message template
+      operationId: deleteMessageTemplate
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: messageTemplateId
+        in: path
+        description: Message template ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The message template was deleted successfully.
+        '409':
+          description: The indicated message template is not assigned to the indicated client. Ensure that "clientId" and "messageTemplateId" are correct and that the "messageTemplateId" is assigned to the indicated client.
+      security:
+      - Authorization: []
+  /{clientId}/messagetemplates/{messageTemplateId}/test:
+    post:
+      tags:
+      - Message templates
+      summary: Test a message template
+      description: Send a test mailing to check content and layout of a message template before sending the actual mailing.
+      operationId: testMessageTemplate
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: messageTemplateId
+        in: path
+        description: Message template ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MessageTemplateTestMailingRequestData'
+      responses:
+        '202':
+          description: The message template was sent successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageTemplateTestResponse'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/MessageTemplateTestResponse'
+      security:
+      - Authorization: []
+components:
+  schemas:
+    RestMessageTemplateStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestMessageTemplate'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    MessageTemplateTestResponse:
+      type: object
+      properties:
+        mailingId:
+          type: integer
+          format: int64
+    MessageTemplateRequestData:
+      required:
+      - name
+      type: object
+      properties:
+        subjectForTargetGroup:
+          type: string
+          description: Subject specific to the target group. Set 'subject.[targetGroupId]' in request data (only email).<p>Does not work with the "Try it out" feature.</p>
+        cmsContentTemplateId:
+          type: string
+          description: ID of source content template
+        messageTemplateIdForCreate:
+          type: integer
+          description: ID of source message template for creation
+          format: int64
+        messageTemplateIdForCopy:
+          type: integer
+          description: ID of source message template for copying
+          format: int64
+        replyToAddress:
+          type: string
+          description: Reply-to address (only email)
+        mailingId:
+          type: integer
+          description: ID of source mailing
+          format: int64
+        resetReplyToAddress:
+          type: boolean
+          description: Reset the local part of the reply-to address
+        resetTargetedSubjects:
+          type: boolean
+          description: If true, all target groups subjects are deleted (only email)
+        replyToName:
+          type: string
+          description: Reply-to mailing name (only email)
+        name:
+          type: string
+          description: Name of the message template
+        senderName:
+          type: string
+          description: Mailing sender name (only email)
+        subject:
+          type: string
+          description: Mailing subject (only email)
+        senderAddress:
+          type: string
+          description: Mailing sender address
+    MessageTemplateTestMailingRequestData:
+      required:
+      - recipientIds
+      - recipientListId
+      type: object
+      properties:
+        recipientIds:
+          type: array
+          description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the provided recipient list, no test mailing will be sent to this recipient.
+          items:
+            type: string
+            description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the provided recipient list, no test mailing will be sent to this recipient.
+        mimeType:
+          type: string
+          description: Mime type of the mailing during sending (use an empty string for the mailing mime type)
+          example: text/plain, text/html, text/multipart
+        subject:
+          type: string
+          description: Subject of a test message template (if message template has a subject set)
+        senderAddress:
+          type: string
+          description: Sender address for test message template (if message template has a sender address set)
+        recipientListId:
+          type: integer
+          description: ID of the recipient list for the test mailing
+          format: int64
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestMessageTemplate:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Message template ID
+          format: int64
+        name:
+          type: string
+          description: Message template name
+        contentId:
+          type: string
+          description: Content ID of the message template
+        contentTemplate:
+          type: string
+          description: Content template
+        mediaType:
+          type: string
+          description: Media type of the message template
+        senderAddress:
+          type: string
+          description: Email address of the sender
+        senderName:
+          type: string
+          description: Sender name
+          example: Episerver GmbH
+        replyToAddress:
+          type: string
+          description: Email address for reply mails
+        replyToName:
+          type: string
+          description: Name for reply mails
+        subject:
+          type: object
+          additionalProperties:
+            type: string
+            description: Subjects
+          description: Subjects
+        format:
+          type: string
+          description: Format
+        dispatchOption:
+          type: string
+          description: Dispatch option of the message template
+        dispatchStrategyOption:
+          type: string
+          description: Dispatch strategy option of the message template
+        accumulateMessagesForDays:
+          type: integer
+          description: Number of messages per day
+          format: int32
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

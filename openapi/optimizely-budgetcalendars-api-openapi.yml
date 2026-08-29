@@ -1,0 +1,162 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Budgetcalendars API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Budgetcalendars
+paths:
+  /api/v1/budgetcalendars:
+    get:
+      tags:
+      - Budgetcalendars
+      operationId: BudgetCalendarsV1_GetCollectionAsync
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarCollectionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarCollectionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarCollectionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarCollectionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarCollectionModel'
+      security:
+      - access_token: []
+  /api/v1/budgetcalendars/{fiscalYear}:
+    get:
+      tags:
+      - Budgetcalendars
+      operationId: BudgetCalendarsV1_GetAsync
+      parameters:
+      - name: fiscalYear
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Budgetcalendars
+      operationId: BudgetCalendarsV1_PatchAsync
+      parameters:
+      - name: fiscalYear
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+          text/html:
+            schema:
+              $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        fiscalYear:
+          format: int32
+          type: integer
+        fiscalYearEndDate:
+          format: date-time
+          type: string
+        budgetPeriods:
+          type: array
+          items:
+            format: date-time
+            type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        budgetCalendarCollection:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCalendarModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

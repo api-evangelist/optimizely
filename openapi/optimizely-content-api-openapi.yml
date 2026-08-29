@@ -1,17 +1,34 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Optimizely Campaign REST Assets Content API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  title: Optimizely Content API
   version: '1.0'
-  contact:
-    name: Optimizely Support
-    url: https://support.optimizely.com
-  termsOfService: https://www.optimizely.com/legal/terms/
+  description: 'Operations tagged Content across 6 of this provider''s published API definitions: optimizely-cmp-openapi.yml, optimizely-configured-commerce-storefront-api-v2-openapi.json, optimizely-content-delivery-openapi.yml, optimizely-content-management-openapi.yml, optimizely-content-management-system-episervercontentapidocs-openapi.json, optimizely-recommendations-public-api-spec-openapi.yaml. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://api.campaign.episerver.net/rest
-  description: Optimizely Campaign Production Server
-security:
-- basicAuth: []
+- url: https://api.cmp.optimizely.com/v0
+  description: Optimizely CMP API Server
+- url: https://dogfood.commerce.insitesandbox.com
+- url: '{siteUrl}/api/episerver/v3.0'
+  description: Optimizely CMS Content Delivery API endpoint
+  variables:
+    siteUrl:
+      default: https://www.example.com
+      description: The base URL of the Optimizely CMS site
+- url: '{siteUrl}/api/episerver/v3.0/contentmanagement'
+  description: Optimizely CMS Content Management API endpoint
+  variables:
+    siteUrl:
+      default: https://www.example.com
+      description: The base URL of the Optimizely CMS site
+- url: https://{hostname}/1.0
+  description: Primary API server
+  variables:
+    hostname:
+      default: api.usea01.idio.episerver.net
+      enum:
+      - api.apac01.idio.episerver.net
+      - api.caea01.idio.episerver.net
+      - api.emea01.idio.episerver.net
+      - api.usea01.idio.episerver.net
 tags:
 - name: Content
   description: Manage content items including articles and other content types within the CMP content repository.
@@ -43,6 +60,35 @@ paths:
                     $ref: '#/components/schemas/Pagination'
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - oauth2: []
+    post:
+      operationId: contentImport
+      summary: Import content
+      description: Import a content item using a URL. The URL is queued for processing.
+      tags:
+      - Content
+      requestBody:
+        required: true
+        description: A content URL
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentURL'
+      responses:
+        '202':
+          description: Content URL is queued for processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                message: The Content has been queued for importing
+      security:
+      - oauth2: []
+    servers:
+    - url: https://api.cmp.optimizely.com/v0
+      description: Optimizely CMP API Server
   /content/{contentId}:
     get:
       operationId: getContent
@@ -63,6 +109,244 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Content not found
+      security:
+      - oauth2: []
+    servers:
+    - url: https://api.cmp.optimizely.com/v0
+      description: Optimizely CMP API Server
+  /api/v2/content/PageByType:
+    get:
+      tags:
+      - Content
+      operationId: Content_PageByType
+      parameters:
+      - name: type
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Spire.Services.RetrievePageResult'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Spire.Services.RetrievePageResult'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Spire.Services.RetrievePageResult'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Spire.Services.RetrievePageResult'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Spire.Services.RetrievePageResult'
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v2/content/PagesByParent:
+    get:
+      tags:
+      - Content
+      operationId: Content_PagesByParent
+      parameters:
+      - name: parentNodeId
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+            text/json:
+              schema:
+                type: object
+            application/xml:
+              schema:
+                type: object
+            text/xml:
+              schema:
+                type: object
+            text/html:
+              schema:
+                type: object
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v2/content/PageByUrl:
+    get:
+      tags:
+      - Content
+      operationId: Content_PageByUrl
+      parameters:
+      - name: url
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Spire.Services.RetrievePageResult'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Spire.Services.RetrievePageResult'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Spire.Services.RetrievePageResult'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Spire.Services.RetrievePageResult'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Spire.Services.RetrievePageResult'
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v2/content/PageUrlByType:
+    get:
+      tags:
+      - Content
+      operationId: Content_PageUrlByType
+      parameters:
+      - name: type
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+            text/json:
+              schema:
+                type: string
+            application/xml:
+              schema:
+                type: string
+            text/xml:
+              schema:
+                type: string
+            text/html:
+              schema:
+                type: string
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v2/content/PageLinks:
+    get:
+      tags:
+      - Content
+      operationId: Content_PageLinks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Insite.Spire.Models.PageLinkModel'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Insite.Spire.Models.PageLinkModel'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Insite.Spire.Models.PageLinkModel'
+            text/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Insite.Spire.Models.PageLinkModel'
+            text/html:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Insite.Spire.Models.PageLinkModel'
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v2/content/GetNodeIdForPageName:
+    get:
+      tags:
+      - Content
+      operationId: Content_GetNodeIdForPageName
+      parameters:
+      - name: pageName
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+            text/json:
+              schema:
+                type: object
+            application/xml:
+              schema:
+                type: object
+            text/xml:
+              schema:
+                type: object
+            text/html:
+              schema:
+                type: object
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v2/content/Theme:
+    get:
+      tags:
+      - Content
+      operationId: Content_ThemeAsync
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+            text/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+            application/xml:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+            text/xml:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+            text/html:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
   /content/{contentId}/children:
     get:
       operationId: getContentChildren
@@ -96,6 +380,16 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Parent content item not found
+      security:
+      - bearerAuth: []
+      - anonymous: []
+    servers:
+    - url: '{siteUrl}/api/episerver/v3.0'
+      description: Optimizely CMS Content Delivery API endpoint
+      variables:
+        siteUrl:
+          default: https://www.example.com
+          description: The base URL of the Optimizely CMS site
   /content/{contentId}/ancestors:
     get:
       operationId: getContentAncestors
@@ -120,6 +414,16 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Content item not found
+      security:
+      - bearerAuth: []
+      - anonymous: []
+    servers:
+    - url: '{siteUrl}/api/episerver/v3.0'
+      description: Optimizely CMS Content Delivery API endpoint
+      variables:
+        siteUrl:
+          default: https://www.example.com
+          description: The base URL of the Optimizely CMS site
   /:
     post:
       operationId: createContent
@@ -155,6 +459,15 @@ paths:
           description: Invalid request body
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - bearerAuth: []
+    servers:
+    - url: '{siteUrl}/api/episerver/v3.0/contentmanagement'
+      description: Optimizely CMS Content Management API endpoint
+      variables:
+        siteUrl:
+          default: https://www.example.com
+          description: The base URL of the Optimizely CMS site
   /{contentGuid}:
     get:
       operationId: getContentByGuid
@@ -175,6 +488,8 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Content item not found
+      security:
+      - bearerAuth: []
     put:
       operationId: updateContentByGuid
       summary: Update content by GUID
@@ -206,6 +521,8 @@ paths:
           description: Invalid request body
         '401':
           description: Authentication credentials are missing or invalid
+      security:
+      - bearerAuth: []
     patch:
       operationId: patchContentByGuid
       summary: Partially update content by GUID
@@ -233,6 +550,8 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Content item not found
+      security:
+      - bearerAuth: []
     delete:
       operationId: deleteContentByGuid
       summary: Delete content by GUID
@@ -255,6 +574,15 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Content item not found
+      security:
+      - bearerAuth: []
+    servers:
+    - url: '{siteUrl}/api/episerver/v3.0/contentmanagement'
+      description: Optimizely CMS Content Management API endpoint
+      variables:
+        siteUrl:
+          default: https://www.example.com
+          description: The base URL of the Optimizely CMS site
   /{contentGuid}/move:
     post:
       operationId: moveContent
@@ -285,6 +613,15 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Content item or destination not found
+      security:
+      - bearerAuth: []
+    servers:
+    - url: '{siteUrl}/api/episerver/v3.0/contentmanagement'
+      description: Optimizely CMS Content Management API endpoint
+      variables:
+        siteUrl:
+          default: https://www.example.com
+          description: The base URL of the Optimizely CMS site
   /{contentReference}:
     get:
       operationId: getContentByReference
@@ -305,8 +642,529 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Content item not found
+      security:
+      - bearerAuth: []
+    servers:
+    - url: '{siteUrl}/api/episerver/v3.0/contentmanagement'
+      description: Optimizely CMS Content Management API endpoint
+      variables:
+        siteUrl:
+          default: https://www.example.com
+          description: The base URL of the Optimizely CMS site
+  /api/episerver/v3.0/content/{contentIdentifier}:
+    get:
+      tags:
+      - Content
+      summary: Get content by given content reference or unique identifier and language.
+      operationId: Content_GetByContentIdentifier
+      parameters:
+      - name: contentIdentifier
+        in: path
+        description: Content reference or unique identifier to retrieve data.
+        required: true
+        schema:
+          type: string
+      - name: Accept-Language
+        in: header
+        description: 'Determines in which language the content should be retrieved. Example: ''en'' or ''sv''. Does not support fallback.'
+        schema:
+          type: string
+      - name: expand
+        in: query
+        description: List of properties needed to be expanded. The list is separated by comma
+        schema:
+          type: string
+          default: ''
+      - name: select
+        in: query
+        description: List of properties needed to be returned. The list is separated by comma. Default are all properties returned
+        schema:
+          type: string
+          default: ''
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/content'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+  /api/episerver/v3.0/content/{contentIdentifier}/children:
+    get:
+      tags:
+      - Content
+      summary: Get the children of the content item by given content reference or unique identifier and language.
+      operationId: Content_GetChildren
+      parameters:
+      - name: contentIdentifier
+        in: path
+        description: Parent's content reference or parent's unique identifier.
+        required: true
+        schema:
+          type: string
+      - name: Accept-Language
+        in: header
+        description: 'Determines in which language the content should be retrieved. Example: ''en'' or ''sv''. Does not support fallback.'
+        schema:
+          type: string
+      - name: expand
+        in: query
+        description: List of properties needed to be expanded. The list is separated by comma
+        schema:
+          type: string
+          default: ''
+      - name: select
+        in: query
+        description: List of properties needed to be returned. The list is separated by comma. Default are all properties returned
+        schema:
+          type: string
+          default: ''
+      - name: top
+        in: query
+        description: The max number of children to return.
+        schema:
+          type: integer
+          format: int32
+      - name: x-epi-continuation
+        in: header
+        description: The max number of children to return.
+        schema:
+          type: string
+          default: ''
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/content'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+  /api/episerver/v3.0/content/{contentIdentifier}/ancestors:
+    get:
+      tags:
+      - Content
+      summary: Get the ancestors of the content item by given content reference or unique identifier and language.
+      operationId: Content_GetAncestors
+      parameters:
+      - name: contentIdentifier
+        in: path
+        description: Content reference or unique identifier to retrieve parents.
+        required: true
+        schema:
+          type: string
+      - name: Accept-Language
+        in: header
+        description: 'Determines in which language the content should be retrieved. Example: ''en'' or ''sv''. Does not support fallback.'
+        schema:
+          type: string
+      - name: expand
+        in: query
+        description: List of properties needed to be expanded. The list is separated by comma
+        schema:
+          type: string
+          default: ''
+      - name: select
+        in: query
+        description: List of properties needed to be returned. The list is separated by comma. Default are all properties returned
+        schema:
+          type: string
+          default: ''
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/content'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+  /api/episerver/v3.0/content:
+    get:
+      tags:
+      - Content
+      summary: Get content by given content url or by list of GUID/Reference with given language
+      operationId: Content_QueryContent
+      parameters:
+      - name: Accept-Language
+        in: header
+        description: 'Determines in which language the content should be retrieved. Example: ''en'' or ''sv''. Does not support fallback.'
+        schema:
+          type: string
+      - name: ContentUrl
+        in: query
+        description: The absolute url to the content
+        schema:
+          type: string
+      - name: Guids
+        in: query
+        description: List of GUID separated by ','.
+        schema:
+          type: string
+      - name: References
+        in: query
+        description: List of ContentReference separated by ','.
+        schema:
+          type: string
+      - name: Expand
+        in: query
+        description: List of properties needed to be expanded. The list is separated by comma.
+        schema:
+          type: string
+      - name: Select
+        in: query
+        description: List of properties needed to be returned. The list is separated by comma. Default are all properties returned.
+        schema:
+          type: string
+      - name: MatchExact
+        in: query
+        description: Indicates if the specified 'contentUrl' should match url of the content exactly, that is no additional segments are allowed.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/content'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+  /content/_filter:
+    post:
+      operationId: contentSearch
+      summary: Search content
+      description: Retrieve a paginated list of content items matching a Lucene query.
+      tags:
+      - Content
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/rpp'
+      - $ref: '#/components/parameters/topics'
+      requestBody:
+        required: true
+        description: Lucene query
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentQuery'
+      responses:
+        '200':
+          $ref: '#/components/responses/ContentList'
+        '204':
+          description: No content matches the query
+      security:
+      - key: []
+    servers:
+    - url: https://{hostname}/1.0
+      description: Primary API server
+      variables:
+        hostname:
+          default: api.usea01.idio.episerver.net
+          enum:
+          - api.apac01.idio.episerver.net
+          - api.caea01.idio.episerver.net
+          - api.emea01.idio.episerver.net
+          - api.usea01.idio.episerver.net
+  /content/{id}:
+    parameters:
+    - $ref: '#/components/parameters/contentID'
+    get:
+      operationId: contentGet
+      summary: Fetch content by ID
+      description: Get detailed information about a specific content item.
+      tags:
+      - Content
+      responses:
+        '200':
+          $ref: '#/components/responses/ContentItem'
+        '404':
+          description: Content does not exist
+      security:
+      - key: []
+    patch:
+      operationId: contentUpdate
+      summary: Update content
+      description: Update specific fields of a content item. Only 'Approved' and 'Featured' fields can be modified.
+      tags:
+      - Content
+      requestBody:
+        required: true
+        description: Map of fields to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentItemPartial'
+      responses:
+        '200':
+          description: Confirmation of successful update.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                message: Content updated successfully
+        '404':
+          description: Content does not exist
+      security:
+      - key: []
+    servers:
+    - url: https://{hostname}/1.0
+      description: Primary API server
+      variables:
+        hostname:
+          default: api.usea01.idio.episerver.net
+          enum:
+          - api.apac01.idio.episerver.net
+          - api.caea01.idio.episerver.net
+          - api.emea01.idio.episerver.net
+          - api.usea01.idio.episerver.net
+  /content/{id}/sections:
+    parameters:
+    - $ref: '#/components/parameters/contentID'
+    get:
+      operationId: contentSectionsList
+      summary: List content sections
+      description: Retrieve all sections containing the specified content item.
+      tags:
+      - Content
+      responses:
+        '200':
+          description: List of sections assigned to the content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentSectionList'
+        '404':
+          description: Content does not exist
+      security:
+      - key: []
+    servers:
+    - url: https://{hostname}/1.0
+      description: Primary API server
+      variables:
+        hostname:
+          default: api.usea01.idio.episerver.net
+          enum:
+          - api.apac01.idio.episerver.net
+          - api.caea01.idio.episerver.net
+          - api.emea01.idio.episerver.net
+          - api.usea01.idio.episerver.net
 components:
+  parameters:
+    offset:
+      name: offset
+      in: query
+      required: false
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+    contentId:
+      name: contentId
+      in: path
+      required: true
+      description: The unique identifier for the content item
+      schema:
+        type: string
+    limit:
+      name: limit
+      in: query
+      required: false
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    filter:
+      name: filter
+      in: query
+      required: false
+      description: OData-style filter expression for content items
+      schema:
+        type: string
+    top:
+      name: top
+      in: query
+      required: false
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        minimum: 1
+    orderby:
+      name: orderby
+      in: query
+      required: false
+      description: OData-style ordering expression
+      schema:
+        type: string
+    expand:
+      name: expand
+      in: query
+      required: false
+      description: Comma-separated list of content references to expand inline
+      schema:
+        type: string
+    skip:
+      name: skip
+      in: query
+      required: false
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        minimum: 0
+    language:
+      name: language
+      in: query
+      required: false
+      description: The language code for content retrieval
+      schema:
+        type: string
+        example: en
+    contentId_2:
+      name: contentId
+      in: path
+      required: true
+      description: The unique identifier or content reference for the content item
+      schema:
+        type: string
+    select:
+      name: select
+      in: query
+      required: false
+      description: Comma-separated list of properties to include in the response
+      schema:
+        type: string
+    contentGuid:
+      name: contentGuid
+      in: path
+      required: true
+      description: The GUID of the content item
+      schema:
+        type: string
+        format: uuid
+    contentReference:
+      name: contentReference
+      in: path
+      required: true
+      description: The numeric content reference identifier
+      schema:
+        type: integer
+    page:
+      name: page
+      in: query
+      description: Page number for pagination (1-based index).
+      schema:
+        type: integer
+        example: 2
+    contentID:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier of the content item.
+      schema:
+        type: integer
+        example: 101
+    rpp:
+      name: rpp
+      in: query
+      description: Results per page for pagination.
+      schema:
+        type: integer
+    topics:
+      name: include_topics
+      in: query
+      description: Whether to include topic information in the response.
+      allowEmptyValue: true
+      schema:
+        type: boolean
   schemas:
+    Pagination:
+      type: object
+      description: Pagination metadata
+      properties:
+        total:
+          type: integer
+          description: Total number of items
+        limit:
+          type: integer
+          description: Maximum items per page
+        offset:
+          type: integer
+          description: Current offset
     CmpContent:
       type: object
       description: A content item in the CMP content repository
@@ -342,92 +1200,187 @@ components:
           type: string
           format: date-time
           description: Timestamp when the content was last updated
-    Pagination:
+    Insite.Spire.Models.PageLinkModel:
       type: object
-      description: Pagination metadata
       properties:
-        total:
+        title:
+          type: string
+        url:
+          type: string
+        type:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sortOrder:
+          format: int32
           type: integer
-          description: Total number of items
-        limit:
-          type: integer
-          description: Maximum items per page
-        offset:
-          type: integer
-          description: Current offset
-    ContentItem_2:
+        excludeFromNavigation:
+          type: boolean
+        hideFromSearchEngines:
+          type: boolean
+        publishOn:
+          format: date-time
+          type: string
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Spire.Models.PageLinkModel'
+    Insite.Spire.Services.RetrievePageResult:
       type: object
-      description: A content item in the Optimizely CMS
       properties:
-        contentLink:
+        page:
+          $ref: '#/components/schemas/Insite.Spire.Models.PageModel'
+        statusCode:
+          format: int32
+          enum:
+          - 100
+          - 101
+          - 200
+          - 201
+          - 202
+          - 203
+          - 204
+          - 205
+          - 206
+          - 300
+          - 301
+          - 302
+          - 303
+          - 304
+          - 305
+          - 306
+          - 307
+          - 400
+          - 401
+          - 402
+          - 403
+          - 404
+          - 405
+          - 406
+          - 407
+          - 408
+          - 409
+          - 410
+          - 411
+          - 412
+          - 413
+          - 414
+          - 415
+          - 416
+          - 417
+          - 426
+          - 500
+          - 501
+          - 502
+          - 503
+          - 504
+          - 505
+          type: integer
+        redirectTo:
+          type: string
+        authorizationFailed:
+          type: boolean
+        isAuthenticatedOnServer:
+          type: boolean
+        bypassedAuthorization:
+          type: boolean
+        requiresAuthorization:
+          type: boolean
+        alternateLanguageUrls:
           type: object
-          description: Reference to this content item
-          properties:
-            id:
-              type: integer
-              description: Numeric content ID
-            workId:
-              type: integer
-              description: Work ID for versioning
-            guidValue:
-              type: string
-              format: uuid
-              description: GUID for the content item
+          additionalProperties:
+            type: string
+        canonicalUrl:
+          type: string
+    Insite.Spire.Models.PageModel:
+      type: object
+      properties:
+        nodeId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
         name:
           type: string
-          description: Display name of the content item
-        contentType:
+        type:
+          type: string
+        parentId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sortOrder:
+          format: int32
+          type: integer
+        websiteId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        variantName:
+          type: string
+        layoutPageId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        templateHash:
+          type: string
+        widgets:
           type: array
-          description: Content type hierarchy
           items:
-            type: string
-        parentLink:
+            $ref: '#/components/schemas/Insite.Spire.Models.WidgetModel'
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        generalFields:
           type: object
-          description: Reference to the parent content item
-          properties:
-            id:
-              type: integer
-              description: Parent content ID
-            guidValue:
-              type: string
-              format: uuid
-              description: Parent GUID
-        language:
+          additionalProperties:
+            type: object
+        translatableFields:
           type: object
-          description: Language information
-          properties:
-            name:
-              type: string
-              description: Language code
-            displayName:
-              type: string
-              description: Language display name
-        status:
-          type: string
-          description: Content status
-          enum:
-          - CheckedOut
-          - CheckedIn
-          - Published
-          - PreviouslyPublished
-          - Rejected
-          - DelayedPublish
-        startPublish:
-          type: string
-          format: date-time
-          description: Scheduled publish start time
-        stopPublish:
-          type: string
-          format: date-time
-          description: Scheduled publish end time
-        saved:
-          type: string
-          format: date-time
-          description: Timestamp when the content was last saved
-        properties:
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: object
+        contextualFields:
           type: object
-          description: Dynamic content properties specific to the content type
-          additionalProperties: true
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: object
+    Insite.Spire.Models.WidgetModel:
+      type: object
+      properties:
+        parentId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        type:
+          type: string
+        zone:
+          type: string
+        isLayout:
+          type: boolean
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        generalFields:
+          type: object
+          additionalProperties:
+            type: object
+        translatableFields:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: object
+        contextualFields:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: object
     ContentItem:
       type: object
       description: A content item such as a page, block, or media file
@@ -538,24 +1491,6 @@ components:
         status:
           type: string
           description: Publication status of the content
-    ContentPatch:
-      type: object
-      description: Input for partially updating a content item
-      properties:
-        name:
-          type: string
-          description: Display name of the content item
-        status:
-          type: string
-          description: Content status
-          enum:
-          - CheckedOut
-          - CheckedIn
-          - Published
-        properties:
-          type: object
-          description: Dynamic content properties to update
-          additionalProperties: true
     ContentInput:
       type: object
       description: Input for creating or fully updating a content item
@@ -601,91 +1536,665 @@ components:
           type: object
           description: Dynamic content properties specific to the content type
           additionalProperties: true
-  parameters:
-    contentReference:
-      name: contentReference
-      in: path
-      required: true
-      description: The numeric content reference identifier
-      schema:
-        type: integer
-    expand:
-      name: expand
-      in: query
-      required: false
-      description: Comma-separated list of content references to expand inline
-      schema:
-        type: string
-    offset:
-      name: offset
-      in: query
-      required: false
-      description: Number of items to skip for pagination
-      schema:
-        type: integer
-        default: 0
-        minimum: 0
-    contentGuid:
-      name: contentGuid
-      in: path
-      required: true
-      description: The GUID of the content item
-      schema:
-        type: string
-        format: uuid
-    skip:
-      name: skip
-      in: query
-      required: false
-      description: Number of items to skip for pagination
-      schema:
-        type: integer
-        minimum: 0
-    limit:
-      name: limit
-      in: query
-      required: false
-      description: Maximum number of items to return
-      schema:
-        type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
+    ContentPatch:
+      type: object
+      description: Input for partially updating a content item
+      properties:
+        name:
+          type: string
+          description: Display name of the content item
+        status:
+          type: string
+          description: Content status
+          enum:
+          - CheckedOut
+          - CheckedIn
+          - Published
+        properties:
+          type: object
+          description: Dynamic content properties to update
+          additionalProperties: true
+    ContentItem_2:
+      type: object
+      description: A content item in the Optimizely CMS
+      properties:
+        contentLink:
+          type: object
+          description: Reference to this content item
+          properties:
+            id:
+              type: integer
+              description: Numeric content ID
+            workId:
+              type: integer
+              description: Work ID for versioning
+            guidValue:
+              type: string
+              format: uuid
+              description: GUID for the content item
+        name:
+          type: string
+          description: Display name of the content item
+        contentType:
+          type: array
+          description: Content type hierarchy
+          items:
+            type: string
+        parentLink:
+          type: object
+          description: Reference to the parent content item
+          properties:
+            id:
+              type: integer
+              description: Parent content ID
+            guidValue:
+              type: string
+              format: uuid
+              description: Parent GUID
+        language:
+          type: object
+          description: Language information
+          properties:
+            name:
+              type: string
+              description: Language code
+            displayName:
+              type: string
+              description: Language display name
+        status:
+          type: string
+          description: Content status
+          enum:
+          - CheckedOut
+          - CheckedIn
+          - Published
+          - PreviouslyPublished
+          - Rejected
+          - DelayedPublish
+        startPublish:
+          type: string
+          format: date-time
+          description: Scheduled publish start time
+        stopPublish:
+          type: string
+          format: date-time
+          description: Scheduled publish end time
+        saved:
+          type: string
+          format: date-time
+          description: Timestamp when the content was last saved
+        properties:
+          type: object
+          description: Dynamic content properties specific to the content type
+          additionalProperties: true
     language:
-      name: language
-      in: query
-      required: false
-      description: The language code for content retrieval
-      schema:
-        type: string
-        example: en
-    top:
-      name: top
-      in: query
-      required: false
-      description: Maximum number of items to return
-      schema:
-        type: integer
-        minimum: 1
-    contentId_2:
-      name: contentId
-      in: path
-      required: true
-      description: The unique identifier or content reference for the content item
-      schema:
-        type: string
-    contentId:
-      name: contentId
-      in: path
-      required: true
-      description: The unique identifier for the content item
-      schema:
-        type: string
+      type: object
+      properties:
+        displayName:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    contentReference:
+      type: object
+      properties:
+        id:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        workId:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        guidValue:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        providerName:
+          type:
+          - string
+          - 'null'
+        url:
+          type:
+          - string
+          - 'null'
+        language:
+          $ref: '#/components/schemas/language'
+        expanded:
+          $ref: '#/components/schemas/content'
+      additionalProperties: false
+    content:
+      type: object
+      properties:
+        contentLink:
+          $ref: '#/components/schemas/contentReference'
+        name:
+          type:
+          - string
+          - 'null'
+        language:
+          $ref: '#/components/schemas/language'
+        existingLanguages:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/language'
+        masterLanguage:
+          $ref: '#/components/schemas/language'
+        contentType:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        parentLink:
+          $ref: '#/components/schemas/contentReference'
+        routeSegment:
+          type:
+          - string
+          - 'null'
+        url:
+          type:
+          - string
+          - 'null'
+        changed:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        startPublish:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        stopPublish:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        saved:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        status:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    problemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    ContentItemVerbose:
+      allOf:
+      - $ref: '#/components/schemas/ContentItem_3'
+      - $ref: '#/components/schemas/ContentItemContent'
+      - type: object
+        additionalProperties: false
+        required:
+        - content
+        - images
+        - topics
+        properties:
+          images:
+            type: array
+            uniqueItems: true
+            description: Additional images associated with the content.
+            items:
+              $ref: '#/components/schemas/ContentImage'
+    ContentItemPartial:
+      allOf:
+      - $ref: '#/components/schemas/ContentItemMinimal'
+      - $ref: '#/components/schemas/ContentItemContent'
+    ContentTopic:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the topic.
+        title:
+          type: string
+          description: Topic title.
+        full_details_url:
+          type: string
+          format: url
+          description: API link to full topic details.
+    ContentItem_3:
+      allOf:
+      - $ref: '#/components/schemas/ContentItemMinimal'
+      - type: object
+        additionalProperties: false
+        required:
+        - id
+        - title
+        - abstract
+        - featured
+        - approved
+        - read
+        - published
+        - original_url
+        - metadata
+        - link_url
+        - full_details_url
+        - main_image_url
+        - main_image
+        - source
+        - author
+        properties:
+          id:
+            type: integer
+            description: Unique identifier of the content item.
+          metadata:
+            $ref: '#/components/schemas/ContentMetadata'
+          topics:
+            type: array
+            uniqueItems: true
+            description: Topic information associated with the content.
+            items:
+              $ref: '#/components/schemas/ContentTopic'
+          link_url:
+            type: string
+            format: url
+            description: URL to the live content link.
+          full_details_url:
+            type: string
+            format: url
+            description: API URL for full details of the content.
+          main_image_url:
+            type: string
+            format: url
+            description: URL to the main image of the content.
+          main_image:
+            $ref: '#/components/schemas/ContentMainImage'
+          source:
+            $ref: '#/components/schemas/ContentSource'
+          author:
+            $ref: '#/components/schemas/ContentAuthor'
+    ContentItemContent:
+      type: object
+      additionalProperties: false
+      properties:
+        content:
+          type: string
+          description: Full content body (if available).
+    ContentImage:
+      type: object
+      additionalProperties: false
+      required:
+      - url
+      - width
+      - height
+      properties:
+        url:
+          type: string
+          format: url
+          description: Image URL.
+        width:
+          type: integer
+          description: Image width in pixels.
+        height:
+          type: integer
+          description: Image height in pixels.
+    ContentItemMinimal:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the content item.
+        abstract:
+          type: string
+          description: Short summary or abstract of the content.
+        featured:
+          type: boolean
+          description: Indicates whether the content is featured.
+        approved:
+          type: string
+          enum:
+          - approved
+          - unapproved
+          - binned
+          description: Approval status of the content.
+        read:
+          type: boolean
+          description: Whether the content is marked as read.
+        published:
+          type: string
+          format: date-time
+          description: Date and time when the content was published.
+        original_url:
+          type: string
+          format: url
+          description: Original source URL of the content.
+    List:
+      type: object
+      description: Base pagination metadata object.
+      additionalProperties: false
+      required:
+      - total_hits
+      properties:
+        total_hits:
+          type: integer
+          description: Total number of items matching the query.
+        next_page:
+          type: string
+          format: url
+          description: Link to the next page of results, if available.
+        previous_page:
+          type: string
+          format: url
+          description: Link to the previous page of results, if available.
+    ContentMainImage:
+      type: object
+      additionalProperties: false
+      required:
+      - width
+      - height
+      properties:
+        width:
+          type: integer
+          description: Image width in pixels.
+        height:
+          type: integer
+          description: Image height in pixels.
+    ContentURL:
+      type: object
+      additionalProperties: false
+      required:
+      - original_url
+      description: Schema for submitting a new content item by URL.
+      properties:
+        original_url:
+          type: string
+          format: url
+          description: The original URL of the content to be ingested.
+          example: https://example.com/news/article123
+    Message:
+      type: object
+      additionalProperties: false
+      required:
+      - message
+      description: Generic message response object returned by the API.
+      properties:
+        message:
+          type: string
+          description: The message content.
+          example: User updated successfully.
+    ContentSection:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      description: Represents a section that groups related content.
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the section.
+          example: 42
+        title:
+          type: string
+          description: The display title of the section.
+          example: Technology
+        full_details_url:
+          type: string
+          format: url
+          description: API link to fetch full details of this section.
+          example: https://api.usea01.idio.episerver.net/1.0/sections/42
+    ContentAuthor:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the author.
+        title:
+          type: string
+          description: Name of the author.
+        full_details_url:
+          type: string
+          format: url
+          description: API URL for full author details.
+    ContentSource:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      - display
+      description: The source (origin) of the content.
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the source.
+        title:
+          type: string
+          description: Display name of the source.
+        full_details_url:
+          type: string
+          format: url
+          description: API URL for full source details.
+        display:
+          type: string
+          enum:
+          - full
+          - abstract
+          - link
+          description: How the source should be displayed.
+    ContentList:
+      description: A paginated list of content items with navigation metadata.
+      allOf:
+      - $ref: '#/components/schemas/List'
+      - type: object
+        additionalProperties: false
+        required:
+        - content
+        properties:
+          content:
+            type: array
+            description: The list of content items for the current page.
+            uniqueItems: true
+            items:
+              $ref: '#/components/schemas/ContentItem_3'
+    ContentSectionList:
+      type: object
+      additionalProperties: false
+      required:
+      - sections
+      description: A list of content sections.
+      properties:
+        sections:
+          type: array
+          uniqueItems: true
+          description: Array of section objects.
+          items:
+            $ref: '#/components/schemas/ContentSection'
+    ContentQuery:
+      type: object
+      additionalProperties: false
+      required:
+      - query
+      description: Object containing a Lucene query string used to search or filter content.
+      properties:
+        query:
+          type: string
+          description: Lucene query string. Use the platform's Lucene dialect for advanced filtering.
+          example: title:AI AND language:en
+    ContentMetadata:
+      type: object
+      description: Metadata for a content item, such as language and tags.
+      properties:
+        language:
+          type: string
+          enum:
+          - de
+          - en
+          - es
+          - fr
+          - it
+          description: Language of the content.
+        tags:
+          type: object
+          description: Arbitrary namespaced tags associated with the content. Values may be strings or arrays of strings (for example, multiple authors).
+          additionalProperties: true
+  responses:
+    ContentList:
+      description: A paginated list of content items, including metadata for navigation, such as total hits and page links.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ContentList'
+          example:
+            total_hits: 124
+            next_page: https://api.usea01.idio.episerver.net/1.0/content?page=2&rpp=10
+            previous_page: null
+            content:
+            - id: 987654
+              title: The Future of Enterprise Personalisation
+              abstract: How content recommendations drive engagement across digital channels.
+              featured: true
+              approved: approved
+              read: false
+              published: '2026-05-14T09:30:00Z'
+              original_url: https://www.example.com/blog/future-of-personalisation
+              link_url: https://www.example.com/blog/future-of-personalisation
+              full_details_url: https://api.usea01.idio.episerver.net/1.0/content/987654
+              main_image_url: https://images.example.com/987654/main.jpg
+              main_image:
+                width: 1200
+                height: 630
+              metadata:
+                language: en
+              source:
+                id: 55
+                title: Company Blog
+                full_details_url: https://api.usea01.idio.episerver.net/1.0/sources/55
+                display: full
+              author:
+                id: 21
+                title: Jordan Lee
+                full_details_url: https://api.usea01.idio.episerver.net/1.0/authors/21
+              topics:
+              - id: 301
+                title: Personalisation
+                full_details_url: https://api.usea01.idio.episerver.net/1.0/topics/301
+    ContentItem:
+      description: Detailed information about a single content item, including metadata, author, source, and media links.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ContentItemVerbose'
+          example:
+            id: 101
+            title: AI in Healthcare
+            abstract: Exploring how AI is transforming healthcare.
+            featured: true
+            approved: approved
+            read: false
+            published: '2026-05-14T09:30:00Z'
+            original_url: https://www.example.com/news/ai-in-healthcare
+            link_url: https://www.example.com/news/ai-in-healthcare
+            full_details_url: https://api.usea01.idio.episerver.net/1.0/content/101
+            main_image_url: https://images.example.com/101/main.jpg
+            main_image:
+              width: 1200
+              height: 800
+            metadata:
+              language: en
+            source:
+              id: 501
+              title: Nature Journal
+              full_details_url: https://api.usea01.idio.episerver.net/1.0/sources/501
+              display: full
+            author:
+              id: 301
+              title: Dr. Jane Smith
+              full_details_url: https://api.usea01.idio.episerver.net/1.0/authors/301
+            topics:
+            - id: 42
+              title: Artificial Intelligence
+              full_details_url: https://api.usea01.idio.episerver.net/1.0/topics/42
+            content: Artificial intelligence is reshaping how clinicians diagnose and treat patients across the care pathway.
+            images:
+            - url: https://images.example.com/101/inline-1.jpg
+              width: 800
+              height: 450
   securitySchemes:
-    basicAuth:
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 authentication for the CMP API.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.cmp.optimizely.com/oauth/token
+          scopes: {}
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query
+    bearerAuth:
       type: http
-      scheme: basic
-      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
-externalDocs:
-  description: Optimizely Campaign REST API Documentation
-  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+      scheme: bearer
+      description: OAuth 2.0 or OpenID Connect Bearer token for authenticated access.
+    anonymous:
+      type: http
+      scheme: bearer
+      description: Anonymous access for publicly available content.
+    key:
+      type: apiKey
+      in: query
+      name: key
+      description: API key required for authentication. Must be provided as a query parameter, for example, `?key=YOUR_API_KEY`.
+x-refined-from:
+- optimizely-cmp-openapi.yml
+- optimizely-configured-commerce-storefront-api-v2-openapi.json
+- optimizely-content-delivery-openapi.yml
+- optimizely-content-management-openapi.yml
+- optimizely-content-management-system-episervercontentapidocs-openapi.json
+- optimizely-recommendations-public-api-spec-openapi.yaml

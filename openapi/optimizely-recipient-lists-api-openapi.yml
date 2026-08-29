@@ -1,0 +1,444 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Recipient lists API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Recipient lists
+  description: View, copy and update recipient lists
+paths:
+  /{clientId}/recipientlists:
+    get:
+      tags:
+      - Recipient lists
+      summary: Get information about all recipient lists
+      description: Get detailed information about all recipient lists, such as number of recipients, list description or suitability for transactional mails. You can limit the number of retrieved lists and include test lists.
+      operationId: selectRecipientLists
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        description: 'Starting point of the result list <p><i>Default value</i> : 0</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved recipient lists <p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: includeTestLists
+        in: query
+        description: Include test lists in the result set
+        schema:
+          type: boolean
+          default: true
+      - name: sort
+        in: query
+        description: Sort result by specific criteria
+        schema:
+          type: string
+          default: created
+          enum:
+          - name
+          - created
+          - modified
+      - name: direction
+        in: query
+        description: Sort order
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+      responses:
+        '200':
+          description: The recipient lists were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Recipient lists
+      summary: Copy a recipient list
+      operationId: copyRecipientList
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CopyRecipientListRequestData'
+      responses:
+        '201':
+          description: The recipient list was copied successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientList'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientList'
+        '400':
+          description: sourceRecipientListId is not provided. Ensure that the required parameter is added.
+      security:
+      - Authorization: []
+  /{clientId}/recipientlists/{recipientListId}:
+    get:
+      tags:
+      - Recipient lists
+      summary: Get information about a recipient list
+      description: Get detailed information about a recipient list, such as number of recipients, list description or suitability for transactional mails.
+      operationId: getRecipientList
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: recipientListId
+        in: path
+        description: Recipient list ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The recipient list was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientList'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientList'
+        '409':
+          description: 'The indicated recipient list is not assigned to the indicated client. Ensure that "clientId" and "recipientListId" are correct and that the "recipientListId" is assigned to the indicated client. '
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Recipient lists
+      summary: Update a recipient list
+      description: Update information of a recipient list such as name or description and check if the list is a test list.
+      operationId: updateRecipientList
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: recipientListId
+        in: path
+        description: Recipient list ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RecipientListRequestData'
+      responses:
+        '200':
+          description: The recipient list was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientList'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientList'
+      security:
+      - Authorization: []
+  /{clientId}/recipientlists/{recipientListId}/attributeNames:
+    get:
+      tags:
+      - Recipient lists
+      summary: Get the attribute names of a recipient list
+      operationId: getRecipientListAttributeNames
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: recipientListId
+        in: path
+        description: Recipient list ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The recipient list's attribute names were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListAttributeNames'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListAttributeNames'
+        '409':
+          description: The recipient list's attribute names could not be retrieved. Ensure that the required parameters such as "recipientListId" are correct and the recipient list exists.
+      security:
+      - Authorization: []
+  /{clientId}/recipientlists/{recipientListId}/fields:
+    get:
+      tags:
+      - Recipient lists
+      summary: Get the fields of a recipient list
+      operationId: getRecipientListFields
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: recipientListId
+        in: path
+        description: Recipient list ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The recipient list's fields were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListFieldStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListFieldStreamingCollection'
+        '409':
+          description: The recipient list's attribute names could not be retrieved. Ensure that the required parameters such as "recipientListId" are correct and the recipient list exists.
+      security:
+      - Authorization: []
+components:
+  schemas:
+    RestRecipientListFieldStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestRecipientListField'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestRecipientListField:
+      type: object
+      properties:
+        internalName:
+          type: string
+          description: Internal name
+        displayName:
+          type: string
+          description: Display name
+        type:
+          type: string
+          description: Field's type
+          enum:
+          - LONG
+          - INTEGER
+          - SHORT
+          - STRING
+          - TEXT
+          - FLOAT
+          - DECIMAL
+          - DATE
+          - TIMESTAMP
+          - BOOLEAN
+        required:
+          type: boolean
+          description: If true, the field is required
+    CopyRecipientListRequestData:
+      required:
+      - sourceRecipientListId
+      type: object
+      properties:
+        sourceRecipientListId:
+          type: integer
+          description: ID of the recipient list to be copied
+          format: int64
+    RestRecipientList:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Recipient list ID
+          format: int64
+        name:
+          type: string
+          description: Name of the recipient list
+        description:
+          type: string
+          description: Description of the recipient list
+        recipients:
+          type: integer
+          description: Number of recipients
+          format: int32
+        mediaTypes:
+          type: array
+          description: Media types of the recipient list
+          items:
+            type: string
+            description: Media types of the recipient list
+        testList:
+          type: boolean
+          description: If true, the recipient list is a test list
+        forTransactionApi:
+          type: boolean
+          description: If true, the recipient list is suitable for transactional mails
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    RecipientListRequestData:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the recipient list
+        description:
+          type: string
+          description: Description of the recipient list
+        testList:
+          type: boolean
+          description: If true, the recipient list is a test list
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestRecipientListAttributeNames:
+      type: object
+      properties:
+        attributeNames:
+          type: array
+          items:
+            type: string
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    RestRecipientListStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestRecipientList'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

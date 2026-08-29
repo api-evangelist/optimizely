@@ -1,0 +1,650 @@
+openapi: 3.2.0
+info:
+  version: admin-v1
+  title: Admin API V1 Price Matrices API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Price Matrices
+paths:
+  /api/v1/admin/PriceMatrices:
+    get:
+      tags:
+      - Price Matrices
+      summary: Returns the EntitySet PriceMatrices
+      operationId: PriceMatrices_Get
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    post:
+      tags:
+      - Price Matrices
+      summary: Post a new entity to EntitySet PriceMatrices
+      operationId: PriceMatrices_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.PriceMatrix'
+        description: The entity to post
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/PriceMatrices({id}):
+    get:
+      tags:
+      - Price Matrices
+      summary: Returns the entity with the key from PriceMatrices
+      operationId: PriceMatrices_GetById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    put:
+      tags:
+      - Price Matrices
+      summary: Replace entity in EntitySet PriceMatrices
+      operationId: PriceMatrices_PutById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.PriceMatrix'
+        description: The entity to put
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    delete:
+      tags:
+      - Price Matrices
+      summary: Delete entity in EntitySet PriceMatrices
+      operationId: PriceMatrices_DeleteById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: If-Match
+        in: header
+        description: If-Match header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Price Matrices
+      summary: Update entity in EntitySet PriceMatrices
+      operationId: PriceMatrices_PatchById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.PriceMatrix'
+        description: The entity to patch
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/PriceMatrices/Default.Default():
+    get:
+      tags:
+      - Price Matrices
+      summary: Call operation  Default
+      operationId: PriceMatrices_Default
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/PriceMatrices/Default.archive:
+    post:
+      tags:
+      - Price Matrices
+      summary: Call operation  archive
+      operationId: PriceMatrices_Archive
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      requestBody:
+        $ref: '#/components/requestBodies/Affiliates_ArchiveParameters'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/pricematrices/archive:
+    delete:
+      tags:
+      - Price Matrices
+      operationId: PriceMatrices_ArchiveRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/pricematrices/delete:
+    delete:
+      tags:
+      - Price Matrices
+      operationId: PriceMatrices_DeleteRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/pricematrices({key})/customproperties({custompropertyKey}):
+    get:
+      tags:
+      - Price Matrices
+      operationId: PriceMatrices_GetCustomPropertyByKeyAndCustompropertykey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: custompropertyKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Data.Entities.PriceMatrix:
+      required:
+      - adjustmentType01
+      - adjustmentType02
+      - adjustmentType03
+      - adjustmentType04
+      - adjustmentType05
+      - adjustmentType06
+      - adjustmentType07
+      - adjustmentType08
+      - adjustmentType09
+      - adjustmentType10
+      - adjustmentType11
+      - calculationFlags
+      - currencyCode
+      - customerKeyPart
+      - priceBasis01
+      - priceBasis02
+      - priceBasis03
+      - priceBasis04
+      - priceBasis05
+      - priceBasis06
+      - priceBasis07
+      - priceBasis08
+      - priceBasis09
+      - priceBasis10
+      - priceBasis11
+      - productKeyPart
+      - recordType
+      - unitOfMeasure
+      - warehouse
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        activateOn:
+          format: date-time
+          type: string
+        adjustmentType01:
+          maxLength: 50
+          minLength: 0
+          type: string
+        adjustmentType02:
+          maxLength: 50
+          minLength: 0
+          type: string
+        adjustmentType03:
+          maxLength: 50
+          minLength: 0
+          type: string
+        adjustmentType04:
+          maxLength: 50
+          minLength: 0
+          type: string
+        adjustmentType05:
+          maxLength: 50
+          minLength: 0
+          type: string
+        adjustmentType06:
+          maxLength: 50
+          minLength: 0
+          type: string
+        adjustmentType07:
+          maxLength: 50
+          minLength: 0
+          type: string
+        adjustmentType08:
+          maxLength: 50
+          minLength: 0
+          type: string
+        adjustmentType09:
+          maxLength: 50
+          minLength: 0
+          type: string
+        adjustmentType10:
+          maxLength: 50
+          minLength: 0
+          type: string
+        adjustmentType11:
+          maxLength: 50
+          minLength: 0
+          type: string
+        altAmount01:
+          format: decimal
+          type: number
+        altAmount02:
+          format: decimal
+          type: number
+        altAmount03:
+          format: decimal
+          type: number
+        altAmount04:
+          format: decimal
+          type: number
+        altAmount05:
+          format: decimal
+          type: number
+        altAmount06:
+          format: decimal
+          type: number
+        altAmount07:
+          format: decimal
+          type: number
+        altAmount08:
+          format: decimal
+          type: number
+        altAmount09:
+          format: decimal
+          type: number
+        altAmount10:
+          format: decimal
+          type: number
+        altAmount11:
+          format: decimal
+          type: number
+        amount01:
+          format: decimal
+          type: number
+        amount02:
+          format: decimal
+          type: number
+        amount03:
+          format: decimal
+          type: number
+        amount04:
+          format: decimal
+          type: number
+        amount05:
+          format: decimal
+          type: number
+        amount06:
+          format: decimal
+          type: number
+        amount07:
+          format: decimal
+          type: number
+        amount08:
+          format: decimal
+          type: number
+        amount09:
+          format: decimal
+          type: number
+        amount10:
+          format: decimal
+          type: number
+        amount11:
+          format: decimal
+          type: number
+        breakQty01:
+          format: decimal
+          type: number
+        breakQty02:
+          format: decimal
+          type: number
+        breakQty03:
+          format: decimal
+          type: number
+        breakQty04:
+          format: decimal
+          type: number
+        breakQty05:
+          format: decimal
+          type: number
+        breakQty06:
+          format: decimal
+          type: number
+        breakQty07:
+          format: decimal
+          type: number
+        breakQty08:
+          format: decimal
+          type: number
+        breakQty09:
+          format: decimal
+          type: number
+        breakQty10:
+          format: decimal
+          type: number
+        breakQty11:
+          format: decimal
+          type: number
+        calculationFlags:
+          maxLength: 50
+          minLength: 0
+          type: string
+        currencyCode:
+          maxLength: 50
+          minLength: 0
+          type: string
+        customerKeyPart:
+          maxLength: 50
+          minLength: 0
+          type: string
+        deactivateOn:
+          format: date-time
+          type: string
+        priceBasis01:
+          maxLength: 50
+          minLength: 0
+          type: string
+        priceBasis02:
+          maxLength: 50
+          minLength: 0
+          type: string
+        priceBasis03:
+          maxLength: 50
+          minLength: 0
+          type: string
+        priceBasis04:
+          maxLength: 50
+          minLength: 0
+          type: string
+        priceBasis05:
+          maxLength: 50
+          minLength: 0
+          type: string
+        priceBasis06:
+          maxLength: 50
+          minLength: 0
+          type: string
+        priceBasis07:
+          maxLength: 50
+          minLength: 0
+          type: string
+        priceBasis08:
+          maxLength: 50
+          minLength: 0
+          type: string
+        priceBasis09:
+          maxLength: 50
+          minLength: 0
+          type: string
+        priceBasis10:
+          maxLength: 50
+          minLength: 0
+          type: string
+        priceBasis11:
+          maxLength: 50
+          minLength: 0
+          type: string
+        productKeyPart:
+          maxLength: 50
+          minLength: 0
+          type: string
+        recordType:
+          maxLength: 50
+          minLength: 0
+          type: string
+        unitOfMeasure:
+          maxLength: 50
+          minLength: 0
+          type: string
+        warehouse:
+          maxLength: 50
+          minLength: 0
+          type: string
+        customerId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
+  requestBodies:
+    Affiliates_ArchiveParameters:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: {}
+      description: archive action parameters
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

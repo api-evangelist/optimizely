@@ -1,0 +1,463 @@
+openapi: 3.2.0
+info:
+  version: admin-v1
+  title: Admin API V1 Integration Connections API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Integration Connections
+paths:
+  /api/v1/admin/IntegrationConnections:
+    get:
+      tags:
+      - Integration Connections
+      summary: Returns the EntitySet IntegrationConnections
+      operationId: IntegrationConnections_Get
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    post:
+      tags:
+      - Integration Connections
+      summary: Post a new entity to EntitySet IntegrationConnections
+      operationId: IntegrationConnections_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.IntegrationConnection'
+        description: The entity to post
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/IntegrationConnections({id}):
+    get:
+      tags:
+      - Integration Connections
+      summary: Returns the entity with the key from IntegrationConnections
+      operationId: IntegrationConnections_GetById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    put:
+      tags:
+      - Integration Connections
+      summary: Replace entity in EntitySet IntegrationConnections
+      operationId: IntegrationConnections_PutById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.IntegrationConnection'
+        description: The entity to put
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    delete:
+      tags:
+      - Integration Connections
+      summary: Delete entity in EntitySet IntegrationConnections
+      operationId: IntegrationConnections_DeleteById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: If-Match
+        in: header
+        description: If-Match header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Integration Connections
+      summary: Update entity in EntitySet IntegrationConnections
+      operationId: IntegrationConnections_PatchById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.IntegrationConnection'
+        description: The entity to patch
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/IntegrationConnections/Default.Default():
+    get:
+      tags:
+      - Integration Connections
+      summary: Call operation  Default
+      operationId: IntegrationConnections_Default
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/integrationconnections/delete:
+    delete:
+      tags:
+      - Integration Connections
+      operationId: IntegrationConnections_DeleteRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/integrationconnections({key})/customproperties({custompropertyKey}):
+    get:
+      tags:
+      - Integration Connections
+      operationId: IntegrationConnections_GetCustomPropertyByKeyAndCustompropertykey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: custompropertyKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Data.Entities.IntegrationConnection:
+      required:
+      - name
+      - typeName
+      - dataSource
+      - runsOn
+      - delimiter
+      - url
+      - logOn
+      - password
+      - connectionString
+      - archiveFolder
+      - systemNumber
+      - client
+      - language
+      - connectionsLimit
+      - connectionTimeout
+      - appServerHost
+      - appServerService
+      - messageServerHost
+      - messageServerService
+      - gatewayHost
+      - gatewayService
+      - systemId
+      - systemIds
+      - logonGroup
+      - sourceServerTimeZone
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          maxLength: 255
+          minLength: 0
+          type: string
+        typeName:
+          maxLength: 255
+          minLength: 0
+          type: string
+        dataSource:
+          maxLength: 255
+          minLength: 0
+          type: string
+        runsOn:
+          maxLength: 255
+          minLength: 0
+          type: string
+        debuggingEnabled:
+          type: boolean
+        delimiter:
+          maxLength: 255
+          minLength: 0
+          type: string
+        url:
+          maxLength: 2048
+          minLength: 0
+          type: string
+        logOn:
+          maxLength: 255
+          minLength: 0
+          type: string
+        password:
+          maxLength: 255
+          minLength: 0
+          type: string
+        connectionString:
+          maxLength: 2048
+          minLength: 0
+          type: string
+        archiveFolder:
+          maxLength: 512
+          minLength: 0
+          type: string
+        archiveRetentionDays:
+          format: int32
+          type: integer
+        integratedSecurity:
+          type: boolean
+        systemNumber:
+          maxLength: 255
+          minLength: 0
+          type: string
+        client:
+          maxLength: 255
+          minLength: 0
+          type: string
+        language:
+          maxLength: 255
+          minLength: 0
+          type: string
+        connectionsLimit:
+          maxLength: 255
+          minLength: 0
+          type: string
+        connectionTimeout:
+          maxLength: 255
+          minLength: 0
+          type: string
+        appServerHost:
+          maxLength: 255
+          minLength: 0
+          type: string
+        appServerService:
+          maxLength: 255
+          minLength: 0
+          type: string
+        messageServerHost:
+          maxLength: 255
+          minLength: 0
+          type: string
+        messageServerService:
+          maxLength: 255
+          minLength: 0
+          type: string
+        gatewayHost:
+          maxLength: 255
+          minLength: 0
+          type: string
+        gatewayService:
+          maxLength: 255
+          minLength: 0
+          type: string
+        systemId:
+          maxLength: 255
+          minLength: 0
+          type: string
+        systemIds:
+          maxLength: 255
+          minLength: 0
+          type: string
+        logonGroup:
+          maxLength: 255
+          minLength: 0
+          type: string
+        sourceServerTimeZone:
+          maxLength: 255
+          minLength: 0
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

@@ -1,0 +1,202 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Agent Config API
+  description: Optimizely Agent is a stand-alone, open-source microservice that provides major benefits over using Optimizely SDKs in certain use cases. Its REST API offers consolidated and simplified endpoints for accessing all the functionality of Optimizely Feature Experimentation SDKs. Use this API the control experiments (such as a feature tests). For more info, see https://docs.developers.optimizely.com/experimentation/v4.0.0-full-stack/docs/optimizely-agent
+  termsOfService: https://www.optimizely.com/legal/terms/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.12.0
+security:
+- SdkKeyAuth: []
+- TokenAuth: []
+tags:
+- name: Config
+paths:
+  /v1/config:
+    get:
+      summary: Return the Optimizely config for the given environment
+      description: Return all available experiment and features definitions for this environment.
+      operationId: getConfig
+      responses:
+        '200':
+          description: Valid response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OptimizelyConfig'
+        '401':
+          description: Unauthorized, invalid JWT
+          content:
+            application/json: {}
+        '403':
+          description: You do not have necessary permissions for the resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: false
+      tags:
+      - Config
+components:
+  schemas:
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
+          type: string
+    OptimizelyFeature:
+      title: OptimizelyFeature
+      required:
+      - id
+      - key
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        experimentRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptimizelyExperiment'
+          description: ''
+        deliveryRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptimizelyExperiment'
+          description: ''
+        variablesMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/OptimizelyVariable'
+        experimentsMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/OptimizelyExperiment'
+    OptimizelyAudience:
+      title: OptimizelyAudience
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        conditions:
+          type: string
+    OptimizelyVariable:
+      title: OptimizelyVariable
+      required:
+      - id
+      - key
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        type:
+          type: string
+        value:
+          type: string
+    OptimizelyEvent:
+      title: OptimizelyEvent
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        experimentIds:
+          type: array
+          items:
+            type: string
+          description: ''
+    OptimizelyVariation:
+      title: OptimizelyVariation
+      required:
+      - id
+      - key
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        featureEnabled:
+          type: boolean
+        variablesMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/OptimizelyVariable'
+    OptimizelyAttribute:
+      title: OptimizelyAttribute
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+    OptimizelyConfig:
+      title: OptimizelyConfig
+      type: object
+      properties:
+        environmentKey:
+          type: string
+        sdkKey:
+          type: string
+        revision:
+          type: string
+        experimentsMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/OptimizelyExperiment'
+        featuresMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/OptimizelyFeature'
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptimizelyAttribute'
+          description: ''
+        audiences:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptimizelyAudience'
+          description: ''
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptimizelyEvent'
+          description: ''
+    OptimizelyExperiment:
+      title: OptimizelyExperiment
+      required:
+      - id
+      - key
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        audiences:
+          type: string
+        variationsMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/OptimizelyVariation'
+  securitySchemes:
+    SdkKeyAuth:
+      type: apiKey
+      name: X-Optimizely-SDK-Key
+      in: header
+    TokenAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

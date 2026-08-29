@@ -1,0 +1,400 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Folders API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Folders
+  description: Manage folders for mailings, message templates, custom blacklists, images, recipient list and attachment
+paths:
+  /{clientId}/folders:
+    get:
+      tags:
+      - Folders
+      summary: Get information about all folders
+      description: Get detailed information about all folders, such as parent ID, children ID or creation date. You can limit the result to root folders or filter for a specific type.
+      operationId: selectFolders
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved folders <p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: onlyRoot
+        in: query
+        description: If true, only root folders are included in the results
+        schema:
+          type: boolean
+          default: false
+      - name: entityId
+        in: query
+        description: ID of a folder to which a mailing, message template, custom blacklist, image, recipient list or attachment has been assigned (required if type is not provided)
+        schema:
+          type: integer
+          format: int64
+      - name: type
+        in: query
+        description: Filter folders by type (required if "entityId" is not provided)
+        schema:
+          type: string
+          enum:
+          - mailing
+          - messageTemplate
+          - customBlacklist
+          - image
+          - recipientList
+          - attachment
+      responses:
+        '200':
+          description: The folders were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestFolderStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestFolderStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Folders
+      summary: Create a folder
+      operationId: createFolder
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FolderRequestData'
+      responses:
+        '201':
+          description: The folder was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestFolder'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestFolder'
+        '400':
+          description: Either ["name" or "folderType"] is not provided or "folderType" is not in {mailing, messageTemplate, customBlacklist, image, recipientList, attachment}. Ensure that the required parameters are added and "folderType" is correct.
+        '404':
+          description: The parent folder could not be found. Ensure that "parentId" is correct and the parent folder exists.
+      security:
+      - Authorization: []
+  /{clientId}/folders/{folderId}/assign:
+    post:
+      tags:
+      - Folders
+      summary: Assign to an entity
+      description: Assign a folder to an entity, such as mailing, message template, custom blacklist, image, recipient list or attachment.
+      operationId: assign
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: folderId
+        in: path
+        description: Folder ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UnAssignEntityToFolderRequestData'
+      responses:
+        '200':
+          description: The entity was assigned successfully.
+        '400':
+          description: The entity ID is required. Check for the ID of the entity and add it to the request.
+        '404':
+          description: The folder or entity object could not be found. Ensure that the required parameters such as "folderId" or "entityID" are correct and the folder exists.
+        '409':
+          description: The folder could not be assigned to the mailing entity because the entity is a campaign child. Ensure that the requested entity is not a child of a campaign.
+      security:
+      - Authorization: []
+  /{clientId}/folders/{folderId}:
+    get:
+      tags:
+      - Folders
+      summary: Get information about a folder
+      description: Get detailed information about a folder, such as ID, name or date and time of creation.
+      operationId: getFolder
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: folderId
+        in: path
+        description: Folder ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The folder was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestFolder'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestFolder'
+        '404':
+          description: The folder could not be found. Ensure that the required parameters such as "folderId" are correct and the folder exists.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Folders
+      summary: Update a folder
+      description: Update information of a folder, such as name, type or parent folder.
+      operationId: updateFolder
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: folderId
+        in: path
+        description: Folder ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FolderRequestData'
+      responses:
+        '200':
+          description: The folder was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestFolder'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestFolder'
+        '404':
+          description: The folder does not exist or the new updated parent folder could not be found. Ensure that the required parameters such as "folderId" or "parentId" are correct and the folder exists.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Folders
+      summary: Delete a folder
+      description: The folder to be deleted must be empty.
+      operationId: deleteFolder
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: folderId
+        in: path
+        description: Folder ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The folder was deleted successfully.
+        '404':
+          description: The folder could not be found. Ensure that the required parameters such as "folderId" are correct and the folder exists.
+        '409':
+          description: The folder could not be deleted because it is either not empty or being referenced in a filter.
+      security:
+      - Authorization: []
+  /{clientId}/folders/{folderId}/unassign:
+    post:
+      tags:
+      - Folders
+      summary: Unassign from an entity
+      description: Unassign a folder to an entity, such as mailing, message template, custom blacklist, image, recipient list or attachment.
+      operationId: unassign
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: folderId
+        in: path
+        description: Folder ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UnAssignEntityToFolderRequestData'
+      responses:
+        '200':
+          description: The entity was unassigned successfully.
+        '400':
+          description: The entity ID is required. Check for the ID of the entity and add it to the request.
+        '404':
+          description: 'The folder could not be found. Ensure that the required parameters such as "folderId" or "entitiyId" are correct and the folder exists. '
+        '409':
+          description: The folder could not be unassigned from the mailing entity because the entity is a campaign child. Ensure that the entity is not a child of a campaign.
+      security:
+      - Authorization: []
+components:
+  schemas:
+    RestFolder:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Folder ID
+          format: int64
+        name:
+          type: string
+          description: Folder name
+        parentId:
+          type: integer
+          description: Parent folder ID
+          format: int64
+        childrenIds:
+          type: array
+          description: IDs of children folders
+          items:
+            type: integer
+            description: IDs of children folders
+            format: int64
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+    UnAssignEntityToFolderRequestData:
+      required:
+      - entityId
+      type: object
+      properties:
+        entityId:
+          type: integer
+          description: ID of the entity to be assigned or unassigned
+          format: int64
+    RestFolderStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestFolder'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    FolderRequestData:
+      required:
+      - folderType
+      - name
+      type: object
+      properties:
+        folderType:
+          type: string
+          description: Folder type
+          enum:
+          - mailing
+          - messageTemplate
+          - customBlacklist
+          - image
+          - recipientList
+          - attachment
+        parentId:
+          type: integer
+          description: ID of the parent folder
+          format: int64
+        name:
+          type: string
+          description: Folder name
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

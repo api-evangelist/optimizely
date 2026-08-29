@@ -1,0 +1,1084 @@
+openapi: 3.2.0
+info:
+  version: admin-v1
+  title: Admin API V1 Customer Orders API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Customer Orders
+paths:
+  /api/v1/admin/CustomerOrders:
+    get:
+      tags:
+      - Customer Orders
+      summary: Returns the EntitySet CustomerOrders
+      operationId: CustomerOrders_Get
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    post:
+      tags:
+      - Customer Orders
+      summary: Post a new entity to EntitySet CustomerOrders
+      operationId: CustomerOrders_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.CustomerOrder'
+        description: The entity to post
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/CustomerOrders({id}):
+    get:
+      tags:
+      - Customer Orders
+      summary: Returns the entity with the key from CustomerOrders
+      operationId: CustomerOrders_GetById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    put:
+      tags:
+      - Customer Orders
+      summary: Replace entity in EntitySet CustomerOrders
+      operationId: CustomerOrders_PutById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.CustomerOrder'
+        description: The entity to put
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    delete:
+      tags:
+      - Customer Orders
+      summary: Delete entity in EntitySet CustomerOrders
+      operationId: CustomerOrders_DeleteById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: If-Match
+        in: header
+        description: If-Match header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Customer Orders
+      summary: Update entity in EntitySet CustomerOrders
+      operationId: CustomerOrders_PatchById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.CustomerOrder'
+        description: The entity to patch
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/CustomerOrders/Default.Default():
+    get:
+      tags:
+      - Customer Orders
+      summary: Call operation  Default
+      operationId: CustomerOrders_Default
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/CustomerOrders({id})/Default.Totals():
+    get:
+      tags:
+      - Customer Orders
+      summary: Call operation  Totals
+      operationId: CustomerOrders_TotalsById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Admin.Controllers.OData.OrderTotal'
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/customerorders({key})/totals:
+    get:
+      tags:
+      - Customer Orders
+      operationId: CustomerOrders_TotalsByKey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Admin.Controllers.OData.OrderTotal'
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/customerorders/delete:
+    delete:
+      tags:
+      - Customer Orders
+      operationId: CustomerOrders_DeleteRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/customerorders({key})/creditcardtransactions({creditcardtransactionKey}):
+    get:
+      tags:
+      - Customer Orders
+      operationId: CustomerOrders_GetCreditCardTransactionByKeyAndCreditcardtransactionkey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: creditcardtransactionKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/customerorders({key})/customerorderpromotions({customerorderpromotionKey}):
+    get:
+      tags:
+      - Customer Orders
+      operationId: CustomerOrders_GetCustomerOrderPromotionByKeyAndCustomerorderpromotionkey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: customerorderpromotionKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/customerorders({key})/customerordertaxes({customerordertaxKey}):
+    get:
+      tags:
+      - Customer Orders
+      operationId: CustomerOrders_GetCustomerOrderTaxByKeyAndCustomerordertaxkey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: customerordertaxKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/customerorders({key})/customproperties({custompropertyKey}):
+    get:
+      tags:
+      - Customer Orders
+      operationId: CustomerOrders_GetCustomPropertyByKeyAndCustompropertykey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: custompropertyKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/customerorders({key})/giftcards({giftcardKey}):
+    get:
+      tags:
+      - Customer Orders
+      operationId: CustomerOrders_GetGiftCardByKeyAndGiftcardkey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: giftcardKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/customerorders({key})/orderlines({orderlineKey}):
+    get:
+      tags:
+      - Customer Orders
+      operationId: CustomerOrders_GetOrderLineByKeyAndOrderlinekey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: orderlineKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/customerorders({key})/orderpromotioncodes({orderpromotioncodeKey}):
+    get:
+      tags:
+      - Customer Orders
+      operationId: CustomerOrders_GetOrderPromotionCodeByKeyAndOrderpromotioncodekey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: orderpromotioncodeKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/customerorders({key})/subscriptions({subscriptionKey}):
+    get:
+      tags:
+      - Customer Orders
+      operationId: CustomerOrders_GetSubscriptionByKeyAndSubscriptionkey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: subscriptionKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Admin.Controllers.OData.OrderTotal:
+      type: object
+      properties:
+        orderSubTotal:
+          format: decimal
+          type: number
+        orderGrandTotal:
+          format: decimal
+          type: number
+        shippingAndHandling:
+          format: decimal
+          type: number
+        totalTax:
+          format: decimal
+          type: number
+        promotionOrderDiscountTotal:
+          format: decimal
+          type: number
+        promotionProductDiscountTotal:
+          format: decimal
+          type: number
+        promotionShippingDiscountTotal:
+          format: decimal
+          type: number
+    Insite.Data.Entities.CustomerOrder:
+      required:
+      - type
+      - status
+      - orderNumber
+      - customerPO
+      - termsCode
+      - shipCode
+      - taxCode1
+      - taxCode2
+      - notes
+      - customerNumber
+      - customerSequence
+      - btCompanyName
+      - btFirstName
+      - btMiddleName
+      - btLastName
+      - btPhone
+      - btAddress1
+      - btAddress2
+      - btAddress3
+      - btAddress4
+      - btCity
+      - btState
+      - btPostalCode
+      - btCountry
+      - btEmail
+      - stCompanyName
+      - stFirstName
+      - stMiddleName
+      - stLastName
+      - stPhone
+      - stAddress1
+      - stAddress2
+      - stAddress3
+      - stAddress4
+      - stCity
+      - stState
+      - stPostalCode
+      - stCountry
+      - stEmail
+      - placedByUserName
+      - collectAccountNumber
+      - shipmentQuoteNumber
+      - customerReference1
+      - customerReference2
+      - buyer
+      - erpOrderNumber
+      - approverMessage
+      - fulfillmentMethod
+      - customerVatNumber
+      - orderSource
+      - orderDeviceType
+      - additionalEmails
+      - orderApprovalStatus
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        customerId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        shipToId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        websiteId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        type:
+          maxLength: 50
+          minLength: 0
+          type: string
+        status:
+          maxLength: 50
+          minLength: 0
+          type: string
+        orderNumber:
+          maxLength: 50
+          minLength: 0
+          type: string
+        orderDate:
+          format: date-time
+          type: string
+        customerPO:
+          maxLength: 50
+          minLength: 0
+          type: string
+        termsCode:
+          maxLength: 50
+          minLength: 0
+          type: string
+        shipCode:
+          maxLength: 50
+          minLength: 0
+          type: string
+        taxCode1:
+          maxLength: 50
+          minLength: 0
+          type: string
+        taxCode2:
+          maxLength: 50
+          minLength: 0
+          type: string
+        shipEarly:
+          type: boolean
+        shipPartial:
+          type: boolean
+        notes:
+          type: string
+        shippingCharges:
+          format: decimal
+          type: number
+        handlingCharges:
+          format: decimal
+          type: number
+        stateTax:
+          format: decimal
+          type: number
+        localTax:
+          format: decimal
+          type: number
+        customerNumber:
+          maxLength: 50
+          minLength: 0
+          type: string
+        customerSequence:
+          maxLength: 50
+          minLength: 0
+          type: string
+        btCompanyName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btFirstName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btMiddleName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btLastName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btPhone:
+          maxLength: 50
+          minLength: 0
+          type: string
+        btAddress1:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btAddress2:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btAddress3:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btAddress4:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btCity:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btState:
+          maxLength: 50
+          minLength: 0
+          type: string
+        btPostalCode:
+          maxLength: 50
+          minLength: 0
+          type: string
+        btCountry:
+          maxLength: 100
+          minLength: 0
+          type: string
+        btEmail:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stCompanyName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stFirstName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stMiddleName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stLastName:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stPhone:
+          maxLength: 50
+          minLength: 0
+          type: string
+        stAddress1:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stAddress2:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stAddress3:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stAddress4:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stCity:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stState:
+          maxLength: 50
+          minLength: 0
+          type: string
+        stPostalCode:
+          maxLength: 50
+          minLength: 0
+          type: string
+        stCountry:
+          maxLength: 100
+          minLength: 0
+          type: string
+        stEmail:
+          maxLength: 100
+          minLength: 0
+          type: string
+        placedByUserName:
+          maxLength: 256
+          minLength: 0
+          type: string
+        affiliateId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        residential:
+          type: boolean
+        insideDelivery:
+          type: boolean
+        collectAccountNumber:
+          maxLength: 50
+          minLength: 0
+          type: string
+        shipmentQuoteNumber:
+          maxLength: 50
+          minLength: 0
+          type: string
+        customerReference1:
+          maxLength: 50
+          minLength: 0
+          type: string
+        customerReference2:
+          maxLength: 50
+          minLength: 0
+          type: string
+        shipViaId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        dropShipCustomerId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        requestedShipDate:
+          format: date-time
+          type: string
+        requestedDeliveryDate:
+          format: date-time
+          type: string
+        buyer:
+          maxLength: 100
+          minLength: 0
+          type: string
+        batchNumber:
+          format: int32
+          type: integer
+        subscriptionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        verificationSentOn:
+          format: date-time
+          type: string
+        erpOrderNumber:
+          maxLength: 50
+          minLength: 0
+          type: string
+        initiatedByUserProfileId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        approverUserProfileId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        placedByUserProfileId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        approverMessage:
+          maxLength: 255
+          minLength: 0
+          type: string
+        currencyId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        conversionRate:
+          format: decimal
+          type: number
+        quoteExpirationDate:
+          format: date-time
+          type: string
+        quotedByUserProfileId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        salespersonId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        defaultWarehouseId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        languageId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        recalculatePromotions:
+          type: boolean
+        recalculateTax:
+          type: boolean
+        shippingCalculationNeededAsOf:
+          format: date-time
+          type: string
+        otherCharges:
+          format: decimal
+          type: number
+        taxAmount:
+          format: decimal
+          type: number
+        orderTotal:
+          format: decimal
+          type: number
+        impersonatedByAdminUserProfileId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        lastPricingOn:
+          format: date-time
+          type: string
+        isGuestOrder:
+          type: boolean
+        fulfillmentMethod:
+          maxLength: 50
+          minLength: 0
+          type: string
+        requestedPickupDate:
+          format: date-time
+          type: string
+        taxCalculated:
+          type: boolean
+        reminderSent:
+          type: boolean
+        customerVatNumber:
+          maxLength: 50
+          minLength: 0
+          type: string
+        shippingVatAmount:
+          format: decimal
+          type: number
+        vmiLocationId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        orderSource:
+          maxLength: 50
+          minLength: 0
+          type: string
+        orderDeviceType:
+          maxLength: 50
+          minLength: 0
+          type: string
+        isCommerceOrder:
+          type: boolean
+        additionalEmails:
+          type: string
+        orderApprovalEmailSent:
+          type: boolean
+        orderApprovalStatus:
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

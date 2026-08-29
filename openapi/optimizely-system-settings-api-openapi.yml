@@ -1,0 +1,615 @@
+openapi: 3.2.0
+info:
+  version: admin-v1
+  title: Admin API V1 System Settings API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: System Settings
+paths:
+  /api/v1/admin/SystemSettings:
+    get:
+      tags:
+      - System Settings
+      summary: Returns the EntitySet SystemSettings
+      operationId: SystemSettings_GetList
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    post:
+      tags:
+      - System Settings
+      summary: Post a new entity to EntitySet SystemSettings
+      operationId: SystemSettings_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.SystemSetting'
+        description: The entity to post
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/SystemSettings({id}):
+    get:
+      tags:
+      - System Settings
+      summary: Returns the entity with the key from SystemSettings
+      operationId: SystemSettings_GetSingleById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    put:
+      tags:
+      - System Settings
+      summary: Replace entity in EntitySet SystemSettings
+      operationId: SystemSettings_PutById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.SystemSetting'
+        description: The entity to put
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    delete:
+      tags:
+      - System Settings
+      summary: Delete entity in EntitySet SystemSettings
+      operationId: SystemSettings_DeleteById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: If-Match
+        in: header
+        description: If-Match header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - System Settings
+      summary: Update entity in EntitySet SystemSettings
+      operationId: SystemSettings_PatchById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.SystemSetting'
+        description: The entity to patch
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/SystemSettings/Default.Default():
+    get:
+      tags:
+      - System Settings
+      summary: Call operation  Default
+      operationId: SystemSettings_Default
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/SystemSettings/Default.batch:
+    post:
+      tags:
+      - System Settings
+      summary: Call operation  batch
+      operationId: SystemSettings_SetSettings_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                settings:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Insite.Admin.SystemSettings.SystemSettingDto'
+                websiteId:
+                  format: guid
+                  type: string
+        description: batch action parameters
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/SystemSettings/Default.restore:
+    post:
+      tags:
+      - System Settings
+      summary: Call operation  restore
+      operationId: SystemSettings_RestoreSettings_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                settings:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Insite.Admin.SystemSettings.SystemSettingDto'
+                websiteId:
+                  format: guid
+                  type: string
+        description: restore action parameters
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/SystemSettings/Default.test:
+    post:
+      tags:
+      - System Settings
+      summary: Call operation  test
+      operationId: SystemSettings_Test_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                settingsGroup:
+                  type: string
+        description: test action parameters
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/SystemSettings/Default.Groups(websiteId={websiteId}):
+    get:
+      tags:
+      - System Settings
+      summary: Call operation  Groups
+      operationId: SystemSettings_GetGroupsByWebsiteid_1
+      parameters:
+      - name: websiteId
+        in: path
+        description: 'parameter: websiteId'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/systemsettings({key}):
+    get:
+      tags:
+      - System Settings
+      operationId: SystemSettings_GetSingleByKey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/systemsettings/groups(websiteId={websiteId}):
+    get:
+      tags:
+      - System Settings
+      operationId: SystemSettings_GetGroupsByWebsiteid_2
+      parameters:
+      - name: websiteId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/systemsettings/test:
+    post:
+      tags:
+      - System Settings
+      operationId: SystemSettings_Test_2
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/systemsettings/batch:
+    post:
+      tags:
+      - System Settings
+      operationId: SystemSettings_SetSettings_2
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/systemsettings/restore:
+    post:
+      tags:
+      - System Settings
+      operationId: SystemSettings_RestoreSettings_2
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/systemsettings/delete:
+    delete:
+      tags:
+      - System Settings
+      operationId: SystemSettings_DeleteRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/systemsettings({key})/customproperties({custompropertyKey}):
+    get:
+      tags:
+      - System Settings
+      operationId: SystemSettings_GetCustomPropertyByKeyAndCustompropertykey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: custompropertyKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Admin.SystemSettings.SystemSettingDto:
+      type: object
+      properties:
+        name:
+          type: string
+        groupName:
+          type: string
+        displayName:
+          type: string
+        description:
+          type: string
+        isGlobal:
+          type: boolean
+        websiteSpecificOnly:
+          type: boolean
+        isEncrypted:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        type:
+          type: string
+        controlType:
+          type: string
+        value:
+          type: string
+        defaultValue:
+          type: string
+        minValue:
+          format: double
+          type: number
+        maxValue:
+          format: double
+          type: number
+        valueSeparator:
+          type: string
+        toggleValues:
+          type: array
+          items:
+            type: string
+        displayWebsiteSpecificValueIndicator:
+          type: boolean
+        pluralizedEntityName:
+          type: string
+        isHidden:
+          type: boolean
+        regexValidation:
+          type: string
+        required:
+          type: boolean
+        preventTrimValue:
+          type: boolean
+        restored:
+          type: boolean
+        isConfigurationValue:
+          type: boolean
+        overrideAll:
+          type: boolean
+        searchProviderTag:
+          type: string
+    Insite.Data.Entities.SystemSetting:
+      required:
+      - name
+      - value
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          maxLength: 256
+          minLength: 0
+          type: string
+        websiteId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        value:
+          maxLength: 1024
+          minLength: 0
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

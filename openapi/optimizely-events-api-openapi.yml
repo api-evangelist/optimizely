@@ -1,64 +1,323 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Optimizely Campaign REST Assets Events API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  title: Optimizely Events API
   version: '1.0'
-  contact:
-    name: Optimizely Support
-    url: https://support.optimizely.com
-  termsOfService: https://www.optimizely.com/legal/terms/
+  description: 'Operations tagged Events across 6 of this provider''s published API definitions: optimizely-content-marketing-platform-optimizely-cmp-open-api-documentation-openapi.json, optimizely-data-platform-events-openapi.json, optimizely-data-platform-openapi.yml, optimizely-platform-optimizely-swagger-openapi.json, optimizely-web-experimentation-openapi.yml, optimizely-web-experimentation-optimizely-api-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://api.campaign.episerver.net/rest
-  description: Optimizely Campaign Production Server
-security:
-- basicAuth: []
+- url: https://api.cmp.optimizely.com/v3
+  description: v3 version of Optimizely CMP Open API
+- url: https://api.us1.odp.optimizely.com/v3
+  description: United States
+- url: https://api.eu1.odp.optimizely.com/v3
+  description: Europe
+- url: https://api.au1.odp.optimizely.com/v3
+  description: Asia-Pacific
+- url: https://api.zaius.com/v3
+  description: Optimizely Data Platform API v3 Server
+- url: https://prod.cg.optimizely.com
+- url: https://api.optimizely.com/v2
+  description: Optimizely REST API v2 Production Server
 tags:
 - name: Events
-  description: Send customer events to ODP for tracking actions, behaviors, and interactions across channels.
 paths:
   /events:
-    post:
-      operationId: sendEvents
-      summary: Send events
-      description: Sends one or more events to ODP for processing. Events represent customer actions such as purchases, page views, email opens, and custom interactions. Each event includes a type, action, and associated identifiers and fields.
+    get:
+      operationId: listEvents
       tags:
       - Events
+      summary: GET /events
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a list of events.
+      parameters:
+      - name: start_date
+        in: query
+        schema:
+          type: string
+          description: ISO date string - filters events with end_date >= start_date
+        example: '2024-11-24T00:00:00.000Z'
+      - name: end_date
+        in: query
+        schema:
+          type: string
+          description: ISO date string - filters events with start_date <= end_date
+        example: '2024-11-26T00:00:00.000Z'
+      - name: campaign_id
+        in: query
+        schema:
+          type: string
+          description: Single campaign ID - filters events by campaign
+        example: 66d953340019d7b86833ac6d
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of fetched events
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of events
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EventResponse'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/events?offset=10&page_size=10
+                required:
+                - data
+                - pagination
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    post:
+      operationId: createEvent
+      tags:
+      - Events
+      summary: POST /events
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Create an event.
       requestBody:
+        description: Payload to create a new event
         required: true
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/EventInput'
+              $ref: '#/components/schemas/EventCreateRequest'
       responses:
-        '202':
-          description: Events accepted for processing
-        '400':
-          description: Invalid event data
-        '401':
-          description: Authentication credentials are missing or invalid
-    get:
-      operationId: listEvents
-      summary: List events
-      description: Returns a list of custom events for the specified project. Events are used as goals and metrics in experiments.
-      tags:
-      - Events
-      parameters:
-      - $ref: '#/components/parameters/projectIdQuery'
-      - $ref: '#/components/parameters/perPage'
-      - $ref: '#/components/parameters/page'
-      responses:
-        '200':
-          description: Successfully retrieved the list of events
+        '201':
+          description: Created event details
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Event'
+                $ref: '#/components/schemas/EventResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
         '401':
-          description: Authentication credentials are missing or invalid
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    servers:
+    - url: https://api.cmp.optimizely.com/v3
+      description: v3 version of Optimizely CMP Open API
+  /events/{id}:
+    get:
+      operationId: getEvent
+      tags:
+      - Events
+      summary: GET /events/{id}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get an event.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the event
+          example: 674ea40a7a9cac80ff78c95c
+      responses:
+        '200':
+          description: Fetched event details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    patch:
+      operationId: updateEvent
+      tags:
+      - Events
+      summary: PATCH /events/{id}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Update an event.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the event
+          example: 674ea40a7a9cac80ff78c95c
+      requestBody:
+        description: Payload to update an event
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdateRequest'
+      responses:
+        '200':
+          description: Updated event details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    servers:
+    - url: https://api.cmp.optimizely.com/v3
+      description: v3 version of Optimizely CMP Open API
+  /events/{id}/fields:
+    put:
+      operationId: updateEventFields
+      tags:
+      - Events
+      summary: PUT /events/{id}/fields
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Replace existing fields of an event.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the event
+        example: 5f857f30e1c4a2038d6179e9
+      requestBody:
+        description: Payload to replace the fields
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventFieldsUpdateRequest'
+      responses:
+        '204':
+          description: Event fields updated
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    get:
+      operationId: listEventFields
+      tags:
+      - Events
+      summary: GET events/{id}/fields
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get the list of fields of an event.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the event
+        example: 5f857f30e1c4a2038d6179e9
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of fetched fields
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of fields
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FieldListResponseItem'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/events/5f857f30e1c4a2038d6179e9/fields?offset=10&page_size=10
+                required:
+                - data
+                - pagination
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+      - OAuth2:
+        - openid
+        - profile
+        - offline_access
+    servers:
+    - url: https://api.cmp.optimizely.com/v3
+      description: v3 version of Optimizely CMP Open API
+  /api/events/fx:
+    post:
+      operationId: post-FxEventHandler
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+      security: []
+      parameters: []
+      tags:
+      - Events
+    servers:
+    - url: https://prod.cg.optimizely.com
   /events/{event_id}:
     get:
       operationId: getEvent
@@ -74,11 +333,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
+                $ref: '#/components/schemas/Event_2'
         '401':
           description: Authentication credentials are missing or invalid
         '404':
           description: Event not found
+      security:
+      - bearerAuth: []
     patch:
       operationId: updateEvent
       summary: Update an event
@@ -99,13 +360,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
+                $ref: '#/components/schemas/Event_2'
         '400':
           description: Invalid request body
         '401':
           description: Authentication credentials are missing or invalid
         '404':
           description: Event not found
+      security:
+      - bearerAuth: []
     delete:
       operationId: deleteEvent
       summary: Delete an event
@@ -121,65 +384,1060 @@ paths:
           description: Authentication credentials are missing or invalid
         '404':
           description: Event not found
-components:
-  parameters:
-    perPage:
-      name: per_page
-      in: query
-      required: false
-      description: Number of results per page
-      schema:
-        type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
-    eventId:
-      name: event_id
-      in: path
-      required: true
-      description: The unique identifier for the event
-      schema:
-        type: integer
-        format: int64
-    projectIdQuery:
-      name: project_id
-      in: query
-      required: true
-      description: The unique identifier for the project to filter by
-      schema:
-        type: integer
-        format: int64
-    page:
-      name: page
-      in: query
-      required: false
-      description: Page number for pagination
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-  schemas:
-    EventInput_2:
-      type: object
-      description: Input for creating or updating an event
-      properties:
-        project_id:
-          type: integer
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.optimizely.com/v2
+      description: Optimizely REST API v2 Production Server
+  /pages/{page_id}/events:
+    post:
+      description: Create an Event that occurs in the context of a Page, such as measuring clicks
+      operationId: create_in_page_event
+      parameters:
+      - description: The Page ID of the Page you want to create an In-Page Event for
+        in: path
+        name: page_id
+        required: true
+        schema:
           format: int64
-          description: The project this event belongs to
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InPageEvent'
+        description: A string in JSON format that includes all the fields to create an In-Page Event
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InPageEvent'
+          description: Return the created In-Page event
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Invalid Page ID or request body supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: You do not have permission to add an In-Page event
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Unexpected error
+      summary: Create an In-Page Event
+      tags:
+      - Events
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
+  /pages/{page_id}/events/{event_id}:
+    delete:
+      description: Archive an In-Page Event
+      operationId: delete_in_page_event
+      parameters:
+      - description: The Page ID of the In-Page Event you want to archive
+        in: path
+        name: page_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: The In-Page Event ID of the In-Page Event you want to archive
+        in: path
+        name: event_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '204':
+          description: Successfully archived In-Page event
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: You do not have permission to archive this In-Page event
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Invalid Page ID or Event ID supplied
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Unexpected error
+      summary: Archive an In-Page Event
+      tags:
+      - Events
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    patch:
+      description: Update an Event that occurs in the context of a Page, such as measuring clicks
+      operationId: update_in_page_event
+      parameters:
+      - description: The Page ID of the In-Page Event you want to change
+        in: path
+        name: page_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: The In-Page Event ID of the In-Page Event you want to change
+        in: path
+        name: event_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InPageEventUpdate'
+        description: A string in JSON format that includes all the fields you'd like to change for an In-Page Event
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InPageEvent'
+          description: Successfully updated the In-Page event
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Invalid request body supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: You do not have access to the specified Event
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Event not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Unexpected error
+      summary: Update an In-Page Event
+      tags:
+      - Events
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
+  /projects/{project_id}/custom_events:
+    post:
+      description: Create a Custom Event in a provided Project
+      operationId: create_custom_event
+      parameters:
+      - description: The Project ID of the Project you want to create an Custom Event in
+        in: path
+        name: project_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomEvent'
+        description: A string in JSON format that includes all the fields to create a Custom Event
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomEvent'
+          description: Return the created Custom Event
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Invalid request body supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: You do not have access to the specified Project
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Unexpected error
+      summary: Create a Custom Event
+      tags:
+      - Events
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
+  /projects/{project_id}/custom_events/{event_id}:
+    delete:
+      description: Archive a Custom Event
+      operationId: delete_custom_event
+      parameters:
+      - description: The project ID of the Project the Custom Event is stored in
+        in: path
+        name: project_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: The Event ID of the Custom Event you'd like to archive
+        in: path
+        name: event_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        '204':
+          description: Successfully archived Custom Event
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: You do not have permission to archive this Custom Event
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Invalid Project ID or Event ID supplied
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Unexpected error
+      summary: Archive a Custom Event
+      tags:
+      - Events
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    patch:
+      description: Update a Custom Event
+      operationId: update_custom_event
+      parameters:
+      - description: The project ID of the Project the Custom Event is stored in
+        in: path
+        name: project_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: The Event ID of the Custom Event you'd like to change
+        in: path
+        name: event_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomEventUpdate'
+        description: A string in JSON format that includes all the fields you'd like to change for a Custom Event
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomEvent'
+          description: Return the updated Event
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Invalid Project ID supplied
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Invalid credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: You do not have permission to access the specified Event
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Event not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error_2'
+          description: Unexpected error
+      summary: Update a Custom Event
+      tags:
+      - Events
+      security:
+      - apiKey: []
+      - OAuth2:
+        - read
+        - write
+    servers:
+    - url: https://api.optimizely.com/v2
+components:
+  responses:
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    UnprocessableEntity:
+      description: Unprocessable entity error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource cannot be processed
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+  schemas:
+    EventFieldsUpdateRequest:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        oneOf:
+        - $ref: '#/components/schemas/MultiChoiceTypeObjectField'
+        - $ref: '#/components/schemas/StringTypeObjectField'
+        - $ref: '#/components/schemas/DropdownTypeObjectField'
+        - $ref: '#/components/schemas/RadioButtonTypeObjectField'
+        - $ref: '#/components/schemas/NumberTypeObjectField'
+        - $ref: '#/components/schemas/DateTypeObjectField'
+        - $ref: '#/components/schemas/AssetTypeObjectField'
+        discriminator:
+          propertyName: type
+          mapping:
+            checkbox: '#/components/schemas/MultiChoiceTypeObjectField'
+            currency_number: '#/components/schemas/NumberTypeObjectField'
+            date: '#/components/schemas/DateTypeObjectField'
+            dropdown: '#/components/schemas/DropdownTypeObjectField'
+            label: '#/components/schemas/MultiChoiceTypeObjectField'
+            radio_button: '#/components/schemas/RadioButtonTypeObjectField'
+            percentage_number: '#/components/schemas/NumberTypeObjectField'
+            simple_number: '#/components/schemas/NumberTypeObjectField'
+            text: '#/components/schemas/StringTypeObjectField'
+            text_area: '#/components/schemas/StringTypeObjectField'
+            rich_text: '#/components/schemas/StringTypeObjectField'
+            image: '#/components/schemas/AssetTypeObjectField'
+            video: '#/components/schemas/AssetTypeObjectField'
+    FieldListResponseItem:
+      oneOf:
+      - $ref: '#/components/schemas/FieldTypeCommon'
+      - $ref: '#/components/schemas/FieldTypeLabel'
+      - $ref: '#/components/schemas/FieldTypeDropdown'
+      - $ref: '#/components/schemas/FieldTypeRadio'
+      - $ref: '#/components/schemas/FieldTypeCheckbox'
+      - $ref: '#/components/schemas/FieldTypeSimpleNumber'
+      - $ref: '#/components/schemas/FieldTypePercentageNumber'
+      - $ref: '#/components/schemas/FieldTypeCurrencyNumber'
+      discriminator:
+        propertyName: type
+        mapping:
+          checkbox: '#/components/schemas/FieldTypeCheckbox'
+          currency_number: '#/components/schemas/FieldTypeCurrencyNumber'
+          date: '#/components/schemas/FieldTypeCommon'
+          dropdown: '#/components/schemas/FieldTypeDropdown'
+          image: '#/components/schemas/FieldTypeCommon'
+          label: '#/components/schemas/FieldTypeLabel'
+          percentage_number: '#/components/schemas/FieldTypePercentageNumber'
+          radio_button: '#/components/schemas/FieldTypeRadio'
+          rich_text: '#/components/schemas/FieldTypeCommon'
+          simple_number: '#/components/schemas/FieldTypeSimpleNumber'
+          text: '#/components/schemas/FieldTypeCommon'
+          text_area: '#/components/schemas/FieldTypeCommon'
+          video: '#/components/schemas/FieldTypeCommon'
+    FieldTypeCommon:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+    FieldTypeRadio:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          choices:
+            type: array
+            description: Choices of the radio button
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Radio 1 Choice 1
+              required:
+              - id
+              - name
+              - color
+        required:
+        - choices
+    StringTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/StringTypeObjectFieldUpdatePayload'
+    FieldTypeDropdown:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          is_multi_select:
+            type: boolean
+            description: Select multiple values from the dropdown
+          choices:
+            type: array
+            description: Choices of the dropdown
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Dropdown 1 Choice 1
+              required:
+              - id
+              - name
+        required:
+        - is_multi_select
+        - choices
+    FieldTypeLabel:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          is_multi_select:
+            type: boolean
+            description: Select multiple values from the label
+          choices:
+            type: array
+            description: Choices of the label
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Label 1 Choice 1
+              required:
+              - id
+              - name
+              - color
+        required:
+        - is_multi_select
+        - choices
+    NumberTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Accepts a single numeric value
+            maxItems: 1
+            items:
+              type: number
+              example: 200
+    MultiChoiceTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/MultiChoiceTypeObjectFieldUpdatePayload'
+    EventUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the event
+          example: The awesome event
+        description:
+          type: string
+          description: Description of the event
+          example: This awesome event is created to celebrate our clients
+        is_all_day:
+          type: boolean
+          description: Indicate if the event is all day long
+          example: false
+        start_date:
+          type: string
+          format: date-time
+          description: 'Start date and time of the event in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`'
+          example: '1996-09-09T12:18:00Z'
+        end_date:
+          type: string
+          format: date-time
+          description: 'End date and time of the event in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`'
+          example: '2024-12-24T12:18:00Z'
+    FieldTypeSimpleNumber:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          has_thousand_separator:
+            type: boolean
+            description: Whether the numerical field has a thousand separator
+            example: true
+          decimal_places:
+            type:
+            - integer
+            - 'null'
+            description: Decimal place of the numerical field
+            example: 2
+        required:
+        - has_thousand_separator
+        - decimal_places
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
+    BaseObjectFieldUpdatePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the field
+          example: checkbox
+        values:
+          type: array
+          description: Values for the campaign field
+      required:
+      - type
+      - values
+    Pagination:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
+    FieldTypeCurrencyNumber:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          has_thousand_separator:
+            type: boolean
+            description: Whether the numerical field has a thousand separator
+            example: true
+          decimal_places:
+            type:
+            - integer
+            - 'null'
+            description: Decimal place of the numerical field
+            example: 2
+          currency_code:
+            type: string
+            description: Currency code of the numerical field
+            example: USD
+        required:
+        - has_thousand_separator
+        - decimal_places
+        - currency_code
+    DropdownTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of choice ID. Multiple choice values are not acceptable for `is_multi_select=false`.
+            items:
+              type: string
+              example: 9119a313057e401189407116fcd3
+    AssetTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/AssetTypeObjectFieldUpdatePayload'
+    DateTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/DateTypeObjectFieldUpdatePayload'
+    MultiChoiceTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of choice IDs
+            items:
+              type: string
+              example: 9119a313057e401189407116fcd3
+    StringTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Any single string
+            items:
+              type: string
+              example: This is a test string
+    FieldTypeCheckbox:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          choices:
+            type: array
+            description: Choices of the checkbox
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Checkbox 1 Choice 1
+              required:
+              - id
+              - name
+              - color
+        required:
+        - choices
+    DateTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of date-time values, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+            items:
+              type: string
+              format: date-time
+              description: Date and time, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+              example: '2020-02-10T10:40:45Z'
+            maxItems: 1
+    AssetTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Payload for fields with attachments
+            maxItems: 1
+            items:
+              properties:
+                title:
+                  type: string
+                  description: Title of the image or video
+                  example: Sample.jpeg
+                  minLength: 1
+                key:
+                  type: string
+                  description: Unique identifier of the file upload session. This is the `upload_meta_fields.key` field retrieved from the `/v3/upload-url` endpoint.
+                  example: ce8995aea58b11ea8cd90242ac120005
+              required:
+              - title
+              - key
+    RadioButtonTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/RadioButtonTypeObjectFieldUpdatePayload'
+    BaseObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          id:
+            type: string
+            description: Unique identifier of the field
+            example: 41aac313bda1e40b6cde7116fc24a
+        required:
+        - id
+    FieldBaseType:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Identifier of the field
+          example: 64be245ec0d79e79fdf1ad84
         name:
           type: string
-          description: Human-readable name of the event
-        key:
+          description: Name of the field
+          example: Dropdown 101
+        values:
+          type: array
+          description: List of selected values or from user input
+          items:
+            type: string
+        type:
           type: string
-          description: Unique key for the event within the project
-        event_type:
+          description: Type of the field
+          example: text
+      required:
+      - id
+      - name
+      - type
+      - values
+    DropdownTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/DropdownTypeObjectFieldUpdatePayload'
+    NumberTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/NumberTypeObjectFieldUpdatePayload'
+    FieldTypePercentageNumber:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          decimal_places:
+            type:
+            - integer
+            - 'null'
+            description: Decimal place of the numerical field
+            example: 2
+        required:
+        - decimal_places
+    RadioButtonTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Accepts a single choice Id.
+            maxItems: 1
+            items:
+              type: string
+              example: 9119a313057e401189407116fcd3
+    EventResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
           type: string
-          description: Type of the event
-          enum:
-          - custom
-          - click
-          - pageview
+          description: Unique identifier of the event
+          example: 674ea40a7a9cac80ff78c95c
+        title:
+          type: string
+          description: Title of the event
+          example: The awesome event
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the event
+          example: The awesome event's description
+        campaign_id:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the campaign associated with the event
+          example: 66d953340019d7b86833ac6dg
+        start_date:
+          type: string
+          description: Start date of the event in ISO 8601 UTC format
+          example: '2024-11-26T11:00:34Z'
+        end_date:
+          type: string
+          description: End date of the event in ISO 8601 UTC format
+          example: '2024-11-26T11:30:34Z'
+        is_all_day:
+          type: boolean
+          description: Whether the event is a day long event or not
+          example: false
+        is_archived:
+          type: boolean
+          description: Whether the event is archived or not
+          example: false
+        created_by:
+          type: string
+          description: Unique identifier of the user who created the event
+          example: 66d837c62373533177b59db3
+        reference_id:
+          type: string
+          description: Reference ID of the event
+          example: EVT-3
+        links:
+          type: object
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the event
+              example: https://api.cmp.optimizely.com/v3/events/674ea40a7a9cac80ff78c95c
+            campaign:
+              type:
+              - string
+              - 'null'
+              description: URL of the campaign associated with the event
+              example: https://api.cmp.optimizely.com/v3/campaigns/66d953340019d7b86833ac6d
+          required:
+          - self
+          - campaign
+      required:
+      - id
+      - title
+      - description
+      - campaign_id
+      - start_date
+      - end_date
+      - is_archived
+      - is_all_day
+      - reference_id
+      - created_by
+      - links
+    EventCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the event
+          example: The awesome event
+        description:
+          type: string
+          description: Description of the event
+          example: This awesome event is created to celebrate our clients
+        campaign_id:
+          type: string
+          description: ID of the campaign under which the event is to be created
+          example: 8p7f91i55722y04188a30cee6612
+        is_all_day:
+          type: boolean
+          description: Indicate if the event is all day long
+          example: false
+        start_date:
+          type: string
+          format: date-time
+          description: 'Start date and time of the event in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`'
+          example: '1996-09-09T12:18:00Z'
+        end_date:
+          type: string
+          format: date-time
+          description: 'End date and time of the event in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`'
+          example: '2024-12-24T12:18:00Z'
+        fields:
+          type: array
+          minItems: 0
+          description: List of fields to be associated with the event
+          items:
+            type: object
+            additionalProperties: false
+            oneOf:
+            - $ref: '#/components/schemas/StringTypeObjectField'
+            - $ref: '#/components/schemas/MultiChoiceTypeObjectField'
+            - $ref: '#/components/schemas/DropdownTypeObjectField'
+            - $ref: '#/components/schemas/RadioButtonTypeObjectField'
+            - $ref: '#/components/schemas/NumberTypeObjectField'
+            - $ref: '#/components/schemas/DateTypeObjectField'
+            - $ref: '#/components/schemas/AssetTypeObjectField'
+            discriminator:
+              propertyName: type
+              mapping:
+                checkbox: '#/components/schemas/MultiChoiceTypeObjectField'
+                currency_number: '#/components/schemas/NumberTypeObjectField'
+                date: '#/components/schemas/DateTypeObjectField'
+                dropdown: '#/components/schemas/DropdownTypeObjectField'
+                label: '#/components/schemas/MultiChoiceTypeObjectField'
+                radio_button: '#/components/schemas/RadioButtonTypeObjectField'
+                percentage_number: '#/components/schemas/NumberTypeObjectField'
+                simple_number: '#/components/schemas/NumberTypeObjectField'
+                text: '#/components/schemas/StringTypeObjectField'
+                text_area: '#/components/schemas/StringTypeObjectField'
+                rich_text: '#/components/schemas/StringTypeObjectField'
+                image: '#/components/schemas/AssetTypeObjectField'
+                video: '#/components/schemas/AssetTypeObjectField'
+      required:
+      - title
+      - is_all_day
+      - start_date
+      - end_date
+    Event:
+      required:
+      - action
+      - identifiers
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: the event type (for example, product)
+          example: product
+        action:
+          type: string
+          description: the event action associated with the type (for example, add_to_cart)
+          example: add_to_cart
+        identifiers:
+          type: object
+          additionalProperties:
+            type: string
+            description: any known identifiers associated with the customer that performed the event
+          description: any known identifiers associated with the customer that performed the event
+        data:
+          type: object
+          additionalProperties:
+            type: string
+            description: any additional fields you want to include on the event (for example, product_id)
+          description: any additional fields you want to include on the event (for example, product_id)
+    GenericUpdateResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        timestamp:
+          type: string
     EventInput:
       type: object
       description: An event to send to ODP
@@ -202,7 +1460,15 @@ components:
           type: object
           description: Additional event data fields
           additionalProperties: true
-    Event:
+    Response:
+      description: 'This Fetch API interface represents the response to a request.
+
+
+        [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response)'
+      properties: {}
+      type: object
+      additionalProperties: false
+    Event_2:
       type: object
       description: A custom event used as a goal or metric
       properties:
@@ -234,11 +1500,458 @@ components:
         is_editable:
           type: boolean
           description: Whether the event can be edited
+    EventInput_2:
+      type: object
+      description: Input for creating or updating an event
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this event belongs to
+        name:
+          type: string
+          description: Human-readable name of the event
+        key:
+          type: string
+          description: Unique key for the event within the project
+        event_type:
+          type: string
+          description: Type of the event
+          enum:
+          - custom
+          - click
+          - pageview
+    Error_2:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    CustomEventUpdate:
+      properties:
+        archived:
+          description: Whether or not to archive this Event
+          type: boolean
+        category:
+          $ref: '#/components/schemas/EventCategories'
+        description:
+          description: A description of this Event
+          type: string
+        key:
+          description: Unique string identifier for this Event within the Project
+          example: loaded_new_app
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\- .]+$
+          type: string
+        name:
+          description: A human readable name for this Event
+          example: Loaded New App
+          type: string
+      type: object
+    InPageEvent:
+      description: An Event that can occur only within the context of a specific Page (allowed in Web Projects only)
+      properties:
+        archived:
+          description: Whether or not this Event is archived
+          type: boolean
+        category:
+          $ref: '#/components/schemas/EventCategories'
+        config:
+          $ref: '#/components/schemas/InPageEventConfig'
+        created:
+          description: Creation date for this Event
+          format: date-time
+          readOnly: true
+          type: string
+        description:
+          description: A description of this Event
+          type: string
+        event_type:
+          description: The type of this Event
+          enum:
+          - click
+          type: string
+        id:
+          description: The unique identifier of the Event
+          format: int64
+          readOnly: true
+          type: integer
+        is_classic:
+          default: false
+          description: Whether or not this Event is a classic Event. If true, the Event is read-only
+          readOnly: true
+          type: boolean
+        is_editable:
+          description: Whether or not this Event may be edited
+          readOnly: true
+          type: boolean
+        key:
+          description: Unique string identifier for this Event within the Project
+          example: add_to_cart
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\-]+$
+          type: string
+        name:
+          description: A human readable name for this Event
+          example: Add to Cart
+          type: string
+        page_id:
+          description: The Page ID associated with this Event
+          format: int64
+          readOnly: true
+          type: integer
+        project_id:
+          description: The ID of this Event's parent Project
+          example: 1000
+          format: int64
+          readOnly: true
+          type: integer
+      required:
+      - name
+      - event_type
+      type: object
+    CustomEvent:
+      properties:
+        archived:
+          description: Whether or not to archive this Event
+          type: boolean
+        category:
+          $ref: '#/components/schemas/EventCategories'
+        created:
+          description: Creation date for this Event
+          format: date-time
+          readOnly: true
+          type: string
+        description:
+          description: A description of this Event
+          type: string
+        event_properties:
+          description: A set of user-defined data elements for the event. Metrics can filter on particular values of these properties.
+          items:
+            $ref: '#/components/schemas/EventProperty'
+          type: array
+        event_type:
+          description: The type of this Event
+          enum:
+          - custom
+          type: string
+        id:
+          description: The unique identifier of the Event
+          format: int64
+          readOnly: true
+          type: integer
+        is_classic:
+          default: false
+          description: Whether or not this Event is a classic Event. If true, this Event is read-only
+          readOnly: true
+          type: boolean
+        is_editable:
+          description: Whether or not this Event may be edited
+          readOnly: true
+          type: boolean
+        key:
+          description: Unique string identifier for this Event within the Project
+          example: loaded_new_app
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\- .]+$
+          type: string
+        name:
+          description: A human readable name for this Event. If unspecified, defaults to the key
+          example: Loaded New App
+          type: string
+        project_id:
+          description: The ID of this Event's parent Project
+          example: 1000
+          format: int64
+          readOnly: true
+          type: integer
+      required:
+      - key
+      type: object
+    Event_3:
+      properties:
+        archived:
+          description: Whether or not this Event is archived
+          type: boolean
+        category:
+          $ref: '#/components/schemas/EventCategories'
+        config:
+          $ref: '#/components/schemas/InPageEventConfig'
+        created:
+          description: Creation date for this Event
+          format: date-time
+          readOnly: true
+          type: string
+        description:
+          description: A description for this Event
+          example: Item added to cart
+          type: string
+        event_properties:
+          description: A set of user-defined data elements for the event. Metrics can filter on particular values of these properties.
+          items:
+            $ref: '#/components/schemas/EventProperty'
+          type: array
+        event_type:
+          description: The type of this Event
+          enum:
+          - custom
+          - click
+          - pageview
+          - classic_custom
+          - classic_click
+          - classic_pageview
+          - classic_engagement
+          - classic_revenue
+          - classic_mobile_tap
+          - classic_mobile_view
+          - classic_mobile_session_length
+          - classic_mobile_num_session
+          type: string
+        id:
+          description: The unique identifier of the Event
+          format: int64
+          readOnly: true
+          type: integer
+        is_classic:
+          default: false
+          description: Whether or not this Event is a classic Event. If true, this Event is read-only
+          readOnly: true
+          type: boolean
+        is_editable:
+          description: Whether this Event may be edited
+          readOnly: true
+          type: boolean
+        key:
+          description: Unique string identifier for this Event within the Project
+          example: add_to_cart
+          maxLength: 64
+          type: string
+        last_modified:
+          description: The last time the Event was modified
+          format: date-time
+          readOnly: true
+          type: string
+        name:
+          description: A human readable name for this Event
+          example: Add to Cart
+          type: string
+        page_id:
+          description: The Page ID associated with this Event
+          example: 5000
+          format: int64
+          type: integer
+        project_id:
+          description: The ID of this Event's parent Project
+          example: 1000
+          format: int64
+          type: integer
+      type: object
+    InPageEventUpdate:
+      properties:
+        archived:
+          description: Whether or not to archive this Event
+          type: boolean
+        category:
+          $ref: '#/components/schemas/EventCategories'
+        config:
+          $ref: '#/components/schemas/InPageEventConfig'
+        description:
+          description: A description of this Event
+          type: string
+        key:
+          description: Unique string identifier for this Event within the Project
+          example: add_to_cart
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\-]+$
+          type: string
+        name:
+          description: A human readable name for this Event
+          example: Add to Cart
+          type: string
+        page_id:
+          description: The Page ID associated with this Event
+          format: int64
+          type: integer
+        variation_specific:
+          description: Whether or not this Event is variation specific.
+          type: boolean
+      type: object
+    EventCategories:
+      enum:
+      - add_to_cart
+      - save
+      - search
+      - share
+      - purchase
+      - convert
+      - sign_up
+      - subscribe
+      - other
+      properties:
+        name:
+          type: string
+      type: string
+    EventProperty:
+      description: A user-defined data element giving additional detail about the event.
+      properties:
+        data_type:
+          description: The type of data that can be accepted for this property.
+          enum:
+          - boolean
+          - number
+          - string
+          type: string
+        name:
+          description: The name of the property.
+          type: string
+      type: object
+    InPageEventConfig:
+      properties:
+        selector:
+          description: CSS selector for the page element(s) that trigger an Event
+          example: .menu-options
+          type: string
+      required:
+      - selector
+      type: object
+  parameters:
+    page_size:
+      name: page_size
+      in: query
+      description: Number of results to return per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+      example: 15
+    offset:
+      name: offset
+      in: query
+      description: Starting index of results (zero indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 5
+    eventId:
+      name: event_id
+      in: path
+      required: true
+      description: The unique identifier for the event
+      schema:
+        type: integer
+        format: int64
+    projectIdQuery:
+      name: project_id
+      in: query
+      required: true
+      description: The unique identifier for the project to filter by
+      schema:
+        type: integer
+        format: int64
+    page:
+      name: page
+      in: query
+      required: false
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
   securitySchemes:
-    basicAuth:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/auth
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes:
+            openid: Grants the ability to receive a unique identifier for the user.
+            profile: Grants access to user profile information.
+            offline_access: Grants the ability to refresh access_token using the refresh token even when user is not present (not logged in).
+        clientCredentials:
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes: {}
+    x-api-key:
+      type: apiKey
+      name: x-api-key
+      in: header
+    publicApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Public API Key (Tracker ID) for sending data to ODP. May be exposed publicly on the internet.
+    privateApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Private API Key for querying data from ODP. Must be kept confidential and used only in backend services.
+    epi-single:
+      type: apiKey
+      name: auth
+      in: query
+      description: Single key authentication
+    epi-hmac:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: HMAC authentication (`epi-hmac xxx`)
+    Basic:
       type: http
       scheme: basic
-      description: HTTP Basic authentication using the Optimizely Campaign API credentials.
-externalDocs:
-  description: Optimizely Campaign REST API Documentation
-  url: https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api
+      description: HMAC credentials
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: OAuth 2.0 Bearer token or personal access token generated from the Optimizely application settings.
+    apiKey:
+      scheme: bearer
+      type: http
+x-refined-from:
+- optimizely-content-marketing-platform-optimizely-cmp-open-api-documentation-openapi.json
+- optimizely-data-platform-events-openapi.json
+- optimizely-data-platform-openapi.yml
+- optimizely-platform-optimizely-swagger-openapi.json
+- optimizely-web-experimentation-openapi.yml
+- optimizely-web-experimentation-optimizely-api-openapi.json

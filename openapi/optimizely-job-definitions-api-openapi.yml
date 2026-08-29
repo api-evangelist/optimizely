@@ -1,0 +1,582 @@
+openapi: 3.2.0
+info:
+  version: admin-v1
+  title: Admin API V1 Job Definitions API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Job Definitions
+paths:
+  /api/v1/admin/JobDefinitions:
+    get:
+      tags:
+      - Job Definitions
+      summary: Returns the EntitySet JobDefinitions
+      operationId: JobDefinitions_Get
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    post:
+      tags:
+      - Job Definitions
+      summary: Post a new entity to EntitySet JobDefinitions
+      operationId: JobDefinitions_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.JobDefinition'
+        description: The entity to post
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/JobDefinitions({id}):
+    get:
+      tags:
+      - Job Definitions
+      summary: Returns the entity with the key from JobDefinitions
+      operationId: JobDefinitions_GetById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    put:
+      tags:
+      - Job Definitions
+      summary: Replace entity in EntitySet JobDefinitions
+      operationId: JobDefinitions_PutById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.JobDefinition'
+        description: The entity to put
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    delete:
+      tags:
+      - Job Definitions
+      summary: Delete entity in EntitySet JobDefinitions
+      operationId: JobDefinitions_DeleteById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: If-Match
+        in: header
+        description: If-Match header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Job Definitions
+      summary: Update entity in EntitySet JobDefinitions
+      operationId: JobDefinitions_PatchById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.JobDefinition'
+        description: The entity to patch
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/JobDefinitions/Default.Default():
+    get:
+      tags:
+      - Job Definitions
+      summary: Call operation  Default
+      operationId: JobDefinitions_Default
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/jobdefinitions/delete:
+    delete:
+      tags:
+      - Job Definitions
+      operationId: JobDefinitions_DeleteRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/jobdefinitions({key})/customproperties({custompropertyKey}):
+    get:
+      tags:
+      - Job Definitions
+      operationId: JobDefinitions_GetCustomPropertyByKeyAndCustompropertykey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: custompropertyKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/jobdefinitions({key})/integrationjobs({integrationjobKey}):
+    get:
+      tags:
+      - Job Definitions
+      operationId: JobDefinitions_GetIntegrationJobByKeyAndIntegrationjobkey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: integrationjobKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/jobdefinitions({key})/jobdefinitionparameters({jobdefinitionparameterKey}):
+    get:
+      tags:
+      - Job Definitions
+      operationId: JobDefinitions_GetJobDefinitionParameterByKeyAndJobdefinitionparameterkey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: jobdefinitionparameterKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/jobdefinitions({key})/jobdefinitionsteps({jobdefinitionstepKey}):
+    get:
+      tags:
+      - Job Definitions
+      operationId: JobDefinitions_GetJobDefinitionStepByKeyAndJobdefinitionstepkey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: jobdefinitionstepKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Data.Entities.JobDefinition:
+      required:
+      - standardJobName
+      - name
+      - description
+      - jobType
+      - notifyEmail
+      - notifyCondition
+      - preProcessor
+      - integrationProcessor
+      - postProcessor
+      - lastRunJobNumber
+      - lastRunStatus
+      - recurringType
+      - linkedJobCondition
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        integrationConnectionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        standardJobName:
+          maxLength: 50
+          minLength: 0
+          type: string
+        name:
+          maxLength: 255
+          minLength: 0
+          type: string
+        description:
+          maxLength: 2048
+          minLength: 0
+          type: string
+        jobType:
+          maxLength: 255
+          minLength: 0
+          type: string
+        debuggingEnabled:
+          type: boolean
+        passThroughJob:
+          type: boolean
+        notifyEmail:
+          maxLength: 255
+          minLength: 0
+          type: string
+        notifyCondition:
+          maxLength: 255
+          minLength: 0
+          type: string
+        linkedJobId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        passDataSetToLinkedJob:
+          type: boolean
+        useDeltaDataSet:
+          type: boolean
+        preProcessor:
+          maxLength: 510
+          minLength: 0
+          type: string
+        integrationProcessor:
+          maxLength: 510
+          minLength: 0
+          type: string
+        postProcessor:
+          maxLength: 510
+          minLength: 0
+          type: string
+        lastRunDateTime:
+          format: date-time
+          type: string
+        lastRunJobNumber:
+          maxLength: 255
+          minLength: 0
+          type: string
+        lastRunStatus:
+          maxLength: 255
+          minLength: 0
+          type: string
+        recurringJob:
+          type: boolean
+        recurringStartDateTime:
+          format: date-time
+          type: string
+        recurringEndDateTime:
+          format: date-time
+          type: string
+        recurringInterval:
+          format: int32
+          type: integer
+        recurringType:
+          maxLength: 50
+          minLength: 0
+          type: string
+        recurringStartTime:
+          format: date-time
+          type: string
+        recurringStartDay:
+          format: int32
+          type: integer
+        recurringAdvancedMode:
+          type: boolean
+        recurringCronExpression:
+          maxLength: 200
+          minLength: 0
+          type: string
+        emailTemplateId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        runStepsInParallel:
+          type: boolean
+        linkedJobCondition:
+          maxLength: 50
+          minLength: 0
+          type: string
+        maxErrorsBeforeFail:
+          format: int32
+          type: integer
+        maxWarningsBeforeFail:
+          format: int32
+          type: integer
+        maxRetries:
+          format: int32
+          type: integer
+        maxDeactivationPercent:
+          format: int32
+          type: integer
+        maxTimeoutMinutes:
+          format: int32
+          type: integer
+        refreshBatchSize:
+          format: int32
+          type: integer
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

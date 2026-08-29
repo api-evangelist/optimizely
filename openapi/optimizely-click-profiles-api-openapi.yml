@@ -1,0 +1,578 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Click profiles API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Click profiles
+  description: Manage click profiles
+paths:
+  /{clientId}/clickprofiles:
+    get:
+      tags:
+      - Click profiles
+      summary: Get information about all click profiles
+      description: Get detailed information about all click profiles, such as name, description, rule or rule type. You can filter for profiles in a folder or limit the number of retrieved click profiles.
+      operationId: selectClickProfiles
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: offset
+        in: query
+        description: 'Starting point of the result list <p><i>Default value</i> : 0</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved click profiles <p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: sort
+        in: query
+        description: Sort result by specific criteria
+        schema:
+          type: string
+          default: created
+          enum:
+          - created
+          - modified
+          - name
+          - description
+          - rulePattern
+          - ruleType
+      - name: folderId
+        in: query
+        description: Filter click profiles assigned to a folder
+        schema:
+          type: integer
+          format: int64
+      - name: clickProfileIds
+        in: query
+        description: Filter click profiles by IDs
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: direction
+        in: query
+        description: Sort order
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+      - name: linkIds
+        in: query
+        description: Filter click profiles assigned to the link IDs
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: The click profiles were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestClickProfileStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestClickProfileStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Click profiles
+      summary: Create a new click profile
+      description: Create a new click profile. You can specify the name, the description, the rule pattern, the rule type of the new click profile.
+      operationId: createClickProfile
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClickProfileRequestData'
+      responses:
+        '201':
+          description: The click profile was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestClickProfile'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestClickProfile'
+        '400':
+          description: The request parameters are invalid.
+      security:
+      - Authorization: []
+  /{clientId}/clickprofiles/{clickProfileId}/assignedlinks:
+    get:
+      tags:
+      - Click profiles
+      summary: Get links a click profile is assigned to
+      description: Get the links to which a specified click profile is assigned.
+      operationId: getAssignedLinks
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: offset
+        in: query
+        description: 'Starting point of the result list <p><i>Default value</i> : 0</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved links <p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: urlPattern
+        in: query
+        description: Filter links matching given pattern
+        schema:
+          type: string
+      - name: urls
+        in: query
+        description: Filter links by their urls
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: mailingIds
+        in: query
+        description: Filter links associated with given mailing IDs
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: searchTerm
+        in: query
+        description: Value of the column to be searched. It is used in conjunction with 'searchColumn'.
+        schema:
+          type: string
+      - name: searchColumn
+        in: query
+        description: Name of the column to be searched. It is used in conjunction with 'searchTerm'.
+        schema:
+          type: string
+          enum:
+          - id
+          - name
+          - type
+          - url
+          - created
+          - modified
+      - name: sort
+        in: query
+        description: Sort result by specific criteria
+        schema:
+          type: string
+          default: created
+          enum:
+          - id
+          - name
+          - type
+          - url
+          - created
+          - modified
+      - name: name
+        in: query
+        description: Filter links by their name
+        schema:
+          type: string
+      - name: types
+        in: query
+        description: Filter links by their types
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: direction
+        in: query
+        description: Sort order
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+      - name: clickProfileId
+        in: path
+        description: Click profile ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The assigned links were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestLinkStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestLinkStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Click profiles
+      summary: Assign links to a click profile
+      description: Assign specific links to a click profile.
+      operationId: assignLinksToClickProfile
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: clickProfileId
+        in: path
+        description: Click profile ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssignLinksToClickProfileRequestData'
+      responses:
+        '200':
+          description: The links were assigned successfully to a click profile.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestLink'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestLink'
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Click profiles
+      summary: Unassign specific links from  a click profile
+      operationId: unAssignLinksFromClickProfile
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: linkIds
+        in: query
+        description: Comma-separated list of link IDs
+        required: true
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: clickProfileId
+        in: path
+        description: Click profile ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The links were unassigned from the click profile successfully.
+      security:
+      - Authorization: []
+  /{clientId}/clickprofiles/{clickProfileId}:
+    get:
+      tags:
+      - Click profiles
+      summary: Get information about a click profile
+      description: Get detailed information about a click profile, such as name, description, rule pattern or rule type.
+      operationId: getClickProfile
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: clickProfileId
+        in: path
+        description: Click profile ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The click profile was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestClickProfile'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestClickProfile'
+        '404':
+          description: The click profile could not be found. Ensure that the required parameters such as "clickProfileId" are correct and the click profile exists.
+        '409':
+          description: The click profile is not assigned to the client. Ensure that the required parameters such as "clientId" and "clickProfileId" are correct and the folder exists.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Click profiles
+      summary: Update a click profile
+      description: Update information of a click profile, such as name or description.
+      operationId: updateClickProfile
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: clickProfileId
+        in: path
+        description: Click profile ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClickProfileRequestData'
+      responses:
+        '200':
+          description: The click profile was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestClickProfile'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestClickProfile'
+        '400':
+          description: The request parameters are invalid.
+        '404':
+          description: The click profile could not be found. Ensure that the required parameters such as "clickProfileId" are correct and the click profile exists.
+        '409':
+          description: The click profile is not assigned to the client. Ensure that the required parameters such as "clientId" and "clickProfileId" are correct and the folder exists.
+      security:
+      - Authorization: []
+components:
+  schemas:
+    ClickProfileRequestData:
+      required:
+      - name
+      type: object
+      properties:
+        rulePattern:
+          type: string
+          description: Rule pattern of the click profile
+        name:
+          type: string
+          description: Name of the click profile
+        description:
+          type: string
+          description: Description of the click profile
+        ruleType:
+          type: string
+          description: Rule type of the click profile
+          default: NONE
+          enum:
+          - REGEXP
+          - WILDCARDS
+          - NONE
+    RestLink:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Link ID
+          format: int64
+        name:
+          type: string
+          description: Link name
+        url:
+          type: string
+          description: Link URL
+        type:
+          type: string
+          description: Link type
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+    RestClickProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Click profile ID
+          format: int64
+        name:
+          type: string
+          description: Click profile name
+        description:
+          type: string
+          description: Click profile description
+        rulePattern:
+          type: string
+          description: Click profile rule pattern
+        ruleType:
+          type: string
+          description: Click profile rule type
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+    RestLinkStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestLink'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestClickProfileStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestClickProfile'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    AssignLinksToClickProfileRequestData:
+      required:
+      - linkIds
+      type: object
+      properties:
+        linkIds:
+          type: array
+          description: Comma-separated list of link IDs
+          items:
+            type: integer
+            description: Comma-separated list of link IDs
+            format: int64
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

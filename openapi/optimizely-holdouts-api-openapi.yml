@@ -1,0 +1,1952 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Holdouts API
+  x-refined-note:
+  - x-logo differs across the merged source definitions and was not carried
+  version: '1.0'
+  description: 'Operations tagged Holdouts across 2 of this provider''s published API definitions: optimizely-feature-experimentation-optimizely-feature-experimentation-api-openapi.json, optimizely-web-experimentation-optimizely-api-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.optimizely.com/flags/v1/
+- url: https://api.optimizely.com/v2
+security:
+- apiKey: []
+- OAuth2:
+  - read
+  - write
+tags:
+- name: Holdouts
+paths:
+  /projects/{project_id}/holdouts:
+    get:
+      description: 'Get a list of Holdouts within a Project.
+
+
+        Holdouts are experiments that reserve a portion of your traffic to measure the impact of your feature flags and experiments. They help establish a control group by excluding a percentage of users from seeing any experiments, allowing you to measure the overall impact of your experimentation program.
+
+
+        You can use query parameters to filter and sort the response. Holdouts can be in different states (draft, running, concluded) and can be scoped globally or locally within your project.
+
+        '
+      operationId: list_holdouts
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - description: 'Filter the Holdouts by archived status. Set to `true` to show only archived holdouts, `false` to show only active holdouts, or omit to show both.
+
+          '
+        in: query
+        name: archived
+        required: false
+        schema:
+          type: boolean
+      - description: 'Filter the Holdouts by status. Can be one or multiple values from: `draft`, `running`, or `concluded`. Multiple statuses can be provided as an array.
+
+          '
+        in: query
+        name: status
+        required: false
+        schema:
+          items:
+            $ref: '#/components/schemas/Holdout/properties/status'
+          type: array
+      - description: 'Search for Holdouts by name, description, or key. Performs a case-insensitive substring match on the holdout name, description, and key fields.
+
+          '
+        in: query
+        name: query
+        required: false
+        schema:
+          type: string
+      - description: 'Sort the Holdouts by one or more attributes. Use format `attribute:direction` where direction is either `asc` or `desc`. Multiple sort criteria are applied from left to right.
+
+          '
+        in: query
+        name: sort
+        schema:
+          items:
+            enum:
+            - name:asc
+            - name:desc
+            - key:asc
+            - key:desc
+            - created_time:asc
+            - created_time:desc
+            - updated_time:asc
+            - updated_time:desc
+            - status:asc
+            - status:desc
+            type: string
+          type: array
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/perPage'
+      - $ref: '#/components/parameters/pageToken'
+      - $ref: '#/components/parameters/pageWindow'
+      responses:
+        '200':
+          $ref: '#/components/responses/HoldoutsPaginatedListSuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+      summary: List Holdouts for a project
+      tags:
+      - Holdouts
+    post:
+      description: "Creates a new holdout experiment to establish a control group for measuring the impact of your feature flags and experiments.\n\nA holdout reserves a percentage of your traffic (specified in basis points) that will be excluded from seeing any experiments, allowing you to measure the overall impact of your experimentation program against a baseline control group.\n\nThe holdout will be created in a `draft` status and can be configured with:\n- **Traffic allocation**: Percentage of users to exclude from experiments (0-10000 basis points)\n- **Scope**: Global (affects all experiments) or local (specific experiments only)  \n- **Audiences**: Target specific user segments using audience conditions\n- **Metrics**: Track and analyze the impact on key business metrics\n- **Environment**: Specify which environment the holdout applies to\n\n**Key Validation Rules:**\n- Holdout `key` must be unique within the project\n- Required fields: `key`, `name`\n- `traffic_allocation` must be between 0-10000 (basis points)\n- `key` must match pattern: `^[a-zA-Z0-9_\\-]+$` (max 64 characters)\n- `name` and `description` have character limits (255 and 1000 respectively)\n\n**Metrics Integration:** If metrics are provided, they will be automatically saved to the MetricsHub for tracking and analysis.\n"
+      operationId: create_holdout
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      requestBody:
+        $ref: '#/components/requestBodies/HoldoutRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/HoldoutSuccessResponse'
+        '400':
+          content:
+            application/json:
+              examples:
+                duplicate_key:
+                  summary: Duplicate holdout key
+                  value:
+                    detail: Another entity already exists with the key 'checkout_holdout'.
+                    status: 400
+                    title: Key checkout_holdout already exists
+                    type: about:blank
+                invalid_data:
+                  summary: Invalid request data
+                  value:
+                    detail: traffic_allocation must be between 0 and 10000
+                    status: 400
+                    title: Invalid request data
+                    type: about:blank
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: "Bad Request - Invalid input data or validation failure.\n\nCommon causes:\n- Missing required fields (`key` or `name`)\n- Duplicate holdout key within the project  \n- Invalid `key` format (must be alphanumeric with underscores/hyphens only)\n- `traffic_allocation` outside valid range (0-10000)\n- Field length limits exceeded\n- Invalid JSON structure in request body\n- Malformed audience conditions or metrics configuration\n"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+      summary: Create a new Holdout
+      tags:
+      - Holdouts
+    servers:
+    - url: https://api.optimizely.com/flags/v1/
+  /projects/{project_id}/holdouts/{holdout_id}:
+    delete:
+      description: "Permanently and irreversibly delete a holdout by its unique ID. This is a destructive operation that cannot be undone.\n\n**⚠️ CAUTION - Permanent Deletion:**\n- All holdout configuration data will be permanently lost\n- Associated metric data will be deleted from MetricsHub  \n- Experiment rules and historical data will be removed\n- There is **no way to recover** this data after deletion\n\n**What gets deleted:**\n- Holdout configuration (traffic allocation, audience conditions, etc.)\n- All associated experiment rules and their settings\n- Metric tracking data and historical performance \n- System metadata and lifecycle timestamps\n\n**Safer Alternative - Archiving:**\nIf you want to stop a holdout without permanent data loss, consider archiving instead:\n1. Update the holdout status to `concluded` (if currently running)\n2. Use the PATCH endpoint to set `archived: true`\n\nArchived holdouts preserve all historical data while removing them from active lists and preventing further modifications.\n\n**When to use DELETE vs ARCHIVE:**\n- **DELETE**: Use only when you're certain the holdout and all its data should be permanently removed\n- **ARCHIVE**: Recommended for most cases - preserves data for analysis while cleaning up active experiments\n\n**Important Notes:**\n- Can delete holdouts in any status (draft, running, concluded)\n- Operation affects both database and MetricsHub systems\n- This corresponds to the `delete_url` link in holdout responses\n"
+      operationId: delete_holdout
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/holdoutId'
+      responses:
+        '204':
+          content: {}
+          description: 'Successfully deleted the holdout. No response body is returned.
+
+
+            **Deletion completed:**
+
+            - Holdout configuration permanently removed from database
+
+            - Associated metrics deleted from MetricsHub
+
+            - All experiment rules and historical data destroyed
+
+            - Holdout is no longer accessible via any API endpoints
+
+
+            **What happens after deletion:**
+
+            - GET requests to this holdout will return 404 Not Found
+
+            - The holdout will not appear in list responses
+
+            - Associated URLs (update_url, fetch_url, etc.) become invalid
+
+            - Any references to this holdout in other systems should be cleaned up
+
+
+            A successful 204 response confirms the holdout has been completely removed from all systems.
+
+            '
+        '400':
+          content:
+            application/json:
+              example:
+                detail: Holdout ID must be a positive integer
+                status: 400
+                title: Invalid holdout ID
+                type: about:blank
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: 'Bad Request - Invalid request parameters or malformed holdout ID.
+
+
+            **Common causes:**
+
+            - Invalid `holdout_id` format (must be a positive integer)
+
+            - Invalid `project_id` format (must be a positive integer)
+
+            - Malformed request structure
+
+            '
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          content:
+            application/json:
+              examples:
+                feature_disabled:
+                  summary: Holdouts feature disabled
+                  value:
+                    detail: Holdouts feature is not enabled for this project
+                    status: 403
+                    title: Feature not enabled
+                    type: about:blank
+                insufficient_permissions:
+                  summary: Insufficient permissions
+                  value:
+                    detail: Permission denied - insufficient privileges to delete holdouts
+                    status: 403
+                    title: Forbidden
+                    type: about:blank
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: 'Forbidden - You don''t have permission to delete holdouts in this project.
+
+
+            **Permission requirements:**
+
+            - Must have project-level access
+
+            - Must have holdout deletion permissions
+
+            - Holdouts feature must be enabled for this project
+
+
+            **Common causes:**
+
+            - Insufficient user permissions for destructive operations
+
+            - Project-level permissions don''t include holdout management
+
+            - Organization-level policies restrict holdout deletion
+
+            - Holdouts feature flag is disabled for this project
+
+            '
+        '404':
+          content:
+            application/json:
+              examples:
+                holdout_not_found:
+                  summary: Holdout does not exist
+                  value:
+                    detail: Holdout not found with id '987'
+                    status: 404
+                    title: Holdout not found
+                    type: about:blank
+                project_not_found:
+                  summary: Project does not exist
+                  value:
+                    detail: Project not found with id '12345'
+                    status: 404
+                    title: Project not found
+                    type: about:blank
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: "Not Found - The specified holdout does not exist or has already been deleted.\n\n**Possible reasons:**\n- Holdout ID does not exist in the specified project\n- Project ID does not exist or you don't have access to it\n- Holdout was already deleted by another user/process\n- Insufficient permissions to view or delete this holdout\n\n**Note**: This is also returned if the holdout exists but you lack delete permissions, \nfor security reasons (to prevent ID enumeration attacks).\n"
+      summary: Delete a Holdout
+      tags:
+      - Holdouts
+    get:
+      description: "Retrieves detailed information about a specific holdout by its unique ID within a project.\n\n**What you'll get:**\n- Complete holdout configuration including traffic allocation, status, and settings\n- Associated experiment rules and their current states  \n- Audience conditions and targeting criteria (if configured)\n- Metric tracking configuration and current values\n- Lifecycle timestamps (created, updated, started, ended)\n- RESTful links for related operations (update, delete, archive, etc.)\n\n**Holdout States:**\n- **Draft**: Holdout is configured but not yet active\n- **Running**: Currently excluding traffic from experiments  \n- **Concluded**: Finished collecting data, results available for analysis\n\n**Use Cases:**\n- View complete holdout configuration before making changes\n- Monitor current status and performance metrics\n- Access experiment rules affected by this holdout\n- Retrieve data for analysis and reporting\n- Verify permissions for management operations via included links\n\nThis operation corresponds to the `url` or `fetch_holdout_url` property found in holdout list responses.\n"
+      operationId: fetch_holdout
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/holdoutId'
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                concluded_holdout:
+                  summary: Concluded holdout with complete lifecycle
+                  value:
+                    archive_url: /projects/12345/holdouts/archived
+                    archived: false
+                    created_time: '2024-06-28T10:00:00.000Z'
+                    delete_url: /projects/12345/holdouts/987
+                    description: Completed control group study showing 15% incremental impact
+                    end_time: '2024-08-31T23:59:59.000Z'
+                    environment_key: production
+                    holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+                    id: 987
+                    key: q3_control_group
+                    metrics:
+                    - id: conversion_rate
+                      name: Conversion Rate
+                      type: custom
+                    - id: revenue_per_visitor
+                      name: Revenue per Visitor
+                      type: custom
+                    name: Q3 Marketing Control Group - Concluded
+                    project_id: 12345
+                    rules:
+                      '456':
+                        created_time: '2024-06-15T10:00:00.000Z'
+                        flag_key: promo_banner
+                        flag_name: Promotional Banner
+                        flag_status: archived
+                        rule_key: summer_promo
+                        rule_name: Summer Promotion
+                        traffic_allocation: 2000
+                        updated_time: '2024-08-31T23:59:59.000Z'
+                    start_time: '2024-07-01T09:00:00.000Z'
+                    status: concluded
+                    traffic_allocation: 1000
+                    updated_time: '2024-08-31T23:59:59.000Z'
+                    url: /projects/12345/holdouts/987
+                    urn: holdouts.flag.optimizely.com::987
+                draft_holdout:
+                  summary: Draft holdout ready for configuration
+                  value:
+                    archive_url: /projects/12345/holdouts/archived
+                    archived: false
+                    created_time: '2024-09-15T10:00:00.000Z'
+                    delete_url: /projects/12345/holdouts/987
+                    description: Control group for Q4 marketing campaigns to measure incremental impact
+                    environment_key: production
+                    holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+                    id: 987
+                    key: q4_control_group
+                    metrics: []
+                    name: Q4 Marketing Control Group
+                    project_id: 12345
+                    rules: {}
+                    status: draft
+                    traffic_allocation: 1000
+                    update_url: /projects/12345/holdouts/987
+                    updated_time: '2024-09-15T10:00:00.000Z'
+                    url: /projects/12345/holdouts/987
+                    urn: holdouts.flag.optimizely.com::987
+                running_holdout:
+                  summary: Active holdout with experiment rules
+                  value:
+                    archived: false
+                    created_time: '2024-09-15T10:00:00.000Z'
+                    delete_url: /projects/12345/holdouts/987
+                    description: Active control group excluding 10% traffic from all experiments
+                    environment_key: production
+                    holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+                    id: 987
+                    key: q4_control_group
+                    metrics:
+                    - id: revenue_impact
+                      name: Revenue Impact
+                      type: custom
+                    name: Q4 Marketing Control Group
+                    project_id: 12345
+                    rules:
+                      '456':
+                        created_time: '2024-09-10T14:30:00.000Z'
+                        flag_key: new_checkout
+                        flag_name: New Checkout Experience
+                        flag_status: unarchived
+                        rule_key: checkout_experiment
+                        rule_name: Checkout Flow Test
+                        traffic_allocation: 2000
+                        updated_time: '2024-09-12T11:15:00.000Z'
+                    start_time: '2024-09-16T09:00:00.000Z'
+                    status: running
+                    traffic_allocation: 1000
+                    update_url: /projects/12345/holdouts/987
+                    updated_time: '2024-09-16T09:00:00.000Z'
+                    url: /projects/12345/holdouts/987
+                    urn: holdouts.flag.optimizely.com::987
+              schema:
+                $ref: '#/components/schemas/Holdout'
+          description: 'Successfully retrieved the holdout with all its configuration details.
+
+
+            **Response includes:**
+
+            - **Core properties**: ID, key, name, description, status, traffic allocation
+
+            - **Lifecycle data**: Created/updated timestamps, start/end times (if applicable)
+
+            - **Configuration**: Environment, audience conditions, metrics setup
+
+            - **Experiment rules**: Associated experiments and their allocation settings
+
+            - **Management links**: URLs for update, archive, delete operations (if authorized)
+
+            - **System metadata**: URN, project association, archive status
+
+
+            **Link availability depends on user permissions:**
+
+            - Missing `update_url`: Cannot modify this holdout
+
+            - Missing `delete_url`: Cannot permanently delete
+
+            - Missing `archive_url`/`unarchive_url`: Cannot change archive status
+
+
+            **Status-specific data:**
+
+            - **Draft holdouts**: Full configuration, no timing data
+
+            - **Running holdouts**: Includes `start_time`, active experiment rules
+
+            - **Concluded holdouts**: Includes both `start_time` and `end_time`
+
+            '
+        '400':
+          content:
+            application/json:
+              example:
+                detail: Holdout ID must be a positive integer
+                status: 400
+                title: Invalid holdout ID
+                type: about:blank
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: "Bad Request - Invalid request parameters or malformed holdout ID.\n\n**Common causes:**\n- Invalid `holdout_id` format (must be a positive integer)\n- Invalid `project_id` format (must be a positive integer)  \n- Malformed request structure or unsupported query parameters\n"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          content:
+            application/json:
+              example:
+                detail: Holdout not found with id '987'
+                status: 404
+                title: Holdout not found
+                type: about:blank
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: 'Not Found - The specified holdout does not exist or you don''t have access to it.
+
+
+            **Possible reasons:**
+
+            - Holdout ID does not exist in the specified project
+
+            - Project ID does not exist or you don''t have access to it
+
+            - Holdout was permanently deleted
+
+            - Insufficient permissions to view this holdout
+
+            '
+      summary: Fetch a single Holdout
+      tags:
+      - Holdouts
+    post:
+      description: "Updates a specific holdout using JSON Patch operations (RFC 6902). This endpoint allows you to modify individual properties of an existing holdout without replacing the entire resource.\n\n**Supported Operations:**\n- **Status transitions**: Move holdouts through their lifecycle (`draft` → `running` → `concluded`)\n- **Configuration updates**: Modify traffic allocation, name, description, and other settings\n- **Archive management**: Archive/unarchive concluded holdouts\n- **Metrics updates**: Modify metric configurations (restricted based on status)\n\n**State Management & Validation Rules:**\n- **Draft holdouts**: All fields can be updated except readonly properties\n- **Running holdouts**: Limited updates allowed; cannot modify metrics or core configuration\n- **Concluded holdouts**: Only `name` and `archived` status can be modified\n- **Status transitions**: Must follow proper sequence (draft→running→concluded)\n- **Traffic allocation**: Must be 0-10000 basis points (0-100%)\n\n**Automatic Timestamp Management:**\n- Moving to `running` status automatically sets `start_time` to current timestamp\n- Moving to `concluded` status automatically sets `end_time` to current timestamp\n\n**Common Update Patterns:**\n```json\n[\n  {\"op\": \"replace\", \"path\": \"/name\", \"value\": \"Updated Holdout Name\"},\n  {\"op\": \"replace\", \"path\": \"/traffic_allocation\", \"value\": 1500},\n  {\"op\": \"replace\", \"path\": \"/status\", \"value\": \"running\"}\n]\n```\n\n**Important Limitations:**\n- Cannot modify metrics on running holdouts (prevents mid-experiment changes)\n- Cannot archive non-concluded holdouts (must conclude first)\n- Cannot update core configuration on running/concluded holdouts\n- ReadOnly properties in patch operations are ignored\n"
+      operationId: update_holdouts
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/holdoutId'
+      requestBody:
+        content:
+          application/json-patch+json:
+            examples:
+              archive_holdout:
+                summary: Archive a concluded holdout
+                value:
+                - op: replace
+                  path: /archived
+                  value: true
+              conclude_holdout:
+                summary: Conclude a running holdout
+                value:
+                - op: replace
+                  path: /status
+                  value: concluded
+              multiple_updates:
+                summary: Update multiple properties at once
+                value:
+                - op: replace
+                  path: /name
+                  value: Q4 2024 Control Group
+                - op: replace
+                  path: /description
+                  value: Updated control group for Q4 campaign analysis
+                - op: replace
+                  path: /traffic_allocation
+                  value: 1000
+              start_holdout:
+                summary: Start a draft holdout (moves to running)
+                value:
+                - op: replace
+                  path: /status
+                  value: running
+              update_basic_properties:
+                summary: Update name and traffic allocation
+                value:
+                - op: replace
+                  path: /name
+                  value: Updated Control Group
+                - op: replace
+                  path: /traffic_allocation
+                  value: 2500
+            schema:
+              items:
+                $ref: '#/components/schemas/PatchRequestBody'
+              type: array
+        description: "Array of JSON Patch operations to apply to the holdout. Each operation specifies a change to make to the holdout resource.\n\n**Supported patch paths include:**\n- `/name` - Update holdout display name\n- `/description` - Update holdout description  \n- `/status` - Change holdout status (draft/running/concluded)\n- `/traffic_allocation` - Update traffic percentage (0-10000 basis points)\n- `/archived` - Archive or unarchive the holdout\n- `/metrics` - Update metric configurations (not allowed on running holdouts)\n\n**Note**: Status transitions and archiving have specific validation rules enforced server-side.\n"
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                basic_update:
+                  summary: Updated holdout with new name and traffic
+                  value:
+                    '987':
+                      archive_url: /projects/12345/holdouts/archived
+                      archived: false
+                      created_time: '2019-05-08T00:00:00.000Z'
+                      delete_url: /projects/12345/holdouts/987
+                      description: Updated control group for better targeting
+                      environment_key: production
+                      holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+                      id: 987
+                      name: Updated Control Group
+                      project_id: 12345
+                      rules:
+                        '456':
+                          created_time: '2022-01-08T00:00:00.000Z'
+                          flag_key: recurring_revenue
+                          flag_name: Recurring Revenue
+                          flag_status: unarchived
+                          rule_key: experiment_one
+                          rule_name: Experiment One
+                          traffic_allocation: 2000
+                          updated_time: '2022-01-08T00:00:00.000Z'
+                      status: draft
+                      traffic_allocation: 2500
+                      unarchive_url: /projects/12345/holdouts/unarchived
+                      update_url: /projects/12345/holdouts/987
+                      updated_time: '2024-09-16T10:30:00.000Z'
+                      url: /projects/12345/holdouts/987
+                      urn: holdouts.flag.optimizely.com::987
+                started_holdout:
+                  summary: Holdout moved to running status
+                  value:
+                    '987':
+                      archived: false
+                      created_time: '2019-05-08T00:00:00.000Z'
+                      delete_url: /projects/12345/holdouts/987
+                      description: Now actively excluding traffic from experiments
+                      environment_key: production
+                      holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+                      id: 987
+                      name: Live Control Group
+                      project_id: 12345
+                      start_time: '2024-09-16T10:30:00.000Z'
+                      status: running
+                      traffic_allocation: 1500
+                      update_url: /projects/12345/holdouts/987
+                      updated_time: '2024-09-16T10:30:00.000Z'
+                      url: /projects/12345/holdouts/987
+                      urn: holdouts.flag.optimizely.com::987
+              schema:
+                $ref: '#/components/schemas/HoldoutMap'
+          description: "Successful update of the holdout. Returns the updated holdout resource with all modifications applied.\n\n**Response Details:**\n- Contains the complete updated holdout with all applied changes\n- Includes RESTful JSON (https://restfuljson.org/) styled links for related actions\n- Automatic timestamps are included (start_time/end_time) if status was changed\n- Missing links indicate insufficient permissions for related operations\n- ReadOnly fields reflect any server-managed updates (like timestamps)\n\n**Status-Specific Behavior:**\n- **Draft→Running**: Includes newly set `start_time`\n- **Running→Concluded**: Includes newly set `end_time` \n- **Archived**: Shows `archived: true` with preserved historical data\n"
+        '400':
+          content:
+            application/json:
+              examples:
+                concluded_holdout_restriction:
+                  summary: Limited updates on concluded holdout
+                  value:
+                    detail: Can't edit holdouts in 'concluded' state.
+                    status: 400
+                    title: Unable to update holdout
+                    type: about:blank
+                invalid_state_transition:
+                  summary: Invalid status transition
+                  value:
+                    detail: Holdout with key 'control_group' is not in 'draft' state, can't move to 'running' state.
+                    status: 400
+                    title: Unable to update holdout
+                    type: about:blank
+                invalid_traffic_allocation:
+                  summary: Traffic allocation out of range
+                  value:
+                    detail: Traffic allocation must be between 0 and 10000 (basis points).
+                    status: 400
+                    title: Unable to update holdout
+                    type: about:blank
+                metrics_update_restricted:
+                  summary: Cannot update metrics on running holdout
+                  value:
+                    detail: Can't update metrics on a running holdout.
+                    status: 400
+                    title: Unable to update holdout
+                    type: about:blank
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: "Bad Request - Invalid patch operations, validation failures, or illegal state transitions.\n\n**Common causes:**\n- **Invalid state transitions**: Attempting invalid status changes (e.g., draft→concluded)\n- **Restricted updates**: Trying to modify metrics on running holdouts\n- **Invalid traffic allocation**: Values outside 0-10000 range\n- **Archive violations**: Attempting to archive non-concluded holdouts  \n- **Malformed patch**: Invalid JSON Patch structure or unsupported operations\n- **Missing required fields**: Patch operations targeting required fields with null/empty values\n- **Type mismatches**: Providing wrong data types for specific fields\n"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '409':
+          $ref: '#/components/responses/ConflictResponse'
+      summary: Update a Holdout using JSON Patch
+      tags:
+      - Holdouts
+    servers:
+    - url: https://api.optimizely.com/flags/v1/
+  /projects/{project_id}/holdouts/{holdout_id}/experiments:
+    get:
+      description: "Retrieves a list of experiments that are connected to a specific holdout through the system's data relationships.\n\n**What you'll get:**\n- **Experiment identification**: Layer experiment IDs from connected rules\n- **Timing information**: Start and end times from experiment reports  \n- **Variation details**: Deployed variation IDs when configured\n- **Clean data**: Filtered to remove empty or null values for clarity\n\n**How experiments connect to holdouts:**\nThis endpoint traverses complex database relationships to find experiments associated with a holdout:\n1. **Holdout → Project**: Matches by project_id\n2. **Project → Flags**: All flags in the same project\n3. **Flags → Rulesets → Rules**: Rules within flag configurations\n4. **Rules → Reports**: Experiment reports linked to rules\n5. **Rules → Variations**: Deployed variations (when configured)\n\n**Data relationships explained:**\n- Each returned experiment represents a rule that's potentially affected by the holdout's traffic allocation\n- Experiment timing comes from associated reports (start_time, end_time)\n- Deployed variations are included when rules have configured variations\n- Results are automatically filtered to exclude empty/null values\n\n**Use cases:**\n- **Impact analysis**: Understanding which experiments are affected by a holdout\n- **Experiment coordination**: Viewing overlapping experiment timelines  \n- **Traffic allocation planning**: Seeing experiment relationships before making holdout changes\n- **Reporting integration**: Connecting holdout data with experiment performance\n- **Debugging**: Investigating unexpected experiment behavior related to holdouts\n\n**Performance considerations:**\n- Query involves multiple table joins across the experiment system\n- Results are processed to remove empty values for cleaner responses\n- Response size depends on the number of connected experiments\n\nThis endpoint provides crucial visibility into the complex relationships between holdouts and the experiments they may influence.\n"
+      operationId: fetch_holdout_experiments
+      parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/holdoutId'
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                concluded_experiments:
+                  summary: Historical experiments with complete data
+                  value:
+                  - deployed_variation_id: 6666666666
+                    experiment_end_time: '2024-07-31T23:59:59.000Z'
+                    experiment_id: 5555555555
+                    experiment_start_time: '2024-07-01T10:00:00.000Z'
+                  - deployed_variation_id: 8888888888
+                    experiment_end_time: '2024-06-30T23:59:59.000Z'
+                    experiment_id: 7777777777
+                    experiment_start_time: '2024-06-15T14:00:00.000Z'
+                multiple_experiments:
+                  summary: Holdout with multiple connected experiments
+                  value:
+                  - deployed_variation_id: 9876543210
+                    experiment_end_time: '2024-09-30T23:59:59.000Z'
+                    experiment_id: 1234567890
+                    experiment_start_time: '2024-09-01T10:00:00.000Z'
+                  - deployed_variation_id: 8765432109
+                    experiment_end_time: null
+                    experiment_id: 2345678901
+                    experiment_start_time: '2024-09-15T14:30:00.000Z'
+                  - deployed_variation_id: null
+                    experiment_end_time: '2024-08-31T23:59:59.000Z'
+                    experiment_id: 3456789012
+                    experiment_start_time: '2024-08-01T09:00:00.000Z'
+                no_experiments:
+                  summary: Holdout with no connected experiments
+                  value: []
+                ongoing_experiments:
+                  summary: Active experiments without end times
+                  value:
+                  - deployed_variation_id: 2222222222
+                    experiment_end_time: null
+                    experiment_id: 1111111111
+                    experiment_start_time: '2024-09-10T12:00:00.000Z'
+                  - deployed_variation_id: null
+                    experiment_end_time: null
+                    experiment_id: 3333333333
+                    experiment_start_time: '2024-09-16T08:00:00.000Z'
+              schema:
+                $ref: '#/components/schemas/HoldoutExperiments'
+          description: "Successfully retrieved the list of experiments associated with the holdout.\n\n**Response structure:**\n- Returns an array of experiment objects  \n- Each experiment contains identification, timing, and variation data\n- Empty or null values are automatically filtered out\n- Results are ordered by the database query (typically by experiment_id)\n\n**Data interpretation:**\n- **experiment_id**: References the layer_experiment_id from rules connected to this holdout\n- **Timing fields**: Reflect actual experiment run periods from reports\n- **deployed_variation_id**: Present only when experiments have specific variation deployments\n- **Missing end_time**: Indicates ongoing or perpetually running experiments\n- **Missing deployed_variation_id**: Experiments without specific variation targeting\n\n**Empty response scenarios:**\n- Holdout exists but has no connected experiments (valid scenario)\n- No rules in the project match the holdout's configuration\n- All connected experiments have been archived or removed\n\n**Use this data for:**\n- Understanding experiment overlap with holdout traffic\n- Planning holdout changes with awareness of affected experiments\n- Building experiment impact reports and analytics\n- Coordinating experiment timelines and traffic allocation\n"
+        '400':
+          content:
+            application/json:
+              example:
+                detail: Holdout ID must be a positive integer
+                status: 400
+                title: Invalid holdout ID
+                type: about:blank
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: "Bad Request - Invalid request parameters or malformed IDs.\n\n**Common causes:**\n- Invalid `holdout_id` format (must be a positive integer)\n- Invalid `project_id` format (must be a positive integer)  \n- Malformed request structure or unsupported query parameters\n"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          content:
+            application/json:
+              examples:
+                feature_disabled:
+                  summary: Holdouts feature disabled
+                  value:
+                    detail: Holdouts feature is not enabled for this project
+                    status: 403
+                    title: Feature not enabled
+                    type: about:blank
+                insufficient_permissions:
+                  summary: Insufficient permissions
+                  value:
+                    detail: Permission denied - insufficient privileges to view holdout experiments
+                    status: 403
+                    title: Forbidden
+                    type: about:blank
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: 'Forbidden - You don''t have permission to view holdout experiments in this project.
+
+
+            **Permission requirements:**
+
+            - Must have project-level read access
+
+            - Must have permissions to view holdouts and their associated data
+
+            - Must have experiment data access permissions
+
+            - Holdouts feature must be enabled for this project
+
+
+            **Common causes:**
+
+            - Insufficient user permissions for holdout data access
+
+            - Project-level permissions don''t include experiment data viewing
+
+            - Organization-level policies restrict holdout information access
+
+            - Holdouts feature flag is disabled for this project
+
+            '
+        '404':
+          content:
+            application/json:
+              examples:
+                holdout_not_found:
+                  summary: Holdout does not exist
+                  value:
+                    detail: Holdout not found with id '987'
+                    status: 404
+                    title: Holdout not found
+                    type: about:blank
+                project_not_found:
+                  summary: Project does not exist
+                  value:
+                    detail: Project not found with id '12345'
+                    status: 404
+                    title: Project not found
+                    type: about:blank
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: "Not Found - The specified holdout does not exist or you don't have access to it.\n\n**Possible reasons:**\n- Holdout ID does not exist in the specified project\n- Project ID does not exist or you don't have access to it\n- Holdout was permanently deleted  \n- Insufficient permissions to view this holdout or its experiments\n\n**Note**: Returns 404 even if holdout exists but you lack permissions, for security reasons.\n"
+      summary: Fetch experiments associated with a holdout
+      tags:
+      - Holdouts
+    servers:
+    - url: https://api.optimizely.com/flags/v1/
+  /export/projects/{project_id}/holdouts/{holdout_id}/results/csv:
+    get:
+      description: Get results for a Holdout as a CSV
+      operationId: get_holdout_results_csv
+      parameters:
+      - description: The ID for the Project where the Holdout is located
+        in: path
+        name: project_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: The ID for the Holdout you want results for
+        in: path
+        name: holdout_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - $ref: '#/components/parameters/browser_segment'
+      - $ref: '#/components/parameters/device_segment'
+      - $ref: '#/components/parameters/source_segment'
+      - $ref: '#/components/parameters/attribute_id_segment'
+      - $ref: '#/components/parameters/attribute_value_segment'
+      - $ref: '#/components/parameters/segment_conditions'
+      responses:
+        '200':
+          description: Return Holdout results in CSV format
+        '202':
+          description: The results request has been received but has not yet finished processing. Wait a bit and try again.
+        '204':
+          description: There are no results data for this Holdout yet.
+        default:
+          content:
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: Get Holdout results as a CSV
+      tags:
+      - Holdouts
+      x-release-state: beta
+    servers:
+    - url: https://api.optimizely.com/v2
+components:
+  schemas:
+    AudienceConditionsString:
+      description: A valid AudienceConditionsArray represented as a JSON string
+      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
+      type: string
+    PatchRequestBody:
+      description: A JSONPatch document as defined by RFC 6902
+      properties:
+        from:
+          description: A JSON Pointer to the resource attribute
+          type: string
+        op:
+          description: The operation to be performed
+          enum:
+          - add
+          - remove
+          - replace
+          - move
+          - copy
+          - test
+          type: string
+        path:
+          description: A JSON-Pointer to the resource or the resource attribute
+          type: string
+        value:
+          anyOf:
+          - type: object
+          - items:
+              type: string
+            type: array
+          - $ref: '#/components/schemas/AudienceConditions'
+          - type: string
+          - type: integer
+          - type: boolean
+          - items:
+              $ref: '#/components/schemas/SubMetric'
+            type: array
+          description: The value to be used within the operations.
+      required:
+      - op
+      - path
+      type: object
+    Holdout:
+      description: 'Represents a holdout experiment that reserves a portion of traffic to measure the impact of feature flags and experiments.
+
+
+        Holdouts help establish control groups by excluding a percentage of users from seeing any experiments, allowing you to measure the overall impact of your experimentation program against a baseline.
+
+        '
+      example:
+        archived: false
+        audience_conditions:
+        - or
+        - audience_id: 5340810295
+        created_by_user_email: user@company.com
+        created_time: '2023-12-15T10:00:00.000Z'
+        description: Holdout group to measure the overall impact of our growth experiments throughout the year
+        environment_key: production
+        holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+        id: 12345
+        key: annual_growth_holdout
+        metrics:
+        - aggregator: unique
+          display_title: Conversion Rate
+          scope: visitor
+          winning_direction: increasing
+        name: Annual Growth Control Group
+        project_id: 98765
+        revision: 3
+        scope: global
+        scope_type: exclude
+        start_time: '2024-01-01T00:00:00.000Z'
+        status: running
+        traffic_allocation: 1000
+        updated_time: '2024-01-01T10:00:00.000Z'
+        urn: holdout.flag.optimizely.com::12345
+      properties:
+        archived:
+          description: 'Whether the holdout is archived. Archived holdouts are hidden from normal views
+
+            but retain their historical data and configuration.
+
+            '
+          example: false
+          type: boolean
+        audience_conditions:
+          description: 'Defines which audiences this holdout applies to. If omitted, the holdout applies to all users.
+
+            Uses logical operators like ''and'', ''or'', ''not'' to combine multiple audience conditions.
+
+            '
+          externalDocs:
+            description: Audience conditions structure documentation
+            url: https://developers.optimizely.com/x/rest/guides/conditions/
+          items:
+            example:
+            - or
+            - audience_id: 5340810295
+            - audience_id: 1234567890
+          type: array
+        audience_ids:
+          deprecated: true
+          description: 'DEPRECATED: Use audience_conditions instead. List of audience IDs that this holdout applies to.
+
+            This field is maintained for backward compatibility.
+
+            '
+          example:
+          - 5340810295
+          - 1234567890
+          items:
+            type: integer
+          type: array
+        created_by_user_email:
+          description: Email address of the user who created the holdout.
+          example: user@company.com
+          readOnly: true
+          type: string
+        created_time:
+          description: Timestamp when the holdout was originally created.
+          example: '2023-12-15T10:00:00.000Z'
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        description:
+          description: 'Optional detailed description explaining the purpose and context of this holdout.
+
+            Helps team members understand what this holdout is measuring.
+
+            '
+          example: Holdout group to measure the overall impact of our growth experiments throughout the year
+          maxLength: 1000
+          type: string
+        end_time:
+          description: 'Timestamp when the holdout finished or will finish.
+
+            Null for holdouts that are still running or have no defined end time.
+
+            '
+          example: '2024-12-31T23:59:59.000Z'
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        environment_key:
+          description: 'The environment where this holdout is active (e.g., ''production'', ''staging'').
+
+            The holdout only affects traffic in this specific environment.
+
+            '
+          example: production
+          type: string
+        holdout_results_api_token:
+          description: 'API token for accessing holdout results and analytics data.
+
+            This token is dynamically generated for each API response and provides
+
+            secure access to holdout-specific results endpoints.
+
+            '
+          example: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+          readOnly: true
+          type: string
+        id:
+          description: System-generated unique identifier for the holdout.
+          example: 12345
+          readOnly: true
+          type: integer
+        key:
+          description: 'Unique user-defined identifier for the holdout within the project.
+
+            Must contain only alphanumeric characters, underscores, and hyphens.
+
+            '
+          example: annual_growth_holdout
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\-]+$
+          type: string
+        metrics:
+          description: 'List of metrics being tracked and analyzed for this holdout.
+
+            These metrics help measure the impact of experiments on the control group.
+
+            '
+          example:
+          - aggregator: unique
+            display_title: Conversion Rate
+            scope: visitor
+            winning_direction: increasing
+          - aggregator: sum
+            display_title: Revenue per Visitor
+            field: revenue
+            scope: visitor
+            winning_direction: increasing
+          items:
+            $ref: '#/components/schemas/Metric'
+          type: array
+        name:
+          description: Human-readable name for the holdout displayed in the UI.
+          example: Annual Growth Control Group
+          maxLength: 255
+          type: string
+        project_id:
+          description: The unique identifier of the project this holdout belongs to.
+          example: 98765
+          format: int64
+          readOnly: true
+          type: integer
+        revision:
+          description: 'Revision number that increments with each change to the holdout.
+
+            Used for tracking modifications and ensuring data consistency.
+
+            '
+          example: 3
+          readOnly: true
+          type: integer
+        scope:
+          description: 'Defines the scope of the holdout:
+
+            - ''global'': Affects all experiments across the entire project
+
+            - ''local'': Affects only specific experiments or flags
+
+            '
+          enum:
+          - global
+          - local
+          example: global
+          type: string
+        scope_type:
+          description: 'Defines how the holdout scope is applied:
+
+            - ''exclude'': Users in holdout are excluded from seeing experiments (most common)
+
+            - ''include'': Users in holdout are included in experiments (less common)
+
+            '
+          enum:
+          - exclude
+          - include
+          example: exclude
+          type: string
+        start_time:
+          description: 'Timestamp when the holdout became or will become active.
+
+            When the holdout starts affecting traffic allocation.
+
+            '
+          example: '2024-01-01T00:00:00.000Z'
+          format: date-time
+          type: string
+        status:
+          description: 'Current operational status of the holdout:
+
+            - ''draft'': Holdout is configured but not yet active
+
+            - ''running'': Holdout is currently active and affecting traffic
+
+            - ''concluded'': Holdout has finished and is no longer active
+
+            '
+          enum:
+          - draft
+          - running
+          - concluded
+          example: running
+          type: string
+        traffic_allocation:
+          description: 'Percentage of traffic allocated to this holdout, expressed in basis points (1/100th of a percent).
+
+            For example: 100 = 1%, 1000 = 10%, 5000 = 50%. The remaining traffic sees experiments normally.
+
+            '
+          example: 1000
+          maximum: 10000
+          minimum: 0
+          type: integer
+        updated_time:
+          description: Timestamp when the holdout was last modified.
+          example: '2024-01-01T10:00:00.000Z'
+          format: date-time
+          readOnly: true
+          type: string
+        urn:
+          description: Universal Resource Name (URN) for the holdout, used for global identification.
+          example: holdout.flag.optimizely.com::12345
+          readOnly: true
+          type: string
+      required:
+      - id
+      - name
+      - key
+      type: object
+    SubMetric:
+      properties:
+        aggregator:
+          type: string
+        event_id:
+          type: integer
+        event_type:
+          type: string
+        field:
+          type:
+          - string
+          - 'null'
+        role:
+          enum:
+          - numerator
+          - denominator
+          type: string
+        scope:
+          type: string
+      type: object
+    AudienceConditionsArray:
+      example:
+      - or
+      - audience_id: 123
+      - - and
+        - audience_id: 456
+        - audience_id: 789
+      items:
+        anyOf:
+        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+          type: string
+        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
+          properties:
+            audience_id:
+              type: integer
+          required:
+          - audience_id
+          type: object
+        - $ref: '#/components/schemas/AudienceConditionsArray'
+          description: A nested AudienceConditionsArray
+          example:
+          - - and
+            - audience_id: 456
+            - audience_id: 789
+      type: array
+    Metric:
+      properties:
+        aggregator:
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
+          enum:
+          - unique
+          - count
+          - sum
+          - ratio
+          type: string
+        display_title:
+          description: An optional title for the unique metric configuration. If not provided, the event name will be used.
+          type: string
+        display_unit:
+          description: An optional name for the unit of the unique metric configuration.
+          type: string
+        event_id:
+          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
+          example: 32334454244
+          format: int64
+          type: integer
+        event_properties:
+          properties:
+            filter:
+              properties:
+                combine_operator:
+                  enum:
+                  - or
+                  - and
+                  type: string
+                conditions:
+                  items:
+                    $ref: '#/components/schemas/EventPropertyCondition'
+              type: object
+          type: object
+        event_type:
+          type: string
+        field:
+          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
+          enum:
+          - revenue
+          - value
+          type:
+          - string
+          - 'null'
+        id:
+          description: A unique identifier for the metric configuration.
+          type: string
+        metrics:
+          items:
+            $ref: '#/components/schemas/SubMetric'
+            type: object
+          type: array
+        project_id:
+          description: A unique identifier for the project associated with the metric.
+          type: integer
+        scope:
+          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
+          enum:
+          - session
+          - visitor
+          - event
+          type: string
+        visibility:
+          description: The visibility of the metric.
+          enum:
+          - account
+          - experiment
+          - project
+          type: string
+        winning_direction:
+          description: The winning direction of this metric
+          enum:
+          - increasing
+          - decreasing
+          type: string
+      required:
+      - winning_direction
+      - aggregator
+      type: object
+    HoldoutRequestBody:
+      description: "Request body schema for creating or updating a holdout. \n\nHoldouts are experiments that reserve a portion of your traffic to measure the impact of your feature flags and experiments. They help establish a control group by excluding a percentage of users from seeing any experiments, allowing you to measure the overall impact of your experimentation program.\n"
+      example:
+        audience_conditions:
+        - or
+        - audience_id: 5340810295
+        description: Holdout group to measure the overall impact of our growth experiments throughout the year
+        environment_key: production
+        key: annual_growth_holdout
+        metrics:
+        - aggregator: unique
+          display_title: Conversion Rate
+          scope: visitor
+          winning_direction: increasing
+        name: Annual Growth Control Group
+        scope: global
+        scope_type: exclude
+        start_time: '2024-01-01T00:00:00.000Z'
+        traffic_allocation: 500
+      properties:
+        archived:
+          description: Whether the holdout is archived. New holdouts are created as unarchived by default.
+          example: false
+          readOnly: true
+          type: boolean
+        audience_conditions:
+          description: 'Defines which audiences this holdout should apply to. If omitted, the holdout applies to all users.
+
+            Uses the same structure as audience conditions in experiments - supports logical operators like ''and'', ''or'', ''not''.
+
+            '
+          externalDocs:
+            description: Audience conditions structure documentation
+            url: https://developers.optimizely.com/x/rest/guides/conditions/
+          items:
+            example:
+            - or
+            - audience_id: 5340810295
+            - audience_id: 1234567890
+          type: array
+        audience_ids:
+          deprecated: true
+          description: 'DEPRECATED: Use audience_conditions instead. List of audience IDs that this holdout should apply to.
+
+            This field is maintained for backward compatibility.
+
+            '
+          example:
+          - 5340810295
+          - 1234567890
+          items:
+            type: integer
+          type: array
+        created_by_user_email:
+          description: Email of the user who created the holdout.
+          example: user@company.com
+          readOnly: true
+          type: string
+        created_time:
+          description: Timestamp when the holdout was created.
+          example: '2024-01-01T10:00:00.000Z'
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        description:
+          description: "Optional detailed description explaining the purpose and context of this holdout. \nHelps team members understand what this holdout is measuring.\n"
+          example: Holdout group to measure the overall impact of our growth experiments throughout the year
+          maxLength: 1000
+          type: string
+        end_time:
+          description: Timestamp when the holdout finished or will finish.
+          example: '2024-12-31T23:59:59.000Z'
+          format: date-time
+          readOnly: true
+          type: string
+        environment_key:
+          description: "The environment where this holdout will be active (e.g., 'production', 'staging'). \nThe holdout will only affect traffic in this specific environment.\n"
+          example: production
+          type: string
+        id:
+          description: System-generated unique identifier for the holdout.
+          example: 12345
+          readOnly: true
+          type: integer
+        key:
+          description: "Unique identifier for the holdout. Must be unique within the project. \nUse alphanumeric characters, underscores, and hyphens only.\n"
+          example: annual_growth_holdout
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\-]+$
+          type: string
+        metrics:
+          description: 'List of metrics that will be tracked and analyzed for this holdout.
+
+            These metrics help measure the impact of experiments on your control group.
+
+            '
+          example:
+          - aggregator: unique
+            display_title: Conversion Rate
+            scope: visitor
+            winning_direction: increasing
+          - aggregator: sum
+            display_title: Revenue per Visitor
+            field: revenue
+            scope: visitor
+            winning_direction: increasing
+          items:
+            $ref: '#/components/schemas/Metric'
+          type: array
+        name:
+          description: Human-readable name for the holdout that will be displayed in the UI.
+          example: Annual Growth Control Group
+          maxLength: 255
+          type: string
+        project_id:
+          description: The ID of the project this holdout belongs to.
+          example: 98765
+          format: int64
+          readOnly: true
+          type: integer
+        revision:
+          description: Revision number for tracking changes to the holdout.
+          example: 1
+          readOnly: true
+          type: integer
+        scope:
+          default: global
+          description: 'Defines the scope of the holdout:
+
+            - ''global'': Affects all experiments across the entire project
+
+            - ''local'': Affects only specific experiments or flags (requires additional configuration)
+
+            '
+          enum:
+          - global
+          - local
+          example: global
+          type: string
+        scope_type:
+          default: exclude
+          description: 'Defines how the holdout scope is applied:
+
+            - ''exclude'': Users in holdout are excluded from seeing experiments (most common)
+
+            - ''include'': Users in holdout are included in experiments (less common)
+
+            '
+          enum:
+          - exclude
+          - include
+          example: exclude
+          type: string
+        start_time:
+          description: 'When the holdout should become active. If not specified, the holdout will be active immediately upon creation.
+
+            Must be in ISO 8601 format.
+
+            '
+          example: '2024-01-01T00:00:00.000Z'
+          format: date-time
+          type: string
+        status:
+          description: Current status of the holdout.
+          enum:
+          - draft
+          - running
+          - concluded
+          example: draft
+          readOnly: true
+          type: string
+        traffic_allocation:
+          description: 'Percentage of traffic to allocate to this holdout, expressed in basis points (1/100th of a percent).
+
+            For example: 100 = 1%, 1000 = 10%, 5000 = 50%. The remaining traffic will see experiments normally.
+
+            '
+          example: 1000
+          maximum: 10000
+          minimum: 0
+          type: integer
+        updated_time:
+          description: Timestamp when the holdout was last updated.
+          example: '2024-01-01T10:00:00.000Z'
+          format: date-time
+          readOnly: true
+          type: string
+      required:
+      - key
+      - name
+      type: object
+    HoldoutMap:
+      additionalProperties:
+        $ref: '#/components/schemas/Holdout'
+      description: 'A dictionary/map of holdouts where each key is the holdout ID and the value is the holdout object.
+
+
+        This structure is used internally for efficient lookups and when representing holdout
+
+        relationships. The keys are string representations of holdout IDs.
+
+        '
+      example:
+        '12345':
+          description: Control group for measuring overall impact of Q4 growth experiments
+          environment_key: production
+          id: 12345
+          key: growth_experiment_holdout
+          name: Q4 Growth Experiment Control
+          project_id: 98765
+          scope: global
+          scope_type: exclude
+          status: running
+          traffic_allocation: 1000
+        '12346':
+          description: Holdout for measuring checkout conversion experiments
+          environment_key: staging
+          id: 12346
+          key: checkout_flow_holdout
+          name: Checkout Flow Holdout Group
+          project_id: 98765
+          scope: local
+          scope_type: exclude
+          status: draft
+          traffic_allocation: 500
+      type: object
+    AudienceConditions:
+      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
+      oneOf:
+      - $ref: '#/components/schemas/AudienceConditionsArray'
+      - $ref: '#/components/schemas/AudienceConditionsString'
+    HoldoutExperiments:
+      description: "A collection of experiment rules associated with a holdout.\n\nEach item represents an experiment that is connected to the holdout through database \nrelationships between holdouts, flags, rulesets, rules, and reports. The list contains \nexperiment timing information and deployed variation details.\n"
+      items:
+        $ref: '#/components/schemas/HoldoutExperiment'
+      type: array
+    HoldoutsPaginatedList:
+      description: 'Paginated response structure for holdout collections with navigation links and metadata.
+
+
+        This response format follows the standard pagination pattern used across the API,
+
+        providing navigation URLs and counts for efficient browsing of large holdout collections.
+
+        '
+      example:
+        count: 2
+        filter_url: /projects/98765/holdouts{?archived}
+        first_url: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
+        items:
+        - archived: false
+          created_time: '2023-12-15T10:00:00.000Z'
+          description: Control group for measuring overall impact of Q4 growth experiments
+          environment_key: production
+          holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+          id: 12345
+          key: growth_experiment_holdout
+          name: Q4 Growth Experiment Control
+          project_id: 98765
+          revision: 2
+          scope: global
+          scope_type: exclude
+          start_time: '2024-01-01T00:00:00.000Z'
+          status: running
+          traffic_allocation: 1000
+          updated_time: '2024-01-01T10:00:00.000Z'
+        - archived: false
+          created_time: '2024-01-20T14:30:00.000Z'
+          description: Holdout for measuring checkout conversion experiments
+          environment_key: production
+          holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+          id: 12346
+          key: checkout_flow_holdout
+          name: Checkout Flow Holdout Group
+          project_id: 98765
+          revision: 1
+          scope: global
+          scope_type: exclude
+          start_time: '2024-02-01T00:00:00.000Z'
+          status: draft
+          traffic_allocation: 500
+          updated_time: '2024-01-20T14:30:00.000Z'
+        last_url: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#13
+        next_url:
+        - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#2
+        - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
+        page: 1
+        reset_url: /projects/98765/holdouts
+        total_count: 25
+        total_pages: 13
+        url: /projects/98765/holdouts
+      properties:
+        count:
+          description: Number of holdouts returned on the current page (length of items array).
+          example: 2
+          minimum: 0
+          type: integer
+        filter_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'URL template for applying filters to the holdouts list. Replace the placeholder
+
+            with filter parameters like ''archived=false'' to filter results.
+
+            '
+          example: /projects/98765/holdouts{?archived,status}
+        first_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'Link to the first page of holdouts in the result set. Always points to page 1
+
+            with the same query parameters as the current request.
+
+            '
+          example: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
+        items:
+          description: Array of holdout objects for the current page.
+          items:
+            $ref: '#/components/schemas/Holdout'
+          type: array
+        last_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'Link to the final page of holdouts in the result set. Points to the highest
+
+            page number that contains results.
+
+            '
+          example: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#13
+        next_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: "Array of links to subsequent pages in the result set. The first element is the \nimmediate next page, followed by additional pages in sequence. Empty if on the last page.\n"
+          example:
+          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#2
+          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
+        page:
+          description: 'Current page number (1-indexed). The first page is page 1, not page 0.
+
+            This corresponds to the requested page in the pagination sequence.
+
+            '
+          example: 1
+          minimum: 1
+          type: integer
+        prev_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: "Array of links to previous pages in the result set. The first element is the \nimmediate previous page, followed by earlier pages in reverse sequence. Empty if on the first page.\n"
+          example:
+          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#4
+          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
+        reset_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'Link to reset pagination and view the default first page without any applied filters.
+
+            Use this to return to the standard holdouts list view.
+
+            '
+          example: /projects/98765/holdouts
+        total_count:
+          description: 'Total number of holdouts matching the query criteria across all pages.
+
+            This count reflects any filters applied to the request.
+
+            '
+          example: 25
+          minimum: 0
+          type: integer
+        total_pages:
+          description: 'Total number of pages required to display all holdouts matching the criteria.
+
+            Calculated as ceil(total_count / per_page).
+
+            '
+          example: 13
+          minimum: 1
+          type: integer
+        url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: "Link to the current page (self-reference). Use this URL to refresh \nthe current page or bookmark the current view.\n"
+          example: /projects/98765/holdouts?page=1
+      required:
+      - items
+      - count
+      - page
+      - total_count
+      - total_pages
+      - url
+      - first_url
+      - last_url
+      type: object
+    HoldoutExperiment:
+      description: 'Represents a single experiment rule that is connected to a holdout configuration.
+
+
+        Contains experiment identification, timing information from the associated report,
+
+        and the deployed variation ID if one exists for the experiment.
+
+        '
+      example:
+        deployed_variation_id: 9876543210
+        experiment_end_time: '2024-03-15T23:59:59.000Z'
+        experiment_id: 1234567890
+        experiment_start_time: '2024-01-15T10:00:00.000Z'
+      properties:
+        deployed_variation_id:
+          description: 'The unique identifier of the deployed variation for this experiment.
+
+            This is the Variation.id that matches the Rule.deployed_variation_key.
+
+            May be null if no deployed variation is configured.
+
+            '
+          example: 9876543210
+          format: int64
+          type:
+          - integer
+          - 'null'
+        experiment_end_time:
+          description: "The end time of the experiment report. This timestamp indicates when the \nexperiment finished collecting data. May be null for ongoing experiments.\nSourced from Report.end_time.\n"
+          example: '2024-03-15T23:59:59.000Z'
+          format: date-time
+          type:
+          - string
+          - 'null'
+        experiment_id:
+          description: 'The layer experiment ID from the rule associated with this holdout.
+
+            This corresponds to the Rule.layer_experiment_id field in the database.
+
+            '
+          example: 1234567890
+          format: int64
+          type: integer
+        experiment_start_time:
+          description: "The start time of the experiment report. This timestamp indicates when the \nexperiment began collecting data. Sourced from Report.start_time.\n"
+          example: '2024-01-15T10:00:00.000Z'
+          format: date-time
+          type:
+          - string
+          - 'null'
+      required:
+      - experiment_id
+      type: object
+    UrlValue:
+      description: A single url.
+      type: string
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
+      properties:
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
+      type: object
+    EventPropertyCondition:
+      properties:
+        name:
+          type: string
+        operator:
+          enum:
+          - equal_to
+          - not_equal_to
+          - greater_than
+          - greater_than_or_equal_to
+          - less_than
+          - less_than_or_equal_to
+          - contains
+          - does_not_contain
+          type: string
+        type:
+          enum:
+          - string
+          - number
+          - boolean
+          type: string
+        value:
+          type: string
+      required:
+      - name
+      - type
+      - value
+      - operator
+      type: object
+    UrlList:
+      description: A list of urls.
+      items:
+        type: string
+      type: array
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+  parameters:
+    page:
+      description: Page number for pagination
+      in: query
+      name: page
+      schema:
+        format: int64
+        type: integer
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    holdoutId:
+      description: The holdout identifier
+      example: 54321
+      in: path
+      name: holdout_id
+      required: true
+      schema:
+        type: integer
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
+    device_segment:
+      description: Device to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, source, attribute_id, attribute_value].
+      in: query
+      name: device
+      schema:
+        enum:
+        - desktop
+        - ipad
+        - iphone
+        - mobile
+        - tablet
+        type: string
+    attribute_id_segment:
+      description: 'ID of the attribute to segment results by. Requests containing attribute_id will return the results for all visitors that have attribute_value for the attribute represented by attribute_id. If present, the attribute_value parameter must also be present, and it cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
+
+        '
+      in: query
+      name: attribute_id
+      schema:
+        format: int64
+        type: integer
+    browser_segment:
+      description: Browser to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [device, source, attribute_id, attribute_value].
+      in: query
+      name: browser
+      schema:
+        enum:
+        - firefox
+        - chrome
+        - internet_explorer
+        - opera
+        - safari
+        type: string
+    segment_conditions:
+      description: '(BETA) A string representation of a JSON Segment Conditions Expression. This parameter can be either URL-escaped stringified JSON or Base64-encoded stringified JSON using URL-safe alphabet (preferred).
+
+        Segment Conditions Expressions consist of Logical Expressions and Match Expressions.
+
+        Logical Expressions are represented as an array of the format [<operator>, <expression>...], where the supported operators are "and", "or" and "not".
+
+        Match Expressions are represented as an object of the format {"attribute_id": <attribute_id>, "attribute_value": <value>[, "match_type": <match_type>]}, where supported values for match_type are "exact" match type will match only an exact string match between "value" string and the attribute value. "substring" match type will match if "value" is a substring of the attribute value. "prefix" match type will match if "value" is a string prefix of the attribute value. "regex" match type will match if "value" is a regular expression match for the attribute value. The default match_type is "exact".
+
+        '
+      in: query
+      name: segment_conditions
+      schema:
+        type: string
+    source_segment:
+      description: 'Source to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, device, attribute_id, attribute_value].
+
+        Campaign: Contains users that arrive on a URL containing a ''utm_campaign,'' ''utm_source,'' ''gclid,'' or ''otm_source'' query parameter. If the URL contains one of these parameters, the visitor will count as "Campaign" traffic even if they arrived through search.
+
+        Direct:  Includes all users who do not have any external referrer in their URL.
+
+        Referral: Includes all users that come from another URL that doesn''t count as Campaign.
+
+        '
+      in: query
+      name: source
+      schema:
+        enum:
+        - campaign
+        - direct
+        - referral
+        - search
+        type: string
+    attribute_value_segment:
+      description: 'UTF-8 encoded value correlating to attribute_id. If present, the attribute_id parameter must also be present. This parameter also requires attribute_id to be set, and cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
+
+        '
+      in: query
+      name: attribute_value
+      schema:
+        type: string
+  responses:
+    HoldoutsPaginatedListSuccessResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HoldoutsPaginatedList'
+      description: 'Successful retrieval of a list of holdouts.
+
+
+        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+        link is not present in the response, it indicates a user is not authorized to access
+
+        the related resource.
+
+        '
+    HoldoutSuccessResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Holdout'
+      description: 'Successful retrieval, creation or update of a Holdout.
+
+
+        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+        link is not present in the response, it indicates a user is not authorized to access
+
+        the related resource.
+
+        '
+    ConflictResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Conflicting resource state with requested action
+    NotFoundResponse:
+      description: Not found. No content
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
+  requestBodies:
+    HoldoutRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HoldoutRequestBody'
+      required: true
+  securitySchemes:
+    BearerAuth:
+      description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token
+      scheme: bearer
+      type: http
+    OAuth2:
+      description: Write applications that authenticate with the REST API via OAuth 2.0.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.optimizely.com/oauth2/authorize
+          scopes:
+            all: Grants all access
+          tokenUrl: https://app.optimizely.com/oauth2/token
+      type: oauth2
+    apiKey:
+      scheme: bearer
+      type: http
+x-refined-from:
+- optimizely-feature-experimentation-optimizely-feature-experimentation-api-openapi.json
+- optimizely-web-experimentation-optimizely-api-openapi.json

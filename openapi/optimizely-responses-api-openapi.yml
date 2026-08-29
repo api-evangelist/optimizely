@@ -1,0 +1,372 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Responses API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Responses
+  description: Manage mailing responses, such as hard or soft bounces
+paths:
+  /{clientId}/responses/bounces/{recipientId}:
+    get:
+      tags:
+      - Responses
+      summary: Get the total number of hard or soft bounces of a recipient
+      description: Get the total number of hard or soft bounces of a recipient to determine if a recipient will receive further mailings.
+      operationId: getBounceCounter
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: category
+        in: query
+        description: 'Type of the response<p><i>Available values</i> : hardbounce, softbounce</p>'
+        required: true
+        schema:
+          type: string
+      - name: mediaType
+        in: query
+        description: Media type of the mailing
+        schema:
+          type: string
+          default: EMAIL
+          enum:
+          - EMAIL
+          - FAX
+          - SMS
+          - LETTER
+          - PUSH
+          - PRINT
+      - name: recipientId
+        in: path
+        description: Recipient ID (usually the email address)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The total number of hard or soft bounces was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCount'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestCount'
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Responses
+      summary: Delete hard and soft bounces
+      description: Delete hard and soft bounces of a recipient.
+      operationId: resetBounceCounter
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: mediaType
+        in: query
+        description: 'Media type of the mailing<p><i>Default value</i> : EMAIL</p>'
+        schema:
+          type: string
+          enum:
+          - EMAIL
+          - FAX
+          - SMS
+          - LETTER
+          - PUSH
+          - PRINT
+      - name: recipientId
+        in: path
+        description: Recipient ID (usually the email address)
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: The hard and soft bounces of the indicated recipient were deleted successfully.
+      security:
+      - Authorization: []
+  /{clientId}/responses/bounces/{recipientId}/thresholdExceeded:
+    get:
+      tags:
+      - Responses
+      summary: Get information about whether a recipient has exceeded the hard or the soft bounce threshold
+      operationId: isBounceCounterThresholdExceeded
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: mediaType
+        in: query
+        description: 'Media type of the mailing<p><i>Default value</i> : EMAIL</p>'
+        schema:
+          type: string
+          enum:
+          - EMAIL
+          - FAX
+          - SMS
+          - LETTER
+          - PUSH
+          - PRINT
+      - name: recipientId
+        in: path
+        description: Recipient ID (usually the email address)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The information about whether the recipient has exceeded the hard or soft bounce threshold was retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestBounceCounterThresholdExceeded'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestBounceCounterThresholdExceeded'
+      security:
+      - Authorization: []
+  /{clientId}/responses/bounces:
+    get:
+      tags:
+      - Responses
+      summary: Get the maximum number of allowed bounces of a recipient
+      description: Get the maximum number of hard or soft bounces a recipient can produce before the recipient will stop to get further mailings.
+      operationId: getBounceCounterThreshold
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: category
+        in: query
+        description: 'Response type<p><i>Available values</i> : hardbounce, softbounce</p>'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Maximum number of allowed hard or soft bounces was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestCount'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestCount'
+      security:
+      - Authorization: []
+  /{clientId}/responses:
+    get:
+      tags:
+      - Responses
+      summary: Get information about all responses of a recipient
+      description: Get detailed information about all responses of a recipient, such as response type, response subject and rule name of the response.
+      operationId: selectResponses
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: 'Maximum number of retrieved responses <p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: recipientIds
+        in: query
+        description: Comma-separated list of recipient IDs (only required if the "mailingId" parameter is not specified)
+        schema:
+          type: array
+          items:
+            type: string
+      - name: mailingId
+        in: query
+        description: Mailing ID (only required if the "recipientIds" parameter is not specified)
+        schema:
+          type: integer
+          format: int64
+      - name: category
+        in: query
+        description: Response type
+        required: true
+        schema:
+          type: string
+          enum:
+          - hardbounce
+          - softbounce
+          - autoresponder
+          - unknown
+      responses:
+        '200':
+          description: The responses were retrieved successfully (empty result if none was found).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestResponseStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestResponseStreamingCollection'
+        '400':
+          description: None of the mandatory parameters were provided (category and mailingId/recipientIds), or limit parameter is greater than 10000.
+        '404':
+          description: If a mailingId was requested and that mailingId was not found. If one or more recipientIds were requested and none of them were found.
+      security:
+      - Authorization: []
+components:
+  schemas:
+    RestCount:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+        count:
+          type: integer
+          description: Total number
+          format: int64
+    RestResponseStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestResponse'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestBounceCounterThresholdExceeded:
+      type: object
+      properties:
+        exceeded:
+          type: boolean
+          description: If true, the recipient has exceeded the hard or the soft bounce threshold
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestResponse:
+      type: object
+      properties:
+        mailId:
+          type: string
+          description: Encoded mail ID
+        mailingId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        recipientListId:
+          type: integer
+          description: Recipient list ID
+          format: int64
+        recipientId:
+          type: string
+          description: Recipient ID
+        category:
+          type: string
+          description: Response type
+        subject:
+          type: string
+          description: Response subject
+        ruleName:
+          type: string
+          description: Rule name of the response
+        mediaType:
+          type: string
+          description: Media type of the response
+          enum:
+          - EMAIL
+          - FAX
+          - SMS
+          - LETTER
+          - PUSH
+          - PRINT
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

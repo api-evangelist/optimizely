@@ -1,0 +1,1813 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Confirmations API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Confirmations
+  description: Manage registration confirmations (opt-in emails)
+paths:
+  /{clientId}/confirmations:
+    get:
+      tags:
+      - Confirmations
+      summary: Get information about all confirmation mailings
+      description: Get detailed information about all confirmation mailings, such as status, type or creation date. You can filter mailings by media type and sort the result by specific criteria.
+      operationId: selectConfirmationMailings
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: offset
+        in: query
+        description: 'Starting point of the result list <p><i>Default value</i> : 0</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        description: 'Maximum number of confirmation mailings<p><i>Default value</i> : 100</p>'
+        schema:
+          type: integer
+          format: int32
+      - name: mediaType
+        in: query
+        description: 'Filter mailings by media type<p><i>Available values</i> : email, sms, letter, push</p>'
+        schema:
+          type: string
+      - name: resultView
+        in: query
+        description: Choose whether to retrieve a DETAILED view including all nodes (messages, recipient lists, target groups) or a SUMMARY of metadata.<p><b>Note:</b> The more campaigns you have, the more time the detailed view takes to load.</p>
+        schema:
+          type: string
+          default: SUMMARY
+          enum:
+          - SUMMARY
+          - DETAILED
+      - name: status
+        in: query
+        description: 'Filter mailings by status<p><i>Available values</i> : invalid, activationRequired, activated, canceled, paused, running, finished</p>'
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Sort result by specific criteria
+        schema:
+          type: string
+          default: created
+          enum:
+          - id
+          - name
+          - description
+          - status
+          - created
+          - modified
+          - started
+          - finished
+      - name: folderId
+        in: query
+        description: Filter mailings assigned to a folder
+        schema:
+          type: integer
+          format: int64
+      - name: direction
+        in: query
+        description: Sort order
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+      responses:
+        '200':
+          description: A list of all confirmation mailings was retrieved (empty if none exists).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaignStreamingCollection'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaignStreamingCollection'
+        '400':
+          description: Invalid limit request. Change the limit to less than 10000.
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Confirmations
+      summary: Create a confirmation mail
+      operationId: createConfirmationMailing
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConfirmationMailingRequestData'
+      responses:
+        '201':
+          description: Confirmation mail was created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+        '400':
+          description: Request parameters were not valid
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}:
+    get:
+      tags:
+      - Confirmations
+      summary: Get information about a confirmation mailing
+      description: Get detailed information about a confirmation mailing, such as type, status or creation date.
+      operationId: getConfirmationMailing
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The confirmation mailing was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestSmartCampaign'
+        '404':
+          description: The confirmation mailing could not be found. Ensure that the required parameters such as "confirmationMailId" are correct and the confirmation mailing exists.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Confirmations
+      summary: Delete a confirmation mailing
+      operationId: deleteConfirmationMailing
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The confirmation mailing was deleted successfully.
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}/message:
+    post:
+      tags:
+      - Confirmations
+      summary: Update a mailing
+      description: Update information of a mailing, such as name, subject or content.
+      operationId: updateCampaignMessage
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MessageRequestData'
+      responses:
+        '200':
+          description: The mailing was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestMessageNode'
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}/message/attachments:
+    post:
+      tags:
+      - Confirmations
+      summary: Add attachments into a campaign message. Only applicable for campaign message of type email
+      description: Add attachments into a campaign message. With this operation you can add a single, or multiple attachments into a campaign message.
+      operationId: addAttachments
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                attachmentIds:
+                  type: array
+                  description: A comma separated list of attachment ids to be added
+                  items:
+                    type: integer
+                    format: int64
+            encoding:
+              attachmentIds:
+                explode: false
+      responses:
+        '200':
+          description: The attachments were successfully added into campaign message.
+        '400':
+          description: The "attachmentIds" parameter is either empty or invalid, or the campaign mailing is of type FAX.
+        '404':
+          description: The campaign mailing was not found.
+        '405':
+          description: The campaign message is not of type EMAIL.
+      security:
+      - Authorization: []
+    delete:
+      tags:
+      - Confirmations
+      summary: Delete attachments of a campaign message. Only applicable for campaign message of type email
+      operationId: deleteAttachments
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: attachmentIds
+        in: query
+        description: A comma separated list of attachment ids to be deleted
+        required: true
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: The attachments were successfully deleted from campaign message.
+        '400':
+          description: The "attachmentIds" parameter is empty, or the campaign mailing is of type FAX.
+        '404':
+          description: The campaign mailing was not found.
+        '405':
+          description: The campaign message is not of type EMAIL.
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}/message/content:
+    get:
+      tags:
+      - Confirmations
+      summary: Get the content of a mailing (email)
+      description: Get the content of a mailing (email) and define the content type to be delivered.
+      operationId: getCampaignMessageContent
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: Accept
+        in: header
+        description: 'Controls which content type is used <p><i>Available values</i> : text/plain, text/html<p><i>Default value</i> : text/plain</p><p>Does not work with the "Try it out" feature.</p>'
+        schema:
+          type: string
+      - name: source
+        in: query
+        schema:
+          type: string
+          default: message
+          enum:
+          - EDITOR
+          - MESSAGE
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The content of the mailing (in the indicated content type) was retrieved successfully.
+        '404':
+          description: No content could be found for the indicated content type. Ensure that the "Accept" parameter has the correct content type and the content exists.
+        '406':
+          description: The content type is not supported. Ensure that the "Accept" parameter has the correct content type.
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}/message/test/{testMailingId}:
+    get:
+      tags:
+      - Confirmations
+      summary: Get information about the sending status of all recipients of a test mailing
+      description: Get detailed information about the sending status of all recipients of a test mailing, such as enqueued, sending, sent or failed.
+      operationId: getTestMailingReport
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: testMailingId
+        in: path
+        description: Test mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The report was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestMailingReport'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/TestMailingReport'
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}/message/tracking/links/{trackingLinkId}:
+    get:
+      tags:
+      - Confirmations
+      summary: Get information about a tracking link of a mailing
+      description: Get detailed information about a tracking link of a mailing, such as ID, URL or link occurrences in the text version.
+      operationId: getTrackingLink
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: trackingLinkId
+        in: path
+        description: Tracking link ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The tracking link was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingLink'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingLink'
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Confirmations
+      summary: Update the tracking link configuration of a mailing
+      operationId: updateLinkTracking
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: trackingLinkId
+        in: path
+        description: Tracking link ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TrackingLinkConfigurationRequestData'
+      responses:
+        '200':
+          description: The tracking link configuration was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingLink'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingLink'
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}/message/tracking/links:
+    get:
+      tags:
+      - Confirmations
+      summary: Get information about all tracking links of a mailing
+      description: Get detailed information about all tracking links of a mailing, such as ID, URL or link occurrences in the text version.
+      operationId: getTrackingLinks
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The tracking links were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestTrackingLink'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestTrackingLink'
+        '400':
+          description: The number of tracking links exceeded the maximum of 3000.
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}/message/tracking:
+    get:
+      tags:
+      - Confirmations
+      summary: Get information about the tracking configuration of a mailing
+      operationId: getTrackingConfiguration
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The tracking configuration was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingConfiguration'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingConfiguration'
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Confirmations
+      summary: Update the tracking configuration of a mailing
+      operationId: updateTrackingConfiguration
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TrackingConfigurationRequestData'
+      responses:
+        '200':
+          description: The tracking configuration was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingConfiguration'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestTrackingConfiguration'
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}/recipientLists:
+    get:
+      tags:
+      - Confirmations
+      summary: Get information about a "Recipients" node
+      description: Get detailed information about a "Recipients" node, such as node ID, successor node ID or grid location.
+      operationId: getRecipientListsNodeForSCMailing
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The "Recipients" node was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListsNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListsNode'
+        '404':
+          description: 'The "Recipients" node could not be found. Ensure that the required parameters such as "campaignId" or "nodeId" are correct and the "Recipients" node exists. '
+      security:
+      - Authorization: []
+    post:
+      tags:
+      - Confirmations
+      summary: Create or update a "Recipients" node
+      description: Create or update a "Recipients" node. The "recipientListIds" parameter is only required for updating.
+      operationId: createOrUpdateRecipientListsNode
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RecipientListsRequestData'
+      responses:
+        '200':
+          description: The "Recipient" node was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListsNode'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestRecipientListsNode'
+        '201':
+          description: The "Recipient" node was created successfully.
+        '404':
+          description: The "Recipient" node could not be found. Ensure that the required parameters such as "campaignId" or "recipientListIds" are correct and the "Recipients" node exists.
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}/test/{testMailingId}:
+    get:
+      tags:
+      - Confirmations
+      summary: Get information about the sending status of all recipients of a test mailing
+      description: Get detailed information about the sending status of all recipients of a test mailing, such as enqueued, sending, sent or failed.
+      operationId: getTestMailingReport_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: testMailingId
+        in: path
+        description: Test mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The report was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestMailingReport'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/TestMailingReport'
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}/test:
+    post:
+      tags:
+      - Confirmations
+      summary: Send a test mailing
+      description: Send a test mailing to check content, layout or target groups before sending the actual mailing.
+      operationId: startTestMailing_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TestMailingRequestData'
+      responses:
+        '202':
+          description: The test message was sent successfully. The response contains a report on the recipients included in the test mailing (check "validRecipientAddresses" field).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestMailingStartedReport'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/TestMailingStartedReport'
+        '400':
+          description: At least one request parameter is not valid
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}/report:
+    get:
+      tags:
+      - Confirmations
+      summary: Get a campaign report
+      description: Get a detailed campaign report containing information such as number of recipients, opens, clicks, bounces or unsubscribes.
+      operationId: getReport
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The report was retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignMailingRestReport'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/CampaignMailingRestReport'
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}/start:
+    post:
+      tags:
+      - Confirmations
+      summary: Start a confirmation mailing
+      operationId: startConfirmationMailing
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The confirmation mailing was started successfully.
+      security:
+      - Authorization: []
+  /{clientId}/confirmations/{confirmationMailId}/stop:
+    post:
+      tags:
+      - Confirmations
+      summary: Stop a confirmation mailing
+      operationId: stopConfirmationMailing
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      - name: confirmationMailId
+        in: path
+        description: Confirmation mailing ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The Confirmation mailing was stopped successfully.
+      security:
+      - Authorization: []
+components:
+  schemas:
+    ConfirmationMailingRequestData:
+      required:
+      - content
+      - recipientListIds
+      - senderAddress
+      - subject
+      type: object
+      properties:
+        recipientListIds:
+          type: array
+          description: Comma-separated list of recipient list IDs
+          items:
+            type: integer
+            description: Comma-separated list of recipient list IDs
+            format: int64
+        content:
+          type: string
+          description: Mailing content (plain text)
+        subject:
+          type: string
+          description: Mailing subject
+        senderAddress:
+          type: string
+          description: Mailing sender address
+        subjectForTargetGroup:
+          type: string
+          description: Subject for a specific target group. Set "subject.[targetGroupId]" in request data (only email).<p>Does not work with the "Try it out" feature.</p>
+        replyToAddress:
+          type: string
+          description: Reply-to address (only email)
+        archiveEnabled:
+          type: boolean
+          description: Toggle whether a mailing can be archived or not
+        iconMetaData:
+          type: string
+          description: Icon meta data. Configure "icon.[attribute]".<p>Does not work with the "Try it out" feature.</p>
+        archivePeriod:
+          type: string
+          description: Period suggesting for how long a mailing should be archived
+          enum:
+          - ONE_MONTH
+          - TWO_MONTHS
+          - THREE_MONTHS
+          - SIX_MONTHS
+          - ONE_YEAR
+          - TWO_YEARS
+        resetReplyToAddress:
+          type: boolean
+          description: If true, the local part of the reply-to address is reset
+        replyToName:
+          type: string
+          description: Reply-to mailing name (only email)
+        resetPayload:
+          type: boolean
+          description: If true, all payload parameters are deleted. All set parameters within this request remain (only Web Push mailings).
+        name:
+          type: string
+          description: Mailing name
+        payload:
+          type: string
+          description: Payload parameters for Mobile Push and Web Push. Set "payload.[name]" in request data.<p>Does not work with the "Try it out" feature.</p>
+        description:
+          type: string
+          description: Mailing description
+        senderName:
+          type: string
+          description: Mailing sender name (only email)
+        mediaCode:
+          type: string
+          description: Media code (only email)
+        image:
+          type: string
+          description: Image for the Web Push message
+        clickAction:
+          type: string
+          description: Click action for the Web Push message
+        pushType:
+          type: string
+          description: Push type
+          enum:
+          - MOBILE
+          - WEB
+        icon:
+          type: string
+          description: Icon for the Web Push message
+    RestTrackingLink:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Tracking link ID
+          format: int64
+        url:
+          type: string
+          description: Tracking link URL
+        htmlTracking:
+          type: string
+          description: Tracking state of a link in the HTML version
+          enum:
+          - DEFAULT
+          - ENABLED
+          - DISABLED
+        textTracking:
+          type: string
+          description: Tracking state of a link in the text version
+          enum:
+          - DEFAULT
+          - ENABLED
+          - DISABLED
+        description:
+          type: string
+          description: Tracking link description
+        htmlOccurrences:
+          type: integer
+          description: Link occurrences in the HTML version
+          format: int32
+        textOccurrences:
+          type: integer
+          description: Link occurrences in the text version
+          format: int32
+        clickProfileIds:
+          type: array
+          description: Click profile IDs
+          items:
+            type: integer
+            description: Click profile IDs
+            format: int64
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+    RestRecipientListsNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        recipientListIds:
+          type: array
+          description: List of recipient list IDs
+          items:
+            type: integer
+            description: List of recipient list IDs
+            format: int64
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    RestRecipients:
+      type: object
+      properties:
+        net:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+        skipped:
+          type: integer
+          format: int32
+        inQueue:
+          type: integer
+          format: int32
+      description: Number of total, skipped and in-queue recipients
+    TrackingLinkConfigurationRequestData:
+      type: object
+      properties:
+        htmlTracking:
+          type: string
+          description: Tracking state of a link in the HTML version
+          enum:
+          - DEFAULT
+          - ENABLED
+          - DISABLED
+        textTracking:
+          type: string
+          description: Tracking state of a link in the text version
+          enum:
+          - DEFAULT
+          - ENABLED
+          - DISABLED
+        clickProfileIds:
+          type: array
+          description: IDs of relevant click profiles. An empty list will remove all entries.
+          items:
+            type: integer
+            description: IDs of relevant click profiles. An empty list will remove all entries.
+            format: int64
+        description:
+          type: string
+          description: Tracking link description
+    RestClicks:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+        unique:
+          type: integer
+          format: int32
+      description: Number of unique and total clicks
+    Filter:
+      type: object
+      properties:
+        name:
+          type: string
+    RecipientListsRequestData:
+      required:
+      - recipientListIds
+      type: object
+      properties:
+        recipientListIds:
+          type: array
+          description: Comma-separated list of recipient list IDs
+          items:
+            type: integer
+            description: Comma-separated list of recipient list IDs
+            format: int64
+        successorNodeId:
+          type: string
+          description: Successor node
+    RestSmartCampaignStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestSmartCampaign'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    CampaignMailingRestReport:
+      type: object
+      properties:
+        campaignId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        campaignName:
+          type: string
+          description: Mailing name
+        recipients:
+          $ref: '#/components/schemas/RestRecipients'
+        bounces:
+          $ref: '#/components/schemas/RestBounces'
+        unsubscribes:
+          type: integer
+          description: Number of unique unsubscribes
+          format: int32
+        opens:
+          $ref: '#/components/schemas/RestOpens'
+        clicks:
+          $ref: '#/components/schemas/RestClicks'
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    MessageRequestData:
+      type: object
+      properties:
+        deepLinkName:
+          type: string
+          description: This parameter is deprecated. Use "payload.[name]" instead.
+        mediaType:
+          type: string
+          description: Media type of the mailing (required only for creation)
+          enum:
+          - email
+          - sms
+          - push
+        subjectForTargetGroup:
+          type: string
+          description: Subject for a specific target group. Set "subject.[targetGroupId]" in request data (only email).<p>Does not work with the "Try it out" feature.</p>
+        replyToAddress:
+          type: string
+          description: Reply-to address (only email)
+        archiveEnabled:
+          type: boolean
+          description: Toggle whether a mailing can be archived or not
+        iconMetaData:
+          type: string
+          description: Icon meta data. Configure "icon.[attribute]".<p>Does not work with the "Try it out" feature.</p>
+        archivePeriod:
+          type: string
+          description: Period suggesting for how long a mailing should be archived
+          enum:
+          - ONE_MONTH
+          - TWO_MONTHS
+          - THREE_MONTHS
+          - SIX_MONTHS
+          - ONE_YEAR
+          - TWO_YEARS
+        resetReplyToAddress:
+          type: boolean
+          description: If true, the local part of the reply-to address is reset
+        resetTargetedSubjects:
+          type: boolean
+          description: If true, all target group subjects are deleted (only email)
+        replyToName:
+          type: string
+          description: Reply-to mailing name (only email)
+        resetDeeplinks:
+          type: boolean
+          description: This parameter is deprecated. Use "resetPayload" instead.
+        resetPayload:
+          type: boolean
+          description: If true, all payload parameters are deleted. All set parameters within this request remain (only Web Push mailings).
+        name:
+          type: string
+          description: Mailing name
+        content:
+          type: string
+          description: Mailing content (plain text)
+        payload:
+          type: string
+          description: Payload parameters for Mobile Push and Web Push. Set "payload.[name]" in request data.<p>Does not work with the "Try it out" feature.</p>
+        description:
+          type: string
+          description: Mailing description
+        senderName:
+          type: string
+          description: Mailing sender name (only email)
+        subject:
+          type: string
+          description: Mailing subject
+        mediaCode:
+          type: string
+          description: Media code (only email)
+        expiry:
+          type: string
+          description: Expiry date (only push mailings, use ISO 8601 format without milliseconds, e.g. 2022-03-03T08:45:07+01:00)
+          format: date-time
+        image:
+          type: string
+          description: Image for the Web Push message
+        senderAddress:
+          type: string
+          description: Mailing sender address
+        clickAction:
+          type: string
+          description: Click action for the Web Push message
+        pushType:
+          type: string
+          description: Push type
+          enum:
+          - MOBILE
+          - WEB
+        icon:
+          type: string
+          description: Icon for the Web Push message
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
+    RestOpens:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+        unique:
+          type: integer
+          format: int32
+      description: Number of unique and total opens
+    RestMessageNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        name:
+          type: string
+          description: Mailing name
+        mailingId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        description:
+          type: string
+          description: Mailing description
+        mediaType:
+          type: string
+          description: Media type of the mailing
+        status:
+          type: string
+          description: Current status of the mailing
+          enum:
+          - invalid
+          - activationRequired
+          - activated
+          - canceled
+          - paused
+          - running
+          - finished
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        started:
+          type: string
+          description: Start date of the mailing
+          format: date-time
+        finished:
+          type: string
+          description: Finish date of the mailing
+          format: date-time
+        senderAddress:
+          type: string
+          description: Email address of the sender
+        senderName:
+          type: string
+          description: Sender name
+        replyToAddress:
+          type: string
+          description: Email address for reply emails
+        replyToName:
+          type: string
+          description: Name for reply emails
+        subject:
+          type: object
+          additionalProperties:
+            type: string
+        mediaCode:
+          type: string
+          description: Media code of the mailing
+        format:
+          type: string
+          description: Mailing format
+        dispatchOption:
+          type: string
+          description: Dispatch options of the print mailing
+        dispatchStrategyOption:
+          type: string
+          description: Dispatch strategy of the print mailing
+        accumulateMessagesForDays:
+          type: integer
+          description: Number of messages per day
+          format: int32
+        pushType:
+          type: string
+          description: Push type (push message)
+          enum:
+          - MOBILE
+          - WEB
+        icon:
+          type: string
+          description: Icon (push message)
+        clickAction:
+          type: string
+          description: Click action (push message)
+        archiveEnabled:
+          type: boolean
+          description: Is mail archiving enabled
+        archivePeriod:
+          type: string
+          description: Mail archiving period
+          enum:
+          - ONE_MONTH
+          - TWO_MONTHS
+          - THREE_MONTHS
+          - SIX_MONTHS
+          - ONE_YEAR
+          - TWO_YEARS
+        smsParts:
+          type: integer
+          description: Number of SMS parts
+          format: int32
+        deeplinks:
+          type: object
+          additionalProperties:
+            type: string
+            description: Deeplinks of the push message
+          description: Deeplinks of the push message
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+        content:
+          type: string
+          description: Mailing content
+        payload:
+          type: object
+          additionalProperties:
+            type: string
+            description: Payload of the push message
+          description: Payload of the push message
+        contentType:
+          type: object
+          properties:
+            type:
+              type: string
+            subtype:
+              type: string
+            parameters:
+              type: object
+              additionalProperties:
+                type: string
+            wildcardType:
+              type: boolean
+            wildcardSubtype:
+              type: boolean
+          description: Content type of the mailing
+        expiry:
+          type: string
+          description: Expiry date and time of the push message
+          format: date-time
+        attachmentIds:
+          type: array
+          description: Comma-separated list of attachment IDs
+          items:
+            type: integer
+            description: Comma-separated list of attachment IDs
+            format: int64
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    RestBounces:
+      type: object
+      properties:
+        hard:
+          type: integer
+          format: int32
+        soft:
+          type: integer
+          format: int32
+      description: Number of hard and soft bounces
+    TrackingConfigurationRequestData:
+      type: object
+      properties:
+        defaultTextLinkTrackingEnabled:
+          type: boolean
+          description: If true, links are tracked for the text version by default
+        defaultHtmlLinkTrackingEnabled:
+          type: boolean
+          description: If true, links are tracked for the HTML version by default
+        clickTrackingEnabled:
+          type: boolean
+          description: If true, clicks are tracked
+        openTrackingEnabled:
+          type: boolean
+          description: If true, opens are tracked
+        openTrackingOfPartiallyLoadedMessagesEnabled:
+          type: boolean
+          description: If true, opens of partially loaded messages are tracked
+    RestSmartCampaign:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Campaign ID
+          format: int64
+        name:
+          type: string
+          description: Campaign name
+        mailingGroupId:
+          type: integer
+          description: Client ID
+          format: int64
+        description:
+          type: string
+          description: Mailing description
+        status:
+          type: string
+          description: Current campaign status
+          enum:
+          - invalid
+          - activationRequired
+          - activated
+          - canceled
+          - paused
+          - running
+          - finished
+        type:
+          type: string
+          description: Campaign type
+          enum:
+          - regular
+          - event
+          - confirmation
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        started:
+          type: string
+          description: Start date of the campaign
+          format: date-time
+        finished:
+          type: string
+          description: Finish date of the campaign
+          format: date-time
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+        recipientLists:
+          $ref: '#/components/schemas/RestRecipientListsNode'
+        targetGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestTargetGroupNode'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestMessageNode'
+        message:
+          $ref: '#/components/schemas/RestMessageNode'
+    RestTrackingConfiguration:
+      type: object
+      properties:
+        openTracking:
+          type: boolean
+          description: If true, opens are tracked
+        clickTracking:
+          type: boolean
+          description: If true, clicks are tracked
+        openTrackingOfPartiallyLoadedMessages:
+          type: boolean
+          description: If true, opens of partially loaded messages are tracked
+        defaultHtmlLinkTracking:
+          type: boolean
+          description: If true, links are tracked for the HTML version by default
+        defaultTextLinkTracking:
+          type: boolean
+          description: If true, links are tracked for the text version by default
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+    TestMailingStartedReport:
+      type: object
+      properties:
+        mailingId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        validRecipientAddresses:
+          type: array
+          description: Valid recipient addresses
+          items:
+            type: string
+            description: Valid recipient addresses
+        userIdsOfRecipientsWithoutValidAddresses:
+          type: array
+          description: User IDs of recipients without valid addresses
+          items:
+            type: string
+            description: User IDs of recipients without valid addresses
+        blacklistedRecipientAddresses:
+          type: array
+          description: Blacklisted recipient addresses
+          items:
+            type: string
+            description: Blacklisted recipient addresses
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    Point:
+      type: object
+      properties:
+        x:
+          type: integer
+          format: int32
+          xml:
+            attribute: true
+        y:
+          type: integer
+          format: int32
+          xml:
+            attribute: true
+      description: Grid location point
+      xml:
+        name: Point
+    TestMailingReport:
+      type: object
+      properties:
+        recipientStatus:
+          type: object
+          additionalProperties:
+            type: string
+            description: Sending status of the recipients
+            enum:
+            - enqueued
+            - sending
+            - sent
+            - failed
+          description: Sending status of the recipients
+        mailingId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        reportDate:
+          type: string
+          description: Report date
+          format: date-time
+        mediaType:
+          type: string
+          description: Media type
+        status:
+          type: string
+          description: Current status of the mailing
+          enum:
+          - invalid
+          - activationRequired
+          - activated
+          - canceled
+          - paused
+          - running
+          - finished
+        started:
+          type: string
+          description: Start date of the mailing
+          format: date-time
+        finished:
+          type: string
+          description: Finish date of the mailing
+          format: date-time
+    RestTargetGroupNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        name:
+          type: string
+          description: Target group name
+        targetGroup:
+          $ref: '#/components/schemas/Filter'
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    TestMailingRequestData:
+      required:
+      - recipientIds
+      - recipientListId
+      type: object
+      properties:
+        recipientIds:
+          type: array
+          description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the recipient list, no test mailing will be sent to this recipient.
+          items:
+            type: string
+            description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the recipient list, no test mailing will be sent to this recipient.
+        mimeType:
+          type: string
+          description: Mime type of the mailing during sending (use empty string to use the mime type of the mailing).
+          example: text/plain, text/html, text/multipart
+        subject:
+          type: string
+          description: Subject of the test mailing (if mailing has a subject).
+        senderAddress:
+          type: string
+          description: Sender address for test mailing (if mailing has a sender address). Must not be empty if specified.
+        recipientListId:
+          type: string
+          description: Recipient list ID of the recipient list to be used for the test mailing.
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

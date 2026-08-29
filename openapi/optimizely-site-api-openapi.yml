@@ -1,0 +1,276 @@
+openapi: 3.2.0
+info:
+  title: EPiServer.ContentApi.Docs Site API
+  version: v3
+tags:
+- name: Site
+paths:
+  /api/episerver/v3.0/site:
+    get:
+      tags:
+      - Site
+      summary: Get a list of sites.
+      operationId: Site_List
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/siteDefinition'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+  /api/episerver/v3.0/site/{id}:
+    get:
+      tags:
+      - Site
+      summary: Gets the site with the provided identifier.
+      operationId: Site_Get
+      parameters:
+      - name: id
+        in: path
+        description: The identifier of the site.
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/siteDefinition'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/problemDetails'
+components:
+  schemas:
+    language:
+      type: object
+      properties:
+        displayName:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    problemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    siteDefinition:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        id:
+          type: string
+          format: uuid
+        editLocation:
+          type:
+          - string
+          - 'null'
+        contentRoots:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            $ref: '#/components/schemas/contentReference'
+        languages:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/siteDefinitionLanguage'
+        hosts:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/hostDefinition'
+      additionalProperties: false
+    siteDefinitionLanguage:
+      type: object
+      properties:
+        isMasterLanguage:
+          type:
+          - boolean
+          - 'null'
+        urlSegment:
+          type:
+          - string
+          - 'null'
+        url:
+          type:
+          - string
+          - 'null'
+        displayName:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+    contentReference:
+      type: object
+      properties:
+        id:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        workId:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        guidValue:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        providerName:
+          type:
+          - string
+          - 'null'
+        url:
+          type:
+          - string
+          - 'null'
+        language:
+          $ref: '#/components/schemas/language'
+        expanded:
+          $ref: '#/components/schemas/content'
+      additionalProperties: false
+    hostDefinition:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type:
+          - string
+          - 'null'
+        language:
+          $ref: '#/components/schemas/language'
+      additionalProperties: false
+    content:
+      type: object
+      properties:
+        contentLink:
+          $ref: '#/components/schemas/contentReference'
+        name:
+          type:
+          - string
+          - 'null'
+        language:
+          $ref: '#/components/schemas/language'
+        existingLanguages:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/language'
+        masterLanguage:
+          $ref: '#/components/schemas/language'
+        contentType:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        parentLink:
+          $ref: '#/components/schemas/contentReference'
+        routeSegment:
+          type:
+          - string
+          - 'null'
+        url:
+          type:
+          - string
+          - 'null'
+        changed:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        startPublish:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        stopPublish:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        saved:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        status:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

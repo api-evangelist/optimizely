@@ -1,0 +1,99 @@
+openapi: 3.2.0
+info:
+  version: admin-v1
+  title: Admin API V1 Data Generation API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Data Generation
+paths:
+  /api/v1/admin/datageneration/product:
+    post:
+      tags:
+      - Data Generation
+      operationId: DataGeneration_PostAsync
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Admin.Models.GenerateProductDataModel'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Admin.Models.GenerateProductDataModel'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Admin.Models.GenerateProductDataModel'
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/Insite.Admin.Models.GenerateProductDataModel'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Insite.Admin.Models.GenerateProductDataModel'
+          text/html:
+            schema:
+              $ref: '#/components/schemas/Insite.Admin.Models.GenerateProductDataModel'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Optimizely.OptiGPT.Client.Core.ChatMessage'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Optimizely.OptiGPT.Client.Core.ChatMessage'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Optimizely.OptiGPT.Client.Core.ChatMessage'
+            text/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Optimizely.OptiGPT.Client.Core.ChatMessage'
+            text/html:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Optimizely.OptiGPT.Client.Core.ChatMessage'
+components:
+  schemas:
+    Insite.Admin.Models.GenerateProductDataModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        content:
+          type: string
+        rewrite:
+          type: boolean
+        model:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Optimizely.OptiGPT.Client.Core.ChatMessage:
+      type: object
+      properties:
+        content:
+          type: string
+        role:
+          type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

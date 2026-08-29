@@ -1,0 +1,2622 @@
+openapi: 3.2.0
+info:
+  version: V3
+  title: Optimizely CMP Open API Documentation Work Requests API
+servers:
+- url: https://api.cmp.optimizely.com/v3
+  description: v3 version of Optimizely CMP Open API
+security:
+- OAuth2:
+  - openid
+  - profile
+  - offline_access
+tags:
+- name: Work Requests
+paths:
+  /work-requests:
+    get:
+      operationId: listWorkRequests
+      tags:
+      - Work Requests
+      summary: GET /work-requests
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a list of work requests. '
+      parameters:
+      - name: created_by
+        in: query
+        schema:
+          type: string
+          description: Unique identifier of the creator of the work requests. You can append multiple times, for example `created_by=creator1&created_by=creator2`.
+        example:
+        - 1265ca474ba987cc925164aa7
+        - 606995f714ace404593cce4c
+      - name: status
+        in: query
+        schema:
+          type: string
+          description: Status of a work request. You can append multiple times, for example `status=Submitted&status=Declined`
+          enum:
+          - Submitted
+          - Accepted
+          - Completed
+          - Declined
+        example:
+        - Accepted
+        - Submitted
+      - name: order_by
+        in: query
+        schema:
+          type: string
+          description: Ordering parameter of the work requests.
+          enum:
+          - priority
+          - status
+          - created_at
+          - due_date
+        example: due_date
+      - name: order_as
+        in: query
+        schema:
+          type: string
+          description: Sorting order of the work requests.
+          enum:
+          - asc
+          - desc
+        example: desc
+      - name: template_ids
+        in: query
+        description: Unique identifiers of the templates. You can append multiple times, for example `template_ids=template1&template_ids=template2`.
+        schema:
+          type: array
+          items:
+            type: string
+        example:
+        - 1265ca474ba987cc925164aa7
+        - 606995f714ace404593cce4c
+      - name: created_at__from
+        in: query
+        required: false
+        description: Date and time as the lower limit to filter work requests by `created_at`, in ISO 8601 UTC format
+        schema:
+          type: string
+          format: date-time
+        example: '2018-11-30T13:32:44Z'
+      - name: created_at__to
+        in: query
+        required: false
+        description: Date and time as the upper limit to filter work requests by `created_at`, in ISO 8601 UTC format
+        schema:
+          type: string
+          format: date-time
+        example: '2018-12-31T23:59:59Z'
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of fetched work requests
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of work requests
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkRequestResponse'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/work-requests?offset=10&page_size=10
+                required:
+                - data
+                - pagination
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+      - Work Requests
+      summary: POST /work-requests
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Create a work request. '
+      operationId: createWorkRequest
+      requestBody:
+        description: Payload to create a work request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkRequestCreateRequest'
+            example:
+              template_id: 5c89aebe611eca11302420af
+              assignees:
+              - 74ba987cc9251689abc123
+              form_fields:
+              - identifier: title
+                type: text
+                values:
+                - Some title
+              - identifier: brief
+                type: brief
+                values:
+                - type: attachment_brief
+                  value:
+                    key: 10d5c89aebe611eca11302420ac80002
+                    name: Attachment
+              - identifier: 630c486a90546926f034ea28
+                type: richtext
+                values:
+                - <b>rich</b> text
+              - identifier: 630c479690546926f034ea13
+                type: label
+                values:
+                - 630c479690546926f034ea15
+              - identifier: 630c47be90546926f034ea17
+                type: dropdown
+                values:
+                - 630c47be90546926f034ea18
+              - identifier: 630c482b90546926f034ea22
+                type: simple_number
+                values:
+                - 1234.345678
+              - identifier: 630c484b90546926f034ea23
+                type: percentage_number
+                values:
+                - 23
+              - identifier: 630c481b90546926f034ea21
+                type: currency_number
+                values:
+                - 123.56
+              - identifier: 630c485e90546926f034ea24
+                type: checkbox
+                values:
+                - 630c485e90546926f034ea25
+              - identifier: 630c47d290546926f034ea1b
+                type: radio_button
+                values:
+                - 630c47d290546926f034ea1c
+              - identifier: creative_assets
+                type: file
+                values:
+                - key: creative-asset-key-1
+                  name: Creative Asset 1
+                - key: creative-asset-key-2
+                  name: Creative Asset 2
+              - identifier: due_date
+                type: date
+                values:
+                - '2022-02-20T12:02:03.000000Z'
+              - identifier: media_links
+                type: text_area
+                values:
+                - 'some text
+
+                  more text'
+      responses:
+        '201':
+          description: Created work request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkRequestResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /work-requests/{id}:
+    get:
+      operationId: getWorkRequest
+      tags:
+      - Work Requests
+      summary: GET /work-requests/{id}
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a work request by ID. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: 9119a313057e401189407116fcd3aa24
+      responses:
+        '200':
+          description: Fetched work request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkRequestResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateWorkRequest
+      tags:
+      - Work Requests
+      summary: PATCH /work-requests/{id}
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Updates a work request. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: 9119a313057e401189407116fcd3aa24
+      requestBody:
+        description: Payload to update the work request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkRequestUpdateRequest'
+      responses:
+        '204':
+          description: Work request updated
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /work-requests/{id}/comments:
+    get:
+      operationId: listWorkRequestComments
+      tags:
+      - Work Requests
+      summary: GET /work-requests/{id}/comments
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get list of comments for a work request. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: da80cfd7bbf84959a8a981acbad996b3
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of comments for the work request
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of work request comments
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkRequestCommentResponse'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/work-requests/da80cfd7bbf84959a8a981acbad996b3/comments?offset=10&page_size=10
+                required:
+                - data
+                - pagination
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      operationId: addCommentToWorkRequest
+      tags:
+      - Work Requests
+      summary: POST /work-requests/{id}/comments
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Post a comment on a work request. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: da80cfd7bbf84959a8a981acbad996b3
+      requestBody:
+        description: Payload to add comment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentWithReplyCreateRequest'
+      responses:
+        '201':
+          description: Created comment for the work request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkRequestCommentResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /work-requests/{work_request_id}/comments/{comment_id}:
+    get:
+      operationId: getWorkRequestComment
+      tags:
+      - Work Requests
+      summary: GET /work-requests/{work_request_id}/comments/{comment_id}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a work request comment by ID.
+      parameters:
+      - name: work_request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: da80cfd7bbf84959a8a981acbad996b3
+      - name: comment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request comment
+        example: 5fe38c39574b52a62a089239
+      responses:
+        '200':
+          description: Fetched work request comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkRequestCommentResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /work-requests/{id}/attachments:
+    post:
+      operationId: addAttachmentToWorkRequest
+      tags:
+      - Work Requests
+      summary: POST /work-requests/{id}/attachments
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Create attachments for a work request. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: da80cfd7bbf84959a8a981acbad996b3
+      requestBody:
+        description: Payload to create an attachment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttachmentRequest'
+      responses:
+        '201':
+          description: Created attachment for the work request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /work-requests/{work_request_id}/attachments/{attachment_id}:
+    delete:
+      operationId: deleteWorkRequestAttachment
+      tags:
+      - Work Requests
+      summary: DELETE /work-requests/{work_request_id}/attachments/{attachment_id}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Delete a work request attachment.
+      parameters:
+      - name: work_request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: 7674a2a69f8d4eb48e8d4dafaebc7238
+      - name: attachment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request attachment
+        example: 62f2052962f36e010b9471f1
+      responses:
+        '204':
+          description: Deleted the attachment
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /work-requests/{id}/creative-assets:
+    post:
+      operationId: createWorkRequestCreativeAsset
+      tags:
+      - Work Requests
+      summary: POST /work-requests/{id}/creative-assets
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Create creative assets for a work request. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: da80cfd7bbf84959a8a981acbad996b3
+      requestBody:
+        description: Payload to create creative assets
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreativeAssetRequest'
+      responses:
+        '200':
+          description: Created creative asset for the work request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreativeAssetResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /work-requests/{work_request_id}/creative-assets/{creative_asset_id}:
+    delete:
+      operationId: deleteWorkRequestCreativeAsset
+      tags:
+      - Work Requests
+      summary: DELETE /work-requests/{work_request_id}/creative-assets/{creative_asset_id}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Delete a work request creative asset.
+      parameters:
+      - name: work_request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: 7674a2a69f8d4eb48e8d4dafaebc7238
+      - name: creative_asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request creative asset
+        example: 209d2d281e2b11edbac602420ac80012
+      responses:
+        '204':
+          description: Deleted the creative asset
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /work-requests/{id}/approved-assets:
+    get:
+      operationId: listWorkRequestApprovedAssets
+      tags:
+      - Work Requests
+      summary: GET /work-requests/{id}/approved-assets
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a list of approved assets of a work request.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: da80cfd7bbf84959a8a981acbad996b3
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of approved assets for the work request
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of work request approved assets
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkRequestApprovedAssetResponse'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/work-requests/da80cfd7bbf84959a8a981acbad996b3/approved-assets?offset=10&page_size=10
+                required:
+                - data
+                - pagination
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /work-requests/{id}/campaigns:
+    post:
+      operationId: createCampaignFromWorkRequest
+      tags:
+      - Work Requests
+      summary: POST /work-requests/{id}/campaigns
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Create a new campaign from a work request. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: da80cfd7bbf84959a8a981acbad996b3
+      requestBody:
+        description: Payload to create a campaign
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkRequestCampaignRequest'
+      responses:
+        '201':
+          description: Created a campaign from a work request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkRequestCampaignResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /work-requests/{id}/tasks:
+    post:
+      operationId: createTaskFromWorkRequest
+      tags:
+      - Work Requests
+      summary: POST /work-requests/{id}/tasks
+      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Create a new task from a work request. '
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: da80cfd7bbf84959a8a981acbad996b3
+      requestBody:
+        description: Payload to create a task
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkRequestTaskRequest'
+      responses:
+        '201':
+          description: Created a task from a work request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkRequestTaskResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /work-requests/{id}/related-resources:
+    get:
+      operationId: listWorkRequestRelatedResources
+      tags:
+      - Work Requests
+      summary: GET /work-requests/{id}/related-resources
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a list of work request related resources.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: da80cfd7bbf84959a8a981acbad996b3
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/page_size'
+      responses:
+        '200':
+          description: List of fetched work request related resources
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    description: List of work request related resources
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkRequestRelatedResourceResponse'
+                  pagination:
+                    allOf:
+                    - $ref: '#/components/schemas/Pagination'
+                    - type: object
+                      properties:
+                        next:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://api.cmp.optimizely.com/v3/work-requests/5fe4925ef8a9378056bf4e37/related-resources?offset=10&page_size=10
+                required:
+                - data
+                - pagination
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /work-requests/{work_request_id}/form-fields/{form_field_identifier}:
+    put:
+      operationId: updateWorkRequestFormField
+      tags:
+      - Work Requests
+      summary: PUT /work-requests/{work_request_id}/form-fields/{form_field_identifier}
+      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Updates a work request form field.
+      parameters:
+      - name: work_request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request
+        example: 7674a2a69f8d4eb48e8d4dafaebc7238
+      - name: form_field_identifier
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Unique identifier of the work request form field
+        example: 209d2d281e2b11edbac602420ac80012
+      requestBody:
+        description: Payload to update the work request form field
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkRequestFormFieldUpdateRequest'
+      responses:
+        '200':
+          description: Updated work request form field
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkRequestRequestFormFieldUpdateResponse'
+        '400':
+          $ref: '#/components/responses/ClientError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+components:
+  schemas:
+    WorkRequestRequestFormFieldCurrencyNumberTypePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: currency_number
+          enum:
+          - currency_number
+        values:
+          type: array
+          description: Currency amount for the form field
+          maxItems: 1
+          items:
+            type: string
+          example:
+          - '123.45'
+      required:
+      - type
+      - values
+    TextTypeFormFieldResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseFormFieldResponse'
+      - type: object
+        properties:
+          values:
+            type: array
+            items:
+              type: string
+              description: Any string value
+              example: Sample text
+    WorkRequestRequestFormFieldCheckboxTypeResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: checkbox
+          enum:
+          - checkbox
+        values:
+          type: array
+          description: Values for the form field
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the choice
+              name:
+                type: string
+                description: Name of the choice
+            required:
+            - id
+            - name
+          example:
+          - id: 63342902e84c7544973c07ce
+            name: Option 1
+          - id: 633429b2e84c7544973c07e7
+            name: Option 2
+      required:
+      - type
+      - values
+    WorkRequestRequestFormFieldBriefTypeResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: brief
+          enum:
+          - brief
+        values:
+          type: array
+          description: Brief value payload
+          maxItems: 1
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/WorkRequestTextBriefResponse'
+            - $ref: '#/components/schemas/WorkRequestAttachmentBriefResponse'
+            discriminator:
+              propertyName: type
+              mapping:
+                text_brief: '#/components/schemas/WorkRequestTextBriefResponse'
+                attachment_brief: '#/components/schemas/WorkRequestAttachmentBriefResponse'
+      required:
+      - type
+      - values
+    FileTypeFormFieldValueResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the file
+          example: 6dzf4ds4fds4f4564dzsfd
+        name:
+          type: string
+          description: Name of the file
+          example: Sample Name
+        url:
+          type: string
+          description: URL of the file
+          example: https://files.cmp.optimizely.com/download/8nv8svsdnivjusdijuvisdv?token=token
+      required:
+      - id
+      - name
+      - url
+    MultiChoiceTypeFormFieldResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseFormFieldResponse'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of choices
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Unique identifier of the choice
+                  example: 9119a313057e401189407116fcd3
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Choice 1
+              required:
+              - id
+              - name
+    WorkRequestTaskResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the task
+          example: 8q7f910551b00a722e0418830cee6612
+        title:
+          type: string
+          description: Title of the task
+          example: The awesome task
+        reference_id:
+          type: string
+          description: Reference Id of the task
+          example: TSK-1111
+        start_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Start date of the task, in ISO 8601 UTC format (2022-12-01T06:00:00Z)
+          example: '2022-12-01T06:00:00Z'
+        due_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Due date of the task, in ISO 8601 UTC format (2022-12-31T06:00:00Z)
+          example: '2022-12-31T06:00:00Z'
+        owner_id:
+          type: string
+          description: Unique identifier of the owner
+          example: 8q7f910551b00a722e0418830cee6612
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the task
+              example: https://api.cmp.optimizely.com/v3/tasks/8q7f910551b00a722e0418830cee6612
+            owner:
+              type:
+              - string
+              - 'null'
+              description: URL of the task owner
+              example: https://api.cmp.optimizely.com/v3/users/8q7f910551b00a722e0418830cee6612
+          required:
+          - self
+          - brief
+      required:
+      - id
+      - title
+      - start_at
+      - due_at
+      - owner_id
+      - links
+    AttachmentRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Unique identifier of the file upload session. This is the `upload_meta_fields.key` field retrieved from the `/v3/upload-url` endpoint.
+          example: ce8995aea58b11ea8cd90242ac120005
+        name:
+          type: string
+          minLength: 1
+          description: Filename of the attachment
+          example: sample_image.png
+      required:
+      - key
+      - name
+    WorkRequestFormFieldUpdateRequest:
+      oneOf:
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldBriefTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldCheckboxTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldCurrencyNumberTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldDateTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldDropdownTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldFileTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldLabelTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldPercentageNumberTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldRadioButtonTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldRichtextTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldSimpleNumberTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldTextAreaTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldTextTypePayload'
+      discriminator:
+        propertyName: type
+        mapping:
+          brief: '#/components/schemas/WorkRequestRequestFormFieldBriefTypePayload'
+          checkbox: '#/components/schemas/WorkRequestRequestFormFieldCheckboxTypePayload'
+          currency_number: '#/components/schemas/WorkRequestRequestFormFieldCurrencyNumberTypePayload'
+          date: '#/components/schemas/WorkRequestRequestFormFieldDateTypePayload'
+          dropdown: '#/components/schemas/WorkRequestRequestFormFieldDropdownTypePayload'
+          file: '#/components/schemas/WorkRequestRequestFormFieldFileTypePayload'
+          label: '#/components/schemas/WorkRequestRequestFormFieldLabelTypePayload'
+          percentage_number: '#/components/schemas/WorkRequestRequestFormFieldPercentageNumberTypePayload'
+          radio_button: '#/components/schemas/WorkRequestRequestFormFieldRadioButtonTypePayload'
+          richtext: '#/components/schemas/WorkRequestRequestFormFieldRichtextTypePayload'
+          simple_number: '#/components/schemas/WorkRequestRequestFormFieldSimpleNumberTypePayload'
+          text_area: '#/components/schemas/WorkRequestRequestFormFieldTextAreaTypePayload'
+          text: '#/components/schemas/WorkRequestRequestFormFieldTextTypePayload'
+    BriefTypeFormFieldRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseFormFieldRequest'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of brief values
+            items:
+              oneOf:
+              - $ref: '#/components/schemas/WorkRequestTextBriefRequest'
+              - $ref: '#/components/schemas/WorkRequestAttachmentBriefRequest'
+            maxItems: 1
+    WorkRequestCampaignRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the campaign
+          example: The awesome campaign
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the campaign
+          example: The awesome campaign's description
+        start_date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Start date of the campaign, in ISO 8601 UTC format (2022-08-31T06:00:00Z)
+          example: '2022-08-31T06:00:00Z'
+        end_date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: End date of the campaign, in ISO 8601 UTC format (2022-08-31T06:00:00Z)
+          example: '2022-08-31T06:00:00Z'
+        owner_id:
+          type: string
+          description: Unique identifier of the campaign owner
+          example: 8q7f910551b00a722e0418830cee6612
+        parent_campaign_id:
+          type: string
+          description: Unique identifier of a campaign
+          example: 6679686ade80bdf1dfda5ec3ab32ddf
+      required:
+      - title
+    WorkRequestAttachmentBriefResponse:
+      type: object
+      description: Brief from uploaded attachment
+      properties:
+        type:
+          type: string
+          example: attachment_brief
+          enum:
+          - attachment_brief
+        value:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the attachment brief
+              example: 6dzf4ds4fds4f4564dzsfd
+            name:
+              type: string
+              description: Name of the attachment brief
+              example: Sample-name
+            url:
+              type: string
+              description: URL of the attachment brief
+              example: https://files.cmp.optimizely.com/download/8nv8svsdnivjusdijuvisdv?token=token
+          required:
+          - id
+          - name
+          - url
+      required:
+      - type
+      - value
+    WorkRequestCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        template_id:
+          type: string
+          description: The template on which the work request should be created
+          example: 1265ca474ba987cc925164aa7
+        assignees:
+          type: array
+          description: List of assigned users to the work request
+          minItems: 1
+          items:
+            type: string
+            description: Unique identifier of the assignee
+            example: 74ba987cc9251689abc123
+        form_fields:
+          type: array
+          description: Form fields from the work request template to populate in the work request. **NOTE** You must provide values for all the required form fields.
+          minItems: 1
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/BriefTypeFormFieldRequest'
+            - $ref: '#/components/schemas/DateTypeFormFieldRequest'
+            - $ref: '#/components/schemas/FileTypeFormFieldRequest'
+            - $ref: '#/components/schemas/MultiChoiceTypeFormFieldRequest'
+            - $ref: '#/components/schemas/NumberTypeFormFieldRequest'
+            - $ref: '#/components/schemas/RadioButtonTypeFormFieldRequest'
+            - $ref: '#/components/schemas/TextTypeFormFieldRequest'
+            discriminator:
+              propertyName: type
+              mapping:
+                brief: '#/components/schemas/BriefTypeFormFieldRequest'
+                checkbox: '#/components/schemas/MultiChoiceTypeFormFieldRequest'
+                currency_number: '#/components/schemas/NumberTypeFormFieldRequest'
+                date: '#/components/schemas/DateTypeFormFieldRequest'
+                dropdown: '#/components/schemas/MultiChoiceTypeFormFieldRequest'
+                file: '#/components/schemas/FileTypeFormFieldRequest'
+                label: '#/components/schemas/MultiChoiceTypeFormFieldRequest'
+                radio_button: '#/components/schemas/RadioButtonTypeFormFieldRequest'
+                percentage_number: '#/components/schemas/NumberTypeFormFieldRequest'
+                richtext: '#/components/schemas/TextTypeFormFieldRequest'
+                simple_number: '#/components/schemas/NumberTypeFormFieldRequest'
+                text: '#/components/schemas/TextTypeFormFieldRequest'
+                text_area: '#/components/schemas/TextTypeFormFieldRequest'
+      required:
+      - template_id
+      - form_fields
+    CreativeAssetResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the creative asset
+          example: 5a7f910511b0a72230ce6631
+        name:
+          type: string
+          description: Filename of the creative asset
+          example: sample_image.png
+        url:
+          type: string
+          description: Download URL of the creative asset
+          example: https://files.cmp.optimizely.com/download/2115bfe4450c11ebaae8000c291b51d4
+      required:
+      - id
+      - name
+      - url
+    WorkRequestCampaignResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the campaign
+          example: 8q7f910551b00a722e0418830cee6612
+        title:
+          type: string
+          description: Title of the campaign
+          example: The awesome campaign
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the campaign
+          example: The awesome campaign's description
+        start_date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Start date of the campaign, in ISO 8601 UTC format (2022-08-31T06:00:00Z)
+          example: '2022-08-31T06:00:00Z'
+        end_date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: End date of the campaign, in ISO 8601 UTC format (2022-08-31T06:00:00Z)
+          example: '2022-08-31T06:00:00Z'
+        reference_id:
+          type: string
+          description: Reference identifier of the campaign
+          example: CPN-1589
+        owner_id:
+          type: string
+          description: Unique identifier of the campaign owner
+          example: 8q7f910551b00a722e0418830cee6612
+        parent_campaign_id:
+          type: string
+          description: Unique identifier of the parent campaign
+          example: 6679686ade80bdf1dfda5ec3ab32ddf
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the campaign
+              example: https://api.cmp.optimizely.com/v3/campaigns/8q7f910551b00a722e0418830cee6612
+            brief:
+              type:
+              - string
+              - 'null'
+              description: URL of the campaign brief
+              example: https://api.cmp.optimizely.com/v3/campaigns/8q7f910551b00a722e0418830cee6612/brief
+            parent_campaign:
+              type:
+              - string
+              - 'null'
+              description: URL of the parent campaign
+              example: https://api.cmp.optimizely.com/v3/campaigns/6679686ade80bdf1dfda5ec3ab32ddf
+          required:
+          - self
+          - brief
+          - parent_campaign
+      required:
+      - id
+      - title
+      - description
+      - start_date
+      - end_date
+      - reference_id
+      - owner_id
+      - parent_campaign_id
+      - links
+    CreativeAssetRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Unique identifier of the file upload session. This is the `upload_meta_fields.key` field retrieved from the `/v3/upload-url` endpoint.
+          example: ce8995aea58b11ea8cd90242ac120005
+        name:
+          type: string
+          minLength: 1
+          description: Filename of the creative asset
+          example: sample_image.png
+      required:
+      - key
+      - name
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
+    FileTypeFormFieldRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseFormFieldRequest'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of file inputs to add a file
+            items:
+              $ref: '#/components/schemas/FileTypeFormFieldValueRequest'
+    RadioButtonTypeFormFieldResponse:
+      allOf:
+      - $ref: '#/components/schemas/MultiChoiceTypeFormFieldResponse'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of choices
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Unique identifier of the choice
+                  example: 9119a313057e401189407116fcd3
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Choice 1
+              required:
+              - id
+              - name
+    WorkRequestRequestFormFieldCheckboxTypePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: checkbox
+          enum:
+          - checkbox
+        values:
+          type: array
+          description: Unique identifiers of the choices
+          items:
+            type: string
+          example:
+          - 63342902e84c7544973c07ce
+          - 633429b2e84c7544973c07e7
+      required:
+      - type
+      - values
+    WorkRequestResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the work request
+          example: 5fe4925ef8a9378056bf4e37
+        template:
+          type: object
+          description: The template, based on the work request that was created
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the template
+              example: 1265ca474ba987cc925164aa7
+            title:
+              type: string
+              description: Title of the template
+              example: Sample template title
+            links:
+              type: object
+              description: Meta links
+              properties:
+                self:
+                  type: string
+                  description: URL of the template
+                  example: https://api.cmp.optimizely.com/v3/templates/9119a313057e401189407116fcd3aa24
+              required:
+              - self
+          required:
+          - id
+          - title
+          - links
+        reference_id:
+          type: string
+          description: Reference identifier of the work request
+          example: WRQ-23
+        assignees:
+          type: array
+          description: List of assigned users to the work request
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the assignee
+                example: 6asdcnfnfdsfdsfd54sgfd54sf
+              type:
+                type: string
+                description: Type of the assignee
+                example: user
+                enum:
+                - user
+                - team
+              full_name:
+                type: string
+                description: Full name of the assignee
+                example: John Doe
+              image_url:
+                type:
+                - string
+                - 'null'
+                description: URL of the profile picture of the assignee. `null` if the assignee has not provided an image
+                example: https://images.cmp.optimizely.com/6a485f72ba424f9397c71ddf0cfb8f59
+              links:
+                type: object
+                description: Meta links
+                properties:
+                  self:
+                    type: string
+                    description: URL of the assigned user
+                    example: https://api.cmp.optimizely.com/v3/users/6asdcnfnfdsfdsfd54sgfd54sf
+                required:
+                - self
+            required:
+            - id
+            - full_name
+            - image_url
+            - links
+            - type
+        status:
+          type: string
+          enum:
+          - Accepted
+          - Declined
+          - Submitted
+          - Completed
+          description: Current status of the work request
+          example: Accepted
+        priority:
+          type: string
+          enum:
+          - Low
+          - Medium
+          - High
+          description: Priority of the work request
+          example: Medium
+        created_by:
+          type: object
+          additionalProperties: false
+          description: Creator of the work request
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the creator of the work request
+              example: 6asdcnfnfdsfdsfd54sgfd54sf
+            links:
+              type: object
+              additionalProperties: false
+              description: Meta links
+              properties:
+                self:
+                  type: string
+                  description: URL of the creator
+                  example: https://api.cmp.optimizely.com/v3/users/6asdcnfnfdsfdsfd54sgfd54sf
+              required:
+              - self
+          required:
+          - id
+          - links
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the work request was created, in ISO 8601 UTC format (2022-04-30T06:00:00.000Z)
+          example: '2022-04-30T06:00:00.000Z'
+        modified_at:
+          type: string
+          format: date-time
+          description: Date and time on which the work request was last modified, in ISO 8601 UTC format (2022-04-30T08:00:00.000Z)
+          example: '2022-04-30T08:00:00.000Z'
+        form_fields:
+          type: array
+          description: Populated form fields following the template
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/BriefTypeFormFieldResponse'
+            - $ref: '#/components/schemas/DateTypeFormFieldResponse'
+            - $ref: '#/components/schemas/FileTypeFormFieldResponse'
+            - $ref: '#/components/schemas/MultiChoiceTypeFormFieldResponse'
+            - $ref: '#/components/schemas/NumberTypeFormFieldResponse'
+            - $ref: '#/components/schemas/RadioButtonTypeFormFieldResponse'
+            - $ref: '#/components/schemas/TextTypeFormFieldResponse'
+            discriminator:
+              propertyName: type
+              mapping:
+                brief: '#/components/schemas/BriefTypeFormFieldResponse'
+                checkbox: '#/components/schemas/MultiChoiceTypeFormFieldResponse'
+                currency_number: '#/components/schemas/NumberTypeFormFieldResponse'
+                date: '#/components/schemas/DateTypeFormFieldResponse'
+                dropdown: '#/components/schemas/MultiChoiceTypeFormFieldResponse'
+                file: '#/components/schemas/FileTypeFormFieldResponse'
+                label: '#/components/schemas/MultiChoiceTypeFormFieldResponse'
+                radio_button: '#/components/schemas/RadioButtonTypeFormFieldResponse'
+                percentage_number: '#/components/schemas/NumberTypeFormFieldResponse'
+                richtext: '#/components/schemas/TextTypeFormFieldResponse'
+                simple_number: '#/components/schemas/NumberTypeFormFieldResponse'
+                text: '#/components/schemas/TextTypeFormFieldResponse'
+                text_area: '#/components/schemas/TextTypeFormFieldResponse'
+          example:
+          - identifier: title
+            type: text
+            values:
+            - Some title
+          - identifier: brief
+            type: brief
+            values:
+            - type: attachment_brief
+              value:
+                id: attachment-1
+                name: Attachment
+                url: http://images.cmp.optimizely.com/attachment-1?token=jwt.auth.token
+          - identifier: 630c486a90546926f034ea28
+            type: richtext
+            values:
+            - <b>rich</b> text
+          - identifier: 630c479690546926f034ea13
+            type: label
+            values:
+            - id: 630c479690546926f034ea15
+              name: value-1
+          - identifier: 630c47be90546926f034ea17
+            type: dropdown
+            values:
+            - id: 630c47be90546926f034ea18
+              name: option 1
+            - id: 630c47be90546926f034ea20
+              name: option 3
+          - identifier: 630c482b90546926f034ea22
+            type: simple_number
+            values:
+            - '1234.345678'
+          - identifier: 630c484b90546926f034ea23
+            type: percentage_number
+            values:
+            - '23'
+          - identifier: 630c481b90546926f034ea21
+            type: currency_number
+            values:
+            - '123.56'
+          - identifier: 630c485e90546926f034ea24
+            type: checkbox
+            values:
+            - id: 630c485e90546926f034ea25
+              name: choice 1
+            - id: 630c485e90546926f034ea26
+              name: choice 6
+          - identifier: 630c47d290546926f034ea1b
+            type: radio_button
+            values:
+            - id: 630c47d290546926f034ea1c
+              name: choice 2
+          - identifier: creative_assets
+            type: file
+            values:
+            - id: creative-asset-1
+              name: Creative Asset 1
+              url: http://images.cmp.optimizely.com/creative-asset-1?token=jwt.auth.token
+            - id: creative-asset-2
+              name: Creative Asset 2
+              url: http://images.cmp.optimizely.com/creative-asset-2?token=jwt.auth.token
+          - identifier: due_date
+            type: date
+            values:
+            - '2022-02-20T12:02:03Z'
+          - identifier: media_links
+            type: text_area
+            values:
+            - 'some text
+
+              more text'
+        links:
+          type: object
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the work request
+              example: https://api.cmp.optimizely.com/v3/work-requests/5fe4925ef8a9378056bf4e37
+            comments:
+              type: string
+              description: URL to create or get work request comments
+              example: https://api.cmp.optimizely.com/v3/work-requests/5fe4925ef8a9378056bf4e37/comments
+            attachments:
+              type: string
+              description: URL to add attachments to work request
+              example: https://api.cmp.optimizely.com/v3/work-requests/5fe4925ef8a9378056bf4e37/attachments
+            campaigns:
+              type: string
+              description: URL to create a campaign from the work request
+              example: https://api.cmp.optimizely.com/v3/work-requests/5fe4925ef8a9378056bf4e37/campaigns
+            tasks:
+              type: string
+              description: URL to create a task from the work request
+              example: https://api.cmp.optimizely.com/v3/work-requests/5fe4925ef8a9378056bf4e37/tasks
+            creative_assets:
+              type: string
+              description: URL to add creative assets to the work request
+              example: https://api.cmp.optimizely.com/v3/work-requests/5fe4925ef8a9378056bf4e37/creative-assets
+            related_resources:
+              type: string
+              description: URL to get related resources
+              example: https://api.cmp.optimizely.com/v3/work-requests/5fe4925ef8a9378056bf4e37/related-resources
+          required:
+          - self
+          - comments
+          - attachments
+          - campaigns
+          - tasks
+          - creative_assets
+          - related_resources
+      required:
+      - id
+      - template
+      - reference_id
+      - assignees
+      - status
+      - priority
+      - created_by
+      - created_at
+      - modified_at
+      - form_fields
+      - links
+    RadioButtonTypeFormFieldRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseFormFieldRequest'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of choice IDs
+            items:
+              type: string
+              description: Unique identifier of the choice
+              example: 9119a313057e401189407116fcd3
+            maxItems: 1
+    WorkRequestRequestFormFieldTextTypePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: text
+          enum:
+          - text
+        values:
+          type: array
+          description: Value of the form field
+          maxItems: 1
+          items:
+            type: string
+          example:
+          - Hello world
+      required:
+      - type
+      - values
+    BriefTypeFormFieldResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseFormFieldResponse'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of brief values
+            items:
+              oneOf:
+              - $ref: '#/components/schemas/WorkRequestTextBriefResponse'
+              - $ref: '#/components/schemas/WorkRequestAttachmentBriefResponse'
+    WorkRequestRequestFormFieldUpdateResponse:
+      oneOf:
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldBriefTypeResponse'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldCheckboxTypeResponse'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldCurrencyNumberTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldDateTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldDropdownTypeResponse'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldFileTypeResponse'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldLabelTypeResponse'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldPercentageNumberTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldRadioButtonTypeResponse'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldRichtextTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldSimpleNumberTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldTextAreaTypePayload'
+      - $ref: '#/components/schemas/WorkRequestRequestFormFieldTextTypePayload'
+      discriminator:
+        propertyName: type
+        mapping:
+          brief: '#/components/schemas/WorkRequestRequestFormFieldBriefTypeResponse'
+          checkbox: '#/components/schemas/WorkRequestRequestFormFieldCheckboxTypeResponse'
+          currency_number: '#/components/schemas/WorkRequestRequestFormFieldCurrencyNumberTypePayload'
+          date: '#/components/schemas/WorkRequestRequestFormFieldDateTypePayload'
+          dropdown: '#/components/schemas/WorkRequestRequestFormFieldDropdownTypeResponse'
+          file: '#/components/schemas/WorkRequestRequestFormFieldFileTypeResponse'
+          label: '#/components/schemas/WorkRequestRequestFormFieldLabelTypeResponse'
+          percentage_number: '#/components/schemas/WorkRequestRequestFormFieldPercentageNumberTypePayload'
+          radio_button: '#/components/schemas/WorkRequestRequestFormFieldRadioButtonTypeResponse'
+          richtext: '#/components/schemas/WorkRequestRequestFormFieldRichtextTypePayload'
+          simple_number: '#/components/schemas/WorkRequestRequestFormFieldSimpleNumberTypePayload'
+          text_area: '#/components/schemas/WorkRequestRequestFormFieldTextAreaTypePayload'
+          text: '#/components/schemas/WorkRequestRequestFormFieldTextTypePayload'
+    Pagination:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
+    WorkRequestRequestFormFieldDropdownTypeResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: dropdown
+          enum:
+          - dropdown
+        values:
+          type: array
+          description: Value for the form field
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the choice
+              name:
+                type: string
+                description: Name of the choice
+            required:
+            - id
+            - name
+          example:
+          - id: 63342902e84c7544973c07ce
+            name: Option 1
+      required:
+      - type
+      - values
+    WorkRequestTextBriefResponse:
+      type: object
+      description: Written brief
+      properties:
+        type:
+          type: string
+          example: text_brief
+          enum:
+          - text_brief
+        value:
+          type: string
+          example: <p>Hello</p>
+      required:
+      - type
+      - value
+    WorkRequestRequestFormFieldTextAreaTypePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: text_area
+          enum:
+          - text_area
+        values:
+          type: array
+          description: Value of the form field
+          maxItems: 1
+          items:
+            type: string
+          example:
+          - Hello world
+      required:
+      - type
+      - values
+    WorkRequestRequestFormFieldSimpleNumberTypePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: simple_number
+          enum:
+          - simple_number
+        values:
+          type: array
+          description: Value of the form field
+          maxItems: 1
+          items:
+            type: string
+          example:
+          - '123.456'
+      required:
+      - type
+      - values
+    MultiChoiceTypeFormFieldRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseFormFieldRequest'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of choice IDs
+            items:
+              type: string
+              description: Unique identifier of the choice
+              example: 9119a313057e401189407116fcd3
+    DateTypeFormFieldRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseFormFieldRequest'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of date-time values, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+            items:
+              type: string
+              format: date-time
+              description: Date and time, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+              example: '2020-02-10T10:40:45Z'
+            maxItems: 1
+    WorkRequestRequestFormFieldPercentageNumberTypePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: percentage_number
+          enum:
+          - percentage_number
+        values:
+          type: array
+          description: Value for the form field
+          maxItems: 1
+          items:
+            type: string
+          example:
+          - '123.456'
+      required:
+      - type
+      - values
+    BaseFormFieldRequest:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: Identifier of the form field collected from the template form field
+          example: brief
+        type:
+          type: string
+          description: Type of the form field
+          example: brief
+        values:
+          type: array
+          description: Values for the form field to populate in the work request
+      required:
+      - identifier
+      - type
+      - values
+    WorkRequestRequestFormFieldLabelTypePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: label
+          enum:
+          - label
+        values:
+          type: array
+          description: Unique identifiers of label values for the form field
+          items:
+            type: string
+          example:
+          - 63342902e84c7544973c07ce
+      required:
+      - type
+      - values
+    NumberTypeFormFieldRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseFormFieldRequest'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of numbers
+            items:
+              type: number
+              minimum: 0
+              description: A number
+              example: 123.5
+            maxItems: 1
+    BaseFormFieldResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: Identifier of the form field collected from the template form field
+          example: brief
+        type:
+          type: string
+          description: Type of the form field
+          example: brief
+        values:
+          type: array
+          description: Values of the form field
+        is_protected:
+          type: boolean
+          description: True when this form field is read-only and only organization admins can modify it. Absent or false for editable fields.
+          example: false
+      required:
+      - identifier
+      - type
+      - values
+    FileTypeFormFieldValueRequest:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Unique identifier of the file upload session. This is the `upload_meta_fields.key` field retrieved from the `/v3/upload-url` endpoint.
+          example: ce8995aea58b11ea8cd90242ac120005
+        name:
+          type: string
+          description: Name of the file
+      required:
+      - key
+      - name
+    WorkRequestRequestFormFieldDropdownTypePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: dropdown
+          enum:
+          - dropdown
+        values:
+          type: array
+          description: Unique identifier of the choice for the form field
+          items:
+            type: string
+          example:
+          - 63342902e84c7544973c07ce
+      required:
+      - type
+      - values
+    AttachmentResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the attachment
+          example: 5a7f910511b0a72230ce6631
+        name:
+          type: string
+          description: Filename of the attachment
+          example: sample_image.png
+        url:
+          type: string
+          description: Download URL of the attachment
+          example: https://files.cmp.optimizely.com/download/2115bfe4450c11ebaae8000c291b51d4
+      required:
+      - id
+      - name
+      - url
+    WorkRequestRequestFormFieldFileTypeResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: file
+          enum:
+          - file
+        values:
+          type: array
+          description: Values for the form field
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the file
+              name:
+                type: string
+                description: Name for the file
+                minLength: 1
+              url:
+                type: string
+                description: Download URL of the file
+            required:
+            - id
+            - name
+            - url
+          example:
+          - id: a113667245d111eb8945000c
+            name: My File
+            url: https://files.cmp.optimizely.com/download/96c314a645d111eb8945000c291b51d4?token=
+      required:
+      - type
+      - values
+    WorkRequestCommentResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the work request comment
+          example: 5fe38c39574b52a62a089239
+        value:
+          type: string
+          description: Content of the comment
+          example: Well done!
+        is_resolved:
+          type: boolean
+          description: Determines if the comment is resolved
+          example: false
+        parent_comment_id:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the parent comment
+          example: 5fe38c39574b52a62a089238
+        comment_by:
+          type: string
+          description: Unique identifier of the user who posted the comment
+          example: 62a8455e29fed3045d9c7a8b
+        created_at:
+          type: string
+          format: date-time
+          description: Creation date and time of the work request comment, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2020-10-06T13:15:30Z'
+        modified_at:
+          type: string
+          format: date-time
+          description: Last modification date and time of the work request comment, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+          example: '2020-10-06T14:15:30Z'
+        attachments:
+          description: List of attachments of the comment
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachmentResponse'
+          example:
+          - id: a113667245d111eb8945000c
+            name: sample.png
+            url: https://files.cmp.optimizely.com/download/96c314a645d111eb8945000c291b51d4?token=
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            work_request:
+              type: string
+              description: URL of the work request
+              example: https://api.cmp.optimizely.com/v3/work-requests/da80cfd7bbf84959a8a981acbad996b3
+            comment_by:
+              type: string
+              description: URL of the user who posted the comment
+              example: https://api.cmp.optimizely.com/v3/users/62a8455e29fed3045d9c7a8b
+          required:
+          - work_request
+          - comment_by
+      required:
+      - id
+      - value
+      - is_resolved
+      - parent_comment_id
+      - comment_by
+      - created_at
+      - modified_at
+      - attachments
+      - links
+    WorkRequestRequestFormFieldRichtextTypePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: richtext
+          enum:
+          - richtext
+        values:
+          type: array
+          description: Value of the form field
+          maxItems: 1
+          items:
+            type: string
+          example:
+          - <h1>hello world</h1>
+      required:
+      - type
+      - values
+    WorkRequestRequestFormFieldLabelTypeResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: label
+          enum:
+          - label
+        values:
+          type: array
+          description: Values for the form field
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique identifiers of label value
+              name:
+                type: string
+                description: Name of the label value
+            required:
+            - id
+            - name
+          example:
+          - id: 63342902e84c7544973c07ce
+            name: Label 1
+      required:
+      - type
+      - values
+    DateTypeFormFieldResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseFormFieldResponse'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of date-time values, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+            items:
+              type: string
+              format: date-time
+              description: Date and time, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+              example: '2020-02-10T10:40:45Z'
+    WorkRequestTaskRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the task. If not provided. it will be populated by the work request title.
+          example: The awesome task
+        start_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Start date and time of the task, in ISO 8601 UTC format (2020-02-10T10:40:45Z). If `workflow_id` is present and the workflow has step duration, then either `start_at` or `due_at` is required. If both `start_at` and `due_at` is provided with a `workflow_id` that has step duration, then the `start_at` field will be ignored.
+          example: '2022-12-01T06:00:00Z'
+        due_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Due date and time of the task, in ISO 8601 UTC format (2020-02-10T10:40:45Z). The `due_at` field is required if `workflow_id` is present and the workflow does not have step duration. If `workflow_id` is present and the workflow has step duration, then either `start_at` or `due_at` is required.
+          example: '2022-12-31T06:00:00Z'
+        campaign_id:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of parent campaign
+          example: 8q7f910551b00a722e0418830cee6612
+        workflow_id:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of workflow
+          example: 8q7f910551b00a722e0418830cee6612
+        owner_id:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the task owner. If passed as null, then the owner will be the token user.
+          example: 8q7f910551b00a722e0418830cee6612
+        asset_ids_without_field_inheritance:
+          type: array
+          description: List of asset ids which will not inherit any fields.
+          items:
+            type: string
+          example:
+          - 74f12a064b1611eda2fe02420ac8001d
+        inherit_fields_from:
+          type: string
+          default: work_request
+          description: 'Specifies the source from which to inherit fields.
+
+
+            Supported values:
+
+            - `work_request` (default) : Fields are created from the work request
+
+            - `workflow` : Fields are inherited from the workflow specified by `workflow_id`'
+          example: work_request
+    WorkRequestApprovedAssetResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the work request's approved asset
+          example: 74f12a064b1611eda2fe02420ac8001d
+        title:
+          type: string
+          description: Title of the work request's approved asset
+          example: Nature.png
+        type:
+          type: string
+          description: Type of the work request's approved asset
+          enum:
+          - article
+          - image
+          - video
+          - raw_file
+          example: image
+        mime_type:
+          type: string
+          description: Mime type of the work request's approved asset
+          example: image/png
+        content_type:
+          type: object
+          description: Content of the approved asset
+          properties:
+            type:
+              type: string
+              description: Type of the content. 'html_body for 'article' and 'url' for `image`, `raw file`, and `video`
+              enum:
+              - html_body
+              - url
+              example: url
+            value:
+              type: string
+              description: Content of the asset. 'html_body for 'article' and 'url' for `image`, `raw file`, and `video`
+              example: http://images.cmp.optimizely.com/Zz0xODQ3NDU3Y2Y2YmYzOTlmNjkyOTgyZDY3Y2I3YWM2OA==S
+          required:
+          - type
+          - value
+      required:
+      - id
+      - title
+      - type
+      - mime_type
+      - content_type
+    WorkRequestRequestFormFieldBriefTypePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: brief
+          enum:
+          - brief
+        values:
+          type: array
+          description: Brief value payload
+          maxItems: 1
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/WorkRequestTextBriefRequest'
+            - $ref: '#/components/schemas/WorkRequestAttachmentBriefRequest'
+            discriminator:
+              propertyName: type
+              mapping:
+                text_brief: '#/components/schemas/WorkRequestTextBriefRequest'
+                attachment_brief: '#/components/schemas/WorkRequestAttachmentBriefRequest'
+      required:
+      - type
+      - values
+    WorkRequestRequestFormFieldFileTypePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: file
+          enum:
+          - file
+        values:
+          type: array
+          description: uploaded file values
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                description: Unique identifier of the file upload session. This is the `upload_meta_fields.key` field was retrieved from the `/v3/upload-url` endpoint.
+              name:
+                type: string
+                description: Name for the file
+                minLength: 1
+            required:
+            - key
+            - name
+          example:
+          - key: 123456/789654
+            name: My File
+      required:
+      - type
+      - values
+    NumberTypeFormFieldResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseFormFieldResponse'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of numeric strings
+            items:
+              type: string
+              description: A numberic string
+              example: '123.5'
+    FileTypeFormFieldResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseFormFieldResponse'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of files
+            items:
+              $ref: '#/components/schemas/FileTypeFormFieldValueResponse'
+    WorkRequestRequestFormFieldRadioButtonTypeResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: radio_button
+          enum:
+          - radio_button
+        values:
+          type: array
+          description: Value for the form field
+          maxItems: 1
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the choice
+              name:
+                type: string
+                description: Name of the choice value
+          example:
+          - id: 63342902e84c7544973c07ce
+            name: Choice 1
+      required:
+      - type
+      - values
+    WorkRequestUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          description: Update the status of the work request
+          enum:
+          - Accepted
+          - Declined
+          - Submitted
+          - Completed
+          example: Submitted
+        priority:
+          type: string
+          description: Update the priority of the work request
+          enum:
+          - Low
+          - Medium
+          - High
+          example: Low
+        assignees:
+          type: array
+          description: List of users assigned to the work request
+          minItems: 0
+          items:
+            type: string
+            description: Unique identifier of the assignee
+            example: 6asdcnfnfdsfdsfd54sgfd54sf
+    CommentWithReplyCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        value:
+          type: string
+          minLength: 1
+          description: Content of the comment. Markdown is supported. To mention a user belonging to the organization, use the `@[name](openapi-user-link)` format.
+          example: Comment mentioning @[Organization User](https://api.cmp.optimizely.com/v3/users/5fe38aeb574b52a62a089238)
+        attachments:
+          description: List of comment attachments.
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachmentRequest'
+        parent_comment_id:
+          type: string
+          description: Parent comment id to reply.
+          example: da80cfd7bbf84959a8a981acbad996b3
+      required:
+      - value
+    WorkRequestAttachmentBriefRequest:
+      type: object
+      description: Brief from uploaded attachment
+      properties:
+        type:
+          type: string
+          example: attachment_brief
+          enum:
+          - attachment_brief
+        value:
+          type: object
+          properties:
+            key:
+              type: string
+              description: Unique identifier of the file upload session. This should be the value of `upload_meta_fields.key` retrieved using the `/v3/upload-url` endpoint
+              example: 6dzf4ds4fds4f4564dzsfd
+            name:
+              type: string
+              description: Name of the attachment brief
+              example: Sample-name
+          required:
+          - key
+          - name
+      required:
+      - type
+      - value
+    WorkRequestRequestFormFieldRadioButtonTypePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: radio_button
+          enum:
+          - radio_button
+        values:
+          type: array
+          description: Unique identifier of the choice for the form field
+          maxItems: 1
+          items:
+            type: string
+          example:
+          - 63342902e84c7544973c07ce
+      required:
+      - type
+      - values
+    TextTypeFormFieldRequest:
+      allOf:
+      - $ref: '#/components/schemas/BaseFormFieldRequest'
+      - type: object
+        properties:
+          values:
+            type: array
+            items:
+              type: string
+              description: Any string value
+              example: Sample text
+            maxItems: 1
+    WorkRequestRequestFormFieldDateTypePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the form field
+          example: date
+          enum:
+          - date
+        values:
+          type: array
+          format: date-time
+          description: Date and time, in ISO 8601 UTC format
+          maxItems: 1
+          items:
+            type: string
+          example:
+          - '2022-04-30T06:00:00.00Z'
+      required:
+      - type
+      - values
+    WorkRequestRelatedResourceResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the related resource
+          example: 5fe4925ef8a9378056bf4e37
+        resource_type:
+          type: string
+          description: Related resource type. task/campaign/event etc
+          example: task
+        relation_type:
+          type: string
+          description: Related resource relation type
+          enum:
+          - started
+          - linked
+          example: started
+        created_at:
+          type: string
+          format: date-time
+          description: Date and time on which the work request related resource was created, in ISO 8601 UTC format (2022-04-30T06:00:00.000Z)
+          example: '2022-04-30T06:00:00.000Z'
+        links:
+          type: object
+          description: Meta links
+          properties:
+            self:
+              type:
+              - string
+              - 'null'
+              description: URL of the related resource
+              example: https://api.cmp.optimizely.com/v3/tasks/5fe4925ef8a9378056bf4e37
+          required:
+          - self
+      required:
+      - id
+      - resource_type
+      - relation_type
+      - created_at
+      - links
+    WorkRequestTextBriefRequest:
+      type: object
+      description: Written brief
+      properties:
+        type:
+          type: string
+          example: text_brief
+          enum:
+          - text_brief
+        value:
+          type: string
+          example: <p>Hello</p>
+      required:
+      - type
+      - value
+  responses:
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    UnprocessableEntity:
+      description: Unprocessable entity error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource cannot be processed
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+  parameters:
+    page_size:
+      name: page_size
+      in: query
+      description: Number of results to return per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+      example: 15
+    offset:
+      name: offset
+      in: query
+      description: Starting index of results (zero indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 5
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/auth
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes:
+            openid: Grants the ability to receive a unique identifier for the user.
+            profile: Grants access to user profile information.
+            offline_access: Grants the ability to refresh access_token using the refresh token even when user is not present (not logged in).
+        clientCredentials:
+          tokenUrl: https://accounts.cmp.optimizely.com/o/oauth2/v1/token
+          scopes: {}
+x-tagGroups:
+- name: API
+  tags:
+  - Uploader
+  - Library
+  - Labels
+  - Brand Compliance
+  - Tasks
+  - Task Step
+  - Campaigns
+  - Publishing
+  - Templates
+  - Users
+  - Work Requests
+  - Structured Contents
+  - Assets
+  - Milestones
+  - Teams
+  - Settings
+  - Workflows
+  - Fields
+  - Events

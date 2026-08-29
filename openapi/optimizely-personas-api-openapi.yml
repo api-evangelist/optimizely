@@ -1,0 +1,559 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Personas API
+  version: '1.0'
+  description: 'Operations tagged Personas across 2 of this provider''s published API definitions: optimizely-configured-commerce-admin-api-v1-openapi.json, optimizely-configured-commerce-storefront-api-v1-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Personas
+paths:
+  /api/v1/admin/Personas:
+    get:
+      tags:
+      - Personas
+      summary: Returns the EntitySet Personas
+      operationId: Personas_Get
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    post:
+      tags:
+      - Personas
+      summary: Post a new entity to EntitySet Personas
+      operationId: Personas_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.Persona'
+        description: The entity to post
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/Personas({id}):
+    get:
+      tags:
+      - Personas
+      summary: Returns the entity with the key from Personas
+      operationId: Personas_GetById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    put:
+      tags:
+      - Personas
+      summary: Replace entity in EntitySet Personas
+      operationId: Personas_PutById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.Persona'
+        description: The entity to put
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    delete:
+      tags:
+      - Personas
+      summary: Delete entity in EntitySet Personas
+      operationId: Personas_DeleteById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: If-Match
+        in: header
+        description: If-Match header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Personas
+      summary: Update entity in EntitySet Personas
+      operationId: Personas_PatchById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.Persona'
+        description: The entity to patch
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/Personas/Default.Default():
+    get:
+      tags:
+      - Personas
+      summary: Call operation  Default
+      operationId: Personas_Default
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/Personas/Default.archive:
+    post:
+      tags:
+      - Personas
+      summary: Call operation  archive
+      operationId: Personas_Archive
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      requestBody:
+        $ref: '#/components/requestBodies/Affiliates_ArchiveParameters'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/personas/archive:
+    delete:
+      tags:
+      - Personas
+      operationId: Personas_ArchiveRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/personas/delete:
+    delete:
+      tags:
+      - Personas
+      operationId: Personas_DeleteRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/personas({key})/categories({categoryKey}):
+    get:
+      tags:
+      - Personas
+      operationId: Personas_GetCategoryByKeyAndCategorykey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: categoryKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/personas({key})/customproperties({custompropertyKey}):
+    get:
+      tags:
+      - Personas
+      operationId: Personas_GetCustomPropertyByKeyAndCustompropertykey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: custompropertyKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/admin/personas({key})/userprofiles({userprofileKey}):
+    get:
+      tags:
+      - Personas
+      operationId: Personas_GetUserProfileByKeyAndUserprofilekey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: userprofileKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+  /api/v1/personas/calculate:
+    get:
+      tags:
+      - Personas
+      operationId: PersonasV1_Calculate
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+            text/json:
+              schema:
+                type: object
+            application/xml:
+              schema:
+                type: object
+            text/xml:
+              schema:
+                type: object
+            text/html:
+              schema:
+                type: object
+    servers:
+    - url: https://dogfood.commerce.insitesandbox.com
+components:
+  schemas:
+    Insite.Data.Entities.Persona:
+      required:
+      - description
+      - name
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        activateOn:
+          format: date-time
+          type: string
+        deactivateOn:
+          format: date-time
+          type: string
+        description:
+          maxLength: 1024
+          minLength: 0
+          type: string
+        isDefault:
+          type: boolean
+        name:
+          maxLength: 100
+          minLength: 0
+          type: string
+        ruleManagerId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sequence:
+          format: int32
+          type: integer
+        favorProducts:
+          type: boolean
+        enableSearchBoost:
+          type: boolean
+        boostValue:
+          format: decimal
+          type: number
+        autoAssignGuestUser:
+          type: boolean
+        autoAssignMinimumActions:
+          format: int32
+          type: integer
+        personaSource:
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
+  requestBodies:
+    Affiliates_ArchiveParameters:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: {}
+      description: archive action parameters
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query
+x-refined-from:
+- optimizely-configured-commerce-admin-api-v1-openapi.json
+- optimizely-configured-commerce-storefront-api-v1-openapi.json

@@ -1,0 +1,107 @@
+openapi: 3.2.0
+info:
+  title: Optimizely Campaign REST Personalized Attachments API
+  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  version: '1'
+servers:
+- url: https://api.campaign.episerver.net/rest
+tags:
+- name: Personalized Attachments
+  description: Manage personalized email attachments
+paths:
+  /{clientId}/attachments/personalized:
+    post:
+      tags:
+      - Personalized Attachments
+      summary: Create a personalized attachment
+      description: Create a personalized attachment. You can specify the attachment name and attachment file(s).
+      operationId: createAttachment_1
+      parameters:
+      - name: clientId
+        in: path
+        description: Client ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RestMultiPartRequestSchema'
+      responses:
+        '200':
+          description: The attachment was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestPersonalizedAttachmentUpload'
+            application/vnd.optivo.broadmail.v1+json:
+              schema:
+                $ref: '#/components/schemas/RestPersonalizedAttachmentUpload'
+        '400':
+          description: An erroneous request was sent.
+        '406':
+          description: The uploaded file is empty.
+        '500':
+          description: The request could not be processed successfully.
+      security:
+      - Authorization: []
+components:
+  schemas:
+    RestPersonalizedAttachment:
+      type: object
+      properties:
+        fileName:
+          type: string
+          description: File name
+        fileSize:
+          type: integer
+          description: File size in bytes
+          format: int64
+        id:
+          type: integer
+          description: Attachment ID
+          format: int64
+        contentType:
+          type: string
+          description: File content type
+        expiresAt:
+          type: string
+          description: Expiry date
+          format: date-time
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+      description: List of uploaded attachments
+    RestMultiPartRequestSchema:
+      required:
+      - file
+      type: object
+      properties:
+        file:
+          type: string
+          description: file to be uploaded
+          format: binary
+        name:
+          type: string
+          description: name of the attachment
+    RestPersonalizedAttachmentUpload:
+      type: object
+      properties:
+        uploadedFiles:
+          type: array
+          description: List of uploaded attachments
+          items:
+            $ref: '#/components/schemas/RestPersonalizedAttachment'
+        token:
+          type: string
+          description: Personalized attachment token for all files uploaded - can be used when sending transactional mailings
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

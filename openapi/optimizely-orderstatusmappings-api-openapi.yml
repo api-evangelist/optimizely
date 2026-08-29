@@ -1,0 +1,76 @@
+openapi: 3.2.0
+info:
+  version: storefront-v1
+  title: Storefront API V1 Orderstatusmappings API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Orderstatusmappings
+paths:
+  /api/v1/orderstatusmappings:
+    get:
+      tags:
+      - Orderstatusmappings
+      operationId: OrdersV1_GetOrderStatusMappingsAsync
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingCollectionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingCollectionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingCollectionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingCollectionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingCollectionModel'
+components:
+  schemas:
+    Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        erpOrderStatus:
+          type: string
+        displayName:
+          type: string
+        isDefault:
+          type: boolean
+        allowRma:
+          type: boolean
+        allowCancellation:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        orderStatusMappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query

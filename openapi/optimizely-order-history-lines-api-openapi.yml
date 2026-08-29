@@ -1,0 +1,467 @@
+openapi: 3.2.0
+info:
+  version: admin-v1
+  title: Admin API V1 Order History Lines API
+servers:
+- url: https://dogfood.commerce.insitesandbox.com
+security: []
+tags:
+- name: Order History Lines
+paths:
+  /api/v1/admin/OrderHistoryLines:
+    get:
+      tags:
+      - Order History Lines
+      summary: Returns the EntitySet OrderHistoryLines
+      operationId: OrderHistoryLines_Get
+      parameters:
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $filter
+        in: query
+        description: Filters the results, based on a Boolean condition.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      - name: $apply
+        in: query
+        description: Aggregates the results according to one or more transformations.
+        required: false
+        schema:
+          type: string
+      - name: $orderby
+        in: query
+        description: Sorts the results.
+        required: false
+        schema:
+          type: string
+      - name: $top
+        in: query
+        description: Returns only the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $skip
+        in: query
+        description: Skips the first n results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: $count
+        in: query
+        description: Includes a count of the matching results in the response.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    post:
+      tags:
+      - Order History Lines
+      summary: Post a new entity to EntitySet OrderHistoryLines
+      operationId: OrderHistoryLines_Post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.OrderHistoryLine'
+        description: The entity to post
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/OrderHistoryLines({id}):
+    get:
+      tags:
+      - Order History Lines
+      summary: Returns the entity with the key from OrderHistoryLines
+      operationId: OrderHistoryLines_GetById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    put:
+      tags:
+      - Order History Lines
+      summary: Replace entity in EntitySet OrderHistoryLines
+      operationId: OrderHistoryLines_PutById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.OrderHistoryLine'
+        description: The entity to put
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    delete:
+      tags:
+      - Order History Lines
+      summary: Delete entity in EntitySet OrderHistoryLines
+      operationId: OrderHistoryLines_DeleteById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: If-Match
+        in: header
+        description: If-Match header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+    patch:
+      tags:
+      - Order History Lines
+      summary: Update entity in EntitySet OrderHistoryLines
+      operationId: OrderHistoryLines_PatchById
+      parameters:
+      - name: id
+        in: path
+        description: 'key: id'
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insite.Data.Entities.OrderHistoryLine'
+        description: The entity to patch
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/OrderHistoryLines/Default.Default():
+    get:
+      tags:
+      - Order History Lines
+      summary: Call operation  Default
+      operationId: OrderHistoryLines_Default
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/orderhistorylines/delete:
+    delete:
+      tags:
+      - Order History Lines
+      operationId: OrderHistoryLines_DeleteRoute
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+  /api/v1/admin/orderhistorylines({key})/customproperties({custompropertyKey}):
+    get:
+      tags:
+      - Order History Lines
+      operationId: OrderHistoryLines_GetCustomPropertyByKeyAndCustompropertykey
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: custompropertyKey
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: $expand
+        in: query
+        description: Expands related entities inline.
+        required: false
+        schema:
+          type: string
+      - name: $select
+        in: query
+        description: Selects which properties to include in the response.
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      deprecated: false
+      security:
+      - access_token: []
+components:
+  schemas:
+    Insite.Data.Entities.OrderHistoryLine:
+      required:
+      - customerNumber
+      - customerSequence
+      - lineType
+      - status
+      - productErpNumber
+      - customerProductNumber
+      - linePOReference
+      - description
+      - warehouse
+      - notes
+      - unitOfMeasure
+      - configDataSet
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        orderHistoryId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        lineNumber:
+          format: decimal
+          type: number
+        releaseNumber:
+          format: decimal
+          type: number
+        requiredDate:
+          format: date-time
+          type: string
+        lastShipDate:
+          format: date-time
+          type: string
+        customerNumber:
+          maxLength: 50
+          minLength: 0
+          type: string
+        customerSequence:
+          maxLength: 50
+          minLength: 0
+          type: string
+        lineType:
+          maxLength: 50
+          minLength: 0
+          type: string
+        status:
+          maxLength: 50
+          minLength: 0
+          type: string
+        productErpNumber:
+          maxLength: 50
+          minLength: 0
+          type: string
+        customerProductNumber:
+          maxLength: 50
+          minLength: 0
+          type: string
+        linePOReference:
+          maxLength: 50
+          minLength: 0
+          type: string
+        description:
+          maxLength: 2048
+          minLength: 0
+          type: string
+        warehouse:
+          maxLength: 50
+          minLength: 0
+          type: string
+        notes:
+          type: string
+        qtyOrdered:
+          format: decimal
+          type: number
+        qtyShipped:
+          format: decimal
+          type: number
+        unitOfMeasure:
+          maxLength: 50
+          minLength: 0
+          type: string
+        inventoryQtyOrdered:
+          format: decimal
+          type: number
+        inventoryQtyShipped:
+          format: decimal
+          type: number
+        unitNetPrice:
+          format: decimal
+          type: number
+        discountPercent:
+          format: decimal
+          type: number
+        unitDiscountAmount:
+          format: decimal
+          type: number
+        totalDiscountAmount:
+          format: decimal
+          type: number
+        totalRegularPrice:
+          format: decimal
+          type: number
+        totalNetPrice:
+          format: decimal
+          type: number
+        rmaQtyRequested:
+          format: decimal
+          type: number
+        rmaQtyReceived:
+          format: decimal
+          type: number
+        unitListPrice:
+          format: decimal
+          type: number
+        unitRegularPrice:
+          format: decimal
+          type: number
+        unitCost:
+          format: decimal
+          type: number
+        orderLineOtherCharges:
+          format: decimal
+          type: number
+        taxRate:
+          format: decimal
+          type: number
+        taxAmount:
+          format: decimal
+          type: number
+        configDataSet:
+          type: string
+        netPriceWithVat:
+          format: decimal
+          type: number
+        unitPriceWithVat:
+          format: decimal
+          type: number
+        vmiBinId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
+  securitySchemes:
+    access_token:
+      type: apiKey
+      description: Token used to access storefront API.
+      name: access_token
+      in: query
