@@ -1,0 +1,87 @@
+slug: optimizely
+provider: Optimizely
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 7
+edges:
+- tag: Flags
+  spec_file: optimizely-flags-api-openapi.yml
+  capability_id: BC-4210.50
+  capability_id_l1: BC-4210
+  capability_name: Feature Flag Management
+  confidence: 0.92
+  evidence: GET /projects/{project_id}/flags listFlags; schemas Flag, FlagEnvironment, FlagVariation,
+    Ruleset
+  reason: Operations create, read, update and delete feature flags per project with per-environment variations
+    and rulesets — this is feature flag lifecycle management, matching BC-4210.50 despite the misleading
+    'Campaign' title.
+- tag: Experiments
+  spec_file: optimizely-experiments-api-openapi.yml
+  capability_id: BC-4280.50
+  capability_id_l1: BC-4280
+  capability_name: A/B Test Execution
+  confidence: 0.9
+  evidence: POST /experiments createExperiment Create an experiment; GET /experiments/{experiment_id}/results
+    getExperimentResults Get experiment results
+  reason: Vendor is an A/B testing platform and the operations create, target, and read results of experiments
+    — configuration and monitoring of running A/B tests.
+- tag: Rulesets
+  spec_file: optimizely-rulesets-api-openapi.yml
+  capability_id: BC-4210.50
+  capability_id_l1: BC-4210
+  capability_name: Feature Flag Management
+  confidence: 0.85
+  evidence: GET /projects/{project_id}/flags/{flag_key}/environments/{environment_key}/ruleset getRuleset;
+    POST .../ruleset/enabled enableRuleset
+  reason: Rulesets are the per-environment targeting/enable rules attached to feature flags, i.e. runtime
+    control of feature flags (BC-4210.50).
+- tag: Profiles
+  spec_file: optimizely-profiles-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.78
+  evidence: POST /profiles upsertProfile 'Create or update a profile'; GET /profiles/{identifier_field}/{identifier_value}
+  reason: Upsert and identifier-based lookup of customer profiles in the customer data platform — customer
+    master/identity resolution (Customer Data Management).
+- tag: Audiences
+  spec_file: optimizely-audiences-api-openapi.yml
+  capability_id: BC-420.20
+  capability_id_l1: BC-420
+  capability_name: Customer Segmentation Management
+  confidence: 0.7
+  evidence: '''List audiences'', ''Create an audience'', schemas AudienceInput, Audience, in a campaign
+    API managing ''recipients, mailing lists, smart campaigns'''
+  reason: Audience definition and maintenance for marketing campaigns corresponds to customer segmentation/targeting;
+    could alternatively be read as demand-generation targeting, hence 0.7.
+- tag: Features
+  spec_file: optimizely-features-api-openapi.yml
+  capability_id: BC-4210.50
+  capability_id_l1: BC-4210
+  capability_name: Feature Flag Management
+  confidence: 0.7
+  evidence: 'GET /features listFeatures List features; GET /features/{feature_id} getFeature; schemas:
+    Feature, Variable'
+  reason: Vendor description names 'feature flagging' as a core product, and the schemas Feature/Variable
+    are the classic feature-flag-with-variables model, so these operations expose feature flag definitions.
+    Read-only surface tempers confidence.
+- tag: Smart Campaigns
+  spec_file: optimizely-smart-campaigns-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.7
+  evidence: POST /{clientId}/smartcampaigns/{campaignId}/start  startSmartCampaign  Start a smart campaign;
+    pauseSmartCampaign
+  reason: Operations run and control automated marketing (email) campaigns, i.e. marketing automation
+    within digital marketing. Sub-capability choice between demand generation and digital/marketing-automation
+    is somewhat ambiguous.
