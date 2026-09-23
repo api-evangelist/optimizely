@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Optimizely Campaign REST Coupon blocks API
-  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  description: This documentation lists all available resources and endpoints of the Optimizely Campaign REST API.
   version: '1'
 servers:
 - url: https://api.campaign.episerver.net/rest
@@ -491,6 +491,25 @@ paths:
       - Authorization: []
 components:
   schemas:
+    CouponCodeRequestData:
+      required:
+      - codes
+      type: object
+      properties:
+        codes:
+          type: array
+          description: List of coupon codes
+          items:
+            type: string
+            description: List of coupon codes
+    RestAssignedMailings:
+      type: object
+      properties:
+        mailingIds:
+          type: array
+          items:
+            type: integer
+            format: int64
     RestCouponCodeStreamingCollection:
       type: object
       properties:
@@ -565,22 +584,6 @@ components:
                 type: string
                 format: uri
             description: Restful links
-    RestCouponBlockCounter:
-      type: object
-      properties:
-        codeCount:
-          type: integer
-          description: Number of all coupon codes
-          format: int64
-        assigned:
-          type: integer
-          description: Number of all assigned coupon codes
-          format: int64
-        unassigned:
-          type: integer
-          description: Number of all available coupon codes
-          format: int64
-      description: Counter of coupon codes
     RestApiLink:
       type: object
       properties:
@@ -588,41 +591,6 @@ components:
           type: string
         rel:
           type: string
-    CouponBlockRequestData:
-      required:
-      - couponSource
-      - name
-      type: object
-      properties:
-        couponSource:
-          type: string
-          description: Coupon source of the coupon block
-          enum:
-          - static
-          - generated
-          - ean13barcode
-          - twooffivebarcode
-          - code128barcode
-          - code128abarcode
-          - code128bbarcode
-          - code128cbarcode
-        useRealCodesForTestMails:
-          type: boolean
-          description: If true, valid codes for test mails are used
-        name:
-          type: string
-          description: Internal name of the coupon block
-    CouponCodeRequestData:
-      required:
-      - codes
-      type: object
-      properties:
-        codes:
-          type: array
-          description: List of coupon codes
-          items:
-            type: string
-            description: List of coupon codes
     RestCouponBlockStreamingCollection:
       type: object
       properties:
@@ -644,14 +612,6 @@ components:
         limit:
           type: integer
           format: int32
-    RestAssignedMailings:
-      type: object
-      properties:
-        mailingIds:
-          type: array
-          items:
-            type: integer
-            format: int64
     RestCouponBlock:
       type: object
       properties:
@@ -704,6 +664,46 @@ components:
                 type: string
                 format: uri
             description: Restful links
+    RestCouponBlockCounter:
+      type: object
+      properties:
+        codeCount:
+          type: integer
+          description: Number of all coupon codes
+          format: int64
+        assigned:
+          type: integer
+          description: Number of all assigned coupon codes
+          format: int64
+        unassigned:
+          type: integer
+          description: Number of all available coupon codes
+          format: int64
+      description: Counter of coupon codes
+    CouponBlockRequestData:
+      required:
+      - couponSource
+      - name
+      type: object
+      properties:
+        couponSource:
+          type: string
+          description: Coupon source of the coupon block
+          enum:
+          - static
+          - generated
+          - ean13barcode
+          - twooffivebarcode
+          - code128barcode
+          - code128abarcode
+          - code128bbarcode
+          - code128cbarcode
+        useRealCodesForTestMails:
+          type: boolean
+          description: If true, valid codes for test mails are used
+        name:
+          type: string
+          description: Internal name of the coupon block
   securitySchemes:
     Authorization:
       type: apiKey

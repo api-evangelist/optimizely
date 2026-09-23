@@ -1,18 +1,18 @@
 openapi: 3.2.0
 info:
   title: Optimizely Campaign REST Message templates API
-  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  description: This documentation lists all available resources and endpoints of the Optimizely Campaign REST API.
   version: '1'
 servers:
 - url: https://api.campaign.episerver.net/rest
 tags:
-- name: Message templates
+- name: Message Templates
   description: Manage message templates
 paths:
   /{clientId}/messagetemplates:
     get:
       tags:
-      - Message templates
+      - Message Templates
       summary: Get information about all message templates
       description: Get detailed information about all message templates, such as format, subject, reply-to address or creation date. You can filter for messages in a folder or limit the number of retrieved message templates.
       operationId: selectMessageTemplates
@@ -81,9 +81,9 @@ paths:
       - Authorization: []
     post:
       tags:
-      - Message templates
+      - Message Templates
       summary: Create or copy a message template
-      description: 'Create or copy a message template. You can specify the sender address, the subject for target groups or reset the reply-to address. <b>Note</b>: One of the following request parameters is required: cmsContentTemplateId, mailingId, messageTemplateIdForCreate, messageTemplateIdForCopy.'
+      description: 'Create or copy a message template. You can specify the sender address, the subject for target groups or reset the reply-to address. Note: One of the following request parameters is required: cmsContentTemplateId, mailingId, messageTemplateIdForCreate, messageTemplateIdForCopy.'
       operationId: createOrCopyMessageTemplate
       parameters:
       - name: clientId
@@ -112,7 +112,7 @@ paths:
   /{clientId}/messagetemplates/{messageTemplateId}:
     get:
       tags:
-      - Message templates
+      - Message Templates
       summary: Get information about a message template
       description: Get detailed information about a message template, such as reply-to address, subject, format or creation date.
       operationId: getMessageTemplate
@@ -146,7 +146,7 @@ paths:
       - Authorization: []
     post:
       tags:
-      - Message templates
+      - Message Templates
       summary: Update a message template
       description: Update information of a message template, such as name or subject.
       operationId: updateMessageTemplate
@@ -183,7 +183,7 @@ paths:
       - Authorization: []
     delete:
       tags:
-      - Message templates
+      - Message Templates
       summary: Delete a message template
       operationId: deleteMessageTemplate
       parameters:
@@ -210,7 +210,7 @@ paths:
   /{clientId}/messagetemplates/{messageTemplateId}/test:
     post:
       tags:
-      - Message templates
+      - Message Templates
       summary: Test a message template
       description: Send a test mailing to check content and layout of a message template before sending the actual mailing.
       operationId: testMessageTemplate
@@ -247,27 +247,6 @@ paths:
       - Authorization: []
 components:
   schemas:
-    RestMessageTemplateStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestMessageTemplate'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
     MessageTemplateTestResponse:
       type: object
       properties:
@@ -354,6 +333,27 @@ components:
           type: string
         rel:
           type: string
+    RestMessageTemplateStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestMessageTemplate'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     RestMessageTemplate:
       type: object
       properties:

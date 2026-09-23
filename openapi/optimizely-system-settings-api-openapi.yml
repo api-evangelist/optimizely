@@ -226,7 +226,7 @@ paths:
     get:
       tags:
       - System Settings
-      summary: Call operation  Default
+      summary: Call operation Default
       operationId: SystemSettings_Default
       responses:
         '200':
@@ -242,7 +242,7 @@ paths:
     post:
       tags:
       - System Settings
-      summary: Call operation  batch
+      summary: Call operation batch
       operationId: SystemSettings_SetSettings_1
       requestBody:
         content:
@@ -272,7 +272,7 @@ paths:
     post:
       tags:
       - System Settings
-      summary: Call operation  restore
+      summary: Call operation restore
       operationId: SystemSettings_RestoreSettings_1
       requestBody:
         content:
@@ -302,7 +302,7 @@ paths:
     post:
       tags:
       - System Settings
-      summary: Call operation  test
+      summary: Call operation test
       operationId: SystemSettings_Test_1
       requestBody:
         content:
@@ -327,7 +327,7 @@ paths:
     get:
       tags:
       - System Settings
-      summary: Call operation  Groups
+      summary: Call operation Groups
       operationId: SystemSettings_GetGroupsByWebsiteid_1
       parameters:
       - name: websiteId
@@ -381,6 +381,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: System settings get single by key
+      x-summary-source: derived
   /api/v1/admin/systemsettings/groups(websiteId={websiteId}):
     get:
       tags:
@@ -403,6 +405,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: System settings get groups by websiteid 2
+      x-summary-source: derived
   /api/v1/admin/systemsettings/test:
     post:
       tags:
@@ -418,6 +422,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: System settings test 2
+      x-summary-source: derived
   /api/v1/admin/systemsettings/batch:
     post:
       tags:
@@ -433,6 +439,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: System settings set settings 2
+      x-summary-source: derived
   /api/v1/admin/systemsettings/restore:
     post:
       tags:
@@ -448,6 +456,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: System settings restore settings 2
+      x-summary-source: derived
   /api/v1/admin/systemsettings/delete:
     delete:
       tags:
@@ -473,6 +483,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: System settings delete route
+      x-summary-source: derived
   /api/v1/admin/systemsettings({key})/customproperties({custompropertyKey}):
     get:
       tags:
@@ -513,8 +525,42 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: System settings get custom property by key and custompropertykey
+      x-summary-source: derived
 components:
   schemas:
+    Insite.Data.Entities.SystemSetting:
+      required:
+      - name
+      - value
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          maxLength: 256
+          minLength: 0
+          type: string
+        websiteId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        value:
+          maxLength: 1024
+          minLength: 0
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
     Insite.Admin.SystemSettings.SystemSettingDto:
       type: object
       properties:
@@ -574,38 +620,6 @@ components:
         overrideAll:
           type: boolean
         searchProviderTag:
-          type: string
-    Insite.Data.Entities.SystemSetting:
-      required:
-      - name
-      - value
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          maxLength: 256
-          minLength: 0
-          type: string
-        websiteId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        value:
-          maxLength: 1024
-          minLength: 0
-          type: string
-        createdOn:
-          format: date-time
-          type: string
-        createdBy:
-          type: string
-        modifiedOn:
-          format: date-time
-          type: string
-        modifiedBy:
           type: string
   securitySchemes:
     access_token:

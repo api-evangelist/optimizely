@@ -226,7 +226,7 @@ paths:
     get:
       tags:
       - Vmi Bins
-      summary: Call operation  Default
+      summary: Call operation Default
       operationId: VmiBins_Default
       responses:
         '200':
@@ -242,7 +242,7 @@ paths:
     post:
       tags:
       - Vmi Bins
-      summary: Call operation  archive
+      summary: Call operation archive
       operationId: VmiBins_Archive
       parameters:
       - name: ids
@@ -291,6 +291,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Vmi bins archive route
+      x-summary-source: derived
   /api/v1/admin/vmibins/delete:
     delete:
       tags:
@@ -316,6 +318,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Vmi bins delete route
+      x-summary-source: derived
   /api/v1/admin/vmibins({key})/customproperties({custompropertyKey}):
     get:
       tags:
@@ -356,6 +360,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Vmi bins get custom property by key and custompropertykey
+      x-summary-source: derived
   /api/v1/admin/vmibins({key})/vmicounts({vmicountKey}):
     get:
       tags:
@@ -396,6 +402,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Vmi bins get vmi count by key and vmicountkey
+      x-summary-source: derived
   /api/v1/admin/vmibins({key})/vminotes({vminoteKey}):
     get:
       tags:
@@ -436,6 +444,66 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Vmi bins get vmi note by key and vminotekey
+      x-summary-source: derived
+  /api/v1/vmiBins/count:
+    get:
+      tags:
+      - Vmi Bins
+      operationId: VmiBinsV1_GetCountAsync
+      parameters:
+      - name: parameter.isBelowMinimum
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: parameter.numberOfTimesMinQtyReached
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.numberOfPreviousOrders
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.numberOfVisits
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.vmiLocationId
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinCountModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinCountModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinCountModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinCountModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinCountModel'
+      security:
+      - access_token: []
+      summary: Vmi bins V1 get count async
+      x-summary-source: derived
 components:
   schemas:
     Insite.Data.Entities.VmiBin:
@@ -511,6 +579,18 @@ components:
           type: string
         modifiedBy:
           type: string
+    Insite.Catalog.WebApi.V1.ApiModels.VmiBinCountModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        count:
+          format: int32
+          type: integer
+        properties:
+          type: object
+          additionalProperties:
+            type: string
   requestBodies:
     Affiliates_ArchiveParameters:
       content:

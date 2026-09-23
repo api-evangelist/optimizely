@@ -47,6 +47,8 @@ paths:
                 $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetCollectionModel'
       security:
       - access_token: []
+      summary: Budgets V1 get collection async
+      x-summary-source: derived
   /api/v1/budgets/{fiscalYear}:
     get:
       tags:
@@ -103,6 +105,8 @@ paths:
                 $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetModel'
       security:
       - access_token: []
+      summary: Budgets V1 get async
+      x-summary-source: derived
     patch:
       tags:
       - Budgets
@@ -156,8 +160,33 @@ paths:
                 $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetModel'
       security:
       - access_token: []
+      summary: Budgets V1 patch async
+      x-summary-source: derived
 components:
   schemas:
+    Insite.Budget.WebApi.V1.ApiModels.BudgetModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        fiscalYear:
+          format: int32
+          type: integer
+        fiscalYearEndDate:
+          format: date-time
+          type: string
+        budgetLineCollection:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetLineModel'
+        userProfileId:
+          type: string
+        shipToId:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
     Insite.Budget.WebApi.V1.ApiModels.BudgetCollectionModel:
       type: object
       properties:
@@ -211,29 +240,6 @@ components:
           format: decimal
           type: number
         lastFiscalYearVarianceDisplay:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Budget.WebApi.V1.ApiModels.BudgetModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        fiscalYear:
-          format: int32
-          type: integer
-        fiscalYearEndDate:
-          format: date-time
-          type: string
-        budgetLineCollection:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Budget.WebApi.V1.ApiModels.BudgetLineModel'
-        userProfileId:
-          type: string
-        shipToId:
           type: string
         properties:
           type: object

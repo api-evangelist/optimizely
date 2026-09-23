@@ -1,18 +1,17 @@
 openapi: 3.2.0
 info:
-  title: Optimizely 🏆 BestBets API
+  title: Optimizely Graph 🏆 BestBets API
+  version: 3.24.0
+  description: Optimizely Graph API definition
+  license:
+    name: ' '
   contact:
     name: Documentation
     url: https://cg.optimizely.com/
-  license:
-    name: ' '
-  version: '1.0'
-  description: 'Operations tagged 🏆 BestBets across 2 of this provider''s published API definitions: optimizely-platform-optimizely-optimizely-graph-api-openapi.json, optimizely-platform-optimizely-swagger-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://cg.optimizely.com
 - url: https://prod.cg.optimizely.com
 tags:
-- name: 🏆 BestBets
+- name: Best Bets
 paths:
   /api/bestbets/collection:
     get:
@@ -29,7 +28,7 @@ paths:
       description: Get all bestbet collections or get by Id
       summary: Get bestbet collection(s)
       tags:
-      - 🏆 BestBets
+      - Best Bets
       deprecated: true
       security:
       - epi-hmac: []
@@ -56,10 +55,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BestBetCollectionResult'
-      description: Register a bestbet collection
       summary: Register a bestbet collection
       tags:
-      - 🏆 BestBets
+      - Best Bets
       deprecated: true
       security:
       - epi-hmac: []
@@ -72,8 +70,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/BestBetCollectionPayload'
-    servers:
-    - url: https://cg.optimizely.com
   /api/bestbets/collection/{id}:
     put:
       operationId: update-BestBetCollectionHandler
@@ -87,7 +83,7 @@ paths:
       description: Update bestbet collection by Id
       summary: Update a bestbet collection
       tags:
-      - 🏆 BestBets
+      - Best Bets
       deprecated: true
       security:
       - epi-hmac: []
@@ -113,7 +109,7 @@ paths:
       description: Delete bestbet by Id
       summary: Delete a bestbet collection
       tags:
-      - 🏆 BestBets
+      - Best Bets
       deprecated: true
       security:
       - epi-hmac: []
@@ -125,18 +121,8 @@ paths:
         required: true
         schema:
           type: string
-    servers:
-    - url: https://cg.optimizely.com
 components:
   schemas:
-    BestBetCollectionPayload:
-      properties:
-        title:
-          type: string
-      required:
-      - title
-      type: object
-      additionalProperties: false
     BestBetCollectionResult:
       properties:
         title:
@@ -146,6 +132,14 @@ components:
       required:
       - title
       - id
+      type: object
+      additionalProperties: false
+    BestBetCollectionPayload:
+      properties:
+        title:
+          type: string
+      required:
+      - title
       type: object
       additionalProperties: false
   securitySchemes:
@@ -168,6 +162,3 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT token
-x-refined-from:
-- optimizely-platform-optimizely-optimizely-graph-api-openapi.json
-- optimizely-platform-optimizely-swagger-openapi.json

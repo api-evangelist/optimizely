@@ -140,14 +140,6 @@ paths:
       description: Optimizely Flags API v1 Server
 components:
   parameters:
-    projectId:
-      name: project_id
-      in: path
-      required: true
-      description: The unique identifier for the project
-      schema:
-        type: integer
-        format: int64
     page:
       name: page
       in: query
@@ -167,6 +159,14 @@ components:
         default: 25
         minimum: 1
         maximum: 100
+    projectId:
+      name: project_id
+      in: path
+      required: true
+      description: The unique identifier for the project
+      schema:
+        type: integer
+        format: int64
     page_2:
       description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
 
@@ -321,6 +321,69 @@ components:
           format: uuid
           type: string
       type: object
+    WebSnippetUpdate:
+      properties:
+        enable_force_variation:
+          description: Enables the option to force yourself into a specific variation on any page
+          externalDocs:
+            description: force yourself into a specific variation
+            url: https://help.optimizely.com/hc/en-us/articles/202480860#force_variations
+          type: boolean
+        exclude_disabled_experiments:
+          description: Set to true to remove paused and draft Experiment from the snippet
+          externalDocs:
+            description: paused and draft Experiment
+            url: https://help.optimizely.com/Set_Up_Optimizely/Project_Settings%3A_Privacy#draft_pause
+          type: boolean
+        exclude_names:
+          description: Set to true to mask descriptive names
+          externalDocs:
+            description: mask descriptive names
+            url: https://help.optimizely.com/Set_Up_Optimizely/Project_Settings%3A_Privacy#masking_descriptive_names
+          type: boolean
+        include_jquery:
+          description: Set to true to include jQuery in your snippet
+          type: boolean
+        ip_anonymization:
+          description: Set to true to change the last octet of IP addresses to 0 prior to logging
+          type: boolean
+        ip_filter:
+          description: A regular expression (max 1500 characters) matching ip addresses for filtering out visitors. Matching visitors will still see the Experiment, but they won't be counted in results.
+          example: ^206\.23\.100\.([5-9][0-9]|1([0-4][0-9]|50))$
+          externalDocs:
+            description: filtering out visitors
+            url: https://help.optimizely.com/hc/en-us/articles/200040595-IP-Filtering
+          type: string
+        library:
+          description: The prefered jQuery library version you would like to use with your snippet. If you do not want to include jQuery, set include_jquery to false
+          enum:
+          - jquery-1.11.3-trim
+          - jquery-1.11.3-full
+          - jquery-1.6.4-trim
+          - jquery-1.6.4-full
+          - none
+          type: string
+        project_javascript:
+          description: The javascript code which runs before Optimizely on all pages, regardless of whether or not there is a running Experiment
+          example: alert("Active Experiment")
+          type: string
+        visitor_id_locator_name:
+          description: (BETA) The name of said identifier that locates the visitor id
+          example: cookie_name
+          type:
+          - string
+          - 'null'
+        visitor_id_locator_type:
+          description: (BETA) The type of identifer where the visitor id is located (e.g. cookies, query param)
+          enum:
+          - cookie
+          - query
+          - localStorage
+          - js
+          type:
+          - string
+          - 'null'
+      type: object
     ProjectUpdate:
       properties:
         account_id:
@@ -357,6 +420,84 @@ components:
           type: string
         web_snippet:
           $ref: '#/components/schemas/WebSnippetUpdate'
+      type: object
+    WebSnippet:
+      properties:
+        code_revision:
+          description: The current revision number of the Project snippet
+          readOnly: true
+          type: integer
+        enable_force_variation:
+          default: false
+          description: Enables the option to force yourself into a specific variation on any page
+          externalDocs:
+            description: force yourself into a specific variation
+            url: https://help.optimizely.com/hc/en-us/articles/202480860#force_variations
+          type: boolean
+        exclude_disabled_experiments:
+          default: false
+          description: Set to true to remove paused and draft Experiment from the snippet
+          externalDocs:
+            description: paused and draft Experiment
+            url: https://help.optimizely.com/Set_Up_Optimizely/Project_Settings%3A_Privacy#draft_pause
+          type: boolean
+        exclude_names:
+          default: true
+          description: Set to true to mask descriptive names
+          externalDocs:
+            description: mask descriptive names
+            url: https://help.optimizely.com/Set_Up_Optimizely/Project_Settings%3A_Privacy#masking_descriptive_names
+          type: boolean
+        include_jquery:
+          default: true
+          description: Set to true to include jQuery in your snippet
+          type: boolean
+        ip_anonymization:
+          default: false
+          description: Set to true to change the last octet of IP addresses to 0 prior to logging
+          type: boolean
+        ip_filter:
+          description: A regular expression (max 1500 characters) matching ip addresses for filtering out visitors. Matching visitors will still see the Experiment, but they won't be counted in results.
+          example: ^206\.23\.100\.([5-9][0-9]|1([0-4][0-9]|50))$
+          externalDocs:
+            description: filtering out visitors
+            url: https://help.optimizely.com/hc/en-us/articles/200040595-IP-Filtering
+          type: string
+        js_file_size:
+          description: The current size in bytes of the Project snippet
+          example: 63495
+          readOnly: true
+          type: integer
+        library:
+          default: jquery-1.11.3-trim
+          description: The prefered jQuery library version you would like to use with your snippet. If you do not want to include jQuery, set include_jquery to false
+          enum:
+          - jquery-1.11.3-trim
+          - jquery-1.11.3-full
+          - jquery-1.6.4-trim
+          - jquery-1.6.4-full
+          - none
+          type: string
+        project_javascript:
+          description: The javascript code which runs before Optimizely on all pages, regardless of whether or not there is a running Experiment
+          example: alert("Active Experiment")
+          type: string
+        visitor_id_locator_name:
+          description: (BETA) The name of said identifier that locates the visitor id
+          example: cookie_name
+          type:
+          - string
+          - 'null'
+        visitor_id_locator_type:
+          description: (BETA) The type of identifer where the visitor id is located (e.g. cookies, query param)
+          enum:
+          - cookie
+          - query
+          - localStorage
+          - js
+          type:
+          - string
+          - 'null'
       type: object
     Project_3:
       properties:
@@ -466,147 +607,6 @@ components:
           $ref: '#/components/schemas/WebSnippet'
       required:
       - name
-      type: object
-    WebSnippetUpdate:
-      properties:
-        enable_force_variation:
-          description: Enables the option to force yourself into a specific variation on any page
-          externalDocs:
-            description: force yourself into a specific variation
-            url: https://help.optimizely.com/hc/en-us/articles/202480860#force_variations
-          type: boolean
-        exclude_disabled_experiments:
-          description: Set to true to remove paused and draft Experiment from the snippet
-          externalDocs:
-            description: paused and draft Experiment
-            url: https://help.optimizely.com/Set_Up_Optimizely/Project_Settings%3A_Privacy#draft_pause
-          type: boolean
-        exclude_names:
-          description: Set to true to mask descriptive names
-          externalDocs:
-            description: mask descriptive names
-            url: https://help.optimizely.com/Set_Up_Optimizely/Project_Settings%3A_Privacy#masking_descriptive_names
-          type: boolean
-        include_jquery:
-          description: Set to true to include jQuery in your snippet
-          type: boolean
-        ip_anonymization:
-          description: Set to true to change the last octet of IP addresses to 0 prior to logging
-          type: boolean
-        ip_filter:
-          description: A regular expression (max 1500 characters) matching ip addresses for filtering out visitors. Matching visitors will still see the Experiment, but they won't be counted in results.
-          example: ^206\.23\.100\.([5-9][0-9]|1([0-4][0-9]|50))$
-          externalDocs:
-            description: filtering out visitors
-            url: https://help.optimizely.com/hc/en-us/articles/200040595-IP-Filtering
-          type: string
-        library:
-          description: The prefered jQuery library version you would like to use with your snippet. If you do not want to include jQuery, set include_jquery to false
-          enum:
-          - jquery-1.11.3-trim
-          - jquery-1.11.3-full
-          - jquery-1.6.4-trim
-          - jquery-1.6.4-full
-          - none
-          type: string
-        project_javascript:
-          description: The javascript code which runs before Optimizely on all pages, regardless of whether or not there is a running Experiment
-          example: alert("Active Experiment")
-          type: string
-        visitor_id_locator_name:
-          description: (BETA) The name of said identifier that locates the visitor id
-          example: cookie_name
-          type:
-          - string
-          - 'null'
-        visitor_id_locator_type:
-          description: (BETA) The type of identifer where the visitor id is located (e.g. cookies, query param)
-          enum:
-          - cookie
-          - query
-          - localStorage
-          - js
-          type:
-          - string
-          - 'null'
-      type: object
-    WebSnippet:
-      properties:
-        code_revision:
-          description: The current revision number of the Project snippet
-          readOnly: true
-          type: integer
-        enable_force_variation:
-          default: false
-          description: Enables the option to force yourself into a specific variation on any page
-          externalDocs:
-            description: force yourself into a specific variation
-            url: https://help.optimizely.com/hc/en-us/articles/202480860#force_variations
-          type: boolean
-        exclude_disabled_experiments:
-          default: false
-          description: Set to true to remove paused and draft Experiment from the snippet
-          externalDocs:
-            description: paused and draft Experiment
-            url: https://help.optimizely.com/Set_Up_Optimizely/Project_Settings%3A_Privacy#draft_pause
-          type: boolean
-        exclude_names:
-          default: true
-          description: Set to true to mask descriptive names
-          externalDocs:
-            description: mask descriptive names
-            url: https://help.optimizely.com/Set_Up_Optimizely/Project_Settings%3A_Privacy#masking_descriptive_names
-          type: boolean
-        include_jquery:
-          default: true
-          description: Set to true to include jQuery in your snippet
-          type: boolean
-        ip_anonymization:
-          default: false
-          description: Set to true to change the last octet of IP addresses to 0 prior to logging
-          type: boolean
-        ip_filter:
-          description: A regular expression (max 1500 characters) matching ip addresses for filtering out visitors. Matching visitors will still see the Experiment, but they won't be counted in results.
-          example: ^206\.23\.100\.([5-9][0-9]|1([0-4][0-9]|50))$
-          externalDocs:
-            description: filtering out visitors
-            url: https://help.optimizely.com/hc/en-us/articles/200040595-IP-Filtering
-          type: string
-        js_file_size:
-          description: The current size in bytes of the Project snippet
-          example: 63495
-          readOnly: true
-          type: integer
-        library:
-          default: jquery-1.11.3-trim
-          description: The prefered jQuery library version you would like to use with your snippet. If you do not want to include jQuery, set include_jquery to false
-          enum:
-          - jquery-1.11.3-trim
-          - jquery-1.11.3-full
-          - jquery-1.6.4-trim
-          - jquery-1.6.4-full
-          - none
-          type: string
-        project_javascript:
-          description: The javascript code which runs before Optimizely on all pages, regardless of whether or not there is a running Experiment
-          example: alert("Active Experiment")
-          type: string
-        visitor_id_locator_name:
-          description: (BETA) The name of said identifier that locates the visitor id
-          example: cookie_name
-          type:
-          - string
-          - 'null'
-        visitor_id_locator_type:
-          description: (BETA) The type of identifer where the visitor id is located (e.g. cookies, query param)
-          enum:
-          - cookie
-          - query
-          - localStorage
-          - js
-          type:
-          - string
-          - 'null'
       type: object
   securitySchemes:
     bearerAuth:

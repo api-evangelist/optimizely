@@ -68,6 +68,8 @@ paths:
             text/html:
               schema:
                 $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteModel'
+      summary: Autocomplete V1 get async
+      x-summary-source: derived
   /api/v1/autocomplete/products:
     get:
       tags:
@@ -111,52 +113,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteProductCollectionModel'
       deprecated: true
+      summary: Products V1 get auto complete async
+      x-summary-source: derived
 components:
   schemas:
-    Insite.Catalog.WebApi.V1.ApiModels.AutocompleteCompletionResultModel:
+    Insite.Catalog.WebApi.V1.ApiModels.BrandAutocompleteModel:
       type: object
       properties:
         uri:
           type: string
-        suggestion:
+        productLineName:
           type: string
-        attributeResults:
-          $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteAttributeResultsModel'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.WebApi.V1.ApiModels.AutocompleteProductCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        products:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteProductModel'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.WebApi.V1.ApiModels.ProductAutocompleteItemModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        manufacturerItemNumber:
-          type: string
-        name:
-          type: string
-        isNameCustomerOverride:
-          type: boolean
-        erpNumber:
-          type: string
-        brandName:
-          type: string
-        brandDetailPagePath:
-          type: string
-        styleParentId:
+        productLineId:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
@@ -172,6 +140,19 @@ components:
           type: string
         url:
           type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.AutocompleteProductCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteProductModel'
         properties:
           type: object
           additionalProperties:
@@ -199,17 +180,11 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Catalog.WebApi.V1.ApiModels.BrandAutocompleteModel:
+    Insite.Catalog.WebApi.V1.ApiModels.AutocompleteItemModel:
       type: object
       properties:
         uri:
           type: string
-        productLineName:
-          type: string
-        productLineId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
         id:
           format: uuid
           type: string
@@ -261,11 +236,27 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Catalog.WebApi.V1.ApiModels.AutocompleteItemModel:
+    Insite.Catalog.WebApi.V1.ApiModels.ProductAutocompleteItemModel:
       type: object
       properties:
         uri:
           type: string
+        manufacturerItemNumber:
+          type: string
+        name:
+          type: string
+        isNameCustomerOverride:
+          type: boolean
+        erpNumber:
+          type: string
+        brandName:
+          type: string
+        brandDetailPagePath:
+          type: string
+        styleParentId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
         id:
           format: uuid
           type: string
@@ -278,6 +269,19 @@ components:
           type: string
         url:
           type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.AutocompleteCompletionResultModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        suggestion:
+          type: string
+        attributeResults:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.AutocompleteAttributeResultsModel'
         properties:
           type: object
           additionalProperties:

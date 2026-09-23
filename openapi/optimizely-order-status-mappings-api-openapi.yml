@@ -226,7 +226,7 @@ paths:
     get:
       tags:
       - Order Status Mappings
-      summary: Call operation  Default
+      summary: Call operation Default
       operationId: OrderStatusMappings_Default
       responses:
         '200':
@@ -263,6 +263,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Order status mappings delete route
+      x-summary-source: derived
   /api/v1/admin/orderstatusmappings({key})/customproperties({custompropertyKey}):
     get:
       tags:
@@ -303,6 +305,34 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Order status mappings get custom property by key and custompropertykey
+      x-summary-source: derived
+  /api/v1/orderstatusmappings:
+    get:
+      tags:
+      - Order Status Mappings
+      operationId: OrdersV1_GetOrderStatusMappingsAsync
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingCollectionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingCollectionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingCollectionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingCollectionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingCollectionModel'
+      summary: Orders V1 get order status mappings async
+      x-summary-source: derived
 components:
   schemas:
     Insite.Data.Entities.OrderStatusMapping:
@@ -343,6 +373,40 @@ components:
           type: string
         modifiedBy:
           type: string
+    Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        erpOrderStatus:
+          type: string
+        displayName:
+          type: string
+        isDefault:
+          type: boolean
+        allowRma:
+          type: boolean
+        allowCancellation:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        orderStatusMappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderStatusMappingModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
   securitySchemes:
     access_token:
       type: apiKey

@@ -19,7 +19,7 @@ paths:
       tags:
       - Publishing
       summary: GET /publishing-channels
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get the list of publishing channels available in the organization. Use this to populate a channel picker before creating a publishing intent for a task.
+      description: Experimental Get the list of publishing channels available in the organization. Use this to populate a channel picker before creating a publishing intent for a task.
       parameters:
       - $ref: '#/components/parameters/offset'
       - name: page_size
@@ -184,7 +184,7 @@ paths:
       operationId: getPublishingEventAssetMetadata
       tags:
       - Publishing
-      summary: GET v3/publishing-events/{publishing_event_id}/assets/{asset_id}/publishing-metadata/{publishing_metadata_id}
+      summary: GET v3/publishing-events/{publishing_event_id}/assets/{asset_id}/publishing-meta…
       description: Get publishing metadata.
       parameters:
       - name: publishing_event_id
@@ -331,6 +331,75 @@ components:
           properties: {}
       required:
       - message
+    PublishingEventResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the publishing event
+          example: 5d7f910551b00a722e0418830cee5534
+        assets:
+          type: array
+          description: List of assets associated with the publishing event.
+          items:
+            $ref: '#/components/schemas/PublishingEventAssets'
+        links:
+          type: object
+          description: Meta links
+          additionalProperties: false
+          properties:
+            self:
+              type: string
+              description: URL of the publishing event
+              example: https://api.cmp.optimizely.com/v3/publishing-events/5d7f910551b00a722e0418830cee2212
+            publishing_metadata:
+              type: string
+              description: URL of list of publishing metadata
+              example: https://api.cmp.optimizely.com/v3/publishing-events/5d7f910551b00a722e0418830cee5534/publishing-metadata
+          required:
+          - self
+          - publishing_metadata
+      required:
+      - id
+      - assets
+      - links
+    PublishingEventMetadataCreateRequest:
+      type: object
+      properties:
+        asset_id:
+          type: string
+          description: Unique identifier of the asset
+          example: 4567m474974987479856456457
+        status:
+          type: string
+          description: Publishing status of the asset
+          example: published
+          enum:
+          - published
+          - unpublished
+          - synced
+          - failed
+        status_message:
+          type: string
+          description: Any message patched by the integrator about the asset's status
+          example: This asset is in review
+        locale:
+          type: string
+          description: The locale to which the asset is being published
+          example: en
+        public_url:
+          type: string
+          description: public url of asset
+          example: https://example.com/test
+        publishing_destination_updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of when the publishing destination of the asset was updated
+          example: '2019-10-06T13:15:30Z'
+      required:
+      - asset_id
+      - status
     PublishingEventMetadataBulkCreateResponse:
       type: object
       properties:
@@ -386,42 +455,57 @@ components:
       required:
       - data
       - errors
-    PublishingEventMetadataCreateRequest:
+    PublishingEventAssets:
       type: object
+      additionalProperties: false
       properties:
-        asset_id:
+        id:
           type: string
           description: Unique identifier of the asset
-          example: 4567m474974987479856456457
-        status:
+          example: 5d7f910551b00a722e0418830cee2212
+        type:
           type: string
-          description: Publishing status of the asset
-          example: published
-          enum:
-          - published
-          - unpublished
-          - synced
-          - failed
-        status_message:
-          type: string
-          description: Any message patched by the integrator about the asset's status
-          example: This asset is in review
-        locale:
-          type: string
-          description: The locale to which the asset is being published
-          example: en
-        public_url:
-          type: string
-          description: public url of asset
-          example: https://example.com/test
-        publishing_destination_updated_at:
-          type: string
-          format: date-time
-          description: Timestamp of when the publishing destination of the asset was updated
-          example: '2019-10-06T13:15:30Z'
+          description: 'Type of the asset: `article`, `image`, `video`, `raw_file`, `structured_content`'
+          example: article
+        publishing_metadata:
+          type: array
+          description: List of information related to publishing metadata for the asset
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the publishing metadata
+                example: 5e46745616s564s4564964
+              links:
+                type: object
+                description: Meta links
+                properties:
+                  self:
+                    type: string
+                    description: URL of the publishing metadata of the asset
+                    example: https://api.cmp.optimizely.com/v3/publishing-events/5d7f910551b00a722e0418830cee5534/assets/5d7f910551b00a722e0418830cee2212/publishing-metadata/5e46745616s564s4564964
+                required:
+                - self
+            required:
+            - id
+            - links
+        links:
+          type: object
+          description: Meta links
+          additionalProperties: false
+          properties:
+            self:
+              type: string
+              description: URL of asset
+              example: https://api.cmp.optimizely.com/v3/articles/5d7f910551b00a722e0418830cee2212
+          required:
+          - self
       required:
-      - asset_id
-      - status
+      - id
+      - publishing_metadata
+      - type
+      - links
     PublishingChannelListResponse:
       type: object
       additionalProperties: false
@@ -444,6 +528,14 @@ components:
       required:
       - data
       - pagination
+    PublishingEventMetadataListResponse:
+      type: object
+      properties:
+        data:
+          description: List of successfully posted publishing metadata
+          type: array
+          items:
+            $ref: '#/components/schemas/PublishingEventMetadataResponse'
     PublishingChannelResponse:
       type: object
       additionalProperties: false
@@ -498,107 +590,15 @@ components:
       required:
       - next
       - previous
-    PublishingEventResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: Unique identifier of the publishing event
-          example: 5d7f910551b00a722e0418830cee5534
-        assets:
-          type: array
-          description: List of assets associated with the publishing event.
-          items:
-            $ref: '#/components/schemas/PublishingEventAssets'
-        links:
-          type: object
-          description: Meta links
-          additionalProperties: false
-          properties:
-            self:
-              type: string
-              description: URL of the publishing event
-              example: https://api.cmp.optimizely.com/v3/publishing-events/5d7f910551b00a722e0418830cee2212
-            publishing_metadata:
-              type: string
-              description: URL of list of publishing metadata
-              example: https://api.cmp.optimizely.com/v3/publishing-events/5d7f910551b00a722e0418830cee5534/publishing-metadata
-          required:
-          - self
-          - publishing_metadata
-      required:
-      - id
-      - assets
-      - links
-    PublishingEventAssets:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: Unique identifier of the asset
-          example: 5d7f910551b00a722e0418830cee2212
-        type:
-          type: string
-          description: 'Type of the asset: `article`, `image`, `video`, `raw_file`, `structured_content`'
-          example: article
-        publishing_metadata:
-          type: array
-          description: List of information related to publishing metadata for the asset
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                description: Unique identifier of the publishing metadata
-                example: 5e46745616s564s4564964
-              links:
-                type: object
-                description: Meta links
-                properties:
-                  self:
-                    type: string
-                    description: URL of the publishing metadata of the asset
-                    example: https://api.cmp.optimizely.com/v3/publishing-events/5d7f910551b00a722e0418830cee5534/assets/5d7f910551b00a722e0418830cee2212/publishing-metadata/5e46745616s564s4564964
-                required:
-                - self
-            required:
-            - id
-            - links
-        links:
-          type: object
-          description: Meta links
-          additionalProperties: false
-          properties:
-            self:
-              type: string
-              description: URL of asset
-              example: https://api.cmp.optimizely.com/v3/articles/5d7f910551b00a722e0418830cee2212
-          required:
-          - self
-      required:
-      - id
-      - publishing_metadata
-      - type
-      - links
-    PublishingEventMetadataListResponse:
-      type: object
-      properties:
-        data:
-          description: List of successfully posted publishing metadata
-          type: array
-          items:
-            $ref: '#/components/schemas/PublishingEventMetadataResponse'
   responses:
-    NotFound:
-      description: Not found error
+    Unauthorized:
+      description: Authorization error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            message: Resource not found
+            message: Unauthorized
     ClientError:
       description: Client error
       content:
@@ -615,14 +615,14 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: You do not have the permission to perform this operation
-    Unauthorized:
-      description: Authorization error
+    NotFound:
+      description: Not found error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            message: Unauthorized
+            message: Resource not found
   parameters:
     offset:
       name: offset

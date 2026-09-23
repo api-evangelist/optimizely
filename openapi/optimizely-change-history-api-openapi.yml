@@ -125,7 +125,7 @@ paths:
                   $ref: '#/components/schemas/ChangeHistoryChange'
                 type: array
           description: Returns changes.
-      summary: Retrieve changes for a project.
+      summary: Retrieve changes for a project
       tags:
       - Change History
 components:
@@ -162,13 +162,6 @@ components:
       - email
       - id
       type: object
-    ChangeRevision:
-      properties:
-        current:
-          $ref: '#/components/schemas/Revision'
-        previous:
-          $ref: '#/components/schemas/Revision'
-      type: object
     Entity:
       properties:
         api_url:
@@ -192,6 +185,34 @@ components:
           description: Generated URL to access the entity using Optimizely UI.
           format: url
           type: string
+      type: object
+    Revision:
+      properties:
+        id:
+          description: Reference to a revision of the entity.
+          type:
+          - integer
+          - 'null'
+      type: object
+    ChangeDetail:
+      properties:
+        after:
+          description: Value of the property after modification.
+        before:
+          description: Value of the property before modification.
+        description:
+          description: Human readable description of the change.
+          type: string
+        property:
+          description: The name of the property modified.
+          type: string
+      type: object
+    ChangeRevision:
+      properties:
+        current:
+          $ref: '#/components/schemas/Revision'
+        previous:
+          $ref: '#/components/schemas/Revision'
       type: object
     ChangeHistoryChange:
       properties:
@@ -238,27 +259,6 @@ components:
           $ref: '#/components/schemas/User'
       required:
       - project_id
-      type: object
-    Revision:
-      properties:
-        id:
-          description: Reference to a revision of the entity.
-          type:
-          - integer
-          - 'null'
-      type: object
-    ChangeDetail:
-      properties:
-        after:
-          description: Value of the property after modification.
-        before:
-          description: Value of the property before modification.
-        description:
-          description: Human readable description of the change.
-          type: string
-        property:
-          description: The name of the property modified.
-          type: string
       type: object
   parameters:
     page:

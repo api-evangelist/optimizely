@@ -16,7 +16,6 @@ tags:
 paths:
   /me:
     get:
-      description: Get current User information
       operationId: get_me
       parameters:
       - description: Flag indicator to request features enabled for this user
@@ -62,6 +61,15 @@ paths:
       x-release-state: alpha
 components:
   schemas:
+    AccountFeature:
+      properties:
+        feature_id:
+          type: string
+        sources:
+          items:
+            $ref: '#/components/schemas/AccountFeatureSource'
+          type: array
+      type: object
     Error:
       properties:
         code:
@@ -74,71 +82,12 @@ components:
           format: uuid
           type: string
       type: object
-    ProjectRole:
-      properties:
-        invitation_status:
-          enum:
-          - pending
-          readOnly: true
-          type: string
-        project_id:
-          description: The unique identifier of the Project
-          format: int64
-          readOnly: true
-          type: integer
-        role:
-          enum:
-          - administrator
-          - viewer
-          - restricted_editor
-          - editor
-          - restricted_publisher
-          - publisher
-          - project_owner
-          readOnly: true
-          type: string
-      type: object
-    AccountFeature:
-      properties:
-        feature_id:
-          type: string
-        sources:
-          items:
-            $ref: '#/components/schemas/AccountFeatureSource'
-          type: array
-      type: object
-    Account:
-      properties:
-        id:
-          description: The unique identifier of the Account
-          format: int64
-          readOnly: true
-          type: integer
-        name:
-          description: The name of the Account
-          readOnly: true
-          type: string
-      type: object
     AccountFeatureSource:
       properties:
         type:
           type: string
         value:
           type: string
-      type: object
-    CurrentAccount:
-      properties:
-        features:
-          additionalProperties:
-            $ref: '#/components/schemas/AccountFeature'
-          description: The available features for the Account
-          readOnly: true
-          type: object
-        id:
-          description: The unique identifier of the Account
-          format: int64
-          readOnly: true
-          type: integer
       type: object
     UserProfile:
       properties:
@@ -158,6 +107,18 @@ components:
           default: ''
           description: User's profile image URL
           format: url
+          type: string
+      type: object
+    Account:
+      properties:
+        id:
+          description: The unique identifier of the Account
+          format: int64
+          readOnly: true
+          type: integer
+        name:
+          description: The name of the Account
+          readOnly: true
           type: string
       type: object
     Me:
@@ -184,6 +145,44 @@ components:
             $ref: '#/components/schemas/ProjectRole'
           readOnly: true
           type: array
+      type: object
+    ProjectRole:
+      properties:
+        invitation_status:
+          enum:
+          - pending
+          readOnly: true
+          type: string
+        project_id:
+          description: The unique identifier of the Project
+          format: int64
+          readOnly: true
+          type: integer
+        role:
+          enum:
+          - administrator
+          - viewer
+          - restricted_editor
+          - editor
+          - restricted_publisher
+          - publisher
+          - project_owner
+          readOnly: true
+          type: string
+      type: object
+    CurrentAccount:
+      properties:
+        features:
+          additionalProperties:
+            $ref: '#/components/schemas/AccountFeature'
+          description: The available features for the Account
+          readOnly: true
+          type: object
+        id:
+          description: The unique identifier of the Account
+          format: int64
+          readOnly: true
+          type: integer
       type: object
   securitySchemes:
     OAuth2:

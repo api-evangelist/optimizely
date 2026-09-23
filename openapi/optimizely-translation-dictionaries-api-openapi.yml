@@ -226,7 +226,7 @@ paths:
     get:
       tags:
       - Translation Dictionaries
-      summary: Call operation  Default
+      summary: Call operation Default
       operationId: TranslationDictionaries_Default
       responses:
         '200':
@@ -263,6 +263,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Translation dictionaries delete route
+      x-summary-source: derived
   /api/v1/admin/translationdictionaries({key})/customproperties({custompropertyKey}):
     get:
       tags:
@@ -303,6 +305,67 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Translation dictionaries get custom property by key and custompropertykey
+      x-summary-source: derived
+  /api/v1/translationdictionaries:
+    get:
+      tags:
+      - Translation Dictionaries
+      operationId: TranslationDictionariesV1_GetAsync
+      parameters:
+      - name: parameter.keyWord
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: parameter.source
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: parameter.languageCode
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: parameter.page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.pageSize
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: parameter.sort
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.TranslationDictionaryCollectionModel'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.TranslationDictionaryCollectionModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.TranslationDictionaryCollectionModel'
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.TranslationDictionaryCollectionModel'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.TranslationDictionaryCollectionModel'
+      summary: Translation dictionaries V1 get async
+      x-summary-source: derived
 components:
   schemas:
     Insite.Data.Entities.TranslationDictionary:
@@ -341,6 +404,85 @@ components:
           format: date-time
           type: string
         modifiedBy:
+          type: string
+    Insite.Core.WebApi.PaginationModel:
+      type: object
+      properties:
+        currentPage:
+          format: int32
+          type: integer
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        defaultPageSize:
+          format: int32
+          type: integer
+        totalItemCount:
+          format: int32
+          type: integer
+        numberOfPages:
+          format: int32
+          type: integer
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
+        sortType:
+          type: string
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
+          type: string
+    Insite.Websites.WebApi.V1.ApiModels.TranslationDictionaryCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        translationDictionaries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.TranslationDictionaryModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Websites.WebApi.V1.ApiModels.TranslationDictionaryModel:
+      type: object
+      properties:
+        keyword:
+          type: string
+        source:
+          type: string
+        translation:
+          type: string
+        languageId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        languageCode:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.WebApi.SortOptionModel:
+      type: object
+      properties:
+        displayName:
+          type: string
+        sortType:
           type: string
   securitySchemes:
     access_token:

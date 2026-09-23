@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Optimizely Campaign REST Batch sending API
-  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  description: This documentation lists all available resources and endpoints of the Optimizely Campaign REST API.
   version: '1'
 servers:
 - url: https://api.campaign.episerver.net/rest
@@ -197,6 +197,78 @@ paths:
       - Authorization: []
 components:
   schemas:
+    PrepareSendingBatchRequest:
+      required:
+      - campaign
+      - campaignAction
+      type: object
+      properties:
+        campaign:
+          type: string
+          description: Campaign definition based on the value of campaignAction
+        campaignAction:
+          type: string
+          description: Campaign action
+          enum:
+          - use
+          - copy
+        tag:
+          type: string
+          description: Tag reference
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestChunk:
+      type: object
+      properties:
+        chunk:
+          type: string
+        count:
+          type: integer
+          format: int32
+    RecipientsChunkRequestData:
+      type: object
+      properties:
+        chunk:
+          type: string
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+    RestSendingBatchStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestSendingBatch'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    Recipient:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties:
+            type: object
+        id:
+          type: string
     RestSendingBatch:
       type: object
       properties:
@@ -253,78 +325,6 @@ components:
               uri:
                 type: string
                 format: uri
-    PrepareSendingBatchRequest:
-      required:
-      - campaign
-      - campaignAction
-      type: object
-      properties:
-        campaign:
-          type: string
-          description: Campaign definition based on the value of campaignAction
-        campaignAction:
-          type: string
-          description: Campaign action
-          enum:
-          - use
-          - copy
-        tag:
-          type: string
-          description: Tag reference
-    RestSendingBatchStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestSendingBatch'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    RecipientsChunkRequestData:
-      type: object
-      properties:
-        chunk:
-          type: string
-        recipients:
-          type: array
-          items:
-            $ref: '#/components/schemas/Recipient'
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
-    Recipient:
-      type: object
-      properties:
-        data:
-          type: object
-          additionalProperties:
-            type: object
-        id:
-          type: string
-    RestChunk:
-      type: object
-      properties:
-        chunk:
-          type: string
-        count:
-          type: integer
-          format: int32
   securitySchemes:
     Authorization:
       type: apiKey

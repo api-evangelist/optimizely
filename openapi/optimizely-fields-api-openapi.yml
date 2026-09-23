@@ -19,7 +19,7 @@ paths:
       tags:
       - Fields
       summary: GET /fields
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get the list of fields of an Organization.
+      description: Experimental Get the list of fields of an Organization.
       parameters:
       - name: ids
         in: query
@@ -91,7 +91,7 @@ paths:
       tags:
       - Fields
       summary: POST /fields
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Add a new field to an Organization.
+      description: Experimental Add a new field to an Organization.
       requestBody:
         description: Payload to create a new field in an Organization
         required: true
@@ -130,7 +130,7 @@ paths:
       tags:
       - Fields
       summary: PATCH /fields/{id}
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Update a field in an Organization.
+      description: Experimental Update a field in an Organization.
       parameters:
       - name: id
         in: path
@@ -165,7 +165,7 @@ paths:
       tags:
       - Fields
       summary: POST /fields/{id}/choices
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Create choices in a field.
+      description: Experimental Create choices in a field.
       parameters:
       - name: id
         in: path
@@ -204,7 +204,7 @@ paths:
       tags:
       - Fields
       summary: PATCH /fields/{field_id}/choices/{choice_id}
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Update a choice of a field.
+      description: Experimental Update a choice of a field.
       parameters:
       - name: field_id
         in: path
@@ -245,7 +245,7 @@ paths:
       tags:
       - Fields
       summary: DELETE /fields/{field_id}/choices/{choice_id}
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Delete a choice from a field.
+      description: Experimental Delete a choice from a field.
       parameters:
       - name: field_id
         in: path
@@ -276,36 +276,31 @@ paths:
           $ref: '#/components/responses/UnprocessableEntity'
 components:
   schemas:
-    CurrencyNumberTypeSettingsFieldResponse:
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
+    LabelAndDropdownTypeSettingsFieldUpdatePayload:
       allOf:
-      - $ref: '#/components/schemas/GenericNumberTypeSettingsFieldResponse'
+      - $ref: '#/components/schemas/BaseSettingsFieldUpdatePayload'
       - type: object
         properties:
-          currency_code:
-            type: string
-            description: Currency code of the numerical field
-            example: USD
-        required:
-        - currency_code
-    CurrencyNumberTypeSettingsFieldUpdatePayload:
-      allOf:
-      - $ref: '#/components/schemas/GenericNumberTypeSettingsFieldUpdatePayload'
-      - type: object
-        properties:
-          currency_code:
-            type: string
-            description: Currency code of the numerical field. This must be a valid currency code. If this field is empty, `USD` is set as the default.
-            default: USD
-            example: USD
-    SettingsFieldChoiceCreateRequest:
-      type: array
-      minItems: 1
-      description: Choices of the field
-      items:
-        oneOf:
-        - $ref: '#/components/schemas/GenericSettingsFieldChoiceCreatePayload'
-        - $ref: '#/components/schemas/LabelTypeSettingsFieldChoiceCreatePayload'
-    DropdownTypeSettingsFieldCreatePayload:
+          is_multi_select:
+            type: boolean
+            description: Allow users to select multiple values
+    LabelTypeSettingsFieldCreatePayload:
       allOf:
       - $ref: '#/components/schemas/BaseSettingsFieldCreatePayload'
       - type: object
@@ -325,11 +320,51 @@ components:
                   minLength: 1
                   description: Name of the choice
                   example: Choice 1
+                color:
+                  type: string
+                  example: '#FFC700'
+                  description: 'Code of choice color. Colors are limited to the following:
+
+                    - Electric Blue (#4ECFD5)
+
+                    - Golden Rod (#FFC700)
+
+                    - Salmon Pink (#FF98A7)
+
+                    - Blue Violet (#702BD5)
+
+                    - Spring Green (#5FEEAD)
+
+                    - Lavender Blue (#D6C4F2)
+
+                    - Sky (#5F9FF6)
+
+                    - Persian blue (#CB5DEB)
+
+                    - Cool Gray (#9694B3)
+
+                    '
               required:
               - name
+              - color
         required:
         - is_multi_select
         - choices
+    GenericNumberTypeSettingsFieldCreatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseSettingsFieldCreatePayload'
+      - type: object
+        properties:
+          has_thousand_separator:
+            type: boolean
+            description: Whether the numerical field has a thousand separator
+            example: true
+            default: false
+          decimal_places:
+            type: integer
+            description: Decimal place of the numerical field. This must be greather than 0. If this field is empty, 2 is set as the default.
+            example: 2
+            default: 2
     SettingsFieldUpdateRequest:
       type: object
       additionalProperties: false
@@ -354,152 +389,39 @@ components:
           text: '#/components/schemas/BaseSettingsFieldUpdatePayload'
           text_area: '#/components/schemas/BaseSettingsFieldUpdatePayload'
           video: '#/components/schemas/BaseSettingsFieldUpdatePayload'
-    LabelTypeSettingsFieldChoiceCreatePayload:
-      allOf:
-      - $ref: '#/components/schemas/GenericSettingsFieldChoiceCreatePayload'
-      - type: object
-        description: Choice for field type of `label`
-        properties:
-          color:
-            type: string
-            example: '#FFC700'
-            description: 'Code of choice color. Colors are limited to the following:
-
-              - Electric Blue (#4ECFD5)
-
-              - Golden Rod (#FFC700)
-
-              - Salmon Pink (#FF98A7)
-
-              - Blue Violet (#702BD5)
-
-              - Spring Green (#5FEEAD)
-
-              - Lavender Blue (#D6C4F2)
-
-              - Sky (#5F9FF6)
-
-              - Persian blue (#CB5DEB)
-
-              - Cool Gray (#9694B3)
-
-              '
-        required:
-        - color
-    GenericNumberTypeSettingsFieldUpdatePayload:
-      allOf:
-      - $ref: '#/components/schemas/BaseSettingsFieldUpdatePayload'
-      - type: object
-        properties:
-          has_thousand_separator:
-            type: boolean
-            description: Whether the numerical field has a thousand separator
-            example: true
-            default: false
-          decimal_places:
-            type: integer
-            description: Decimal place of the numerical field. This must be greather than 0. If this field is empty, 2 is set as the default.
-            example: 2
-            default: 2
-    LabelAndDropdownTypeSettingsFieldUpdatePayload:
-      allOf:
-      - $ref: '#/components/schemas/BaseSettingsFieldUpdatePayload'
-      - type: object
-        properties:
-          is_multi_select:
-            type: boolean
-            description: Allow users to select multiple values
-    Error:
+    LabelTypeSettingsFieldChoiceUpdatePayload:
       type: object
-      additionalProperties: true
-      description: Error payload
+      description: Choice for field type of `label`
       properties:
-        message:
+        name:
           type: string
-          description: Message describing the error
-          example: Not found
-        errors:
-          type: object
-          description: Additional information
-          additionalProperties: true
-          properties: {}
-      required:
-      - message
-    CurrencyNumberTypeSettingsFieldCreatePayload:
-      allOf:
-      - $ref: '#/components/schemas/GenericNumberTypeSettingsFieldCreatePayload'
-      - type: object
-        properties:
-          currency_code:
-            type: string
-            description: Currency code of the numerical field. This must be a valid currency code. If this field is empty, `USD` is set as the default.
-            default: USD
-            example: USD
-    CheckboxAndRadioTypeSettingsFieldResponse:
-      allOf:
-      - $ref: '#/components/schemas/BaseSettingsFieldsResponse'
-      - type: object
-        properties:
-          choices:
-            type: array
-            description: Choices of the field
-            items:
-              type: object
-              properties:
-                id:
-                  type: string
-                  description: Identifier of the choice
-                  example: 6ceee2f4fa3411ecb37802420ac8001b
-                name:
-                  type: string
-                  description: Name of the choice
-                  example: Choice 1
-              required:
-              - id
-              - name
-        required:
-        - choices
-    Pagination:
-      type: object
-      additionalProperties: false
-      description: Pagination related information
-      properties:
-        next:
-          type:
-          - string
-          - 'null'
-          description: URL to the next page
-          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
-        previous:
-          type:
-          - string
-          - 'null'
-          description: URL to the previous page
-          example: null
-      required:
-      - next
-      - previous
-    CheckboxAndRadioTypeSettingsFieldCreatePayload:
-      allOf:
-      - $ref: '#/components/schemas/BaseSettingsFieldCreatePayload'
-      - type: object
-        properties:
-          choices:
-            type: array
-            description: Choices of the field
-            minItems: 1
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                  minLength: 1
-                  description: Name of the choice
-                  example: Choice 1
-              required:
-              - name
-        required:
-        - choices
+          minLength: 1
+          description: Name of the choice
+          example: Choice 1
+        color:
+          type: string
+          example: '#FFC700'
+          description: 'Code of choice color. Colors are limited to the following:
+
+            - Electric Blue (#4ECFD5)
+
+            - Golden Rod (#FFC700)
+
+            - Salmon Pink (#FF98A7)
+
+            - Blue Violet (#702BD5)
+
+            - Spring Green (#5FEEAD)
+
+            - Lavender Blue (#D6C4F2)
+
+            - Sky (#5F9FF6)
+
+            - Persian blue (#CB5DEB)
+
+            - Cool Gray (#9694B3)
+
+            '
     LabelTypeSettingsFieldResponse:
       allOf:
       - $ref: '#/components/schemas/BaseSettingsFieldsResponse'
@@ -555,6 +477,340 @@ components:
         required:
         - is_multi_select
         - choices
+    GenericNumberTypeSettingsFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseSettingsFieldUpdatePayload'
+      - type: object
+        properties:
+          has_thousand_separator:
+            type: boolean
+            description: Whether the numerical field has a thousand separator
+            example: true
+            default: false
+          decimal_places:
+            type: integer
+            description: Decimal place of the numerical field. This must be greather than 0. If this field is empty, 2 is set as the default.
+            example: 2
+            default: 2
+    SettingsFieldChoiceCreateResponse:
+      type: array
+      description: Choices of the field
+      minItems: 1
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            description: Identifier of the field choice
+            example: 675ca12f4fa3411ecb37802420ac82ab7
+          name:
+            type: string
+            minLength: 1
+            description: Name of the choice
+            example: Choice 1
+        required:
+        - id
+        - name
+    CheckboxAndRadioTypeSettingsFieldResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseSettingsFieldsResponse'
+      - type: object
+        properties:
+          choices:
+            type: array
+            description: Choices of the field
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Choice 1
+              required:
+              - id
+              - name
+        required:
+        - choices
+    DropdownTypeSettingsFieldCreatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseSettingsFieldCreatePayload'
+      - type: object
+        properties:
+          is_multi_select:
+            type: boolean
+            description: Allow users to select multiple values
+          choices:
+            type: array
+            minItems: 1
+            description: Choices of the field
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  description: Name of the choice
+                  example: Choice 1
+              required:
+              - name
+        required:
+        - is_multi_select
+        - choices
+    CurrencyNumberTypeSettingsFieldResponse:
+      allOf:
+      - $ref: '#/components/schemas/GenericNumberTypeSettingsFieldResponse'
+      - type: object
+        properties:
+          currency_code:
+            type: string
+            description: Currency code of the numerical field
+            example: USD
+        required:
+        - currency_code
+    GenericSettingsFieldChoiceUpdatePayload:
+      type: object
+      description: Choice for field types other than `label`
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Name of the choice
+          example: Choice 1
+      required:
+      - name
+    GenericNumberTypeSettingsFieldResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseSettingsFieldsResponse'
+      - type: object
+        properties:
+          has_thousand_separator:
+            type: boolean
+            description: Whether the numerical field has a thousand separator
+            example: true
+          decimal_places:
+            type: integer
+            description: Decimal place of the numerical field
+            example: 2
+        required:
+        - has_thousand_separator
+        - decimal_places
+    CurrencyNumberTypeSettingsFieldCreatePayload:
+      allOf:
+      - $ref: '#/components/schemas/GenericNumberTypeSettingsFieldCreatePayload'
+      - type: object
+        properties:
+          currency_code:
+            type: string
+            description: Currency code of the numerical field. This must be a valid currency code. If this field is empty, `USD` is set as the default.
+            default: USD
+            example: USD
+    Pagination:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
+    DropdownTypeSettingsFieldResponse:
+      allOf:
+      - $ref: '#/components/schemas/BaseSettingsFieldsResponse'
+      - type: object
+        properties:
+          is_multi_select:
+            type: boolean
+            description: Allow users to select multiple values
+          choices:
+            type: array
+            description: Choices of the field
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Choice 1
+              required:
+              - id
+              - name
+        required:
+        - is_multi_select
+        - choices
+    LabelTypeSettingsFieldChoiceCreatePayload:
+      allOf:
+      - $ref: '#/components/schemas/GenericSettingsFieldChoiceCreatePayload'
+      - type: object
+        description: Choice for field type of `label`
+        properties:
+          color:
+            type: string
+            example: '#FFC700'
+            description: 'Code of choice color. Colors are limited to the following:
+
+              - Electric Blue (#4ECFD5)
+
+              - Golden Rod (#FFC700)
+
+              - Salmon Pink (#FF98A7)
+
+              - Blue Violet (#702BD5)
+
+              - Spring Green (#5FEEAD)
+
+              - Lavender Blue (#D6C4F2)
+
+              - Sky (#5F9FF6)
+
+              - Persian blue (#CB5DEB)
+
+              - Cool Gray (#9694B3)
+
+              '
+        required:
+        - color
+    CurrencyNumberTypeSettingsFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/GenericNumberTypeSettingsFieldUpdatePayload'
+      - type: object
+        properties:
+          currency_code:
+            type: string
+            description: Currency code of the numerical field. This must be a valid currency code. If this field is empty, `USD` is set as the default.
+            default: USD
+            example: USD
+    GenericSettingsFieldChoiceCreatePayload:
+      type: object
+      description: Choice for field types other than `label`
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Name of the choice
+          example: Choice 1
+      required:
+      - name
+    CheckboxAndRadioTypeSettingsFieldCreatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseSettingsFieldCreatePayload'
+      - type: object
+        properties:
+          choices:
+            type: array
+            description: Choices of the field
+            minItems: 1
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  description: Name of the choice
+                  example: Choice 1
+              required:
+              - name
+        required:
+        - choices
+    BaseSettingsFieldCreatePayload:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Name of the field
+          example: Sample Checkbox
+        helper_text:
+          type: string
+          maxLength: 120
+          description: Used to help understand the functionality of the field.
+          example: This field is used to check options
+        is_active:
+          type: boolean
+          description: Indicates active status of field. Inactive fields cannot be accessed in tasks, campaigns or workflows.
+          example: true
+        type:
+          type: string
+          description: Type of the field
+          example: checkbox
+      required:
+      - name
+      - is_active
+      - type
+    SettingsFieldCreateRequest:
+      type: object
+      additionalProperties: false
+      oneOf:
+      - $ref: '#/components/schemas/BaseSettingsFieldCreatePayload'
+      - $ref: '#/components/schemas/LabelTypeSettingsFieldCreatePayload'
+      - $ref: '#/components/schemas/DropdownTypeSettingsFieldCreatePayload'
+      - $ref: '#/components/schemas/CheckboxAndRadioTypeSettingsFieldCreatePayload'
+      - $ref: '#/components/schemas/GenericNumberTypeSettingsFieldCreatePayload'
+      - $ref: '#/components/schemas/CurrencyNumberTypeSettingsFieldCreatePayload'
+      discriminator:
+        propertyName: type
+        mapping:
+          checkbox: '#/components/schemas/CheckboxAndRadioTypeSettingsFieldCreatePayload'
+          currency_number: '#/components/schemas/CurrencyNumberTypeSettingsFieldCreatePayload'
+          date: '#/components/schemas/BaseSettingsFieldCreatePayload'
+          dropdown: '#/components/schemas/DropdownTypeSettingsFieldCreatePayload'
+          image: '#/components/schemas/BaseSettingsFieldCreatePayload'
+          label: '#/components/schemas/LabelTypeSettingsFieldCreatePayload'
+          percentage_number: '#/components/schemas/GenericNumberTypeSettingsFieldCreatePayload'
+          radio_button: '#/components/schemas/CheckboxAndRadioTypeSettingsFieldCreatePayload'
+          rich_text: '#/components/schemas/BaseSettingsFieldCreatePayload'
+          simple_number: '#/components/schemas/GenericNumberTypeSettingsFieldCreatePayload'
+          text: '#/components/schemas/BaseSettingsFieldCreatePayload'
+          text_area: '#/components/schemas/BaseSettingsFieldCreatePayload'
+          video: '#/components/schemas/BaseSettingsFieldCreatePayload'
+    BaseSettingsFieldUpdatePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the field. This field is required but not updateable. Type of a field will always stay the same. Update request body must contain atleast one other updateable field.
+        name:
+          type: string
+          minLength: 1
+          description: Name of the field
+          example: Sample Field
+        helper_text:
+          type: string
+          maxLength: 120
+          description: Used to help understand the functionality of the field.
+          example: This is a helper text
+        is_active:
+          type: boolean
+          description: Indicates active status of field. Inactive fields cannot be accessed in tasks, campaigns or workflows.
+          example: true
+      required:
+      - type
+    SettingsFieldChoiceCreateRequest:
+      type: array
+      minItems: 1
+      description: Choices of the field
+      items:
+        oneOf:
+        - $ref: '#/components/schemas/GenericSettingsFieldChoiceCreatePayload'
+        - $ref: '#/components/schemas/LabelTypeSettingsFieldChoiceCreatePayload'
     BaseSettingsFieldsResponse:
       type: object
       properties:
@@ -596,218 +852,6 @@ components:
       - is_active
       - type
       - links
-    GenericSettingsFieldChoiceCreatePayload:
-      type: object
-      description: Choice for field types other than `label`
-      properties:
-        name:
-          type: string
-          minLength: 1
-          description: Name of the choice
-          example: Choice 1
-      required:
-      - name
-    GenericNumberTypeSettingsFieldCreatePayload:
-      allOf:
-      - $ref: '#/components/schemas/BaseSettingsFieldCreatePayload'
-      - type: object
-        properties:
-          has_thousand_separator:
-            type: boolean
-            description: Whether the numerical field has a thousand separator
-            example: true
-            default: false
-          decimal_places:
-            type: integer
-            description: Decimal place of the numerical field. This must be greather than 0. If this field is empty, 2 is set as the default.
-            example: 2
-            default: 2
-    BaseSettingsFieldCreatePayload:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          description: Name of the field
-          example: Sample Checkbox
-        helper_text:
-          type: string
-          maxLength: 120
-          description: Used to help understand the functionality of the field.
-          example: This field is used to check options
-        is_active:
-          type: boolean
-          description: Indicates active status of field. Inactive fields cannot be accessed in tasks, campaigns or workflows.
-          example: true
-        type:
-          type: string
-          description: Type of the field
-          example: checkbox
-      required:
-      - name
-      - is_active
-      - type
-    GenericSettingsFieldChoiceUpdatePayload:
-      type: object
-      description: Choice for field types other than `label`
-      properties:
-        name:
-          type: string
-          minLength: 1
-          description: Name of the choice
-          example: Choice 1
-      required:
-      - name
-    SettingsFieldChoiceCreateResponse:
-      type: array
-      description: Choices of the field
-      minItems: 1
-      items:
-        type: object
-        properties:
-          id:
-            type: string
-            description: Identifier of the field choice
-            example: 675ca12f4fa3411ecb37802420ac82ab7
-          name:
-            type: string
-            minLength: 1
-            description: Name of the choice
-            example: Choice 1
-        required:
-        - id
-        - name
-    BaseSettingsFieldUpdatePayload:
-      type: object
-      properties:
-        type:
-          type: string
-          description: Type of the field. This field is required but not updateable. Type of a field will always stay the same. Update request body must contain atleast one other updateable field.
-        name:
-          type: string
-          minLength: 1
-          description: Name of the field
-          example: Sample Field
-        helper_text:
-          type: string
-          maxLength: 120
-          description: Used to help understand the functionality of the field.
-          example: This is a helper text
-        is_active:
-          type: boolean
-          description: Indicates active status of field. Inactive fields cannot be accessed in tasks, campaigns or workflows.
-          example: true
-      required:
-      - type
-    LabelTypeSettingsFieldCreatePayload:
-      allOf:
-      - $ref: '#/components/schemas/BaseSettingsFieldCreatePayload'
-      - type: object
-        properties:
-          is_multi_select:
-            type: boolean
-            description: Allow users to select multiple values
-          choices:
-            type: array
-            minItems: 1
-            description: Choices of the field
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                  minLength: 1
-                  description: Name of the choice
-                  example: Choice 1
-                color:
-                  type: string
-                  example: '#FFC700'
-                  description: 'Code of choice color. Colors are limited to the following:
-
-                    - Electric Blue (#4ECFD5)
-
-                    - Golden Rod (#FFC700)
-
-                    - Salmon Pink (#FF98A7)
-
-                    - Blue Violet (#702BD5)
-
-                    - Spring Green (#5FEEAD)
-
-                    - Lavender Blue (#D6C4F2)
-
-                    - Sky (#5F9FF6)
-
-                    - Persian blue (#CB5DEB)
-
-                    - Cool Gray (#9694B3)
-
-                    '
-              required:
-              - name
-              - color
-        required:
-        - is_multi_select
-        - choices
-    SettingsFieldCreateRequest:
-      type: object
-      additionalProperties: false
-      oneOf:
-      - $ref: '#/components/schemas/BaseSettingsFieldCreatePayload'
-      - $ref: '#/components/schemas/LabelTypeSettingsFieldCreatePayload'
-      - $ref: '#/components/schemas/DropdownTypeSettingsFieldCreatePayload'
-      - $ref: '#/components/schemas/CheckboxAndRadioTypeSettingsFieldCreatePayload'
-      - $ref: '#/components/schemas/GenericNumberTypeSettingsFieldCreatePayload'
-      - $ref: '#/components/schemas/CurrencyNumberTypeSettingsFieldCreatePayload'
-      discriminator:
-        propertyName: type
-        mapping:
-          checkbox: '#/components/schemas/CheckboxAndRadioTypeSettingsFieldCreatePayload'
-          currency_number: '#/components/schemas/CurrencyNumberTypeSettingsFieldCreatePayload'
-          date: '#/components/schemas/BaseSettingsFieldCreatePayload'
-          dropdown: '#/components/schemas/DropdownTypeSettingsFieldCreatePayload'
-          image: '#/components/schemas/BaseSettingsFieldCreatePayload'
-          label: '#/components/schemas/LabelTypeSettingsFieldCreatePayload'
-          percentage_number: '#/components/schemas/GenericNumberTypeSettingsFieldCreatePayload'
-          radio_button: '#/components/schemas/CheckboxAndRadioTypeSettingsFieldCreatePayload'
-          rich_text: '#/components/schemas/BaseSettingsFieldCreatePayload'
-          simple_number: '#/components/schemas/GenericNumberTypeSettingsFieldCreatePayload'
-          text: '#/components/schemas/BaseSettingsFieldCreatePayload'
-          text_area: '#/components/schemas/BaseSettingsFieldCreatePayload'
-          video: '#/components/schemas/BaseSettingsFieldCreatePayload'
-    LabelTypeSettingsFieldChoiceUpdatePayload:
-      type: object
-      description: Choice for field type of `label`
-      properties:
-        name:
-          type: string
-          minLength: 1
-          description: Name of the choice
-          example: Choice 1
-        color:
-          type: string
-          example: '#FFC700'
-          description: 'Code of choice color. Colors are limited to the following:
-
-            - Electric Blue (#4ECFD5)
-
-            - Golden Rod (#FFC700)
-
-            - Salmon Pink (#FF98A7)
-
-            - Blue Violet (#702BD5)
-
-            - Spring Green (#5FEEAD)
-
-            - Lavender Blue (#D6C4F2)
-
-            - Sky (#5F9FF6)
-
-            - Persian blue (#CB5DEB)
-
-            - Cool Gray (#9694B3)
-
-            '
     SettingsFieldChoiceUpdateRequest:
       type: object
       description: Payload for updating choice
@@ -815,59 +859,7 @@ components:
       oneOf:
       - $ref: '#/components/schemas/GenericSettingsFieldChoiceUpdatePayload'
       - $ref: '#/components/schemas/LabelTypeSettingsFieldChoiceUpdatePayload'
-    GenericNumberTypeSettingsFieldResponse:
-      allOf:
-      - $ref: '#/components/schemas/BaseSettingsFieldsResponse'
-      - type: object
-        properties:
-          has_thousand_separator:
-            type: boolean
-            description: Whether the numerical field has a thousand separator
-            example: true
-          decimal_places:
-            type: integer
-            description: Decimal place of the numerical field
-            example: 2
-        required:
-        - has_thousand_separator
-        - decimal_places
-    DropdownTypeSettingsFieldResponse:
-      allOf:
-      - $ref: '#/components/schemas/BaseSettingsFieldsResponse'
-      - type: object
-        properties:
-          is_multi_select:
-            type: boolean
-            description: Allow users to select multiple values
-          choices:
-            type: array
-            description: Choices of the field
-            items:
-              type: object
-              properties:
-                id:
-                  type: string
-                  description: Identifier of the choice
-                  example: 6ceee2f4fa3411ecb37802420ac8001b
-                name:
-                  type: string
-                  description: Name of the choice
-                  example: Choice 1
-              required:
-              - id
-              - name
-        required:
-        - is_multi_select
-        - choices
   responses:
-    Forbidden:
-      description: Permission error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: You do not have the permission to perform this operation
     UnprocessableEntity:
       description: Unprocessable entity error
       content:
@@ -876,6 +868,14 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: Resource cannot be processed
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
     NotFound:
       description: Not found error
       content:
@@ -884,14 +884,6 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: Resource not found
-    ClientError:
-      description: Client error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: 'Unsupported arguments: a,b,c'
     Unauthorized:
       description: Authorization error
       content:
@@ -900,6 +892,14 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: Unauthorized
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
   parameters:
     page_size:
       name: page_size

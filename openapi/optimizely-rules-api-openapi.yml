@@ -31,9 +31,7 @@ paths:
     - $ref: '#/components/parameters/environmentKey'
     - $ref: '#/components/parameters/ruleKey'
     get:
-      description: 'Fetch a list of holdouts for a specific rule_key
-
-        '
+      description: Fetch a list of holdouts for a specific rule_key
       operationId: fetch_holdouts_by_rule_key
       responses:
         '200':
@@ -56,9 +54,7 @@ paths:
     - $ref: '#/components/parameters/environmentKey'
     - $ref: '#/components/parameters/ruleKey'
     get:
-      description: 'Fetch a Rule for a Ruleset in a specific Environment of a project.
-
-        '
+      description: Fetch a Rule for a Ruleset in a specific Environment of a project.
       operationId: fetch_rule
       responses:
         '200':
@@ -79,9 +75,7 @@ paths:
       description: 'Get a list of Rules within a Project
 
 
-        You can use query parameters to filter/sort the response.
-
-        '
+        You can use query parameters to filter/sort the response.'
       operationId: list_all_rules_in_project
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -162,9 +156,6 @@ paths:
     - $ref: '#/components/parameters/projectId'
     - $ref: '#/components/parameters/experimentId'
     get:
-      description: 'Fetch a Rule for a specific experiment_id
-
-        '
       operationId: fetch_rule_by_experiment_id
       responses:
         '200':
@@ -182,6 +173,118 @@ paths:
       - Rules
 components:
   schemas:
+    RuleVariation:
+      example:
+        key: high_discount
+        name: High Discount
+        percentage_included: 10000
+      properties:
+        id:
+          description: Id of the RuleVariation
+          readOnly: true
+          type: integer
+        key:
+          description: User-facing Unique identifier of the Variation
+          type: string
+        name:
+          description: User-facing name of the Variation
+          type: string
+        percentage_included:
+          default: 0
+          description: The percentage of the designated audiences that should get this variation, measured in basis points. 100 basis points = 1% traffic
+          maximum: 10000
+          minimum: 0
+          type: integer
+        revision:
+          description: Revision number for tracking changes
+          readOnly: true
+          type: integer
+        variation_id:
+          description: Id of variation
+          type: integer
+      required:
+      - key
+      type: object
+    Metric:
+      properties:
+        aggregator:
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
+          enum:
+          - unique
+          - count
+          - sum
+          - ratio
+          type: string
+        display_title:
+          description: An optional title for the unique metric configuration. If not provided, the event name will be used.
+          type: string
+        display_unit:
+          description: An optional name for the unit of the unique metric configuration.
+          type: string
+        event_id:
+          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
+          example: 32334454244
+          format: int64
+          type: integer
+        event_properties:
+          properties:
+            filter:
+              properties:
+                combine_operator:
+                  enum:
+                  - or
+                  - and
+                  type: string
+                conditions:
+                  items:
+                    $ref: '#/components/schemas/EventPropertyCondition'
+              type: object
+          type: object
+        event_type:
+          type: string
+        field:
+          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
+          enum:
+          - revenue
+          - value
+          type:
+          - string
+          - 'null'
+        id:
+          description: A unique identifier for the metric configuration.
+          type: string
+        metrics:
+          items:
+            $ref: '#/components/schemas/SubMetric'
+            type: object
+          type: array
+        project_id:
+          description: A unique identifier for the project associated with the metric.
+          type: integer
+        scope:
+          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
+          enum:
+          - session
+          - visitor
+          - event
+          type: string
+        visibility:
+          description: The visibility of the metric.
+          enum:
+          - account
+          - experiment
+          - project
+          type: string
+        winning_direction:
+          description: The winning direction of this metric
+          enum:
+          - increasing
+          - decreasing
+          type: string
+      required:
+      - winning_direction
+      - aggregator
+      type: object
     Rules:
       properties:
         count:
@@ -215,6 +318,53 @@ components:
       - total_count
       - total_pages
       - items
+      type: object
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
+      properties:
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
+      type: object
+    RuleAllowList:
+      example:
+        user_id: xyz123
+        variation:
+          key: false
+          name: false
+      properties:
+        user_id:
+          description: User identifier
+          type: string
+        variation:
+          description: Variations to be added to user (key and name)
+          properties:
+            key:
+              type: string
+            name:
+              type: string
+          type: object
+      required:
+      - user_id
+      - variation
       type: object
     Holdout:
       description: 'Represents a holdout experiment that reserves a portion of traffic to measure the impact of feature flags and experiments.
@@ -471,6 +621,56 @@ components:
       - name
       - key
       type: object
+    EventPropertyCondition:
+      properties:
+        name:
+          type: string
+        operator:
+          enum:
+          - equal_to
+          - not_equal_to
+          - greater_than
+          - greater_than_or_equal_to
+          - less_than
+          - less_than_or_equal_to
+          - contains
+          - does_not_contain
+          type: string
+        type:
+          enum:
+          - string
+          - number
+          - boolean
+          type: string
+        value:
+          type: string
+      required:
+      - name
+      - type
+      - value
+      - operator
+      type: object
+    HoldoutsList:
+      description: "A simple array of holdout objects without pagination metadata.\n\nUsed by endpoints that return a basic list of holdouts, such as when fetching \nholdouts associated with a specific rule. This is the non-paginated variant.\n"
+      example:
+      - environment_key: production
+        holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+        id: 12345
+        key: growth_experiment_holdout
+        name: Q4 Growth Experiment Control
+        status: running
+      - environment_key: production
+        holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+        id: 12346
+        key: checkout_flow_holdout
+        name: Checkout Flow Holdout Group
+        status: draft
+      items:
+        $ref: '#/components/schemas/Holdout'
+      type: array
+    UrlValue:
+      description: A single url.
+      type: string
     SubMetric:
       properties:
         aggregator:
@@ -491,135 +691,26 @@ components:
         scope:
           type: string
       type: object
-    HoldoutsList:
-      description: "A simple array of holdout objects without pagination metadata.\n\nUsed by endpoints that return a basic list of holdouts, such as when fetching \nholdouts associated with a specific rule. This is the non-paginated variant.\n"
+    RuleGroupRule:
       example:
-      - environment_key: production
-        holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-        id: 12345
-        key: growth_experiment_holdout
-        name: Q4 Growth Experiment Control
-        status: running
-      - environment_key: production
-        holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-        id: 12346
-        key: checkout_flow_holdout
-        name: Checkout Flow Holdout Group
-        status: draft
-      items:
-        $ref: '#/components/schemas/Holdout'
-      type: array
-    Metric:
+        id: 73915
+        name: My Group
+        traffic_allocation: 5000
       properties:
-        aggregator:
-          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
-          enum:
-          - unique
-          - count
-          - sum
-          - ratio
-          type: string
-        display_title:
-          description: An optional title for the unique metric configuration. If not provided, the event name will be used.
-          type: string
-        display_unit:
-          description: An optional name for the unit of the unique metric configuration.
-          type: string
-        event_id:
-          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
-          example: 32334454244
-          format: int64
+        group_id:
+          description: Group id
           type: integer
-        event_properties:
-          properties:
-            filter:
-              properties:
-                combine_operator:
-                  enum:
-                  - or
-                  - and
-                  type: string
-                conditions:
-                  items:
-                    $ref: '#/components/schemas/EventPropertyCondition'
-              type: object
-          type: object
-        event_type:
-          type: string
-        field:
-          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
-          enum:
-          - revenue
-          - value
-          type:
-          - string
-          - 'null'
-        id:
-          description: A unique identifier for the metric configuration.
-          type: string
-        metrics:
-          items:
-            $ref: '#/components/schemas/SubMetric'
-            type: object
-          type: array
-        project_id:
-          description: A unique identifier for the project associated with the metric.
-          type: integer
-        scope:
-          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
-          enum:
-          - session
-          - visitor
-          - event
-          type: string
-        visibility:
-          description: The visibility of the metric.
-          enum:
-          - account
-          - experiment
-          - project
-          type: string
-        winning_direction:
-          description: The winning direction of this metric
-          enum:
-          - increasing
-          - decreasing
-          type: string
-      required:
-      - winning_direction
-      - aggregator
-      type: object
-    RuleVariation:
-      example:
-        key: high_discount
-        name: High Discount
-        percentage_included: 10000
-      properties:
-        id:
-          description: Id of the RuleVariation
+        group_name:
+          description: Name of the Group
           readOnly: true
-          type: integer
-        key:
-          description: User-facing Unique identifier of the Variation
           type: string
-        name:
-          description: User-facing name of the Variation
-          type: string
-        percentage_included:
-          default: 0
-          description: The percentage of the designated audiences that should get this variation, measured in basis points. 100 basis points = 1% traffic
+        traffic_allocation:
+          description: The traffic allocation for the GroupRule
           maximum: 10000
           minimum: 0
           type: integer
-        revision:
-          description: Revision number for tracking changes
-          readOnly: true
-          type: integer
-        variation_id:
-          description: Id of variation
-          type: integer
       required:
-      - key
+      - group_id
       type: object
     Rule:
       description: Configuration which contains audiences, metrics and variations.
@@ -789,142 +880,12 @@ components:
       - name
       - type
       type: object
-    RuleAllowList:
-      example:
-        user_id: xyz123
-        variation:
-          key: false
-          name: false
-      properties:
-        user_id:
-          description: User identifier
-          type: string
-        variation:
-          description: Variations to be added to user (key and name)
-          properties:
-            key:
-              type: string
-            name:
-              type: string
-          type: object
-      required:
-      - user_id
-      - variation
-      type: object
-    UrlValue:
-      description: A single url.
-      type: string
-    ProblemDetail:
-      additionalProperties: true
-      description: https://tools.ietf.org/html/rfc7807#section-3.1
-      properties:
-        detail:
-          description: A human-readable explanation specific to this occurrence of the problem.
-          type: string
-        status:
-          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
-          type: integer
-        title:
-          description: A short, human-readable summary of the problem type.
-          type: string
-        type:
-          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
-          type: string
-        uuid:
-          description: Error reference for customer support
-          type: string
-      required:
-      - detail
-      - status
-      - title
-      - type
-      type: object
-    EventPropertyCondition:
-      properties:
-        name:
-          type: string
-        operator:
-          enum:
-          - equal_to
-          - not_equal_to
-          - greater_than
-          - greater_than_or_equal_to
-          - less_than
-          - less_than_or_equal_to
-          - contains
-          - does_not_contain
-          type: string
-        type:
-          enum:
-          - string
-          - number
-          - boolean
-          type: string
-        value:
-          type: string
-      required:
-      - name
-      - type
-      - value
-      - operator
-      type: object
-    RuleGroupRule:
-      example:
-        id: 73915
-        name: My Group
-        traffic_allocation: 5000
-      properties:
-        group_id:
-          description: Group id
-          type: integer
-        group_name:
-          description: Name of the Group
-          readOnly: true
-          type: string
-        traffic_allocation:
-          description: The traffic allocation for the GroupRule
-          maximum: 10000
-          minimum: 0
-          type: integer
-      required:
-      - group_id
-      type: object
   parameters:
-    flagKey:
-      description: The Flag identifier
-      example: recurring_deposit
-      in: path
-      name: flag_key
-      required: true
-      schema:
-        type: string
     environmentKey:
       description: The Environment identifier
       example: production
       in: path
       name: environment_key
-      required: true
-      schema:
-        type: string
-    projectId:
-      description: The project identifier
-      example: 12345
-      in: path
-      name: project_id
-      required: true
-      schema:
-        type: integer
-    pageWindow:
-      description: Number of previous and next page links to supply for the request (defaults to 1).
-      in: query
-      name: page_window
-      schema:
-        type: integer
-    ruleKey:
-      description: The Rule identifier
-      example: rule_key
-      in: path
-      name: rule_key
       required: true
       schema:
         type: string
@@ -934,6 +895,12 @@ components:
       in: path
       name: experiment_id
       required: true
+      schema:
+        type: integer
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
       schema:
         type: integer
     pageToken:
@@ -949,30 +916,31 @@ components:
       schema:
         format: int64
         type: integer
+    ruleKey:
+      description: The Rule identifier
+      example: rule_key
+      in: path
+      name: rule_key
+      required: true
+      schema:
+        type: string
+    flagKey:
+      description: The Flag identifier
+      example: recurring_deposit
+      in: path
+      name: flag_key
+      required: true
+      schema:
+        type: string
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
   responses:
-    NotFoundResponse:
-      description: Not found. No content
-    BadRequestResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Another entity already exists with this same key
-            status: 400
-            title: Key example_entity already exists"
-            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Malformed requests and invalid parameter names and types
-    ForbiddenResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Permission denied
-            status: 403
-            title: Forbidden
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Do not have permission to perform the operation
     HoldoutsListSuccessResponse:
       content:
         application/json:
@@ -988,12 +956,6 @@ components:
         the related resource.
 
         '
-    UnauthorizedResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Invalid credentials
     RuleSuccessResponse:
       content:
         application/json:
@@ -1002,6 +964,35 @@ components:
       description: 'Successful retrieval of a Rule.
 
         '
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
+    NotFoundResponse:
+      description: Not found. No content
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
   securitySchemes:
     BearerAuth:
       description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token

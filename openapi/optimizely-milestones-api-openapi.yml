@@ -19,7 +19,7 @@ paths:
       tags:
       - Milestones
       summary: GET /milestones
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a list of milestones.
+      description: Experimental Get a list of milestones.
       parameters:
       - name: campaign_id
         in: query
@@ -81,7 +81,7 @@ paths:
       tags:
       - Milestones
       summary: POST /milestones
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Creates a milestone. Defaults to the organization's campaign if campaign_id is omitted. Tasks are validated against the selected campaign and must belong to it.
+      description: Experimental Creates a milestone. Defaults to the organization's campaign if campaign_id is omitted. Tasks are validated against the selected campaign and must belong to it.
       requestBody:
         description: Payload to create a milestone
         required: true
@@ -110,7 +110,7 @@ paths:
       tags:
       - Milestones
       summary: GET /milestones/{id}
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a milestone by ID.
+      description: Experimental Get a milestone by ID.
       parameters:
       - name: id
         in: path
@@ -139,7 +139,7 @@ paths:
       tags:
       - Milestones
       summary: PATCH /milestones/{id}
-      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Updates a milestone. All fields are optional. Only provided fields will be updated. Note: If tasks array is empty, it will remove all task associations for that milestone.'
+      description: 'Experimental Updates a milestone. All fields are optional. Only provided fields will be updated. Note: If tasks array is empty, it will remove all task associations for that milestone.'
       parameters:
       - name: id
         in: path
@@ -174,22 +174,6 @@ paths:
           $ref: '#/components/responses/UnprocessableEntity'
 components:
   schemas:
-    Error:
-      type: object
-      additionalProperties: true
-      description: Error payload
-      properties:
-        message:
-          type: string
-          description: Message describing the error
-          example: Not found
-        errors:
-          type: object
-          description: Additional information
-          additionalProperties: true
-          properties: {}
-      required:
-      - message
     MilestoneUpdateRequest:
       type: object
       additionalProperties: false
@@ -294,26 +278,22 @@ components:
       - due_date
       - campaign
       - links
-    Pagination:
+    Error:
       type: object
-      additionalProperties: false
-      description: Pagination related information
+      additionalProperties: true
+      description: Error payload
       properties:
-        next:
-          type:
-          - string
-          - 'null'
-          description: URL to the next page
-          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
-        previous:
-          type:
-          - string
-          - 'null'
-          description: URL to the previous page
-          example: null
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
       required:
-      - next
-      - previous
+      - message
     MilestoneCreateRequest:
       type: object
       additionalProperties: false
@@ -363,57 +343,27 @@ components:
       - title
       - due_date
       - hex_color
-  responses:
-    NotFound:
-      description: Not found error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Resource not found
-    ClientError:
-      description: Client error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: 'Unsupported arguments: a,b,c'
-    Forbidden:
-      description: Permission error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: You do not have the permission to perform this operation
-    Unauthorized:
-      description: Authorization error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Unauthorized
-    UnprocessableEntity:
-      description: Unprocessable entity error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Resource cannot be processed
+    Pagination:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
   parameters:
-    offset:
-      name: offset
-      in: query
-      description: Starting index of results (zero indexed)
-      schema:
-        type: integer
-        minimum: 0
-        default: 0
-      example: 5
     page_size:
       name: page_size
       in: query
@@ -424,6 +374,56 @@ components:
         maximum: 100
         default: 10
       example: 15
+    offset:
+      name: offset
+      in: query
+      description: Starting index of results (zero indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 5
+  responses:
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    UnprocessableEntity:
+      description: Unprocessable entity error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource cannot be processed
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
   securitySchemes:
     OAuth2:
       type: oauth2

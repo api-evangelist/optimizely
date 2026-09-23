@@ -110,22 +110,6 @@ components:
         color:
           type: string
           description: Color code for the label
-    Error:
-      type: object
-      additionalProperties: true
-      description: Error payload
-      properties:
-        message:
-          type: string
-          description: Message describing the error
-          example: Not found
-        errors:
-          type: object
-          description: Additional information
-          additionalProperties: true
-          properties: {}
-      required:
-      - message
     LabelGroup:
       type: object
       additionalProperties: false
@@ -160,6 +144,38 @@ components:
       - name
       - source_org_type
       - values
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
+    LabelGroupValue:
+      type: object
+      additionalProperties: false
+      description: Values of a label group
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the label group value
+          example: 1693bd22eac001bae8f33eab29ee5bc2
+        name:
+          type: string
+          description: Name of the label group value
+          example: Pillar 1
+      required:
+      - id
+      - name
     Pagination:
       type: object
       additionalProperties: false
@@ -180,23 +196,15 @@ components:
       required:
       - next
       - previous
-    LabelGroupValue:
-      type: object
-      additionalProperties: false
-      description: Values of a label group
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the label group value
-          example: 1693bd22eac001bae8f33eab29ee5bc2
-        name:
-          type: string
-          description: Name of the label group value
-          example: Pillar 1
-      required:
-      - id
-      - name
   responses:
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
     ClientError:
       description: Client error
       content:
@@ -213,24 +221,7 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: You do not have the permission to perform this operation
-    Unauthorized:
-      description: Authorization error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Unauthorized
   parameters:
-    offset:
-      name: offset
-      in: query
-      description: Starting index of results (zero indexed)
-      schema:
-        type: integer
-        minimum: 0
-        default: 0
-      example: 5
     page_size:
       name: page_size
       in: query
@@ -241,6 +232,15 @@ components:
         maximum: 100
         default: 10
       example: 15
+    offset:
+      name: offset
+      in: query
+      description: Starting index of results (zero indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 5
   securitySchemes:
     oauth2:
       type: oauth2

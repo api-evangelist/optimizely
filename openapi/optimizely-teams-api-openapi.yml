@@ -19,7 +19,7 @@ paths:
       tags:
       - Teams
       summary: GET /teams
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a list of teams.
+      description: Experimental Get a list of teams.
       parameters:
       - $ref: '#/components/parameters/offset'
       - $ref: '#/components/parameters/page_size'
@@ -60,7 +60,7 @@ paths:
       tags:
       - Teams
       summary: GET /teams/{id}
-      description: '<span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a team. '
+      description: Experimental Get a team.
       parameters:
       - name: id
         in: path
@@ -85,6 +85,39 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
+  responses:
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
   schemas:
     Error:
       type: object
@@ -152,6 +185,26 @@ components:
       - name
       - links
       - users
+    Pagination:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
     Team:
       type: object
       additionalProperties: false
@@ -179,69 +232,7 @@ components:
       - id
       - name
       - links
-    Pagination:
-      type: object
-      additionalProperties: false
-      description: Pagination related information
-      properties:
-        next:
-          type:
-          - string
-          - 'null'
-          description: URL to the next page
-          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
-        previous:
-          type:
-          - string
-          - 'null'
-          description: URL to the previous page
-          example: null
-      required:
-      - next
-      - previous
-  responses:
-    NotFound:
-      description: Not found error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Resource not found
-    ClientError:
-      description: Client error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: 'Unsupported arguments: a,b,c'
-    Forbidden:
-      description: Permission error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: You do not have the permission to perform this operation
-    Unauthorized:
-      description: Authorization error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Unauthorized
   parameters:
-    offset:
-      name: offset
-      in: query
-      description: Starting index of results (zero indexed)
-      schema:
-        type: integer
-        minimum: 0
-        default: 0
-      example: 5
     page_size:
       name: page_size
       in: query
@@ -252,6 +243,15 @@ components:
         maximum: 100
         default: 10
       example: 15
+    offset:
+      name: offset
+      in: query
+      description: Starting index of results (zero indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 5
   securitySchemes:
     OAuth2:
       type: oauth2

@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Optimizely Orders API
   version: '1.0'
-  description: 'Operations tagged Orders across 3 of this provider''s published API definitions: optimizely-commerce-service-openapi.yml, optimizely-configured-commerce-storefront-api-v1-openapi.json, optimizely-data-platform-orders-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: 'Operations tagged Orders across 2 of this provider''s published API definitions: optimizely-commerce-service-openapi.yml, optimizely-configured-commerce-storefront-api-v1-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
 - url: '{siteUrl}/episerverapi'
   description: Optimizely Commerce Service API endpoint
@@ -11,12 +11,6 @@ servers:
       default: https://www.example.com
       description: The base URL of the Optimizely Commerce site
 - url: https://dogfood.commerce.insitesandbox.com
-- url: https://api.us1.odp.optimizely.com/v3
-  description: United States
-- url: https://api.eu1.odp.optimizely.com/v3
-  description: Europe
-- url: https://api.au1.odp.optimizely.com/v3
-  description: Asia-Pacific
 tags:
 - name: Orders
   description: Manage purchase orders, cart operations, and order workflows.
@@ -251,6 +245,8 @@ paths:
                 $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderCollectionModel'
       security:
       - access_token: []
+      summary: Orders V1 get collection async
+      x-summary-source: derived
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
   /api/v1/orders/{orderId}:
@@ -283,6 +279,8 @@ paths:
             text/html:
               schema:
                 $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderModel'
+      summary: Orders V1 get async
+      x-summary-source: derived
     patch:
       tags:
       - Orders
@@ -335,6 +333,8 @@ paths:
                 $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderModel'
       security:
       - access_token: []
+      summary: Orders V1 patch async
+      x-summary-source: derived
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
   /api/v1/orders/{orderId}/returns:
@@ -390,6 +390,8 @@ paths:
                 $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.RmaModel'
       security:
       - access_token: []
+      summary: Orders V1 post rma async
+      x-summary-source: derived
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
   /api/v1/orders/shareorder:
@@ -437,152 +439,11 @@ paths:
             text/html:
               schema:
                 $ref: '#/components/schemas/Insite.Email.WebApi.V1.ApiModels.ShareEntityModel'
+      summary: Orders V1 post
+      x-summary-source: derived
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
-  /events:
-    post:
-      tags:
-      - Orders
-      summary: Order Purchase/Return/Refund/Cancellation
-      description: Upload an order purchase/return/refund/cancellation event to Optimizely Data Platform (ODP).
-      operationId: order-returnrefund
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Event'
-            examples:
-              Order Purchase Example Payload:
-                description: Order Purchase Example Payload
-                value:
-                - type: order
-                  action: purchase
-                  identifiers:
-                    email: bob@gmail.com
-                  data:
-                    ts: 123456789
-                    order:
-                      order_id: OR345
-                      total: 109.65
-                      discount: 5
-                      subtotal: 103
-                      tax: 5.15
-                      shipping: 6.5
-                      coupon_code: 5OFF
-                      items:
-                      - product_id: '2045'
-                        price: 19
-                        quantity: 5
-                        discount: 0
-                        subtotal: 95
-                      - product_id: '2091'
-                        price: 10
-                        quantity: 1
-                        discount: 2
-                        subtotal: 8
-              Order Return/Refund Example Payload:
-                description: Order Return/Refund Example Payload
-                value:
-                - type: order
-                  action: return
-                  identifiers:
-                    email: bob@gmail.com
-                  data:
-                    ts: 123456789
-                    order:
-                      order_id: OR345
-                      total: -100
-                      subtotal: -90
-                      tax: 0
-                      shipping: 0
-                      items:
-                      - product_id: '2045'
-                        price: -9
-                        quantity: 10
-                        subtotal: -90
-              Order Cancellation Example Payload:
-                description: Order Cancellation Example Payload
-                value:
-                - type: order
-                  action: cancel
-                  identifiers:
-                    email: bob@gmail.com
-                  data:
-                    ts: 123456789
-                    order:
-                      order_id: OR345
-                      total: -100
-                      items:
-                      - product_id: '2045'
-                        price: -10
-                        quantity: 10
-                        subtotal: -100
-              Partial Refund Example Payload:
-                description: Partial Refund Example Payload
-                value:
-                - identifiers:
-                    email: bob@thebuyer.com
-                  type: order
-                  action: refund
-                  data:
-                    order:
-                      order_id: ABC
-                      total: 10
-                      subtotal: 10
-        required: true
-      responses:
-        '202':
-          description: Accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GenericUpdateResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                example: '{"title":"Bad Request","status":400,"timestamp":"2018-09-10T21:07:10-05:00","detail":{"invalids":[{"field":"delimiter","reason":"Unrecognized delimiter, valid options are comma, tab or pipe"}]}}'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                example: '{  "message": "Forbidden"}'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                example: '{"title":"Bad Request","status":404,"timestamp":"2018-09-10T21:07:10-05:00","detail":{"message":"Not found description"}}'
-      security:
-      - x-api-key: []
-    servers:
-    - url: https://api.us1.odp.optimizely.com/v3
-      description: United States
-    - url: https://api.eu1.odp.optimizely.com/v3
-      description: Europe
-    - url: https://api.au1.odp.optimizely.com/v3
-      description: Asia-Pacific
 components:
-  parameters:
-    orderGroupId:
-      name: orderGroupId
-      in: path
-      required: true
-      description: The unique identifier for the order group
-      schema:
-        type: integer
-        format: int64
-    customerId:
-      name: customerId
-      in: path
-      required: true
-      description: The unique identifier for the customer
-      schema:
-        type: string
   schemas:
     Order:
       type: object
@@ -639,174 +500,6 @@ components:
                     placed_price:
                       type: number
                       description: Price at time of purchase
-    Insite.Order.WebApi.V1.ApiModels.OrderPromotionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          type: string
-        amount:
-          format: double
-          type: number
-        amountDisplay:
-          type: string
-        name:
-          type: string
-        orderHistoryLineId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        promotionResultType:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Core.WebApi.SortOptionModel:
-      type: object
-      properties:
-        displayName:
-          type: string
-        sortType:
-          type: string
-    Insite.Order.Services.Dtos.SectionOptionDto:
-      type: object
-      properties:
-        sectionOptionId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        sectionName:
-          type: string
-        optionName:
-          type: string
-    Insite.Order.WebApi.V1.ApiModels.ShareOrderModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        stEmail:
-          type: string
-        stPostalCode:
-          type: string
-        emailTo:
-          type: string
-        emailFrom:
-          type: string
-        subject:
-          type: string
-        message:
-          type: string
-        entityId:
-          type: string
-        entityName:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Order.Services.Dtos.RmaLineDto:
-      type: object
-      properties:
-        line:
-          format: decimal
-          type: number
-        rmaQtyRequested:
-          format: int32
-          type: integer
-        rmaReasonCode:
-          type: string
-    Insite.Email.WebApi.V1.ApiModels.ShareEntityModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        emailTo:
-          type: string
-        emailFrom:
-          type: string
-        subject:
-          type: string
-        message:
-          type: string
-        entityId:
-          type: string
-        entityName:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.BrandDto:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        urlSegment:
-          type: string
-        logoSmallImagePath:
-          type: string
-        logoLargeImagePath:
-          type: string
-        logoImageAltText:
-          type: string
-        detailPagePath:
-          type: string
-    Insite.Order.Services.Dtos.OrderHistoryTaxDto:
-      type: object
-      properties:
-        taxCode:
-          type: string
-        taxDescription:
-          type: string
-        taxRate:
-          format: decimal
-          type: number
-        taxAmount:
-          format: decimal
-          type: number
-        taxAmountDisplay:
-          type: string
-        sortOrder:
-          format: int32
-          type: integer
-    Insite.Catalog.Services.Dtos.AvailabilityDto:
-      type: object
-      properties:
-        messageType:
-          format: int32
-          enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          type: integer
-        message:
-          type: string
-        requiresRealTimeInventory:
-          type: boolean
-    Insite.Order.WebApi.V1.ApiModels.OrderCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        orders:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderModel'
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        showErpOrderNumber:
-          type: boolean
-        properties:
-          type: object
-          additionalProperties:
-            type: string
     Insite.Core.WebApi.PaginationModel:
       type: object
       properties:
@@ -845,6 +538,77 @@ components:
           type: string
         nextPageToken:
           type: string
+    Insite.Order.WebApi.V1.ApiModels.OrderPromotionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        amount:
+          format: double
+          type: number
+        amountDisplay:
+          type: string
+        name:
+          type: string
+        orderHistoryLineId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        promotionResultType:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Order.WebApi.V1.ApiModels.RmaModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        orderNumber:
+          type: string
+        notes:
+          type: string
+        message:
+          type: string
+        rmaLines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Order.Services.Dtos.RmaLineDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Order.WebApi.V1.ApiModels.OrderCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        showErpOrderNumber:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Order.Services.Dtos.SectionOptionDto:
+      type: object
+      properties:
+        sectionOptionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sectionName:
+          type: string
+        optionName:
+          type: string
     Insite.Order.Services.Dtos.ShipmentPackageDto:
       type: object
       properties:
@@ -871,6 +635,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Insite.Order.Services.Dtos.ShipmentPackageLineDto'
+    Insite.Core.WebApi.SortOptionModel:
+      type: object
+      properties:
+        displayName:
+          type: string
+        sortType:
+          type: string
     Insite.Order.WebApi.V1.ApiModels.OrderLineModel:
       type: object
       properties:
@@ -1074,6 +845,122 @@ components:
           type: object
           additionalProperties:
             type: string
+    Insite.Order.Services.Dtos.ShipmentPackageLineDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        productName:
+          type: string
+        productDescription:
+          type: string
+        productCode:
+          type: string
+        qtyOrdered:
+          format: decimal
+          type: number
+        qtyShipped:
+          format: decimal
+          type: number
+        price:
+          format: decimal
+          type: number
+        orderLineId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+    Insite.Order.Services.Dtos.OrderHistoryTaxDto:
+      type: object
+      properties:
+        taxCode:
+          type: string
+        taxDescription:
+          type: string
+        taxRate:
+          format: decimal
+          type: number
+        taxAmount:
+          format: decimal
+          type: number
+        taxAmountDisplay:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+    Insite.Email.WebApi.V1.ApiModels.ShareEntityModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        emailTo:
+          type: string
+        emailFrom:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+        entityId:
+          type: string
+        entityName:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Order.Services.Dtos.RmaLineDto:
+      type: object
+      properties:
+        line:
+          format: decimal
+          type: number
+        rmaQtyRequested:
+          format: int32
+          type: integer
+        rmaReasonCode:
+          type: string
+    Insite.Catalog.Services.Dtos.AvailabilityDto:
+      type: object
+      properties:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
+          type: string
+        requiresRealTimeInventory:
+          type: boolean
+    Insite.Order.WebApi.V1.ApiModels.ShareOrderModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        stEmail:
+          type: string
+        stPostalCode:
+          type: string
+        emailTo:
+          type: string
+        emailFrom:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+        entityId:
+          type: string
+        entityName:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
     Insite.Order.WebApi.V1.ApiModels.OrderModel:
       type: object
       properties:
@@ -1254,137 +1141,41 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Order.Services.Dtos.ShipmentPackageLineDto:
+    Insite.Catalog.Services.Dtos.BrandDto:
       type: object
       properties:
         id:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        productName:
+        name:
           type: string
-        productDescription:
+        urlSegment:
           type: string
-        productCode:
+        logoSmallImagePath:
           type: string
-        qtyOrdered:
-          format: decimal
-          type: number
-        qtyShipped:
-          format: decimal
-          type: number
-        price:
-          format: decimal
-          type: number
-        orderLineId:
-          format: uuid
+        logoLargeImagePath:
           type: string
-          example: 00000000-0000-0000-0000-000000000000
-    Insite.Order.WebApi.V1.ApiModels.RmaModel:
-      type: object
-      properties:
-        uri:
+        logoImageAltText:
           type: string
-        orderNumber:
+        detailPagePath:
           type: string
-        notes:
-          type: string
-        message:
-          type: string
-        rmaLines:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Order.Services.Dtos.RmaLineDto'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Event:
-      required:
-      - action
-      - identifiers
-      - type
-      type: object
-      properties:
-        type:
-          type: string
-          description: the event type
-          default: order
-          example: order
-        action:
-          type: string
-          description: 'the event action associated with the type.  Acceptable actions include: `purchase`, `return`, `refund`, and `cancel`'
-          example: purchase
-        identifiers:
-          type: object
-          additionalProperties:
-            type: string
-            description: any known identifiers associated with the customer that performed the event
-          description: any known identifiers associated with the customer that performed the event
-        data:
-          type: object
-          properties:
-            ts:
-              type: number
-              description: specify the time of the order action
-            order:
-              $ref: '#/components/schemas/Order_2'
-          additionalProperties:
-            type: string
-            description: any additional fields you want to include on the event (for example, product_id)
-          description: the data with the order and any additional fields
-    LineItem:
-      required:
-      - product_id
-      type: object
-      properties:
-        product_id:
-          type: string
-          description: the unique identifier for the order line item
-        price:
-          type: number
-          description: the price for an order line item
-        quantity:
-          type: number
-          description: the number of items purchased
-        discount:
-          type: number
-          description: the discount (if any) for the given line item
-        subtotal:
-          type: number
-          description: the calculated subtotal for the given product and quantity, typically calculated after any discounts
-    Order_2:
-      required:
-      - order_id
-      type: object
-      properties:
-        order_id:
-          type: string
-          description: the unique identifier related to this order
-        total:
-          type: number
-          description: total should include the final amount charged to the customer after all goods, discounts, tax, and shipping are calculated. See below for more information
-        subtotal:
-          type: number
-          description: subtotal may be taken either before or after discounting, but generally should be before shipping or tax
-        tax:
-          type: number
-        shipping:
-          type: number
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/LineItem'
-    GenericUpdateResponse:
-      type: object
-      properties:
-        title:
-          type: string
-        status:
-          type: integer
-          format: int32
-        timestamp:
-          type: string
+  parameters:
+    customerId:
+      name: customerId
+      in: path
+      required: true
+      description: The unique identifier for the customer
+      schema:
+        type: string
+    orderGroupId:
+      name: orderGroupId
+      in: path
+      required: true
+      description: The unique identifier for the order group
+      schema:
+        type: integer
+        format: int64
   securitySchemes:
     bearerAuth:
       type: http
@@ -1395,14 +1186,9 @@ components:
       description: Token used to access storefront API.
       name: access_token
       in: query
-    x-api-key:
-      type: apiKey
-      name: x-api-key
-      in: header
 externalDocs:
   description: Optimizely Commerce Service API Documentation
   url: https://docs.developers.optimizely.com/commerce-connect/v1.3.0-service-api-developer-guide/docs/optimizely-service-api
 x-refined-from:
 - optimizely-commerce-service-openapi.yml
 - optimizely-configured-commerce-storefront-api-v1-openapi.json
-- optimizely-data-platform-orders-openapi.json

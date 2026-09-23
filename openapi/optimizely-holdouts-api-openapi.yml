@@ -24,9 +24,7 @@ paths:
         Holdouts are experiments that reserve a portion of your traffic to measure the impact of your feature flags and experiments. They help establish a control group by excluding a percentage of users from seeing any experiments, allowing you to measure the overall impact of your experimentation program.
 
 
-        You can use query parameters to filter and sort the response. Holdouts can be in different states (draft, running, concluded) and can be scoped globally or locally within your project.
-
-        '
+        You can use query parameters to filter and sort the response. Holdouts can be in different states (draft, running, concluded) and can be scoped globally or locally within your project.'
       operationId: list_holdouts
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -95,7 +93,39 @@ paths:
       tags:
       - Holdouts
     post:
-      description: "Creates a new holdout experiment to establish a control group for measuring the impact of your feature flags and experiments.\n\nA holdout reserves a percentage of your traffic (specified in basis points) that will be excluded from seeing any experiments, allowing you to measure the overall impact of your experimentation program against a baseline control group.\n\nThe holdout will be created in a `draft` status and can be configured with:\n- **Traffic allocation**: Percentage of users to exclude from experiments (0-10000 basis points)\n- **Scope**: Global (affects all experiments) or local (specific experiments only)  \n- **Audiences**: Target specific user segments using audience conditions\n- **Metrics**: Track and analyze the impact on key business metrics\n- **Environment**: Specify which environment the holdout applies to\n\n**Key Validation Rules:**\n- Holdout `key` must be unique within the project\n- Required fields: `key`, `name`\n- `traffic_allocation` must be between 0-10000 (basis points)\n- `key` must match pattern: `^[a-zA-Z0-9_\\-]+$` (max 64 characters)\n- `name` and `description` have character limits (255 and 1000 respectively)\n\n**Metrics Integration:** If metrics are provided, they will be automatically saved to the MetricsHub for tracking and analysis.\n"
+      description: 'Creates a new holdout experiment to establish a control group for measuring the impact of your feature flags and experiments.
+
+
+        A holdout reserves a percentage of your traffic (specified in basis points) that will be excluded from seeing any experiments, allowing you to measure the overall impact of your experimentation program against a baseline control group.
+
+
+        The holdout will be created in a `draft` status and can be configured with:
+
+        - **Traffic allocation**: Percentage of users to exclude from experiments (0-10000 basis points)
+
+        - **Scope**: Global (affects all experiments) or local (specific experiments only)
+
+        - **Audiences**: Target specific user segments using audience conditions
+
+        - **Metrics**: Track and analyze the impact on key business metrics
+
+        - **Environment**: Specify which environment the holdout applies to
+
+
+        **Key Validation Rules:**
+
+        - Holdout `key` must be unique within the project
+
+        - Required fields: `key`, `name`
+
+        - `traffic_allocation` must be between 0-10000 (basis points)
+
+        - `key` must match pattern: `^[a-zA-Z0-9_\-]+$` (max 64 characters)
+
+        - `name` and `description` have character limits (255 and 1000 respectively)
+
+
+        **Metrics Integration:** If metrics are provided, they will be automatically saved to the MetricsHub for tracking and analysis.'
       operationId: create_holdout
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -136,7 +166,57 @@ paths:
     - url: https://api.optimizely.com/flags/v1/
   /projects/{project_id}/holdouts/{holdout_id}:
     delete:
-      description: "Permanently and irreversibly delete a holdout by its unique ID. This is a destructive operation that cannot be undone.\n\n**⚠️ CAUTION - Permanent Deletion:**\n- All holdout configuration data will be permanently lost\n- Associated metric data will be deleted from MetricsHub  \n- Experiment rules and historical data will be removed\n- There is **no way to recover** this data after deletion\n\n**What gets deleted:**\n- Holdout configuration (traffic allocation, audience conditions, etc.)\n- All associated experiment rules and their settings\n- Metric tracking data and historical performance \n- System metadata and lifecycle timestamps\n\n**Safer Alternative - Archiving:**\nIf you want to stop a holdout without permanent data loss, consider archiving instead:\n1. Update the holdout status to `concluded` (if currently running)\n2. Use the PATCH endpoint to set `archived: true`\n\nArchived holdouts preserve all historical data while removing them from active lists and preventing further modifications.\n\n**When to use DELETE vs ARCHIVE:**\n- **DELETE**: Use only when you're certain the holdout and all its data should be permanently removed\n- **ARCHIVE**: Recommended for most cases - preserves data for analysis while cleaning up active experiments\n\n**Important Notes:**\n- Can delete holdouts in any status (draft, running, concluded)\n- Operation affects both database and MetricsHub systems\n- This corresponds to the `delete_url` link in holdout responses\n"
+      description: 'Permanently and irreversibly delete a holdout by its unique ID. This is a destructive operation that cannot be undone.
+
+
+        **⚠️ CAUTION - Permanent Deletion:**
+
+        - All holdout configuration data will be permanently lost
+
+        - Associated metric data will be deleted from MetricsHub
+
+        - Experiment rules and historical data will be removed
+
+        - There is **no way to recover** this data after deletion
+
+
+        **What gets deleted:**
+
+        - Holdout configuration (traffic allocation, audience conditions, etc.)
+
+        - All associated experiment rules and their settings
+
+        - Metric tracking data and historical performance
+
+        - System metadata and lifecycle timestamps
+
+
+        **Safer Alternative - Archiving:**
+
+        If you want to stop a holdout without permanent data loss, consider archiving instead:
+
+        1. Update the holdout status to `concluded` (if currently running)
+
+        2. Use the PATCH endpoint to set `archived: true`
+
+
+        Archived holdouts preserve all historical data while removing them from active lists and preventing further modifications.
+
+
+        **When to use DELETE vs ARCHIVE:**
+
+        - **DELETE**: Use only when you''re certain the holdout and all its data should be permanently removed
+
+        - **ARCHIVE**: Recommended for most cases - preserves data for analysis while cleaning up active experiments
+
+
+        **Important Notes:**
+
+        - Can delete holdouts in any status (draft, running, concluded)
+
+        - Operation affects both database and MetricsHub systems
+
+        - This corresponds to the `delete_url` link in holdout responses'
       operationId: delete_holdout
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -264,7 +344,47 @@ paths:
       tags:
       - Holdouts
     get:
-      description: "Retrieves detailed information about a specific holdout by its unique ID within a project.\n\n**What you'll get:**\n- Complete holdout configuration including traffic allocation, status, and settings\n- Associated experiment rules and their current states  \n- Audience conditions and targeting criteria (if configured)\n- Metric tracking configuration and current values\n- Lifecycle timestamps (created, updated, started, ended)\n- RESTful links for related operations (update, delete, archive, etc.)\n\n**Holdout States:**\n- **Draft**: Holdout is configured but not yet active\n- **Running**: Currently excluding traffic from experiments  \n- **Concluded**: Finished collecting data, results available for analysis\n\n**Use Cases:**\n- View complete holdout configuration before making changes\n- Monitor current status and performance metrics\n- Access experiment rules affected by this holdout\n- Retrieve data for analysis and reporting\n- Verify permissions for management operations via included links\n\nThis operation corresponds to the `url` or `fetch_holdout_url` property found in holdout list responses.\n"
+      description: 'Retrieves detailed information about a specific holdout by its unique ID within a project.
+
+
+        **What you''ll get:**
+
+        - Complete holdout configuration including traffic allocation, status, and settings
+
+        - Associated experiment rules and their current states
+
+        - Audience conditions and targeting criteria (if configured)
+
+        - Metric tracking configuration and current values
+
+        - Lifecycle timestamps (created, updated, started, ended)
+
+        - RESTful links for related operations (update, delete, archive, etc.)
+
+
+        **Holdout States:**
+
+        - **Draft**: Holdout is configured but not yet active
+
+        - **Running**: Currently excluding traffic from experiments
+
+        - **Concluded**: Finished collecting data, results available for analysis
+
+
+        **Use Cases:**
+
+        - View complete holdout configuration before making changes
+
+        - Monitor current status and performance metrics
+
+        - Access experiment rules affected by this holdout
+
+        - Retrieve data for analysis and reporting
+
+        - Verify permissions for management operations via included links
+
+
+        This operation corresponds to the `url` or `fetch_holdout_url` property found in holdout list responses.'
       operationId: fetch_holdout
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -449,7 +569,66 @@ paths:
       tags:
       - Holdouts
     post:
-      description: "Updates a specific holdout using JSON Patch operations (RFC 6902). This endpoint allows you to modify individual properties of an existing holdout without replacing the entire resource.\n\n**Supported Operations:**\n- **Status transitions**: Move holdouts through their lifecycle (`draft` → `running` → `concluded`)\n- **Configuration updates**: Modify traffic allocation, name, description, and other settings\n- **Archive management**: Archive/unarchive concluded holdouts\n- **Metrics updates**: Modify metric configurations (restricted based on status)\n\n**State Management & Validation Rules:**\n- **Draft holdouts**: All fields can be updated except readonly properties\n- **Running holdouts**: Limited updates allowed; cannot modify metrics or core configuration\n- **Concluded holdouts**: Only `name` and `archived` status can be modified\n- **Status transitions**: Must follow proper sequence (draft→running→concluded)\n- **Traffic allocation**: Must be 0-10000 basis points (0-100%)\n\n**Automatic Timestamp Management:**\n- Moving to `running` status automatically sets `start_time` to current timestamp\n- Moving to `concluded` status automatically sets `end_time` to current timestamp\n\n**Common Update Patterns:**\n```json\n[\n  {\"op\": \"replace\", \"path\": \"/name\", \"value\": \"Updated Holdout Name\"},\n  {\"op\": \"replace\", \"path\": \"/traffic_allocation\", \"value\": 1500},\n  {\"op\": \"replace\", \"path\": \"/status\", \"value\": \"running\"}\n]\n```\n\n**Important Limitations:**\n- Cannot modify metrics on running holdouts (prevents mid-experiment changes)\n- Cannot archive non-concluded holdouts (must conclude first)\n- Cannot update core configuration on running/concluded holdouts\n- ReadOnly properties in patch operations are ignored\n"
+      description: 'Updates a specific holdout using JSON Patch operations (RFC 6902). This endpoint allows you to modify individual properties of an existing holdout without replacing the entire resource.
+
+
+        **Supported Operations:**
+
+        - **Status transitions**: Move holdouts through their lifecycle (`draft` → `running` → `concluded`)
+
+        - **Configuration updates**: Modify traffic allocation, name, description, and other settings
+
+        - **Archive management**: Archive/unarchive concluded holdouts
+
+        - **Metrics updates**: Modify metric configurations (restricted based on status)
+
+
+        **State Management & Validation Rules:**
+
+        - **Draft holdouts**: All fields can be updated except readonly properties
+
+        - **Running holdouts**: Limited updates allowed; cannot modify metrics or core configuration
+
+        - **Concluded holdouts**: Only `name` and `archived` status can be modified
+
+        - **Status transitions**: Must follow proper sequence (draft→running→concluded)
+
+        - **Traffic allocation**: Must be 0-10000 basis points (0-100%)
+
+
+        **Automatic Timestamp Management:**
+
+        - Moving to `running` status automatically sets `start_time` to current timestamp
+
+        - Moving to `concluded` status automatically sets `end_time` to current timestamp
+
+
+        **Common Update Patterns:**
+
+        ```json
+
+        [
+
+        {"op": "replace", "path": "/name", "value": "Updated Holdout Name"},
+
+        {"op": "replace", "path": "/traffic_allocation", "value": 1500},
+
+        {"op": "replace", "path": "/status", "value": "running"}
+
+        ]
+
+        ```
+
+
+        **Important Limitations:**
+
+        - Cannot modify metrics on running holdouts (prevents mid-experiment changes)
+
+        - Cannot archive non-concluded holdouts (must conclude first)
+
+        - Cannot update core configuration on running/concluded holdouts
+
+        - ReadOnly properties in patch operations are ignored'
       operationId: update_holdouts
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -612,7 +791,69 @@ paths:
     - url: https://api.optimizely.com/flags/v1/
   /projects/{project_id}/holdouts/{holdout_id}/experiments:
     get:
-      description: "Retrieves a list of experiments that are connected to a specific holdout through the system's data relationships.\n\n**What you'll get:**\n- **Experiment identification**: Layer experiment IDs from connected rules\n- **Timing information**: Start and end times from experiment reports  \n- **Variation details**: Deployed variation IDs when configured\n- **Clean data**: Filtered to remove empty or null values for clarity\n\n**How experiments connect to holdouts:**\nThis endpoint traverses complex database relationships to find experiments associated with a holdout:\n1. **Holdout → Project**: Matches by project_id\n2. **Project → Flags**: All flags in the same project\n3. **Flags → Rulesets → Rules**: Rules within flag configurations\n4. **Rules → Reports**: Experiment reports linked to rules\n5. **Rules → Variations**: Deployed variations (when configured)\n\n**Data relationships explained:**\n- Each returned experiment represents a rule that's potentially affected by the holdout's traffic allocation\n- Experiment timing comes from associated reports (start_time, end_time)\n- Deployed variations are included when rules have configured variations\n- Results are automatically filtered to exclude empty/null values\n\n**Use cases:**\n- **Impact analysis**: Understanding which experiments are affected by a holdout\n- **Experiment coordination**: Viewing overlapping experiment timelines  \n- **Traffic allocation planning**: Seeing experiment relationships before making holdout changes\n- **Reporting integration**: Connecting holdout data with experiment performance\n- **Debugging**: Investigating unexpected experiment behavior related to holdouts\n\n**Performance considerations:**\n- Query involves multiple table joins across the experiment system\n- Results are processed to remove empty values for cleaner responses\n- Response size depends on the number of connected experiments\n\nThis endpoint provides crucial visibility into the complex relationships between holdouts and the experiments they may influence.\n"
+      description: 'Retrieves a list of experiments that are connected to a specific holdout through the system''s data relationships.
+
+
+        **What you''ll get:**
+
+        - **Experiment identification**: Layer experiment IDs from connected rules
+
+        - **Timing information**: Start and end times from experiment reports
+
+        - **Variation details**: Deployed variation IDs when configured
+
+        - **Clean data**: Filtered to remove empty or null values for clarity
+
+
+        **How experiments connect to holdouts:**
+
+        This endpoint traverses complex database relationships to find experiments associated with a holdout:
+
+        1. **Holdout → Project**: Matches by project_id
+
+        2. **Project → Flags**: All flags in the same project
+
+        3. **Flags → Rulesets → Rules**: Rules within flag configurations
+
+        4. **Rules → Reports**: Experiment reports linked to rules
+
+        5. **Rules → Variations**: Deployed variations (when configured)
+
+
+        **Data relationships explained:**
+
+        - Each returned experiment represents a rule that''s potentially affected by the holdout''s traffic allocation
+
+        - Experiment timing comes from associated reports (start_time, end_time)
+
+        - Deployed variations are included when rules have configured variations
+
+        - Results are automatically filtered to exclude empty/null values
+
+
+        **Use cases:**
+
+        - **Impact analysis**: Understanding which experiments are affected by a holdout
+
+        - **Experiment coordination**: Viewing overlapping experiment timelines
+
+        - **Traffic allocation planning**: Seeing experiment relationships before making holdout changes
+
+        - **Reporting integration**: Connecting holdout data with experiment performance
+
+        - **Debugging**: Investigating unexpected experiment behavior related to holdouts
+
+
+        **Performance considerations:**
+
+        - Query involves multiple table joins across the experiment system
+
+        - Results are processed to remove empty values for cleaner responses
+
+        - Response size depends on the number of connected experiments
+
+
+        This endpoint provides crucial visibility into the complex relationships between holdouts and the experiments they may influence.'
       operationId: fetch_holdout_experiments
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -795,47 +1036,116 @@ paths:
     - url: https://api.optimizely.com/v2
 components:
   schemas:
-    AudienceConditionsString:
-      description: A valid AudienceConditionsArray represented as a JSON string
-      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
-      type: string
-    PatchRequestBody:
-      description: A JSONPatch document as defined by RFC 6902
+    Metric:
       properties:
-        from:
-          description: A JSON Pointer to the resource attribute
-          type: string
-        op:
-          description: The operation to be performed
+        aggregator:
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
           enum:
-          - add
-          - remove
-          - replace
-          - move
-          - copy
-          - test
+          - unique
+          - count
+          - sum
+          - ratio
           type: string
-        path:
-          description: A JSON-Pointer to the resource or the resource attribute
+        display_title:
+          description: An optional title for the unique metric configuration. If not provided, the event name will be used.
           type: string
-        value:
-          anyOf:
-          - type: object
-          - items:
-              type: string
-            type: array
-          - $ref: '#/components/schemas/AudienceConditions'
-          - type: string
-          - type: integer
-          - type: boolean
-          - items:
-              $ref: '#/components/schemas/SubMetric'
-            type: array
-          description: The value to be used within the operations.
+        display_unit:
+          description: An optional name for the unit of the unique metric configuration.
+          type: string
+        event_id:
+          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
+          example: 32334454244
+          format: int64
+          type: integer
+        event_properties:
+          properties:
+            filter:
+              properties:
+                combine_operator:
+                  enum:
+                  - or
+                  - and
+                  type: string
+                conditions:
+                  items:
+                    $ref: '#/components/schemas/EventPropertyCondition'
+              type: object
+          type: object
+        event_type:
+          type: string
+        field:
+          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
+          enum:
+          - revenue
+          - value
+          type:
+          - string
+          - 'null'
+        id:
+          description: A unique identifier for the metric configuration.
+          type: string
+        metrics:
+          items:
+            $ref: '#/components/schemas/SubMetric'
+            type: object
+          type: array
+        project_id:
+          description: A unique identifier for the project associated with the metric.
+          type: integer
+        scope:
+          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
+          enum:
+          - session
+          - visitor
+          - event
+          type: string
+        visibility:
+          description: The visibility of the metric.
+          enum:
+          - account
+          - experiment
+          - project
+          type: string
+        winning_direction:
+          description: The winning direction of this metric
+          enum:
+          - increasing
+          - decreasing
+          type: string
       required:
-      - op
-      - path
+      - winning_direction
+      - aggregator
       type: object
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
+      properties:
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
+      type: object
+    AudienceConditions:
+      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
+      oneOf:
+      - $ref: '#/components/schemas/AudienceConditionsArray'
+      - $ref: '#/components/schemas/AudienceConditionsString'
     Holdout:
       description: 'Represents a holdout experiment that reserves a portion of traffic to measure the impact of feature flags and experiments.
 
@@ -1091,25 +1401,69 @@ components:
       - name
       - key
       type: object
-    SubMetric:
+    HoldoutMap:
+      additionalProperties:
+        $ref: '#/components/schemas/Holdout'
+      description: 'A dictionary/map of holdouts where each key is the holdout ID and the value is the holdout object.
+
+
+        This structure is used internally for efficient lookups and when representing holdout
+
+        relationships. The keys are string representations of holdout IDs.
+
+        '
+      example:
+        '12345':
+          description: Control group for measuring overall impact of Q4 growth experiments
+          environment_key: production
+          id: 12345
+          key: growth_experiment_holdout
+          name: Q4 Growth Experiment Control
+          project_id: 98765
+          scope: global
+          scope_type: exclude
+          status: running
+          traffic_allocation: 1000
+        '12346':
+          description: Holdout for measuring checkout conversion experiments
+          environment_key: staging
+          id: 12346
+          key: checkout_flow_holdout
+          name: Checkout Flow Holdout Group
+          project_id: 98765
+          scope: local
+          scope_type: exclude
+          status: draft
+          traffic_allocation: 500
+      type: object
+    EventPropertyCondition:
       properties:
-        aggregator:
+        name:
           type: string
-        event_id:
-          type: integer
-        event_type:
-          type: string
-        field:
-          type:
-          - string
-          - 'null'
-        role:
+        operator:
           enum:
-          - numerator
-          - denominator
+          - equal_to
+          - not_equal_to
+          - greater_than
+          - greater_than_or_equal_to
+          - less_than
+          - less_than_or_equal_to
+          - contains
+          - does_not_contain
           type: string
-        scope:
+        type:
+          enum:
+          - string
+          - number
+          - boolean
           type: string
+        value:
+          type: string
+      required:
+      - name
+      - type
+      - value
+      - operator
       type: object
     AudienceConditionsArray:
       example:
@@ -1136,86 +1490,263 @@ components:
             - audience_id: 456
             - audience_id: 789
       type: array
-    Metric:
+    HoldoutExperiment:
+      description: 'Represents a single experiment rule that is connected to a holdout configuration.
+
+
+        Contains experiment identification, timing information from the associated report,
+
+        and the deployed variation ID if one exists for the experiment.
+
+        '
+      example:
+        deployed_variation_id: 9876543210
+        experiment_end_time: '2024-03-15T23:59:59.000Z'
+        experiment_id: 1234567890
+        experiment_start_time: '2024-01-15T10:00:00.000Z'
       properties:
-        aggregator:
-          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
-          enum:
-          - unique
-          - count
-          - sum
-          - ratio
-          type: string
-        display_title:
-          description: An optional title for the unique metric configuration. If not provided, the event name will be used.
-          type: string
-        display_unit:
-          description: An optional name for the unit of the unique metric configuration.
-          type: string
-        event_id:
-          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
-          example: 32334454244
+        deployed_variation_id:
+          description: 'The unique identifier of the deployed variation for this experiment.
+
+            This is the Variation.id that matches the Rule.deployed_variation_key.
+
+            May be null if no deployed variation is configured.
+
+            '
+          example: 9876543210
           format: int64
-          type: integer
-        event_properties:
-          properties:
-            filter:
-              properties:
-                combine_operator:
-                  enum:
-                  - or
-                  - and
-                  type: string
-                conditions:
-                  items:
-                    $ref: '#/components/schemas/EventPropertyCondition'
-              type: object
-          type: object
-        event_type:
-          type: string
-        field:
-          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
-          enum:
-          - revenue
-          - value
+          type:
+          - integer
+          - 'null'
+        experiment_end_time:
+          description: "The end time of the experiment report. This timestamp indicates when the \nexperiment finished collecting data. May be null for ongoing experiments.\nSourced from Report.end_time.\n"
+          example: '2024-03-15T23:59:59.000Z'
+          format: date-time
           type:
           - string
           - 'null'
-        id:
-          description: A unique identifier for the metric configuration.
-          type: string
-        metrics:
-          items:
-            $ref: '#/components/schemas/SubMetric'
-            type: object
-          type: array
-        project_id:
-          description: A unique identifier for the project associated with the metric.
+        experiment_id:
+          description: 'The layer experiment ID from the rule associated with this holdout.
+
+            This corresponds to the Rule.layer_experiment_id field in the database.
+
+            '
+          example: 1234567890
+          format: int64
           type: integer
-        scope:
-          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
-          enum:
-          - session
-          - visitor
-          - event
-          type: string
-        visibility:
-          description: The visibility of the metric.
-          enum:
-          - account
-          - experiment
-          - project
-          type: string
-        winning_direction:
-          description: The winning direction of this metric
-          enum:
-          - increasing
-          - decreasing
-          type: string
+        experiment_start_time:
+          description: "The start time of the experiment report. This timestamp indicates when the \nexperiment began collecting data. Sourced from Report.start_time.\n"
+          example: '2024-01-15T10:00:00.000Z'
+          format: date-time
+          type:
+          - string
+          - 'null'
       required:
-      - winning_direction
-      - aggregator
+      - experiment_id
       type: object
+    HoldoutsPaginatedList:
+      description: 'Paginated response structure for holdout collections with navigation links and metadata.
+
+
+        This response format follows the standard pagination pattern used across the API,
+
+        providing navigation URLs and counts for efficient browsing of large holdout collections.
+
+        '
+      example:
+        count: 2
+        filter_url: /projects/98765/holdouts{?archived}
+        first_url: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
+        items:
+        - archived: false
+          created_time: '2023-12-15T10:00:00.000Z'
+          description: Control group for measuring overall impact of Q4 growth experiments
+          environment_key: production
+          holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+          id: 12345
+          key: growth_experiment_holdout
+          name: Q4 Growth Experiment Control
+          project_id: 98765
+          revision: 2
+          scope: global
+          scope_type: exclude
+          start_time: '2024-01-01T00:00:00.000Z'
+          status: running
+          traffic_allocation: 1000
+          updated_time: '2024-01-01T10:00:00.000Z'
+        - archived: false
+          created_time: '2024-01-20T14:30:00.000Z'
+          description: Holdout for measuring checkout conversion experiments
+          environment_key: production
+          holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+          id: 12346
+          key: checkout_flow_holdout
+          name: Checkout Flow Holdout Group
+          project_id: 98765
+          revision: 1
+          scope: global
+          scope_type: exclude
+          start_time: '2024-02-01T00:00:00.000Z'
+          status: draft
+          traffic_allocation: 500
+          updated_time: '2024-01-20T14:30:00.000Z'
+        last_url: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#13
+        next_url:
+        - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#2
+        - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
+        page: 1
+        reset_url: /projects/98765/holdouts
+        total_count: 25
+        total_pages: 13
+        url: /projects/98765/holdouts
+      properties:
+        count:
+          description: Number of holdouts returned on the current page (length of items array).
+          example: 2
+          minimum: 0
+          type: integer
+        filter_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'URL template for applying filters to the holdouts list. Replace the placeholder
+
+            with filter parameters like ''archived=false'' to filter results.
+
+            '
+          example: /projects/98765/holdouts{?archived,status}
+        first_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'Link to the first page of holdouts in the result set. Always points to page 1
+
+            with the same query parameters as the current request.
+
+            '
+          example: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
+        items:
+          description: Array of holdout objects for the current page.
+          items:
+            $ref: '#/components/schemas/Holdout'
+          type: array
+        last_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'Link to the final page of holdouts in the result set. Points to the highest
+
+            page number that contains results.
+
+            '
+          example: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#13
+        next_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: "Array of links to subsequent pages in the result set. The first element is the \nimmediate next page, followed by additional pages in sequence. Empty if on the last page.\n"
+          example:
+          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#2
+          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
+        page:
+          description: 'Current page number (1-indexed). The first page is page 1, not page 0.
+
+            This corresponds to the requested page in the pagination sequence.
+
+            '
+          example: 1
+          minimum: 1
+          type: integer
+        prev_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: "Array of links to previous pages in the result set. The first element is the \nimmediate previous page, followed by earlier pages in reverse sequence. Empty if on the first page.\n"
+          example:
+          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#4
+          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
+        reset_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'Link to reset pagination and view the default first page without any applied filters.
+
+            Use this to return to the standard holdouts list view.
+
+            '
+          example: /projects/98765/holdouts
+        total_count:
+          description: 'Total number of holdouts matching the query criteria across all pages.
+
+            This count reflects any filters applied to the request.
+
+            '
+          example: 25
+          minimum: 0
+          type: integer
+        total_pages:
+          description: 'Total number of pages required to display all holdouts matching the criteria.
+
+            Calculated as ceil(total_count / per_page).
+
+            '
+          example: 13
+          minimum: 1
+          type: integer
+        url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: "Link to the current page (self-reference). Use this URL to refresh \nthe current page or bookmark the current view.\n"
+          example: /projects/98765/holdouts?page=1
+      required:
+      - items
+      - count
+      - page
+      - total_count
+      - total_pages
+      - url
+      - first_url
+      - last_url
+      type: object
+    PatchRequestBody:
+      description: A JSONPatch document as defined by RFC 6902
+      properties:
+        from:
+          description: A JSON Pointer to the resource attribute
+          type: string
+        op:
+          description: The operation to be performed
+          enum:
+          - add
+          - remove
+          - replace
+          - move
+          - copy
+          - test
+          type: string
+        path:
+          description: A JSON-Pointer to the resource or the resource attribute
+          type: string
+        value:
+          anyOf:
+          - type: object
+          - items:
+              type: string
+            type: array
+          - $ref: '#/components/schemas/AudienceConditions'
+          - type: string
+          - type: integer
+          - type: boolean
+          - items:
+              $ref: '#/components/schemas/SubMetric'
+            type: array
+          description: The value to be used within the operations.
+      required:
+      - op
+      - path
+      type: object
+    HoldoutExperiments:
+      description: "A collection of experiment rules associated with a holdout.\n\nEach item represents an experiment that is connected to the holdout through database \nrelationships between holdouts, flags, rulesets, rules, and reports. The list contains \nexperiment timing information and deployed variation details.\n"
+      items:
+        $ref: '#/components/schemas/HoldoutExperiment'
+      type: array
+    UrlValue:
+      description: A single url.
+      type: string
     HoldoutRequestBody:
       description: "Request body schema for creating or updating a holdout. \n\nHoldouts are experiments that reserve a portion of your traffic to measure the impact of your feature flags and experiments. They help establish a control group by excluding a percentage of users from seeing any experiments, allowing you to measure the overall impact of your experimentation program.\n"
       example:
@@ -1409,325 +1940,35 @@ components:
       - key
       - name
       type: object
-    HoldoutMap:
-      additionalProperties:
-        $ref: '#/components/schemas/Holdout'
-      description: 'A dictionary/map of holdouts where each key is the holdout ID and the value is the holdout object.
-
-
-        This structure is used internally for efficient lookups and when representing holdout
-
-        relationships. The keys are string representations of holdout IDs.
-
-        '
-      example:
-        '12345':
-          description: Control group for measuring overall impact of Q4 growth experiments
-          environment_key: production
-          id: 12345
-          key: growth_experiment_holdout
-          name: Q4 Growth Experiment Control
-          project_id: 98765
-          scope: global
-          scope_type: exclude
-          status: running
-          traffic_allocation: 1000
-        '12346':
-          description: Holdout for measuring checkout conversion experiments
-          environment_key: staging
-          id: 12346
-          key: checkout_flow_holdout
-          name: Checkout Flow Holdout Group
-          project_id: 98765
-          scope: local
-          scope_type: exclude
-          status: draft
-          traffic_allocation: 500
-      type: object
-    AudienceConditions:
-      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
-      oneOf:
-      - $ref: '#/components/schemas/AudienceConditionsArray'
-      - $ref: '#/components/schemas/AudienceConditionsString'
-    HoldoutExperiments:
-      description: "A collection of experiment rules associated with a holdout.\n\nEach item represents an experiment that is connected to the holdout through database \nrelationships between holdouts, flags, rulesets, rules, and reports. The list contains \nexperiment timing information and deployed variation details.\n"
-      items:
-        $ref: '#/components/schemas/HoldoutExperiment'
-      type: array
-    HoldoutsPaginatedList:
-      description: 'Paginated response structure for holdout collections with navigation links and metadata.
-
-
-        This response format follows the standard pagination pattern used across the API,
-
-        providing navigation URLs and counts for efficient browsing of large holdout collections.
-
-        '
-      example:
-        count: 2
-        filter_url: /projects/98765/holdouts{?archived}
-        first_url: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
-        items:
-        - archived: false
-          created_time: '2023-12-15T10:00:00.000Z'
-          description: Control group for measuring overall impact of Q4 growth experiments
-          environment_key: production
-          holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-          id: 12345
-          key: growth_experiment_holdout
-          name: Q4 Growth Experiment Control
-          project_id: 98765
-          revision: 2
-          scope: global
-          scope_type: exclude
-          start_time: '2024-01-01T00:00:00.000Z'
-          status: running
-          traffic_allocation: 1000
-          updated_time: '2024-01-01T10:00:00.000Z'
-        - archived: false
-          created_time: '2024-01-20T14:30:00.000Z'
-          description: Holdout for measuring checkout conversion experiments
-          environment_key: production
-          holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-          id: 12346
-          key: checkout_flow_holdout
-          name: Checkout Flow Holdout Group
-          project_id: 98765
-          revision: 1
-          scope: global
-          scope_type: exclude
-          start_time: '2024-02-01T00:00:00.000Z'
-          status: draft
-          traffic_allocation: 500
-          updated_time: '2024-01-20T14:30:00.000Z'
-        last_url: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#13
-        next_url:
-        - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#2
-        - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
-        page: 1
-        reset_url: /projects/98765/holdouts
-        total_count: 25
-        total_pages: 13
-        url: /projects/98765/holdouts
-      properties:
-        count:
-          description: Number of holdouts returned on the current page (length of items array).
-          example: 2
-          minimum: 0
-          type: integer
-        filter_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: 'URL template for applying filters to the holdouts list. Replace the placeholder
-
-            with filter parameters like ''archived=false'' to filter results.
-
-            '
-          example: /projects/98765/holdouts{?archived,status}
-        first_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: 'Link to the first page of holdouts in the result set. Always points to page 1
-
-            with the same query parameters as the current request.
-
-            '
-          example: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
-        items:
-          description: Array of holdout objects for the current page.
-          items:
-            $ref: '#/components/schemas/Holdout'
-          type: array
-        last_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: 'Link to the final page of holdouts in the result set. Points to the highest
-
-            page number that contains results.
-
-            '
-          example: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#13
-        next_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlList'
-          description: "Array of links to subsequent pages in the result set. The first element is the \nimmediate next page, followed by additional pages in sequence. Empty if on the last page.\n"
-          example:
-          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#2
-          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
-        page:
-          description: 'Current page number (1-indexed). The first page is page 1, not page 0.
-
-            This corresponds to the requested page in the pagination sequence.
-
-            '
-          example: 1
-          minimum: 1
-          type: integer
-        prev_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlList'
-          description: "Array of links to previous pages in the result set. The first element is the \nimmediate previous page, followed by earlier pages in reverse sequence. Empty if on the first page.\n"
-          example:
-          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#4
-          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
-        reset_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: 'Link to reset pagination and view the default first page without any applied filters.
-
-            Use this to return to the standard holdouts list view.
-
-            '
-          example: /projects/98765/holdouts
-        total_count:
-          description: 'Total number of holdouts matching the query criteria across all pages.
-
-            This count reflects any filters applied to the request.
-
-            '
-          example: 25
-          minimum: 0
-          type: integer
-        total_pages:
-          description: 'Total number of pages required to display all holdouts matching the criteria.
-
-            Calculated as ceil(total_count / per_page).
-
-            '
-          example: 13
-          minimum: 1
-          type: integer
-        url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: "Link to the current page (self-reference). Use this URL to refresh \nthe current page or bookmark the current view.\n"
-          example: /projects/98765/holdouts?page=1
-      required:
-      - items
-      - count
-      - page
-      - total_count
-      - total_pages
-      - url
-      - first_url
-      - last_url
-      type: object
-    HoldoutExperiment:
-      description: 'Represents a single experiment rule that is connected to a holdout configuration.
-
-
-        Contains experiment identification, timing information from the associated report,
-
-        and the deployed variation ID if one exists for the experiment.
-
-        '
-      example:
-        deployed_variation_id: 9876543210
-        experiment_end_time: '2024-03-15T23:59:59.000Z'
-        experiment_id: 1234567890
-        experiment_start_time: '2024-01-15T10:00:00.000Z'
-      properties:
-        deployed_variation_id:
-          description: 'The unique identifier of the deployed variation for this experiment.
-
-            This is the Variation.id that matches the Rule.deployed_variation_key.
-
-            May be null if no deployed variation is configured.
-
-            '
-          example: 9876543210
-          format: int64
-          type:
-          - integer
-          - 'null'
-        experiment_end_time:
-          description: "The end time of the experiment report. This timestamp indicates when the \nexperiment finished collecting data. May be null for ongoing experiments.\nSourced from Report.end_time.\n"
-          example: '2024-03-15T23:59:59.000Z'
-          format: date-time
-          type:
-          - string
-          - 'null'
-        experiment_id:
-          description: 'The layer experiment ID from the rule associated with this holdout.
-
-            This corresponds to the Rule.layer_experiment_id field in the database.
-
-            '
-          example: 1234567890
-          format: int64
-          type: integer
-        experiment_start_time:
-          description: "The start time of the experiment report. This timestamp indicates when the \nexperiment began collecting data. Sourced from Report.start_time.\n"
-          example: '2024-01-15T10:00:00.000Z'
-          format: date-time
-          type:
-          - string
-          - 'null'
-      required:
-      - experiment_id
-      type: object
-    UrlValue:
-      description: A single url.
+    AudienceConditionsString:
+      description: A valid AudienceConditionsArray represented as a JSON string
+      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
       type: string
-    ProblemDetail:
-      additionalProperties: true
-      description: https://tools.ietf.org/html/rfc7807#section-3.1
-      properties:
-        detail:
-          description: A human-readable explanation specific to this occurrence of the problem.
-          type: string
-        status:
-          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
-          type: integer
-        title:
-          description: A short, human-readable summary of the problem type.
-          type: string
-        type:
-          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
-          type: string
-        uuid:
-          description: Error reference for customer support
-          type: string
-      required:
-      - detail
-      - status
-      - title
-      - type
-      type: object
-    EventPropertyCondition:
-      properties:
-        name:
-          type: string
-        operator:
-          enum:
-          - equal_to
-          - not_equal_to
-          - greater_than
-          - greater_than_or_equal_to
-          - less_than
-          - less_than_or_equal_to
-          - contains
-          - does_not_contain
-          type: string
-        type:
-          enum:
-          - string
-          - number
-          - boolean
-          type: string
-        value:
-          type: string
-      required:
-      - name
-      - type
-      - value
-      - operator
-      type: object
     UrlList:
       description: A list of urls.
       items:
         type: string
       type: array
+    SubMetric:
+      properties:
+        aggregator:
+          type: string
+        event_id:
+          type: integer
+        event_type:
+          type: string
+        field:
+          type:
+          - string
+          - 'null'
+        role:
+          enum:
+          - numerator
+          - denominator
+          type: string
+        scope:
+          type: string
+      type: object
     Error:
       properties:
         code:
@@ -1740,7 +1981,41 @@ components:
           format: uuid
           type: string
       type: object
+  requestBodies:
+    HoldoutRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HoldoutRequestBody'
+      required: true
   parameters:
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
+    holdoutId:
+      description: The holdout identifier
+      example: 54321
+      in: path
+      name: holdout_id
+      required: true
+      schema:
+        type: integer
     page:
       description: Page number for pagination
       in: query
@@ -1756,45 +2031,6 @@ components:
       required: true
       schema:
         type: integer
-    pageWindow:
-      description: Number of previous and next page links to supply for the request (defaults to 1).
-      in: query
-      name: page_window
-      schema:
-        type: integer
-    pageToken:
-      description: Pagination page token. Implements prev, next, last, first
-      in: query
-      name: page_token
-      schema:
-        type: string
-    holdoutId:
-      description: The holdout identifier
-      example: 54321
-      in: path
-      name: holdout_id
-      required: true
-      schema:
-        type: integer
-    perPage:
-      description: The max number of items to include per page or results.
-      in: query
-      name: per_page
-      schema:
-        format: int64
-        type: integer
-    device_segment:
-      description: Device to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, source, attribute_id, attribute_value].
-      in: query
-      name: device
-      schema:
-        enum:
-        - desktop
-        - ipad
-        - iphone
-        - mobile
-        - tablet
-        type: string
     attribute_id_segment:
       description: 'ID of the attribute to segment results by. Requests containing attribute_id will return the results for all visitors that have attribute_value for the attribute represented by attribute_id. If present, the attribute_value parameter must also be present, and it cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
 
@@ -1815,6 +2051,26 @@ components:
         - internet_explorer
         - opera
         - safari
+        type: string
+    device_segment:
+      description: Device to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, source, attribute_id, attribute_value].
+      in: query
+      name: device
+      schema:
+        enum:
+        - desktop
+        - ipad
+        - iphone
+        - mobile
+        - tablet
+        type: string
+    attribute_value_segment:
+      description: 'UTF-8 encoded value correlating to attribute_id. If present, the attribute_id parameter must also be present. This parameter also requires attribute_id to be set, and cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
+
+        '
+      in: query
+      name: attribute_value
+      schema:
         type: string
     segment_conditions:
       description: '(BETA) A string representation of a JSON Segment Conditions Expression. This parameter can be either URL-escaped stringified JSON or Base64-encoded stringified JSON using URL-safe alphabet (preferred).
@@ -1849,15 +2105,34 @@ components:
         - referral
         - search
         type: string
-    attribute_value_segment:
-      description: 'UTF-8 encoded value correlating to attribute_id. If present, the attribute_id parameter must also be present. This parameter also requires attribute_id to be set, and cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
-
-        '
-      in: query
-      name: attribute_value
-      schema:
-        type: string
   responses:
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
+    ConflictResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Conflicting resource state with requested action
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
     HoldoutsPaginatedListSuccessResponse:
       content:
         application/json:
@@ -1888,48 +2163,14 @@ components:
         the related resource.
 
         '
-    ConflictResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Conflicting resource state with requested action
     NotFoundResponse:
       description: Not found. No content
-    BadRequestResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Another entity already exists with this same key
-            status: 400
-            title: Key example_entity already exists"
-            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Malformed requests and invalid parameter names and types
-    ForbiddenResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Permission denied
-            status: 403
-            title: Forbidden
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Do not have permission to perform the operation
     UnauthorizedResponse:
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Invalid credentials
-  requestBodies:
-    HoldoutRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/HoldoutRequestBody'
-      required: true
   securitySchemes:
     BearerAuth:
       description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token

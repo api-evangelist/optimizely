@@ -285,6 +285,33 @@ paths:
                     message: Unable to locate status for the export example.
 components:
   schemas:
+    SegmentSelect:
+      required:
+      - fields
+      - segments
+      type: object
+      properties:
+        segments:
+          uniqueItems: true
+          type: array
+          description: 'Array of segments to export. Examples: [my_rts_segment, rts:my_rts_segment2, classic:public_segment].'
+          items:
+            type: string
+            description: 'Array of segments to export. Examples: [my_rts_segment, rts:my_rts_segment2, classic:public_segment].'
+        fields:
+          type: array
+          description: Array of fields to export. The array ['*'] captures all fields from select.object, but does not follow any relations.
+          example:
+          - customer.email, product.name, qualifications
+          items:
+            type: string
+            description: Array of fields to export. The array ['*'] captures all fields from select.object, but does not follow any relations.
+            example: '["customer.email, product.name, qualifications"]'
+        maxDelay:
+          type: string
+          description: 'Maximum acceptable delay for segment data freshness in ISO 8601 duration format. Default: PT1H (1 hour). Must be at least an hour.'
+          example: PT1H
+      description: Specifies the segments to export and the fields to be included.
     SegmentExportRequest:
       required:
       - delimiter
@@ -347,74 +374,6 @@ components:
             order: asc
           items:
             $ref: '#/components/schemas/Sort'
-    Sort:
-      type: object
-      description: Sort specification applied to each export file. A single table export may span multiple files.
-      example:
-        field: product.name
-        order: asc
-    SegmentSelect:
-      required:
-      - fields
-      - segments
-      type: object
-      properties:
-        segments:
-          uniqueItems: true
-          type: array
-          description: 'Array of segments to export. Examples: [my_rts_segment, rts:my_rts_segment2, classic:public_segment].'
-          items:
-            type: string
-            description: 'Array of segments to export. Examples: [my_rts_segment, rts:my_rts_segment2, classic:public_segment].'
-        fields:
-          type: array
-          description: Array of fields to export. The array ['*'] captures all fields from select.object, but does not follow any relations.
-          example:
-          - customer.email, product.name, qualifications
-          items:
-            type: string
-            description: Array of fields to export. The array ['*'] captures all fields from select.object, but does not follow any relations.
-            example: '["customer.email, product.name, qualifications"]'
-        maxDelay:
-          type: string
-          description: 'Maximum acceptable delay for segment data freshness in ISO 8601 duration format. Default: PT1H (1 hour). Must be at least an hour.'
-          example: PT1H
-      description: Specifies the segments to export and the fields to be included.
-    ExportDefinition:
-      required:
-      - format
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          example: 3aab9524-5248-45f9-8102-0399872a921e
-        format:
-          type: string
-          example: csv
-          enum:
-          - csv
-          - parquet
-        delimiter:
-          type: string
-          example: comma
-          enum:
-          - tab
-          - comma
-          - pipe
-        select:
-          $ref: '#/components/schemas/Select'
-        exportType:
-          type: string
-          example: data
-        objects:
-          uniqueItems: true
-          type: array
-          example:
-          - string
-          items:
-            type: string
-            example: '["string"]'
     ExportJobStatus:
       required:
       - id
@@ -519,6 +478,47 @@ components:
             description: The objects to be exported in full.
         select:
           $ref: '#/components/schemas/Select'
+    Sort:
+      type: object
+      description: Sort specification applied to each export file. A single table export may span multiple files.
+      example:
+        field: product.name
+        order: asc
+    ExportDefinition:
+      required:
+      - format
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          example: 3aab9524-5248-45f9-8102-0399872a921e
+        format:
+          type: string
+          example: csv
+          enum:
+          - csv
+          - parquet
+        delimiter:
+          type: string
+          example: comma
+          enum:
+          - tab
+          - comma
+          - pipe
+        select:
+          $ref: '#/components/schemas/Select'
+        exportType:
+          type: string
+          example: data
+        objects:
+          uniqueItems: true
+          type: array
+          example:
+          - string
+          items:
+            type: string
+            example: '["string"]'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

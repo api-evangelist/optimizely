@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Permission Service Team Management API
   summary: Permission service for Experimentation
-  description: <a href='https://github.com/optimizely/permission-service' target='_blank'>Github repository</a>
+  description: Github repository
   version: 0.0.1
 servers:
 - url: https://api.optimizely.com/permissions
@@ -178,6 +178,105 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    TeamInfo:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        account_id:
+          type: integer
+          title: Account Id
+        external_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: External Ref
+        created:
+          type: string
+          format: date-time
+          title: Created
+        last_modified:
+          type: string
+          format: date-time
+          title: Last Modified
+        members_count:
+          type: integer
+          title: Members Count
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - account_id
+      - external_ref
+      - created
+      - last_modified
+      - members_count
+      title: TeamInfo
+    TeamUpdateRequest:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        external_ref:
+          anyOf:
+          - type: string
+            maxLength: 4096
+          - type: 'null'
+          title: External Ref
+        members_added:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Members Added
+        members_removed:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Members Removed
+      type: object
+      required:
+      - name
+      title: TeamUpdateRequest
+    AccountRole:
+      type: string
+      enum:
+      - Administrator
+      - Project Creator
+      - User
+      title: AccountRole
+    TeamCreateResponse:
+      properties:
+        message:
+          type: string
+          title: Message
+        team_id:
+          type: string
+          title: Team Id
+      type: object
+      required:
+      - message
+      - team_id
+      title: TeamCreateResponse
     TeamUpdateResponse:
       properties:
         message:
@@ -187,51 +286,6 @@ components:
       required:
       - message
       title: TeamUpdateResponse
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    TeamUser:
-      properties:
-        id:
-          type: string
-          title: Id
-        first_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: First Name
-        last_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Name
-        email:
-          anyOf:
-          - type: string
-            format: email
-          - type: 'null'
-          title: Email
-        org_role:
-          $ref: '#/components/schemas/AccountRole'
-        created:
-          type: string
-          format: date-time
-          title: Created
-      type: object
-      required:
-      - id
-      - first_name
-      - last_name
-      - email
-      - org_role
-      - created
-      title: TeamUser
     TeamInfoResponse:
       properties:
         id:
@@ -281,83 +335,6 @@ components:
       - members_count
       - members
       title: TeamInfoResponse
-    TeamInfo:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        account_id:
-          type: integer
-          title: Account Id
-        external_ref:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: External Ref
-        created:
-          type: string
-          format: date-time
-          title: Created
-        last_modified:
-          type: string
-          format: date-time
-          title: Last Modified
-        members_count:
-          type: integer
-          title: Members Count
-      type: object
-      required:
-      - id
-      - name
-      - description
-      - account_id
-      - external_ref
-      - created
-      - last_modified
-      - members_count
-      title: TeamInfo
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    TeamCreateResponse:
-      properties:
-        message:
-          type: string
-          title: Message
-        team_id:
-          type: string
-          title: Team Id
-      type: object
-      required:
-      - message
-      - team_id
-      title: TeamCreateResponse
     TeamCreateRequest:
       properties:
         name:
@@ -385,49 +362,72 @@ components:
       required:
       - name
       title: TeamCreateRequest
-    TeamUpdateRequest:
+    HTTPValidationError:
       properties:
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        external_ref:
-          anyOf:
-          - type: string
-            maxLength: 4096
-          - type: 'null'
-          title: External Ref
-        members_added:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Members Added
-        members_removed:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Members Removed
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
       type: object
       required:
-      - name
-      title: TeamUpdateRequest
-    AccountRole:
-      type: string
-      enum:
-      - Administrator
-      - Project Creator
-      - User
-      title: AccountRole
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    TeamUser:
+      properties:
+        id:
+          type: string
+          title: Id
+        first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Name
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Name
+        email:
+          anyOf:
+          - type: string
+            format: email
+          - type: 'null'
+          title: Email
+        org_role:
+          $ref: '#/components/schemas/AccountRole'
+        created:
+          type: string
+          format: date-time
+          title: Created
+      type: object
+      required:
+      - id
+      - first_name
+      - last_name
+      - email
+      - org_role
+      - created
+      title: TeamUser
   securitySchemes:
     BearerAuth:
       description: To get an API token, see https://docs.developers.optimizely.com/web/docs/personal-token

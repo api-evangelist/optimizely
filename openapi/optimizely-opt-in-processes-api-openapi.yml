@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Optimizely Campaign REST Opt-in processes API
-  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  description: This documentation lists all available resources and endpoints of the Optimizely Campaign REST API.
   version: '1'
 servers:
 - url: https://api.campaign.episerver.net/rest
@@ -160,60 +160,6 @@ paths:
       - Authorization: []
 components:
   schemas:
-    RestOptinProcessStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestOptinProcess'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    OptinProcessRequestData:
-      required:
-      - name
-      - type
-      type: object
-      properties:
-        confirmationMailingId:
-          type: integer
-          description: ID of the mailing that is used for the opt-in process (only opt-in processes of type "confirmed" or "double")
-          format: int64
-        confirmationUrl:
-          type: string
-          description: URL of the confirmation page to which the recipient is directed to complete the registration process (only opt-in processes of type "double")
-        name:
-          type: string
-          description: Internal name of the opt-in process
-        type:
-          type: string
-          description: Type of the opt-in process
-          enum:
-          - single
-          - confirmed
-          - double
-        description:
-          type: string
-          description: Internal description of the opt-in process
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
     RestOptinProcess:
       type: object
       properties:
@@ -271,6 +217,60 @@ components:
                 type: string
                 format: uri
             description: Restful links
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    OptinProcessRequestData:
+      required:
+      - name
+      - type
+      type: object
+      properties:
+        confirmationMailingId:
+          type: integer
+          description: ID of the mailing that is used for the opt-in process (only opt-in processes of type "confirmed" or "double")
+          format: int64
+        confirmationUrl:
+          type: string
+          description: URL of the confirmation page to which the recipient is directed to complete the registration process (only opt-in processes of type "double")
+        name:
+          type: string
+          description: Internal name of the opt-in process
+        type:
+          type: string
+          description: Type of the opt-in process
+          enum:
+          - single
+          - confirmed
+          - double
+        description:
+          type: string
+          description: Internal description of the opt-in process
+    RestOptinProcessStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestOptinProcess'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
   securitySchemes:
     Authorization:
       type: apiKey

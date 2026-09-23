@@ -53,43 +53,10 @@ paths:
             text/html:
               schema:
                 $ref: '#/components/schemas/Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryModel'
+      summary: Real time inventory V1 post async
+      x-summary-source: derived
 components:
   schemas:
-    Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        realTimeInventoryResults:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.ProductInventoryDto'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Core.Plugins.Inventory.ProductInventoryDto:
-      type: object
-      properties:
-        productId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        qtyOnHand:
-          format: decimal
-          type: number
-        inventoryAvailabilityDtos:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.InventoryAvailabilityDto'
-        inventoryWarehousesDtos:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.InventoryWarehousesDto'
-        additionalResults:
-          type: object
-          additionalProperties:
-            type: string
     Insite.Catalog.Services.Dtos.WarehouseDto:
       type: object
       properties:
@@ -116,15 +83,6 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Core.Plugins.Inventory.InventoryWarehousesDto:
-      type: object
-      properties:
-        unitOfMeasure:
-          type: string
-        warehouseDtos:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.WarehouseDto'
     Insite.Catalog.Services.Dtos.AvailabilityDto:
       type: object
       properties:
@@ -140,6 +98,57 @@ components:
           type: string
         requiresRealTimeInventory:
           type: boolean
+    Insite.Core.Plugins.Inventory.InventoryAvailabilityDto:
+      type: object
+      properties:
+        unitOfMeasure:
+          type: string
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+    Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        realTimeInventoryResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.ProductInventoryDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.Plugins.Inventory.InventoryWarehousesDto:
+      type: object
+      properties:
+        unitOfMeasure:
+          type: string
+        warehouseDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.WarehouseDto'
+    Insite.Core.Plugins.Inventory.ProductInventoryDto:
+      type: object
+      properties:
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        qtyOnHand:
+          format: decimal
+          type: number
+        inventoryAvailabilityDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.InventoryAvailabilityDto'
+        inventoryWarehousesDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.InventoryWarehousesDto'
+        additionalResults:
+          type: object
+          additionalProperties:
+            type: string
     Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryParameter:
       type: object
       properties:
@@ -163,13 +172,6 @@ components:
               format: uuid
               type: string
               example: 00000000-0000-0000-0000-000000000000
-    Insite.Core.Plugins.Inventory.InventoryAvailabilityDto:
-      type: object
-      properties:
-        unitOfMeasure:
-          type: string
-        availability:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
   securitySchemes:
     access_token:
       type: apiKey

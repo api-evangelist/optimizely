@@ -124,6 +124,15 @@ paths:
       description: Optimizely Flags API v1 Server
 components:
   parameters:
+    page:
+      name: page
+      in: query
+      required: false
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
     audienceId:
       name: audience_id
       in: path
@@ -140,15 +149,6 @@ components:
       schema:
         type: integer
         format: int64
-    page:
-      name: page
-      in: query
-      required: false
-      description: Page number for pagination
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
     perPage:
       name: per_page
       in: query
@@ -179,6 +179,23 @@ components:
         maximum: 100
         type: integer
   schemas:
+    AudienceInput:
+      type: object
+      description: Input for creating or updating an audience
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this audience belongs to
+        name:
+          type: string
+          description: Human-readable name of the audience
+        description:
+          type: string
+          description: Description of the audience
+        conditions:
+          type: string
+          description: JSON-encoded audience conditions
     Audience:
       type: object
       description: An audience segment for targeting
@@ -208,7 +225,7 @@ components:
           type: string
           format: date-time
           description: Timestamp when the audience was last modified
-    AudienceInput:
+    AudienceInput_2:
       type: object
       description: Input for creating or updating an audience
       properties:
@@ -221,7 +238,7 @@ components:
           description: Human-readable name of the audience
         description:
           type: string
-          description: Description of the audience
+          description: Description of the audience criteria
         conditions:
           type: string
           description: JSON-encoded audience conditions
@@ -257,23 +274,6 @@ components:
           type: string
           format: date-time
           description: Timestamp when the audience was last modified
-    AudienceInput_2:
-      type: object
-      description: Input for creating or updating an audience
-      properties:
-        project_id:
-          type: integer
-          format: int64
-          description: The project this audience belongs to
-        name:
-          type: string
-          description: Human-readable name of the audience
-        description:
-          type: string
-          description: Description of the audience criteria
-        conditions:
-          type: string
-          description: JSON-encoded audience conditions
     Error:
       properties:
         code:
@@ -285,6 +285,29 @@ components:
         uuid:
           format: uuid
           type: string
+      type: object
+    AudienceUpdate:
+      properties:
+        archived:
+          description: True if the Audience has been archived
+          type: boolean
+        conditions:
+          description: A string defining the targeting rules for an Audience
+          type: string
+        description:
+          description: A short description of the Audience
+          type: string
+        for_journey:
+          default: false
+          description: Whether the Audience has been part of journey or not
+          type: boolean
+        name:
+          description: The name of the Audience
+          example: Spanish speaking San Franciscans
+          type: string
+        segmentation:
+          description: True if the Audience is available for segmentation on the results page (Enterprise plans only)
+          type: boolean
       type: object
     Audience_3:
       properties:
@@ -350,29 +373,6 @@ components:
           type: boolean
       required:
       - project_id
-      type: object
-    AudienceUpdate:
-      properties:
-        archived:
-          description: True if the Audience has been archived
-          type: boolean
-        conditions:
-          description: A string defining the targeting rules for an Audience
-          type: string
-        description:
-          description: A short description of the Audience
-          type: string
-        for_journey:
-          default: false
-          description: Whether the Audience has been part of journey or not
-          type: boolean
-        name:
-          description: The name of the Audience
-          example: Spanish speaking San Franciscans
-          type: string
-        segmentation:
-          description: True if the Audience is available for segmentation on the results page (Enterprise plans only)
-          type: boolean
       type: object
   securitySchemes:
     bearerAuth:

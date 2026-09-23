@@ -236,53 +236,6 @@ paths:
     servers:
     - url: https://api.optimizely.com/v2
 components:
-  parameters:
-    projectIdQuery:
-      name: project_id
-      in: query
-      required: true
-      description: The unique identifier for the project to filter by
-      schema:
-        type: integer
-        format: int64
-    page:
-      name: page
-      in: query
-      required: false
-      description: Page number for pagination
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-    perPage:
-      name: per_page
-      in: query
-      required: false
-      description: Number of results per page
-      schema:
-        type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
-    page_2:
-      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
-
-        '
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        type: integer
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
-        type: integer
   schemas:
     Extension:
       type: object
@@ -322,13 +275,35 @@ components:
             css:
               type: string
               description: CSS styles of the extension
-    Choices:
+    Implementation:
       properties:
-        label:
-          description: label of the choice
+        apply_js:
+          default: ''
+          description: The Apply JS code is used to inject the extension onto the page
+          externalDocs:
+            description: Apply JS
+            url: https://developers.optimizely.com/x/extensions/#apply-js
           type: string
-        value:
-          description: value of the choice
+        css:
+          default: ''
+          description: Some extensions may not need any CSS because they inherit styles from the page itself. However, you can add additional styling here. This will be injected on the page through a <style> tag
+          externalDocs:
+            description: CSS
+            url: https://developers.optimizely.com/x/extensions/#css
+          type: string
+        html:
+          default: ''
+          description: The html implementation of the field
+          externalDocs:
+            description: HTML
+            url: https://developers.optimizely.com/x/extensions/#html
+          type: string
+        reset_js:
+          default: ''
+          description: Reset JS is used to "clean up" after a extension. It's used in the editor, when changing field values or removing an existing extension. Reset JS should remove the element and any other side-effects
+          externalDocs:
+            description: Reset JS
+            url: https://developers.optimizely.com/x/extensions/#reset-js
           type: string
       type: object
     Error:
@@ -343,36 +318,13 @@ components:
           format: uuid
           type: string
       type: object
-    ExtensionUpdate:
+    Options:
       properties:
-        archived:
-          description: Whether the extension is archived
-          type: boolean
-        description:
-          description: The description for the extension
-          type: string
-        edit_url:
-          description: The URL to load when editing the extension
-          type: string
-        enabled:
-          description: Whether the extension is enabled
-          type: boolean
-        fields:
-          description: Array of editable fields in the extension
-          example:
-          - api_name: text
-            default_value: My Butterbar
-            field_type: text
-            label: A text field
+        choices:
+          description: The choices for a field
           items:
-            $ref: '#/components/schemas/Field'
+            $ref: '#/components/schemas/Choices'
           type: array
-        implementation:
-          $ref: '#/components/schemas/Implementation'
-        name:
-          description: Name of the extension
-          example: My Extension
-          type: string
       type: object
     Extension_2:
       properties:
@@ -439,14 +391,6 @@ components:
       - edit_url
       - implementation
       type: object
-    Options:
-      properties:
-        choices:
-          description: The choices for a field
-          items:
-            $ref: '#/components/schemas/Choices'
-          type: array
-      type: object
     Field:
       externalDocs:
         description: Fields
@@ -487,37 +431,93 @@ components:
       - default_value
       - field_type
       type: object
-    Implementation:
+    ExtensionUpdate:
       properties:
-        apply_js:
-          default: ''
-          description: The Apply JS code is used to inject the extension onto the page
-          externalDocs:
-            description: Apply JS
-            url: https://developers.optimizely.com/x/extensions/#apply-js
+        archived:
+          description: Whether the extension is archived
+          type: boolean
+        description:
+          description: The description for the extension
           type: string
-        css:
-          default: ''
-          description: Some extensions may not need any CSS because they inherit styles from the page itself. However, you can add additional styling here. This will be injected on the page through a <style> tag
-          externalDocs:
-            description: CSS
-            url: https://developers.optimizely.com/x/extensions/#css
+        edit_url:
+          description: The URL to load when editing the extension
           type: string
-        html:
-          default: ''
-          description: The html implementation of the field
-          externalDocs:
-            description: HTML
-            url: https://developers.optimizely.com/x/extensions/#html
-          type: string
-        reset_js:
-          default: ''
-          description: Reset JS is used to "clean up" after a extension. It's used in the editor, when changing field values or removing an existing extension. Reset JS should remove the element and any other side-effects
-          externalDocs:
-            description: Reset JS
-            url: https://developers.optimizely.com/x/extensions/#reset-js
+        enabled:
+          description: Whether the extension is enabled
+          type: boolean
+        fields:
+          description: Array of editable fields in the extension
+          example:
+          - api_name: text
+            default_value: My Butterbar
+            field_type: text
+            label: A text field
+          items:
+            $ref: '#/components/schemas/Field'
+          type: array
+        implementation:
+          $ref: '#/components/schemas/Implementation'
+        name:
+          description: Name of the extension
+          example: My Extension
           type: string
       type: object
+    Choices:
+      properties:
+        label:
+          description: label of the choice
+          type: string
+        value:
+          description: value of the choice
+          type: string
+      type: object
+  parameters:
+    page:
+      name: page
+      in: query
+      required: false
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    projectIdQuery:
+      name: project_id
+      in: query
+      required: true
+      description: The unique identifier for the project to filter by
+      schema:
+        type: integer
+        format: int64
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
   securitySchemes:
     bearerAuth:
       type: http

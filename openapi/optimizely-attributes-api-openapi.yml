@@ -244,53 +244,6 @@ paths:
     servers:
     - url: https://api.optimizely.com/v2
 components:
-  parameters:
-    projectIdQuery:
-      name: project_id
-      in: query
-      required: true
-      description: The unique identifier for the project to filter by
-      schema:
-        type: integer
-        format: int64
-    perPage:
-      name: per_page
-      in: query
-      required: false
-      description: Number of results per page
-      schema:
-        type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
-    page:
-      name: page
-      in: query
-      required: false
-      description: Page number for pagination
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-    page_2:
-      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
-
-        '
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        type: integer
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
-        type: integer
   schemas:
     Attribute:
       type: object
@@ -342,6 +295,26 @@ components:
           type: string
           format: date-time
           description: Timestamp when the attribute was last modified
+    AttributeUpdate:
+      properties:
+        archived:
+          default: false
+          description: Whether or not the Attribute has been archived
+          type: boolean
+        description:
+          description: A short description of the Attribute
+          type: string
+        key:
+          description: Unique string identifier for this Attribute within the project
+          example: subscriber_status
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\- .]+$
+          type: string
+        name:
+          description: The name of the Attribute
+          example: Subscriber Status
+          type: string
+      type: object
     Error:
       properties:
         code:
@@ -400,26 +373,53 @@ components:
       - key
       - project_id
       type: object
-    AttributeUpdate:
-      properties:
-        archived:
-          default: false
-          description: Whether or not the Attribute has been archived
-          type: boolean
-        description:
-          description: A short description of the Attribute
-          type: string
-        key:
-          description: Unique string identifier for this Attribute within the project
-          example: subscriber_status
-          maxLength: 64
-          pattern: ^[a-zA-Z0-9_\- .]+$
-          type: string
-        name:
-          description: The name of the Attribute
-          example: Subscriber Status
-          type: string
-      type: object
+  parameters:
+    page:
+      name: page
+      in: query
+      required: false
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    projectIdQuery:
+      name: project_id
+      in: query
+      required: true
+      description: The unique identifier for the project to filter by
+      schema:
+        type: integer
+        format: int64
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
   securitySchemes:
     bearerAuth:
       type: http

@@ -1,15 +1,14 @@
 openapi: 3.2.0
 info:
-  title: Optimizely 🏆 Pinned Results API
+  title: Optimizely Graph 🏆 Pinned Results API
+  version: 3.24.0
+  description: Optimizely Graph API definition
+  license:
+    name: ' '
   contact:
     name: Documentation
     url: https://cg.optimizely.com/
-  license:
-    name: ' '
-  version: '1.0'
-  description: 'Operations tagged 🏆 Pinned Results across 2 of this provider''s published API definitions: optimizely-platform-optimizely-optimizely-graph-api-openapi.json, optimizely-platform-optimizely-swagger-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://cg.optimizely.com
 - url: https://prod.cg.optimizely.com
 tags:
 - name: 🏆 Pinned Results
@@ -50,7 +49,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PinnedCollectionResult'
-      description: Register a pinned collection
       summary: Register a pinned collection
       tags:
       - 🏆 Pinned Results
@@ -65,8 +63,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PinnedCollectionPayload'
-    servers:
-    - url: https://cg.optimizely.com
   /api/pinned/collections/{collectionId}:
     get:
       operationId: get-PinnedCollectionHandler
@@ -140,8 +136,6 @@ paths:
         required: true
         schema:
           type: string
-    servers:
-    - url: https://cg.optimizely.com
   /api/pinned/collections/{collectionId}/items:
     get:
       operationId: list-PinnedItemHandler
@@ -230,7 +224,6 @@ paths:
       responses:
         '204':
           description: No content
-      description: Clear pinned items in collection
       summary: Clear pinned items in collection
       tags:
       - 🏆 Pinned Results
@@ -245,8 +238,6 @@ paths:
         required: true
         schema:
           type: string
-    servers:
-    - url: https://cg.optimizely.com
   /api/pinned/collections/{collectionId}/items/{id}:
     get:
       operationId: get-PinnedItemHandler
@@ -344,8 +335,6 @@ paths:
         required: true
         schema:
           type: string
-    servers:
-    - url: https://cg.optimizely.com
   /api/pinned/results:
     post:
       operationId: match-PinnedItemHandler
@@ -373,115 +362,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PinnedResultMatchParams'
-    servers:
-    - url: https://cg.optimizely.com
 components:
   schemas:
-    PinnedResultMatchParams:
-      properties:
-        phrase:
-          type: string
-        collectionIds:
-          items:
-            type: string
-          type: array
-        collectionKeys:
-          items:
-            type: string
-          type: array
-        languages:
-          items:
-            type:
-            - string
-            - 'null'
-          type:
-          - array
-          - 'null'
-        onlyActive:
-          type: boolean
-        limit:
-          type: number
-          format: double
-      required:
-      - phrase
-      type: object
-      additionalProperties: false
-    PinnedCollectionResult:
-      properties:
-        title:
-          type: string
-        key:
-          type: string
-        isActive:
-          type: boolean
-          default: false
-        id:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-      required:
-      - title
-      - key
-      - id
-      - createdAt
-      - updatedAt
-      type: object
-      additionalProperties: false
-    PinnedItemPayload:
-      properties:
-        phrases:
-          type: string
-          description: Phrase or keyword to match
-        targetKey:
-          type: string
-          description: Document id to pin
-        language:
-          type:
-          - string
-          - 'null'
-          description: 'Language code (e.g. `en`, `fr`, `de`, etc.)
-
-
-            - `null` value means the pinned item is applicable to all languages
-
-
-            - Empty string (`""`) value is for NEUTRAL locale'
-          default: null
-        priority:
-          type: number
-          format: double
-          description: 'Priority of the pinned item (lower number means lower priority)
-
-
-            - Default value is `1000`
-
-
-            - Example: `1`, `10`, `100`, etc.'
-          default: 1000
-        isActive:
-          type: boolean
-          default: true
-      required:
-      - phrases
-      - targetKey
-      type: object
-      additionalProperties: false
-    PinnedCollectionPayload:
-      properties:
-        title:
-          type: string
-        key:
-          type: string
-        isActive:
-          type: boolean
-          default: false
-      required:
-      - title
-      - key
-      type: object
-      additionalProperties: false
     PinnedItemResult:
       properties:
         phrases:
@@ -533,6 +415,29 @@ components:
       - updatedAt
       type: object
       additionalProperties: false
+    PinnedCollectionResult:
+      properties:
+        title:
+          type: string
+        key:
+          type: string
+        isActive:
+          type: boolean
+          default: false
+        id:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+      - title
+      - key
+      - id
+      - createdAt
+      - updatedAt
+      type: object
+      additionalProperties: false
     Partial_PinnedCollectionPayload_:
       properties:
         title:
@@ -544,6 +449,88 @@ components:
           default: false
       type: object
       description: Make all properties in T optional
+    PinnedCollectionPayload:
+      properties:
+        title:
+          type: string
+        key:
+          type: string
+        isActive:
+          type: boolean
+          default: false
+      required:
+      - title
+      - key
+      type: object
+      additionalProperties: false
+    PinnedItemPayload:
+      properties:
+        phrases:
+          type: string
+          description: Phrase or keyword to match
+        targetKey:
+          type: string
+          description: Document id to pin
+        language:
+          type:
+          - string
+          - 'null'
+          description: 'Language code (e.g. `en`, `fr`, `de`, etc.)
+
+
+            - `null` value means the pinned item is applicable to all languages
+
+
+            - Empty string (`""`) value is for NEUTRAL locale'
+          default: null
+        priority:
+          type: number
+          format: double
+          description: 'Priority of the pinned item (lower number means lower priority)
+
+
+            - Default value is `1000`
+
+
+            - Example: `1`, `10`, `100`, etc.'
+          default: 1000
+        isActive:
+          type: boolean
+          default: true
+      required:
+      - phrases
+      - targetKey
+      type: object
+      additionalProperties: false
+    PinnedResultMatchParams:
+      properties:
+        phrase:
+          type: string
+        collectionIds:
+          items:
+            type: string
+          type: array
+        collectionKeys:
+          items:
+            type: string
+          type: array
+        languages:
+          items:
+            type:
+            - string
+            - 'null'
+          type:
+          - array
+          - 'null'
+        onlyActive:
+          type: boolean
+        limit:
+          type: number
+          format: double
+      required:
+      - phrase
+      type: object
+      additionalProperties: false
   securitySchemes:
     epi-single:
       type: apiKey
@@ -564,6 +551,3 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT token
-x-refined-from:
-- optimizely-platform-optimizely-optimizely-graph-api-openapi.json
-- optimizely-platform-optimizely-swagger-openapi.json

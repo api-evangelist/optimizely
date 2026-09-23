@@ -22,9 +22,7 @@ paths:
       description: 'Get a list of exclusion groups within a project
 
 
-        You can use query parameters to filter/sort the response.
-
-        '
+        You can use query parameters to filter/sort the response.'
       operationId: list_groups
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -128,9 +126,7 @@ paths:
 
         Properties that are readOnly that are present in the request body will be ignored as well as
 
-        unknown properties.
-
-        '
+        unknown properties.'
       operationId: update_groups
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -213,9 +209,7 @@ paths:
 
         Note that key for each object in "rules" (if provided), must be a stringified
 
-        rule ID.
-
-        '
+        rule ID.'
       operationId: create_group
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -240,9 +234,7 @@ paths:
       description: 'Archive one or more exclusion groups in a project.
 
 
-        This operation corresponds to the `archive_url` in a Groups response.
-
-        '
+        This operation corresponds to the `archive_url` in a Groups response.'
       operationId: archive_groups
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -317,9 +309,7 @@ paths:
       description: 'Unarchive one or more exclusion groups in a project.
 
 
-        This operation corresponds to the `unarchive_url` in a Groups response.
-
-        '
+        This operation corresponds to the `unarchive_url` in a Groups response.'
       operationId: unarchive_groups
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -398,9 +388,7 @@ paths:
 
         stop seeing a Group without deleting it permanently, archive
 
-        instead.
-
-        '
+        instead.'
       operationId: delete_group
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -423,9 +411,7 @@ paths:
       description: 'Fetch a single exclusion group by its id.
 
 
-        This operation corresponds to the `fetch_group_url` in a Groups response.
-
-        '
+        This operation corresponds to the `fetch_group_url` in a Groups response.'
       operationId: fetch_group
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -697,91 +683,35 @@ paths:
     - url: https://api.optimizely.com/v2
 components:
   schemas:
-    AudienceConditionsString:
-      description: A valid AudienceConditionsArray represented as a JSON string
-      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
-      type: string
-    PatchRequestBody:
-      description: A JSONPatch document as defined by RFC 6902
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
       properties:
-        from:
-          description: A JSON Pointer to the resource attribute
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
           type: string
-        op:
-          description: The operation to be performed
-          enum:
-          - add
-          - remove
-          - replace
-          - move
-          - copy
-          - test
-          type: string
-        path:
-          description: A JSON-Pointer to the resource or the resource attribute
-          type: string
-        value:
-          anyOf:
-          - type: object
-          - items:
-              type: string
-            type: array
-          - $ref: '#/components/schemas/AudienceConditions'
-          - type: string
-          - type: integer
-          - type: boolean
-          - items:
-              $ref: '#/components/schemas/SubMetric'
-            type: array
-          description: The value to be used within the operations.
-      required:
-      - op
-      - path
-      type: object
-    AudienceConditionsArray:
-      example:
-      - or
-      - audience_id: 123
-      - - and
-        - audience_id: 456
-        - audience_id: 789
-      items:
-        anyOf:
-        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
-          type: string
-        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
-          properties:
-            audience_id:
-              type: integer
-          required:
-          - audience_id
-          type: object
-        - $ref: '#/components/schemas/AudienceConditionsArray'
-          description: A nested AudienceConditionsArray
-          example:
-          - - and
-            - audience_id: 456
-            - audience_id: 789
-      type: array
-    SubMetric:
-      properties:
-        aggregator:
-          type: string
-        event_id:
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
           type: integer
-        event_type:
+        title:
+          description: A short, human-readable summary of the problem type.
           type: string
-        field:
-          type:
-          - string
-          - 'null'
-        role:
-          enum:
-          - numerator
-          - denominator
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
           type: string
-        scope:
+        uuid:
+          description: Error reference for customer support
           type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
+      type: object
+    GroupMap:
+      additionalProperties:
+        $ref: '#/components/schemas/Group'
+      description: Map of groups that include group id as key and group payload as value.
       type: object
     GroupRule:
       example:
@@ -834,6 +764,11 @@ components:
       required:
       - traffic_allocation
       type: object
+    AudienceConditions:
+      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
+      oneOf:
+      - $ref: '#/components/schemas/AudienceConditionsArray'
+      - $ref: '#/components/schemas/AudienceConditionsString'
     GroupRuleMap:
       additionalProperties:
         $ref: '#/components/schemas/GroupRule'
@@ -847,6 +782,156 @@ components:
             type: string
           type: array
       type: object
+    AudienceConditionsArray:
+      example:
+      - or
+      - audience_id: 123
+      - - and
+        - audience_id: 456
+        - audience_id: 789
+      items:
+        anyOf:
+        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+          type: string
+        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
+          properties:
+            audience_id:
+              type: integer
+          required:
+          - audience_id
+          type: object
+        - $ref: '#/components/schemas/AudienceConditionsArray'
+          description: A nested AudienceConditionsArray
+          example:
+          - - and
+            - audience_id: 456
+            - audience_id: 789
+      type: array
+    Groups:
+      properties:
+        count:
+          description: Number of Groups on the current page.
+          example: 2
+          type: integer
+        create_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+        filter_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Url template like '.../{?filter}'
+        first_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to first page of Groups in a series.
+          example: /projects/123/groups?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
+        items:
+          items:
+            $ref: '#/components/schemas/Group'
+          type: array
+        last_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the last page of Groups in a series.
+          example: /projects/123/groups?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#10
+        next_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: "List of links to next pages of Groups in a series.\n\n The first element in the array is the exact next page after the current record, etc.\n"
+          example:
+          - /projects/123/groups?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#6
+          - /projects/123/groups?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#7
+        page:
+          description: Number of the current page. 1-index based.
+          example: 5
+          type: integer
+        prev_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: 'List of links to previous pages of Groups in a series.
+
+
+            The first element in the array is the exact previous page before the current record, etc.
+
+            '
+          example:
+          - /projects/123/groups?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#4
+          - /projects/123/groups?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
+        reset_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the default pages of Groups
+          example: '...'
+        sort_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Url template like '.../{?sort}'
+        total_count:
+          description: Total number of Groups for this series.
+          example: 20
+          type: integer
+        total_pages:
+          description: Total number of pages for this series.
+          example: 10
+          type: integer
+        url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to self
+      required:
+      - url
+      - first_url
+      - last_url
+      - count
+      - page
+      - total_count
+      - total_pages
+      - items
+      type: object
+    PatchRequestBody:
+      description: A JSONPatch document as defined by RFC 6902
+      properties:
+        from:
+          description: A JSON Pointer to the resource attribute
+          type: string
+        op:
+          description: The operation to be performed
+          enum:
+          - add
+          - remove
+          - replace
+          - move
+          - copy
+          - test
+          type: string
+        path:
+          description: A JSON-Pointer to the resource or the resource attribute
+          type: string
+        value:
+          anyOf:
+          - type: object
+          - items:
+              type: string
+            type: array
+          - $ref: '#/components/schemas/AudienceConditions'
+          - type: string
+          - type: integer
+          - type: boolean
+          - items:
+              $ref: '#/components/schemas/SubMetric'
+            type: array
+          description: The value to be used within the operations.
+      required:
+      - op
+      - path
+      type: object
+    UrlValue:
+      description: A single url.
+      type: string
+    AudienceConditionsString:
+      description: A valid AudienceConditionsArray represented as a JSON string
+      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
+      type: string
     Group:
       example:
         archive_url: /projects/12345/groups/archived
@@ -956,130 +1041,31 @@ components:
       - created_time
       - updated_time
       type: object
-    Groups:
-      properties:
-        count:
-          description: Number of Groups on the current page.
-          example: 2
-          type: integer
-        create_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-        filter_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Url template like '.../{?filter}'
-        first_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to first page of Groups in a series.
-          example: /projects/123/groups?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
-        items:
-          items:
-            $ref: '#/components/schemas/Group'
-          type: array
-        last_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to the last page of Groups in a series.
-          example: /projects/123/groups?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#10
-        next_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlList'
-          description: "List of links to next pages of Groups in a series.\n\n The first element in the array is the exact next page after the current record, etc.\n"
-          example:
-          - /projects/123/groups?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#6
-          - /projects/123/groups?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#7
-        page:
-          description: Number of the current page. 1-index based.
-          example: 5
-          type: integer
-        prev_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlList'
-          description: 'List of links to previous pages of Groups in a series.
-
-
-            The first element in the array is the exact previous page before the current record, etc.
-
-            '
-          example:
-          - /projects/123/groups?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#4
-          - /projects/123/groups?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
-        reset_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to the default pages of Groups
-          example: '...'
-        sort_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Url template like '.../{?sort}'
-        total_count:
-          description: Total number of Groups for this series.
-          example: 20
-          type: integer
-        total_pages:
-          description: Total number of pages for this series.
-          example: 10
-          type: integer
-        url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to self
-      required:
-      - url
-      - first_url
-      - last_url
-      - count
-      - page
-      - total_count
-      - total_pages
-      - items
-      type: object
-    AudienceConditions:
-      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
-      oneOf:
-      - $ref: '#/components/schemas/AudienceConditionsArray'
-      - $ref: '#/components/schemas/AudienceConditionsString'
-    GroupMap:
-      additionalProperties:
-        $ref: '#/components/schemas/Group'
-      description: Map of groups that include group id as key and group payload as value.
-      type: object
-    UrlValue:
-      description: A single url.
-      type: string
-    ProblemDetail:
-      additionalProperties: true
-      description: https://tools.ietf.org/html/rfc7807#section-3.1
-      properties:
-        detail:
-          description: A human-readable explanation specific to this occurrence of the problem.
-          type: string
-        status:
-          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
-          type: integer
-        title:
-          description: A short, human-readable summary of the problem type.
-          type: string
-        type:
-          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
-          type: string
-        uuid:
-          description: Error reference for customer support
-          type: string
-      required:
-      - detail
-      - status
-      - title
-      - type
-      type: object
     UrlList:
       description: A list of urls.
       items:
         type: string
       type: array
+    SubMetric:
+      properties:
+        aggregator:
+          type: string
+        event_id:
+          type: integer
+        event_type:
+          type: string
+        field:
+          type:
+          - string
+          - 'null'
+        role:
+          enum:
+          - numerator
+          - denominator
+          type: string
+        scope:
+          type: string
+      type: object
     GroupRequestBody:
       properties:
         description:
@@ -1112,26 +1098,29 @@ components:
           format: uuid
           type: string
       type: object
-    GroupEntity:
+    GroupUpdate:
       properties:
-        id:
-          description: The unique identifier for the Group Entity
-          example: 3000
-          type: integer
-        kind:
-          description: The kind of the Group Entity
-          enum:
-          - Campaign
-          - Experiment
+        archived:
+          default: false
+          description: Whether the Exclusion Group has been archived
+          type: boolean
+        description:
+          description: The updated description of the Exclusion Group
+          example: The Exclusion Group is updated!
           type: string
-        weight:
-          description: The weight of the Group Entity. The weight is a value between 0 and 10000. An entity with weight 5000 will receive 50% of this group's traffic
-          example: 1000
-          type: integer
-      required:
-      - id
-      - kind
-      - weight
+        entities:
+          description: Array of experiments or campaigns in the Exclusion Group, represented as a GroupEntity object
+          example:
+          - id: 1234
+            kind: Experiment
+            weight: 5000
+          items:
+            $ref: '#/components/schemas/GroupEntity'
+          type: array
+        name:
+          description: The updated name of the Exclusion Group
+          example: Updated Exclusion Group
+          type: string
       type: object
     Group_2:
       properties:
@@ -1179,104 +1168,32 @@ components:
       - project_id
       - name
       type: object
-    GroupUpdate:
+    GroupEntity:
       properties:
-        archived:
-          default: false
-          description: Whether the Exclusion Group has been archived
-          type: boolean
-        description:
-          description: The updated description of the Exclusion Group
-          example: The Exclusion Group is updated!
+        id:
+          description: The unique identifier for the Group Entity
+          example: 3000
+          type: integer
+        kind:
+          description: The kind of the Group Entity
+          enum:
+          - Campaign
+          - Experiment
           type: string
-        entities:
-          description: Array of experiments or campaigns in the Exclusion Group, represented as a GroupEntity object
-          example:
-          - id: 1234
-            kind: Experiment
-            weight: 5000
-          items:
-            $ref: '#/components/schemas/GroupEntity'
-          type: array
-        name:
-          description: The updated name of the Exclusion Group
-          example: Updated Exclusion Group
-          type: string
+        weight:
+          description: The weight of the Group Entity. The weight is a value between 0 and 10000. An entity with weight 5000 will receive 50% of this group's traffic
+          example: 1000
+          type: integer
+      required:
+      - id
+      - kind
+      - weight
       type: object
-  responses:
-    GroupSuccessResponse:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Group'
-      description: 'Successful retrieval, creation or update of a Group.
-
-
-        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
-
-        link is not present in the response, it indicates a user is not authorized to access
-
-        the related resource.
-
-        '
-    NoContentResponse:
-      description: No content in the response
-    ConflictResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Conflicting resource state with requested action
-    NotFoundResponse:
-      description: Not found. No content
-    BadRequestResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Another entity already exists with this same key
-            status: 400
-            title: Key example_entity already exists"
-            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Malformed requests and invalid parameter names and types
-    ForbiddenResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Permission denied
-            status: 403
-            title: Forbidden
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Do not have permission to perform the operation
-    UnauthorizedResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Invalid credentials
   parameters:
-    projectId:
-      description: The project identifier
-      example: 12345
-      in: path
-      name: project_id
-      required: true
-      schema:
-        type: integer
     pageWindow:
       description: Number of previous and next page links to supply for the request (defaults to 1).
       in: query
       name: page_window
-      schema:
-        type: integer
-    groupId:
-      description: The group identifier
-      example: 54321
-      in: path
-      name: group_id
-      required: true
       schema:
         type: integer
     pageToken:
@@ -1291,6 +1208,22 @@ components:
       name: per_page
       schema:
         format: int64
+        type: integer
+    groupId:
+      description: The group identifier
+      example: 54321
+      in: path
+      name: group_id
+      required: true
+      schema:
+        type: integer
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
         type: integer
     page:
       description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
@@ -1311,6 +1244,59 @@ components:
         default: 25
         maximum: 100
         type: integer
+  responses:
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
+    NoContentResponse:
+      description: No content in the response
+    ConflictResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Conflicting resource state with requested action
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
+    GroupSuccessResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Group'
+      description: 'Successful retrieval, creation or update of a Group.
+
+
+        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+        link is not present in the response, it indicates a user is not authorized to access
+
+        the related resource.
+
+        '
+    NotFoundResponse:
+      description: Not found. No content
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
   requestBodies:
     GroupRequest:
       content:

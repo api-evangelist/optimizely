@@ -19,7 +19,7 @@ paths:
       tags:
       - Brand Compliance
       summary: GET /tasks/{task_id}/assets/{asset_id}/drafts/{draft_id}/brand-compliance
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get the brand compliance details of a draft of an asset of a task.
+      description: Experimental Get the brand compliance details of a draft of an asset of a task.
       parameters:
       - name: task_id
         in: path
@@ -66,7 +66,7 @@ paths:
       tags:
       - Brand Compliance
       summary: PUT /tasks/{task_id}/assets/{asset_id}/drafts/{draft_id}/brand-compliance
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Update the brand compliance details of a draft of an asset of a task.
+      description: Experimental Update the brand compliance details of a draft of an asset of a task.
       parameters:
       - name: task_id
         in: path
@@ -121,7 +121,7 @@ paths:
       tags:
       - Brand Compliance
       summary: GET /brand-compliance/categories
-      description: <span style="background-color:#e95f6a;padding:5px;border-radius:5px">Experimental</span> Get a list of brand compliance categories.
+      description: Experimental Get a list of brand compliance categories.
       parameters:
       - $ref: '#/components/parameters/offset'
       - $ref: '#/components/parameters/page_size'
@@ -157,6 +157,39 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 components:
+  responses:
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
   schemas:
     Error:
       type: object
@@ -249,6 +282,40 @@ components:
       required:
       - status
       - categories
+    BrandComplianceCategoriesResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the category
+          example: 66cebe190bc97e0151eecdda
+        name:
+          type: string
+          description: Name of the category
+          example: Category-1
+        criteria:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the criteria
+                example: 66cebe190bc97e0151eecddb
+              name:
+                type: string
+                description: Name of the criteria
+                example: Sub-category-1A
+              description:
+                type: string
+                description: Details about the criteria
+                example: Description-1A
+            required:
+            - id
+      required:
+      - id
+      - criteria
     TaskAssetDraftBrandComplianceResponse:
       type: object
       additionalProperties: false
@@ -369,83 +436,7 @@ components:
       required:
       - next
       - previous
-    BrandComplianceCategoriesResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: Unique identifier of the category
-          example: 66cebe190bc97e0151eecdda
-        name:
-          type: string
-          description: Name of the category
-          example: Category-1
-        criteria:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                description: Unique identifier of the criteria
-                example: 66cebe190bc97e0151eecddb
-              name:
-                type: string
-                description: Name of the criteria
-                example: Sub-category-1A
-              description:
-                type: string
-                description: Details about the criteria
-                example: Description-1A
-            required:
-            - id
-      required:
-      - id
-      - criteria
-  responses:
-    NotFound:
-      description: Not found error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Resource not found
-    ClientError:
-      description: Client error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: 'Unsupported arguments: a,b,c'
-    Forbidden:
-      description: Permission error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: You do not have the permission to perform this operation
-    Unauthorized:
-      description: Authorization error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Unauthorized
   parameters:
-    offset:
-      name: offset
-      in: query
-      description: Starting index of results (zero indexed)
-      schema:
-        type: integer
-        minimum: 0
-        default: 0
-      example: 5
     page_size:
       name: page_size
       in: query
@@ -456,6 +447,15 @@ components:
         maximum: 100
         default: 10
       example: 15
+    offset:
+      name: offset
+      in: query
+      description: Starting index of results (zero indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 5
   securitySchemes:
     OAuth2:
       type: oauth2

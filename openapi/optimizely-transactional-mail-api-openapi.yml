@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Optimizely Campaign REST Transactional Mail API
-  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities. Developers can use the API to manage campaigns, recipients, mailing lists, smart campaigns, transactional mails, and messaging workflows. The API is hosted at api.campaign.episerver.net and supports automation of marketing campaign operations, enabling integration with external systems and custom marketing workflows. The base URL includes the client ID for multi-tenant access.
+  description: The Optimizely Campaign REST API provides programmatic access to Optimizely's email and omnichannel campaign management capabilities.
   version: '1.0'
   contact:
     name: Optimizely Support
@@ -44,6 +44,19 @@ paths:
           description: Authentication credentials are missing or invalid
 components:
   schemas:
+    TransactionalMailResponse:
+      type: object
+      description: Response from sending a transactional mail
+      properties:
+        status:
+          type: string
+          description: Status of the send operation
+          enum:
+          - success
+          - failed
+        message_id:
+          type: string
+          description: Unique identifier for the sent message
     TransactionalMailInput:
       type: object
       description: Input for sending a transactional email
@@ -64,19 +77,6 @@ components:
           description: Key-value pairs for personalizing the email content
           additionalProperties:
             type: string
-    TransactionalMailResponse:
-      type: object
-      description: Response from sending a transactional mail
-      properties:
-        status:
-          type: string
-          description: Status of the send operation
-          enum:
-          - success
-          - failed
-        message_id:
-          type: string
-          description: Unique identifier for the sent message
   parameters:
     clientId:
       name: clientId

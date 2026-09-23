@@ -7,13 +7,13 @@ servers:
 - url: https://api.campaign.episerver.net/rest
 - url: https://api.optimizely.com/v2
 tags:
-- name: Scheduled jobs
+- name: Scheduled Jobs
   description: Get information about scheduled jobs
 paths:
   /{clientId}/customerjobs/configured:
     get:
       tags:
-      - Scheduled jobs
+      - Scheduled Jobs
       summary: Get information about all configured scheduled jobs
       description: Get detailed information about all configured scheduled jobs, such as name, description, triggers.
       operationId: selectAllConfiguredJobs
@@ -52,7 +52,7 @@ paths:
   /{clientId}/customerjobs/running:
     get:
       tags:
-      - Scheduled jobs
+      - Scheduled Jobs
       summary: Get information about all running scheduled jobs
       description: Get detailed information about all running scheduled jobs, such as name, start time, elapsed running time.
       operationId: selectAllRunningJobs
@@ -109,7 +109,7 @@ paths:
           description: Unexpected error
       summary: Get a list of Scheduled Jobs
       tags:
-      - Scheduled jobs
+      - Scheduled Jobs
       x-release-state: alpha
       security:
       - apiKey: []
@@ -117,7 +117,6 @@ paths:
         - read
         - write
     post:
-      description: Create a Scheduled Job
       operationId: create_scheduled_job
       requestBody:
         content:
@@ -159,7 +158,7 @@ paths:
           description: Unexpected error
       summary: Create a Scheduled Job
       tags:
-      - Scheduled jobs
+      - Scheduled Jobs
       x-release-state: alpha
       security:
       - apiKey: []
@@ -209,7 +208,7 @@ paths:
           description: Unexpected error
       summary: Archive a Scheduled Job
       tags:
-      - Scheduled jobs
+      - Scheduled Jobs
       x-release-state: alpha
       security:
       - apiKey: []
@@ -266,7 +265,7 @@ paths:
           description: Unexpected error
       summary: Get a Scheduled Job
       tags:
-      - Scheduled jobs
+      - Scheduled Jobs
       x-release-state: alpha
       security:
       - apiKey: []
@@ -330,7 +329,7 @@ paths:
           description: Unexpected error
       summary: Update a Scheduled Job
       tags:
-      - Scheduled jobs
+      - Scheduled Jobs
       x-release-state: alpha
       security:
       - apiKey: []
@@ -341,6 +340,54 @@ paths:
     - url: https://api.optimizely.com/v2
 components:
   schemas:
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestConfiguredJob:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the scheduled job
+        description:
+          type: string
+          description: Description of the scheduled job
+        type:
+          type: string
+          description: Type of the scheduled job
+        jobData:
+          type: object
+          additionalProperties:
+            type: string
+        triggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestJobTrigger'
+    RestConfiguredJobStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestConfiguredJob'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     RestRunningJobStreamingCollection:
       type: object
       properties:
@@ -410,33 +457,6 @@ components:
                   dateBased:
                     type: boolean
           description: Elapsed running time of the scheduled job
-    RestConfiguredJob:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the scheduled job
-        description:
-          type: string
-          description: Description of the scheduled job
-        type:
-          type: string
-          description: Type of the scheduled job
-        jobData:
-          type: object
-          additionalProperties:
-            type: string
-        triggers:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestJobTrigger'
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
     RestJobTrigger:
       type: object
       properties:
@@ -462,27 +482,6 @@ components:
           type: string
           description: Finish date and time of the trigger
           format: date-time
-    RestConfiguredJobStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestConfiguredJob'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
     Error:
       properties:
         code:

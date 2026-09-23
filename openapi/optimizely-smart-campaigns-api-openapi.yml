@@ -1084,7 +1084,7 @@ paths:
     post:
       tags:
       - Smart Campaigns
-      summary: Add attachments into a campaign message. Only applicable for campaign message of type email
+      summary: Add attachments into a campaign message.
       description: Add attachments into a campaign message. With this operation you can add a single, or multiple attachments into a campaign message.
       operationId: addAttachments_1
       parameters:
@@ -1138,7 +1138,7 @@ paths:
     delete:
       tags:
       - Smart Campaigns
-      summary: Delete attachments of a campaign message. Only applicable for campaign message of type email
+      summary: Delete attachments of a campaign message.
       operationId: deleteAttachments_1
       parameters:
       - name: clientId
@@ -1239,7 +1239,7 @@ paths:
       tags:
       - Smart Campaigns
       summary: Update the content of a mailing
-      description: 'Update the content of a mailing. You can transmit plain text, html, or multipart content that consists of HTML and plain text. See <a href="https://world.episerver.com/blogs/philipp-gaska/dates/2021/6/updating-mailing-content-via-rest-api" target="_blank">Updating mailing content via REST API</a> on Optimizely World. <b>Note</b>: You can only update the content of mailings created via REST API. This operation is also not suitable for confirmation mailings.'
+      description: 'Update the content of a mailing. You can transmit plain text, html, or multipart content that consists of HTML and plain text. See Updating mailing content via REST API on Optimizely World. Note: You can only update the content of mailings created via REST API. This operation is also not suitable for confirmation mailings.'
       operationId: storeCampaignMessageContent_1
       parameters:
       - name: clientId
@@ -2550,423 +2550,6 @@ components:
           type: string
           format: date-time
           description: Timestamp when the campaign was last modified
-    TargetGroupRequestData:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the target group
-        targetGroup:
-          type: string
-          description: 'Target group definition as JSON, e.g. { "targetGroup": { "id": 123456 }}. Connect definitions by using the operators ''and'', ''or'' or ''not''.'
-        predecessorNodeId:
-          type: string
-          description: Predecessor node
-        successorNodeId:
-          type: string
-          description: Successor node
-    RestSplitSuccessor:
-      type: object
-      properties:
-        nodeId:
-          type: string
-          description: Node ID
-        name:
-          type: string
-          description: Node name
-        targetGroup:
-          $ref: '#/components/schemas/Filter'
-        relative:
-          type: number
-          description: Number of relative recipients in percent
-          format: float
-        absolute:
-          type: integer
-          description: Number of absolute recipients
-          format: int32
-        links:
-          type: array
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-    RestThrottleNode:
-      type: object
-      properties:
-        nodeId:
-          type: string
-          description: Node ID
-        successorNodeId:
-          type: string
-          description: Successor node ID
-        maxMessagesPerHour:
-          type: integer
-          format: int32
-        links:
-          type: array
-          description: Links for further requests
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-            description: Links for further requests
-        gridLocation:
-          $ref: '#/components/schemas/Point'
-    RestTrackingLink:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Tracking link ID
-          format: int64
-        url:
-          type: string
-          description: Tracking link URL
-        htmlTracking:
-          type: string
-          description: Tracking state of a link in the HTML version
-          enum:
-          - DEFAULT
-          - ENABLED
-          - DISABLED
-        textTracking:
-          type: string
-          description: Tracking state of a link in the text version
-          enum:
-          - DEFAULT
-          - ENABLED
-          - DISABLED
-        description:
-          type: string
-          description: Tracking link description
-        htmlOccurrences:
-          type: integer
-          description: Link occurrences in the HTML version
-          format: int32
-        textOccurrences:
-          type: integer
-          description: Link occurrences in the text version
-          format: int32
-        clickProfileIds:
-          type: array
-          description: Click profile IDs
-          items:
-            type: integer
-            description: Click profile IDs
-            format: int64
-        links:
-          type: array
-          description: Restful links
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-            description: Restful links
-    RestRecipientListsNode:
-      type: object
-      properties:
-        nodeId:
-          type: string
-          description: Node ID
-        successorNodeId:
-          type: string
-          description: Successor node ID
-        recipientListIds:
-          type: array
-          description: List of recipient list IDs
-          items:
-            type: integer
-            description: List of recipient list IDs
-            format: int64
-        links:
-          type: array
-          description: Links for further requests
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-            description: Links for further requests
-        gridLocation:
-          $ref: '#/components/schemas/Point'
-    RestRecipients:
-      type: object
-      properties:
-        net:
-          type: integer
-          format: int32
-        total:
-          type: integer
-          format: int32
-        skipped:
-          type: integer
-          format: int32
-        inQueue:
-          type: integer
-          format: int32
-      description: Number of total, skipped and in-queue recipients
-    TrackingLinkConfigurationRequestData:
-      type: object
-      properties:
-        htmlTracking:
-          type: string
-          description: Tracking state of a link in the HTML version
-          enum:
-          - DEFAULT
-          - ENABLED
-          - DISABLED
-        textTracking:
-          type: string
-          description: Tracking state of a link in the text version
-          enum:
-          - DEFAULT
-          - ENABLED
-          - DISABLED
-        clickProfileIds:
-          type: array
-          description: IDs of relevant click profiles. An empty list will remove all entries.
-          items:
-            type: integer
-            description: IDs of relevant click profiles. An empty list will remove all entries.
-            format: int64
-        description:
-          type: string
-          description: Tracking link description
-    RestClicks:
-      type: object
-      properties:
-        total:
-          type: integer
-          format: int32
-        unique:
-          type: integer
-          format: int32
-      description: Number of unique and total clicks
-    SplitSuccessorRequestData:
-      type: object
-      properties:
-        absolute:
-          type: integer
-          description: Number of recipients to be contacted. Cannot be provided simultaneously with relative value.
-          format: int32
-        relative:
-          type: number
-          description: Percentage of recipients to be contacted. Cannot be provided simultaneously with absolute value.
-          format: float
-        name:
-          type: string
-          description: Name of the target group
-        targetGroup:
-          type: string
-          description: 'Target group definition as JSON, e.g. { "targetGroup": { "id": 123456 }}. Connect definitions by using the operators ''and'', ''or'' or ''not''.'
-        predecessorNodeId:
-          type: string
-          description: Predecessor node
-        successorNodeId:
-          type: string
-          description: Successor node
-    Filter:
-      type: object
-      properties:
-        name:
-          type: string
-    RecipientListsRequestData:
-      required:
-      - recipientListIds
-      type: object
-      properties:
-        recipientListIds:
-          type: array
-          description: Comma-separated list of recipient list IDs
-          items:
-            type: integer
-            description: Comma-separated list of recipient list IDs
-            format: int64
-        successorNodeId:
-          type: string
-          description: Successor node
-    RestSmartCampaignStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestSmartCampaign'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    CampaignMailingRestReport:
-      type: object
-      properties:
-        campaignId:
-          type: integer
-          description: Mailing ID
-          format: int64
-        campaignName:
-          type: string
-          description: Mailing name
-        recipients:
-          $ref: '#/components/schemas/RestRecipients'
-        bounces:
-          $ref: '#/components/schemas/RestBounces'
-        unsubscribes:
-          type: integer
-          description: Number of unique unsubscribes
-          format: int32
-        opens:
-          $ref: '#/components/schemas/RestOpens'
-        clicks:
-          $ref: '#/components/schemas/RestClicks'
-        links:
-          type: array
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-    RestAnalysisData:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: Number of recipients that can receive the mailing
-          format: int32
-        analysisDate:
-          type: string
-          description: Start date of the analysis
-          format: date-time
-        state:
-          type: string
-          description: Current state of the analysis
-          enum:
-          - running
-          - finished
-          - failed
-        childMailings:
-          type: object
-          additionalProperties:
-            type: integer
-            description: Number of recipients of the child mailings
-            format: int32
-          description: Number of recipients of the child mailings
-    MultiRequest:
-      type: object
-      properties:
-        content:
-          type: string
-          description: New mailing content to be uploaded
-    ThrottleRequestData:
-      type: object
-      properties:
-        maxMessagesPerHour:
-          type: integer
-          description: Maximum number of messages per hour
-          format: int32
-        predecessorNodeId:
-          type: string
-          description: Predecessor node
-        successorNodeId:
-          type: string
-          description: Successor node
     MessageRequestData:
       type: object
       properties:
@@ -3066,6 +2649,113 @@ components:
         successorNodeId:
           type: string
           description: Successor node
+    RestThrottleNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        maxMessagesPerHour:
+          type: integer
+          format: int32
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    TestMailingReport:
+      type: object
+      properties:
+        recipientStatus:
+          type: object
+          additionalProperties:
+            type: string
+            description: Sending status of the recipients
+            enum:
+            - enqueued
+            - sending
+            - sent
+            - failed
+          description: Sending status of the recipients
+        mailingId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        reportDate:
+          type: string
+          description: Report date
+          format: date-time
+        mediaType:
+          type: string
+          description: Media type
+        status:
+          type: string
+          description: Current status of the mailing
+          enum:
+          - invalid
+          - activationRequired
+          - activated
+          - canceled
+          - paused
+          - running
+          - finished
+        started:
+          type: string
+          description: Start date of the mailing
+          format: date-time
+        finished:
+          type: string
+          description: Finish date of the mailing
+          format: date-time
+    RestPersonalizedSchedule:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: If true, send time optimization is enabled
+        type:
+          type: string
+          description: Period of time that is used for optimizing the sending of messages
+          enum:
+          - DAY
+          - WEEK
+        fallbackAt:
+          type: string
+          description: Fallback time
+          format: date-time
+        optimizationEndsAt:
+          type: string
+          description: End time
+          format: date-time
+        period:
+          $ref: '#/components/schemas/RestDelay'
+      description: Send time optimization settings
     RestOpens:
       type: object
       properties:
@@ -3076,6 +2766,173 @@ components:
           type: integer
           format: int32
       description: Number of unique and total opens
+    RestWaitNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        scheduledAt:
+          type: string
+          description: Scheduled dispatch time
+          format: date-time
+        sto:
+          $ref: '#/components/schemas/RestPersonalizedSchedule'
+        scheduledAfterRecipientImport:
+          type: boolean
+          description: If true, messages are sent after the recipient import
+        scheduledAfterRecipientImportAtTime:
+          type: string
+          description: Time (in format HH:mm) messages are sent after the recipient import
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    RestSmartCampaign:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Campaign ID
+          format: int64
+        name:
+          type: string
+          description: Campaign name
+        mailingGroupId:
+          type: integer
+          description: Client ID
+          format: int64
+        description:
+          type: string
+          description: Mailing description
+        status:
+          type: string
+          description: Current campaign status
+          enum:
+          - invalid
+          - activationRequired
+          - activated
+          - canceled
+          - paused
+          - running
+          - finished
+        type:
+          type: string
+          description: Campaign type
+          enum:
+          - regular
+          - event
+          - confirmation
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        started:
+          type: string
+          description: Start date of the campaign
+          format: date-time
+        finished:
+          type: string
+          description: Finish date of the campaign
+          format: date-time
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+        recipientLists:
+          $ref: '#/components/schemas/RestRecipientListsNode'
+        targetGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestTargetGroupNode'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestMessageNode'
+        message:
+          $ref: '#/components/schemas/RestMessageNode'
+    RecipientListsRequestData:
+      required:
+      - recipientListIds
+      type: object
+      properties:
+        recipientListIds:
+          type: array
+          description: Comma-separated list of recipient list IDs
+          items:
+            type: integer
+            description: Comma-separated list of recipient list IDs
+            format: int64
+        successorNodeId:
+          type: string
+          description: Successor node
+    RestBounces:
+      type: object
+      properties:
+        hard:
+          type: integer
+          format: int32
+        soft:
+          type: integer
+          format: int32
+      description: Number of hard and soft bounces
+    MultiRequest:
+      type: object
+      properties:
+        content:
+          type: string
+          description: New mailing content to be uploaded
     RestMessageNode:
       type: object
       properties:
@@ -3253,193 +3110,6 @@ components:
             format: int64
         gridLocation:
           $ref: '#/components/schemas/Point'
-    RestWaitNode:
-      type: object
-      properties:
-        nodeId:
-          type: string
-          description: Node ID
-        successorNodeId:
-          type: string
-          description: Successor node ID
-        scheduledAt:
-          type: string
-          description: Scheduled dispatch time
-          format: date-time
-        sto:
-          $ref: '#/components/schemas/RestPersonalizedSchedule'
-        scheduledAfterRecipientImport:
-          type: boolean
-          description: If true, messages are sent after the recipient import
-        scheduledAfterRecipientImportAtTime:
-          type: string
-          description: Time (in format HH:mm) messages are sent after the recipient import
-        links:
-          type: array
-          description: Links for further requests
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-            description: Links for further requests
-        gridLocation:
-          $ref: '#/components/schemas/Point'
-    CampaignRequestData:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Campaign name
-        sourceCampaignId:
-          type: integer
-          description: ID of the campaign to be copied (only required for copying)
-          format: int64
-        recipientListIds:
-          type: array
-          description: Comma-separated list of recipient list IDs
-          items:
-            type: integer
-            description: Comma-separated list of recipient list IDs
-            format: int64
-    WaitRequestData:
-      type: object
-      properties:
-        scheduledAt:
-          type: string
-          description: Scheduled time in ISO 8601 format
-          format: date-time
-        sto.enabled:
-          type: boolean
-          description: If true, send time optimization is enabled. The "sto" parameters are only considered if one of the "scheduled" parameters is provided.
-        sto.type:
-          type: string
-          description: Type of send time optimization (can be combined with "scheduledAt" scheduler; DAY will be set by other schedulers)
-          enum:
-          - DAY
-          - WEEK
-        sto.fallbackAt:
-          type: string
-          description: Fallback at time of send time optimization in ISO 8601 format (can be combined with "scheduledAt" scheduler)
-          format: date-time
-        sto.optimizationEndsAt:
-          type: string
-          description: Optimization ends at time of send time optimization in ISO 8601 format (can be combined with "scheduledAt" scheduler)
-          format: date-time
-        scheduledAfterRecipientImport:
-          type: boolean
-          description: If true, the scheduler is triggered after recipient import
-        scheduledAfterRecipientImportAtTime:
-          type: string
-          description: Scheduled after import time in ISO 8601 format
-        sto.period:
-          type: string
-          description: Duration of send time optimization in ISO 8601 format (only days (max. 1), hours, and minute will be accepted (can be combined with "scheduledAfterRecipientImport" and "scheduledAfterRecipientImportAtTime" schedulers)
-          example: PT22H30M (22 hours 30 minutes)
-        predecessorNodeId:
-          type: string
-          description: Predecessor node
-        successorNodeId:
-          type: string
-          description: Successor node
-    RestDelay:
-      type: object
-      properties:
-        days:
-          type: integer
-          format: int32
-        hours:
-          type: integer
-          format: int32
-        minutes:
-          type: integer
-          format: int32
-      description: Delay time
-    BlockRequestData:
-      type: object
-      properties:
-        customBlacklistIds:
-          type: array
-          description: Custom blacklist IDs.
-          items:
-            type: integer
-            description: Custom blacklist IDs.
-            format: int64
-        predecessorNodeId:
-          type: string
-          description: Predecessor node
-        successorNodeId:
-          type: string
-          description: Successor node
-    RestBlockNode:
-      type: object
-      properties:
-        nodeId:
-          type: string
-          description: Node ID
-        successorNodeId:
-          type: string
-          description: Successor node ID
-        customBlacklistIds:
-          type: array
-          items:
-            type: integer
-            format: int64
-        links:
-          type: array
-          description: Links for further requests
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-            description: Links for further requests
-        gridLocation:
-          $ref: '#/components/schemas/Point'
-    RestBounces:
-      type: object
-      properties:
-        hard:
-          type: integer
-          format: int32
-        soft:
-          type: integer
-          format: int32
-      description: Number of hard and soft bounces
     RestCapNode:
       type: object
       properties:
@@ -3485,75 +3155,31 @@ components:
             description: Links for further requests
         gridLocation:
           $ref: '#/components/schemas/Point'
-    TrackingConfigurationRequestData:
+    TestMailingStartedReport:
       type: object
       properties:
-        defaultTextLinkTrackingEnabled:
-          type: boolean
-          description: If true, links are tracked for the text version by default
-        defaultHtmlLinkTrackingEnabled:
-          type: boolean
-          description: If true, links are tracked for the HTML version by default
-        clickTrackingEnabled:
-          type: boolean
-          description: If true, clicks are tracked
-        openTrackingEnabled:
-          type: boolean
-          description: If true, opens are tracked
-        openTrackingOfPartiallyLoadedMessagesEnabled:
-          type: boolean
-          description: If true, opens of partially loaded messages are tracked
-    RestSmartCampaign:
-      type: object
-      properties:
-        id:
+        mailingId:
           type: integer
-          description: Campaign ID
+          description: Mailing ID
           format: int64
-        name:
-          type: string
-          description: Campaign name
-        mailingGroupId:
-          type: integer
-          description: Client ID
-          format: int64
-        description:
-          type: string
-          description: Mailing description
-        status:
-          type: string
-          description: Current campaign status
-          enum:
-          - invalid
-          - activationRequired
-          - activated
-          - canceled
-          - paused
-          - running
-          - finished
-        type:
-          type: string
-          description: Campaign type
-          enum:
-          - regular
-          - event
-          - confirmation
-        created:
-          type: string
-          description: Creation date
-          format: date-time
-        modified:
-          type: string
-          description: Modification date
-          format: date-time
-        started:
-          type: string
-          description: Start date of the campaign
-          format: date-time
-        finished:
-          type: string
-          description: Finish date of the campaign
-          format: date-time
+        validRecipientAddresses:
+          type: array
+          description: Valid recipient addresses
+          items:
+            type: string
+            description: Valid recipient addresses
+        userIdsOfRecipientsWithoutValidAddresses:
+          type: array
+          description: User IDs of recipients without valid addresses
+          items:
+            type: string
+            description: User IDs of recipients without valid addresses
+        blacklistedRecipientAddresses:
+          type: array
+          description: Blacklisted recipient addresses
+          items:
+            type: string
+            description: Blacklisted recipient addresses
         links:
           type: array
           items:
@@ -3578,41 +3204,6 @@ components:
               uri:
                 type: string
                 format: uri
-        recipientLists:
-          $ref: '#/components/schemas/RestRecipientListsNode'
-        targetGroups:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestTargetGroupNode'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestMessageNode'
-        message:
-          $ref: '#/components/schemas/RestMessageNode'
-    RestPersonalizedSchedule:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          description: If true, send time optimization is enabled
-        type:
-          type: string
-          description: Period of time that is used for optimizing the sending of messages
-          enum:
-          - DAY
-          - WEEK
-        fallbackAt:
-          type: string
-          description: Fallback time
-          format: date-time
-        optimizationEndsAt:
-          type: string
-          description: End time
-          format: date-time
-        period:
-          $ref: '#/components/schemas/RestDelay'
-      description: Send time optimization settings
     RestTrackingConfiguration:
       type: object
       properties:
@@ -3657,6 +3248,121 @@ components:
                 type: string
                 format: uri
             description: Restful links
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    ThrottleRequestData:
+      type: object
+      properties:
+        maxMessagesPerHour:
+          type: integer
+          description: Maximum number of messages per hour
+          format: int32
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
+    RestSplitNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        optimization:
+          $ref: '#/components/schemas/RestSplitOptimization'
+        successors:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestSplitSuccessor'
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    TargetGroupRequestData:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the target group
+        targetGroup:
+          type: string
+          description: 'Target group definition as JSON, e.g. { "targetGroup": { "id": 123456 }}. Connect definitions by using the operators ''and'', ''or'' or ''not''.'
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
+    WaitRequestData:
+      type: object
+      properties:
+        scheduledAt:
+          type: string
+          description: Scheduled time in ISO 8601 format
+          format: date-time
+        sto.enabled:
+          type: boolean
+          description: If true, send time optimization is enabled. The "sto" parameters are only considered if one of the "scheduled" parameters is provided.
+        sto.type:
+          type: string
+          description: Type of send time optimization (can be combined with "scheduledAt" scheduler; DAY will be set by other schedulers)
+          enum:
+          - DAY
+          - WEEK
+        sto.fallbackAt:
+          type: string
+          description: Fallback at time of send time optimization in ISO 8601 format (can be combined with "scheduledAt" scheduler)
+          format: date-time
+        sto.optimizationEndsAt:
+          type: string
+          description: Optimization ends at time of send time optimization in ISO 8601 format (can be combined with "scheduledAt" scheduler)
+          format: date-time
+        scheduledAfterRecipientImport:
+          type: boolean
+          description: If true, the scheduler is triggered after recipient import
+        scheduledAfterRecipientImportAtTime:
+          type: string
+          description: Scheduled after import time in ISO 8601 format
+        sto.period:
+          type: string
+          description: Duration of send time optimization in ISO 8601 format (only days (max. 1), hours, and minute will be accepted (can be combined with "scheduledAfterRecipientImport" and "scheduledAfterRecipientImportAtTime" schedulers)
+          example: PT22H30M (22 hours 30 minutes)
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
     SplitRequestData:
       type: object
       properties:
@@ -3711,31 +3417,25 @@ components:
         successorNodeId:
           type: string
           description: Successor node
-    TestMailingStartedReport:
+    RestSplitSuccessor:
       type: object
       properties:
-        mailingId:
+        nodeId:
+          type: string
+          description: Node ID
+        name:
+          type: string
+          description: Node name
+        targetGroup:
+          $ref: '#/components/schemas/Filter'
+        relative:
+          type: number
+          description: Number of relative recipients in percent
+          format: float
+        absolute:
           type: integer
-          description: Mailing ID
-          format: int64
-        validRecipientAddresses:
-          type: array
-          description: Valid recipient addresses
-          items:
-            type: string
-            description: Valid recipient addresses
-        userIdsOfRecipientsWithoutValidAddresses:
-          type: array
-          description: User IDs of recipients without valid addresses
-          items:
-            type: string
-            description: User IDs of recipients without valid addresses
-        blacklistedRecipientAddresses:
-          type: array
-          description: Blacklisted recipient addresses
-          items:
-            type: string
-            description: Blacklisted recipient addresses
+          description: Number of absolute recipients
+          format: int32
         links:
           type: array
           items:
@@ -3760,6 +3460,106 @@ components:
               uri:
                 type: string
                 format: uri
+    CampaignMailingRestReport:
+      type: object
+      properties:
+        campaignId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        campaignName:
+          type: string
+          description: Mailing name
+        recipients:
+          $ref: '#/components/schemas/RestRecipients'
+        bounces:
+          $ref: '#/components/schemas/RestBounces'
+        unsubscribes:
+          type: integer
+          description: Number of unique unsubscribes
+          format: int32
+        opens:
+          $ref: '#/components/schemas/RestOpens'
+        clicks:
+          $ref: '#/components/schemas/RestClicks'
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    RestSmartCampaignStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestSmartCampaign'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestClicks:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+        unique:
+          type: integer
+          format: int32
+      description: Number of unique and total clicks
+    SplitSuccessorRequestData:
+      type: object
+      properties:
+        absolute:
+          type: integer
+          description: Number of recipients to be contacted. Cannot be provided simultaneously with relative value.
+          format: int32
+        relative:
+          type: number
+          description: Percentage of recipients to be contacted. Cannot be provided simultaneously with absolute value.
+          format: float
+        name:
+          type: string
+          description: Name of the target group
+        targetGroup:
+          type: string
+          description: 'Target group definition as JSON, e.g. { "targetGroup": { "id": 123456 }}. Connect definitions by using the operators ''and'', ''or'' or ''not''.'
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
     CapRequestData:
       type: object
       properties:
@@ -3777,18 +3577,60 @@ components:
         successorNodeId:
           type: string
           description: Successor node
-    RestSplitNode:
+    RestSplitOptimization:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: If true, automatic optimization is enabled
+        mode:
+          type: string
+          description: Optimization mode
+          enum:
+          - bestOpenRate
+          - bestUniqueClickRate
+          - bestClickRate
+          - lowestUniqueUnsubscribe
+          - lowestBounceRate
+          - byPostClickValue
+        scheduledAt:
+          type: string
+          description: Scheduled dispatch time
+          format: date-time
+        sto:
+          $ref: '#/components/schemas/RestPersonalizedSchedule'
+        scheduledWithDelay:
+          $ref: '#/components/schemas/RestDelay'
+        scheduledManually:
+          type: boolean
+          description: If true, the optimization is started manually
+    RestDelay:
+      type: object
+      properties:
+        days:
+          type: integer
+          format: int32
+        hours:
+          type: integer
+          format: int32
+        minutes:
+          type: integer
+          format: int32
+      description: Delay time
+    RestBlockNode:
       type: object
       properties:
         nodeId:
           type: string
           description: Node ID
-        optimization:
-          $ref: '#/components/schemas/RestSplitOptimization'
-        successors:
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        customBlacklistIds:
           type: array
           items:
-            $ref: '#/components/schemas/RestSplitSuccessor'
+            type: integer
+            format: int64
         links:
           type: array
           description: Links for further requests
@@ -3817,73 +3659,64 @@ components:
             description: Links for further requests
         gridLocation:
           $ref: '#/components/schemas/Point'
-    RestApiLink:
+    BlockRequestData:
       type: object
       properties:
-        href:
+        customBlacklistIds:
+          type: array
+          description: Custom blacklist IDs.
+          items:
+            type: integer
+            description: Custom blacklist IDs.
+            format: int64
+        predecessorNodeId:
           type: string
-        rel:
+          description: Predecessor node
+        successorNodeId:
           type: string
-    Point:
+          description: Successor node
+    TestMailingRequestData:
+      required:
+      - recipientIds
+      - recipientListId
       type: object
       properties:
-        x:
-          type: integer
-          format: int32
-          xml:
-            attribute: true
-        y:
-          type: integer
-          format: int32
-          xml:
-            attribute: true
-      description: Grid location point
-      xml:
-        name: Point
-    TestMailingReport:
-      type: object
-      properties:
-        recipientStatus:
-          type: object
-          additionalProperties:
+        recipientIds:
+          type: array
+          description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the recipient list, no test mailing will be sent to this recipient.
+          items:
             type: string
-            description: Sending status of the recipients
-            enum:
-            - enqueued
-            - sending
-            - sent
-            - failed
-          description: Sending status of the recipients
-        mailingId:
+            description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the recipient list, no test mailing will be sent to this recipient.
+        mimeType:
+          type: string
+          description: Mime type of the mailing during sending (use empty string to use the mime type of the mailing).
+          example: text/plain, text/html, text/multipart
+        subject:
+          type: string
+          description: Subject of the test mailing (if mailing has a subject).
+        senderAddress:
+          type: string
+          description: Sender address for test mailing (if mailing has a sender address). Must not be empty if specified.
+        recipientListId:
+          type: string
+          description: Recipient list ID of the recipient list to be used for the test mailing.
+    CampaignRequestData:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Campaign name
+        sourceCampaignId:
           type: integer
-          description: Mailing ID
+          description: ID of the campaign to be copied (only required for copying)
           format: int64
-        reportDate:
-          type: string
-          description: Report date
-          format: date-time
-        mediaType:
-          type: string
-          description: Media type
-        status:
-          type: string
-          description: Current status of the mailing
-          enum:
-          - invalid
-          - activationRequired
-          - activated
-          - canceled
-          - paused
-          - running
-          - finished
-        started:
-          type: string
-          description: Start date of the mailing
-          format: date-time
-        finished:
-          type: string
-          description: Finish date of the mailing
-          format: date-time
+        recipientListIds:
+          type: array
+          description: Comma-separated list of recipient list IDs
+          items:
+            type: integer
+            description: Comma-separated list of recipient list IDs
+            format: int64
     RestTargetGroupNode:
       type: object
       properties:
@@ -3926,58 +3759,225 @@ components:
             description: Links for further requests
         gridLocation:
           $ref: '#/components/schemas/Point'
-    RestSplitOptimization:
+    RestRecipients:
       type: object
       properties:
-        enabled:
-          type: boolean
-          description: If true, automatic optimization is enabled
-        mode:
+        net:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+        skipped:
+          type: integer
+          format: int32
+        inQueue:
+          type: integer
+          format: int32
+      description: Number of total, skipped and in-queue recipients
+    Point:
+      type: object
+      properties:
+        x:
+          type: integer
+          format: int32
+          xml:
+            attribute: true
+        y:
+          type: integer
+          format: int32
+          xml:
+            attribute: true
+      description: Grid location point
+      xml:
+        name: Point
+    RestTrackingLink:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Tracking link ID
+          format: int64
+        url:
           type: string
-          description: Optimization mode
+          description: Tracking link URL
+        htmlTracking:
+          type: string
+          description: Tracking state of a link in the HTML version
           enum:
-          - bestOpenRate
-          - bestUniqueClickRate
-          - bestClickRate
-          - lowestUniqueUnsubscribe
-          - lowestBounceRate
-          - byPostClickValue
-        scheduledAt:
+          - DEFAULT
+          - ENABLED
+          - DISABLED
+        textTracking:
           type: string
-          description: Scheduled dispatch time
-          format: date-time
-        sto:
-          $ref: '#/components/schemas/RestPersonalizedSchedule'
-        scheduledWithDelay:
-          $ref: '#/components/schemas/RestDelay'
-        scheduledManually:
-          type: boolean
-          description: If true, the optimization is started manually
-    TestMailingRequestData:
-      required:
-      - recipientIds
-      - recipientListId
+          description: Tracking state of a link in the text version
+          enum:
+          - DEFAULT
+          - ENABLED
+          - DISABLED
+        description:
+          type: string
+          description: Tracking link description
+        htmlOccurrences:
+          type: integer
+          description: Link occurrences in the HTML version
+          format: int32
+        textOccurrences:
+          type: integer
+          description: Link occurrences in the text version
+          format: int32
+        clickProfileIds:
+          type: array
+          description: Click profile IDs
+          items:
+            type: integer
+            description: Click profile IDs
+            format: int64
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+    RestAnalysisData:
       type: object
       properties:
-        recipientIds:
+        count:
+          type: integer
+          description: Number of recipients that can receive the mailing
+          format: int32
+        analysisDate:
+          type: string
+          description: Start date of the analysis
+          format: date-time
+        state:
+          type: string
+          description: Current state of the analysis
+          enum:
+          - running
+          - finished
+          - failed
+        childMailings:
+          type: object
+          additionalProperties:
+            type: integer
+            description: Number of recipients of the child mailings
+            format: int32
+          description: Number of recipients of the child mailings
+    RestRecipientListsNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        recipientListIds:
           type: array
-          description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the recipient list, no test mailing will be sent to this recipient.
+          description: List of recipient list IDs
           items:
-            type: string
-            description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the recipient list, no test mailing will be sent to this recipient.
-        mimeType:
+            type: integer
+            description: List of recipient list IDs
+            format: int64
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    TrackingLinkConfigurationRequestData:
+      type: object
+      properties:
+        htmlTracking:
           type: string
-          description: Mime type of the mailing during sending (use empty string to use the mime type of the mailing).
-          example: text/plain, text/html, text/multipart
-        subject:
+          description: Tracking state of a link in the HTML version
+          enum:
+          - DEFAULT
+          - ENABLED
+          - DISABLED
+        textTracking:
           type: string
-          description: Subject of the test mailing (if mailing has a subject).
-        senderAddress:
+          description: Tracking state of a link in the text version
+          enum:
+          - DEFAULT
+          - ENABLED
+          - DISABLED
+        clickProfileIds:
+          type: array
+          description: IDs of relevant click profiles. An empty list will remove all entries.
+          items:
+            type: integer
+            description: IDs of relevant click profiles. An empty list will remove all entries.
+            format: int64
+        description:
           type: string
-          description: Sender address for test mailing (if mailing has a sender address). Must not be empty if specified.
-        recipientListId:
+          description: Tracking link description
+    Filter:
+      type: object
+      properties:
+        name:
           type: string
-          description: Recipient list ID of the recipient list to be used for the test mailing.
+    TrackingConfigurationRequestData:
+      type: object
+      properties:
+        defaultTextLinkTrackingEnabled:
+          type: boolean
+          description: If true, links are tracked for the text version by default
+        defaultHtmlLinkTrackingEnabled:
+          type: boolean
+          description: If true, links are tracked for the HTML version by default
+        clickTrackingEnabled:
+          type: boolean
+          description: If true, clicks are tracked
+        openTrackingEnabled:
+          type: boolean
+          description: If true, opens are tracked
+        openTrackingOfPartiallyLoadedMessagesEnabled:
+          type: boolean
+          description: If true, opens of partially loaded messages are tracked
   securitySchemes:
     basicAuth:
       type: http

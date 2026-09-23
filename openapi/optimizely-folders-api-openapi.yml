@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Optimizely Campaign REST Folders API
-  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  description: This documentation lists all available resources and endpoints of the Optimizely Campaign REST API.
   version: '1'
 servers:
 - url: https://api.campaign.episerver.net/rest
@@ -279,6 +279,29 @@ paths:
       - Authorization: []
 components:
   schemas:
+    FolderRequestData:
+      required:
+      - folderType
+      - name
+      type: object
+      properties:
+        folderType:
+          type: string
+          description: Folder type
+          enum:
+          - mailing
+          - messageTemplate
+          - customBlacklist
+          - image
+          - recipientList
+          - attachment
+        parentId:
+          type: integer
+          description: ID of the parent folder
+          format: int64
+        name:
+          type: string
+          description: Folder name
     RestFolder:
       type: object
       properties:
@@ -330,15 +353,13 @@ components:
                 type: string
                 format: uri
             description: Restful links
-    UnAssignEntityToFolderRequestData:
-      required:
-      - entityId
+    RestApiLink:
       type: object
       properties:
-        entityId:
-          type: integer
-          description: ID of the entity to be assigned or unassigned
-          format: int64
+        href:
+          type: string
+        rel:
+          type: string
     RestFolderStreamingCollection:
       type: object
       properties:
@@ -360,36 +381,15 @@ components:
         limit:
           type: integer
           format: int32
-    FolderRequestData:
+    UnAssignEntityToFolderRequestData:
       required:
-      - folderType
-      - name
+      - entityId
       type: object
       properties:
-        folderType:
-          type: string
-          description: Folder type
-          enum:
-          - mailing
-          - messageTemplate
-          - customBlacklist
-          - image
-          - recipientList
-          - attachment
-        parentId:
+        entityId:
           type: integer
-          description: ID of the parent folder
+          description: ID of the entity to be assigned or unassigned
           format: int64
-        name:
-          type: string
-          description: Folder name
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
   securitySchemes:
     Authorization:
       type: apiKey

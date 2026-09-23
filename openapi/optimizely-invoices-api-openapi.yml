@@ -113,6 +113,8 @@ paths:
                 $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceCollectionModel'
       security:
       - access_token: []
+      summary: Invoices V1 get collection async
+      x-summary-source: derived
   /api/v1/invoices/{invoiceId}:
     get:
       tags:
@@ -145,6 +147,8 @@ paths:
                 $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceModel'
       security:
       - access_token: []
+      summary: Invoices V1 get async
+      x-summary-source: derived
   /api/v1/invoices/shareinvoice:
     post:
       tags:
@@ -192,15 +196,137 @@ paths:
                 $ref: '#/components/schemas/Insite.Email.WebApi.V1.ApiModels.ShareEntityModel'
       security:
       - access_token: []
+      summary: Invoices V1 post
+      x-summary-source: derived
 components:
   schemas:
-    Insite.Core.WebApi.SortOptionModel:
+    Insite.Core.WebApi.PaginationModel:
       type: object
       properties:
-        displayName:
-          type: string
+        currentPage:
+          format: int32
+          type: integer
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        defaultPageSize:
+          format: int32
+          type: integer
+        totalItemCount:
+          format: int32
+          type: integer
+        numberOfPages:
+          format: int32
+          type: integer
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
         sortType:
           type: string
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
+          type: string
+    Insite.Invoice.WebApi.V1.ApiModels.InvoiceLineModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        productUri:
+          type: string
+        mediumImagePath:
+          type: string
+        altText:
+          type: string
+        productName:
+          type: string
+        manufacturerItem:
+          type: string
+        customerName:
+          type: string
+        shortDescription:
+          type: string
+        productERPNumber:
+          type: string
+        customerProductNumber:
+          type: string
+        lineType:
+          type: string
+        erpOrderNumber:
+          type: string
+        lineNumber:
+          type: string
+        releaseNumber:
+          format: decimal
+          type: number
+        linePOReference:
+          type: string
+        description:
+          type: string
+        warehouse:
+          type: string
+        notes:
+          type: string
+        qtyInvoiced:
+          format: decimal
+          type: number
+        unitOfMeasure:
+          type: string
+        unitPrice:
+          format: decimal
+          type: number
+        discountPercent:
+          format: decimal
+          type: number
+        discountAmount:
+          format: decimal
+          type: number
+        lineTotal:
+          format: decimal
+          type: number
+        shipmentNumber:
+          type: string
+        unitPriceDisplay:
+          type: string
+        discountAmountDisplay:
+          type: string
+        lineTotalDisplay:
+          type: string
+        taxRate:
+          format: decimal
+          type: number
+        taxAmount:
+          format: decimal
+          type: number
+        brand:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BrandDto'
+        netPriceWithVat:
+          format: decimal
+          type: number
+        netPriceWithVatDisplay:
+          type: string
+        unitPriceWithVat:
+          format: decimal
+          type: number
+        unitPriceWithVatDisplay:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
     Insite.Invoice.WebApi.V1.ApiModels.InvoiceCollectionModel:
       type: object
       properties:
@@ -218,6 +344,13 @@ components:
           type: object
           additionalProperties:
             type: string
+    Insite.Core.WebApi.SortOptionModel:
+      type: object
+      properties:
+        displayName:
+          type: string
+        sortType:
+          type: string
     Insite.Invoice.Services.Dtos.InvoiceHistoryTaxDto:
       type: object
       properties:
@@ -257,44 +390,6 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Core.WebApi.PaginationModel:
-      type: object
-      properties:
-        currentPage:
-          format: int32
-          type: integer
-        page:
-          format: int32
-          type: integer
-        pageSize:
-          format: int32
-          type: integer
-        defaultPageSize:
-          format: int32
-          type: integer
-        totalItemCount:
-          format: int32
-          type: integer
-        numberOfPages:
-          format: int32
-          type: integer
-        pageSizeOptions:
-          type: array
-          items:
-            format: int32
-            type: integer
-        sortOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
-        sortType:
-          type: string
-        nextPageUri:
-          type: string
-        prevPageUri:
-          type: string
-        nextPageToken:
-          type: string
     Insite.Invoice.WebApi.V1.ApiModels.InvoiceModel:
       type: object
       properties:
@@ -408,95 +503,6 @@ components:
         shipViaDescription:
           type: string
         customerVatNumber:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Invoice.WebApi.V1.ApiModels.InvoiceLineModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          type: string
-        productUri:
-          type: string
-        mediumImagePath:
-          type: string
-        altText:
-          type: string
-        productName:
-          type: string
-        manufacturerItem:
-          type: string
-        customerName:
-          type: string
-        shortDescription:
-          type: string
-        productERPNumber:
-          type: string
-        customerProductNumber:
-          type: string
-        lineType:
-          type: string
-        erpOrderNumber:
-          type: string
-        lineNumber:
-          type: string
-        releaseNumber:
-          format: decimal
-          type: number
-        linePOReference:
-          type: string
-        description:
-          type: string
-        warehouse:
-          type: string
-        notes:
-          type: string
-        qtyInvoiced:
-          format: decimal
-          type: number
-        unitOfMeasure:
-          type: string
-        unitPrice:
-          format: decimal
-          type: number
-        discountPercent:
-          format: decimal
-          type: number
-        discountAmount:
-          format: decimal
-          type: number
-        lineTotal:
-          format: decimal
-          type: number
-        shipmentNumber:
-          type: string
-        unitPriceDisplay:
-          type: string
-        discountAmountDisplay:
-          type: string
-        lineTotalDisplay:
-          type: string
-        taxRate:
-          format: decimal
-          type: number
-        taxAmount:
-          format: decimal
-          type: number
-        brand:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BrandDto'
-        netPriceWithVat:
-          format: decimal
-          type: number
-        netPriceWithVatDisplay:
-          type: string
-        unitPriceWithVat:
-          format: decimal
-          type: number
-        unitPriceWithVatDisplay:
           type: string
         properties:
           type: object

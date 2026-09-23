@@ -226,7 +226,7 @@ paths:
     get:
       tags:
       - Price Matrices
-      summary: Call operation  Default
+      summary: Call operation Default
       operationId: PriceMatrices_Default
       responses:
         '200':
@@ -242,7 +242,7 @@ paths:
     post:
       tags:
       - Price Matrices
-      summary: Call operation  archive
+      summary: Call operation archive
       operationId: PriceMatrices_Archive
       parameters:
       - name: ids
@@ -291,6 +291,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Price matrices archive route
+      x-summary-source: derived
   /api/v1/admin/pricematrices/delete:
     delete:
       tags:
@@ -316,6 +318,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Price matrices delete route
+      x-summary-source: derived
   /api/v1/admin/pricematrices({key})/customproperties({custompropertyKey}):
     get:
       tags:
@@ -356,7 +360,17 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Price matrices get custom property by key and custompropertykey
+      x-summary-source: derived
 components:
+  requestBodies:
+    Affiliates_ArchiveParameters:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: {}
+      description: archive action parameters
   schemas:
     Insite.Data.Entities.PriceMatrix:
       required:
@@ -634,14 +648,6 @@ components:
           type: string
         modifiedBy:
           type: string
-  requestBodies:
-    Affiliates_ArchiveParameters:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties: {}
-      description: archive action parameters
   securitySchemes:
     access_token:
       type: apiKey

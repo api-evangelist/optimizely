@@ -37,7 +37,6 @@ paths:
       security:
       - bearerAuth: []
     post:
-      description: Create a Feature
       operationId: create_feature
       requestBody:
         content:
@@ -110,7 +109,6 @@ paths:
       security:
       - bearerAuth: []
     delete:
-      description: Archive a Feature
       operationId: delete_feature
       parameters:
       - description: The ID of the Feature you'd like to archive
@@ -219,6 +217,25 @@ paths:
       description: Optimizely Flags API v1 Server
 components:
   schemas:
+    Variable:
+      type: object
+      description: A variable within a feature flag
+      properties:
+        key:
+          type: string
+          description: Unique key for the variable
+        type:
+          type: string
+          description: Data type of the variable
+          enum:
+          - string
+          - integer
+          - double
+          - boolean
+          - json
+        default_value:
+          type: string
+          description: Default value of the variable
     Feature:
       type: object
       description: A feature with configurable variables
@@ -247,26 +264,19 @@ components:
           type: string
           format: date-time
           description: Timestamp when the feature was last modified
-    Variable:
-      type: object
-      description: A variable within a feature flag
+    Error:
       properties:
-        key:
+        code:
           type: string
-          description: Unique key for the variable
-        type:
+        message:
           type: string
-          description: Data type of the variable
-          enum:
-          - string
-          - integer
-          - double
-          - boolean
-          - json
-        default_value:
+        messages:
+          type: object
+        uuid:
+          format: uuid
           type: string
-          description: Default value of the variable
-    FeatureVariableUpdate:
+      type: object
+    FeatureVariable:
       properties:
         archived:
           default: false
@@ -276,12 +286,10 @@ components:
           description: The stringified default value for this Feature Variable. The default value is the value Optimizely SDKs will return when this Feature Variable is accessed by getFeatureVariableValue unless the Feature Variable's value is a part of a feature test variation.
           example: '0.05'
           type: string
-        description:
-          description: A short description of this Feature Variable
-          type: string
         id:
           description: The ID of this Feature Variable
           format: int64
+          readOnly: true
           type: integer
         key:
           description: Unique string identifier for this Feature Variable within the Feature
@@ -294,19 +302,31 @@ components:
           - double
           - integer
           - json
+          example: double
           type: string
+      required:
+      - key
+      - type
+      - default_value
       type: object
-    Error:
+    FeatureEnvironment:
       properties:
-        code:
-          type: string
-        message:
-          type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
-          type: string
+        id:
+          description: The ID of the Environment this set of Rollout Rules applies to
+          format: int64
+          readOnly: true
+          type: integer
+        is_primary:
+          description: Whether the Environment this set of Rollout Rules applies to is the primary Environment
+          readOnly: true
+          type: boolean
+        rollout_rules:
+          description: Rollout Rules allow you to define groups of users and a percentage of those users that will see a Feature by default. You are currently limited to a single rollout rule. Audience IDs sent in any environment must always match that of the primary environment.
+          items:
+            $ref: '#/components/schemas/RolloutRule'
+          type: array
+      required:
+      - rollout_rules
       type: object
     Feature_2:
       properties:
@@ -395,58 +415,6 @@ components:
             example: my_var
             type: string
       type: object
-    FeatureVariable:
-      properties:
-        archived:
-          default: false
-          description: Whether or not this Feature Variable is archived
-          type: boolean
-        default_value:
-          description: The stringified default value for this Feature Variable. The default value is the value Optimizely SDKs will return when this Feature Variable is accessed by getFeatureVariableValue unless the Feature Variable's value is a part of a feature test variation.
-          example: '0.05'
-          type: string
-        id:
-          description: The ID of this Feature Variable
-          format: int64
-          readOnly: true
-          type: integer
-        key:
-          description: Unique string identifier for this Feature Variable within the Feature
-          type: string
-        type:
-          description: The datatype for this Feature Variable
-          enum:
-          - boolean
-          - string
-          - double
-          - integer
-          - json
-          example: double
-          type: string
-      required:
-      - key
-      - type
-      - default_value
-      type: object
-    FeatureEnvironment:
-      properties:
-        id:
-          description: The ID of the Environment this set of Rollout Rules applies to
-          format: int64
-          readOnly: true
-          type: integer
-        is_primary:
-          description: Whether the Environment this set of Rollout Rules applies to is the primary Environment
-          readOnly: true
-          type: boolean
-        rollout_rules:
-          description: Rollout Rules allow you to define groups of users and a percentage of those users that will see a Feature by default. You are currently limited to a single rollout rule. Audience IDs sent in any environment must always match that of the primary environment.
-          items:
-            $ref: '#/components/schemas/RolloutRule'
-          type: array
-      required:
-      - rollout_rules
-      type: object
     FeatureUpdate:
       properties:
         archived:
@@ -480,23 +448,37 @@ components:
             $ref: '#/components/schemas/FeatureVariableUpdate'
           type: array
       type: object
+    FeatureVariableUpdate:
+      properties:
+        archived:
+          default: false
+          description: Whether or not this Feature Variable is archived
+          type: boolean
+        default_value:
+          description: The stringified default value for this Feature Variable. The default value is the value Optimizely SDKs will return when this Feature Variable is accessed by getFeatureVariableValue unless the Feature Variable's value is a part of a feature test variation.
+          example: '0.05'
+          type: string
+        description:
+          description: A short description of this Feature Variable
+          type: string
+        id:
+          description: The ID of this Feature Variable
+          format: int64
+          type: integer
+        key:
+          description: Unique string identifier for this Feature Variable within the Feature
+          type: string
+        type:
+          description: The datatype for this Feature Variable
+          enum:
+          - boolean
+          - string
+          - double
+          - integer
+          - json
+          type: string
+      type: object
   parameters:
-    projectIdQuery:
-      name: project_id
-      in: query
-      required: true
-      description: The unique identifier for the project to filter by
-      schema:
-        type: integer
-        format: int64
-    featureId:
-      name: feature_id
-      in: path
-      required: true
-      description: The unique identifier for the feature
-      schema:
-        type: integer
-        format: int64
     page:
       name: page
       in: query
@@ -506,6 +488,22 @@ components:
         type: integer
         default: 1
         minimum: 1
+    featureId:
+      name: feature_id
+      in: path
+      required: true
+      description: The unique identifier for the feature
+      schema:
+        type: integer
+        format: int64
+    projectIdQuery:
+      name: project_id
+      in: query
+      required: true
+      description: The unique identifier for the project to filter by
+      schema:
+        type: integer
+        format: int64
     perPage:
       name: per_page
       in: query

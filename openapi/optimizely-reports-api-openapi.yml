@@ -22,9 +22,7 @@ paths:
       description: 'Get a list of Reports for a specific Environment of a project
 
 
-        You can use query parameters to filter/sort the response.
-
-        '
+        You can use query parameters to filter/sort the response.'
       operationId: list_reports
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -100,9 +98,7 @@ paths:
       description: 'Archive one or more Reports in an Environment of a Project.
 
 
-        This operation corresponds to the `archive_url` in a Reports response.
-
-        '
+        This operation corresponds to the `archive_url` in a Reports response.'
       operationId: archive_reports
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -177,9 +173,7 @@ paths:
       description: 'Unarchive one or more Reports in an Environment of a Project.
 
 
-        This operation corresponds to the `unarchive_url` in a Reports response.
-
-        '
+        This operation corresponds to the `unarchive_url` in a Reports response.'
       operationId: unarchive_reports
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -258,9 +252,7 @@ paths:
 
         stop seeing a Report without deleting it permanently, try archiving
 
-        instead.
-
-        '
+        instead.'
       operationId: delete_report
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -284,9 +276,7 @@ paths:
       description: 'Fetch a single Report in an Environment of a Project by its key.
 
 
-        This operation corresponds to the `fetch_report_url` in a Report response.
-
-        '
+        This operation corresponds to the `fetch_report_url` in a Report response.'
       operationId: fetch_report
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -312,9 +302,7 @@ paths:
     post:
       description: 'Resetting the results for a Report will clear all the current results and results will be calculated from this point onwards.
 
-        Use caution with this operation as there will be no way to access any previous results.
-
-        '
+        Use caution with this operation as there will be no way to access any previous results.'
       operationId: reset_results
       parameters:
       - $ref: '#/components/parameters/projectId'
@@ -396,60 +384,150 @@ paths:
     servers:
     - url: https://api.optimizely.com/v2
 components:
-  responses:
-    NoContentResponse:
-      description: No content in the response
-    ConflictResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Conflicting resource state with requested action
-    NotFoundResponse:
-      description: Not found. No content
-    ReportSuccessResponse:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Report'
-      description: 'Successful retrieval of a Report.
-
-
-        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
-
-        link is not present in the response, it indicates a user is not authorized to access
-
-        the related resource.
+  parameters:
+    environmentKey:
+      description: The Environment identifier
+      example: production
+      in: path
+      name: environment_key
+      required: true
+      schema:
+        type: string
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
+    reportKey:
+      description: The Report identifier. Get the key from the List Reports endpoint (key is not displayed in the Optimizely app)
+      example: paid_users_45633910
+      in: path
+      name: report_key
+      required: true
+      schema:
+        type: string
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    attribute_id_segment:
+      description: 'ID of the attribute to segment results by. Requests containing attribute_id will return the results for all visitors that have attribute_value for the attribute represented by attribute_id. If present, the attribute_value parameter must also be present, and it cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
 
         '
-    BadRequestResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Another entity already exists with this same key
-            status: 400
-            title: Key example_entity already exists"
-            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Malformed requests and invalid parameter names and types
-    ForbiddenResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Permission denied
-            status: 403
-            title: Forbidden
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Do not have permission to perform the operation
-    UnauthorizedResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Invalid credentials
+      in: query
+      name: attribute_id
+      schema:
+        format: int64
+        type: integer
+    browser_segment:
+      description: Browser to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [device, source, attribute_id, attribute_value].
+      in: query
+      name: browser
+      schema:
+        enum:
+        - firefox
+        - chrome
+        - internet_explorer
+        - opera
+        - safari
+        type: string
+    device_segment:
+      description: Device to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, source, attribute_id, attribute_value].
+      in: query
+      name: device
+      schema:
+        enum:
+        - desktop
+        - ipad
+        - iphone
+        - mobile
+        - tablet
+        type: string
+    attribute_value_segment:
+      description: 'UTF-8 encoded value correlating to attribute_id. If present, the attribute_id parameter must also be present. This parameter also requires attribute_id to be set, and cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
+
+        '
+      in: query
+      name: attribute_value
+      schema:
+        type: string
+    segment_conditions:
+      description: '(BETA) A string representation of a JSON Segment Conditions Expression. This parameter can be either URL-escaped stringified JSON or Base64-encoded stringified JSON using URL-safe alphabet (preferred).
+
+        Segment Conditions Expressions consist of Logical Expressions and Match Expressions.
+
+        Logical Expressions are represented as an array of the format [<operator>, <expression>...], where the supported operators are "and", "or" and "not".
+
+        Match Expressions are represented as an object of the format {"attribute_id": <attribute_id>, "attribute_value": <value>[, "match_type": <match_type>]}, where supported values for match_type are "exact" match type will match only an exact string match between "value" string and the attribute value. "substring" match type will match if "value" is a substring of the attribute value. "prefix" match type will match if "value" is a string prefix of the attribute value. "regex" match type will match if "value" is a regular expression match for the attribute value. The default match_type is "exact".
+
+        '
+      in: query
+      name: segment_conditions
+      schema:
+        type: string
+    source_segment:
+      description: 'Source to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, device, attribute_id, attribute_value].
+
+        Campaign: Contains users that arrive on a URL containing a ''utm_campaign,'' ''utm_source,'' ''gclid,'' or ''otm_source'' query parameter. If the URL contains one of these parameters, the visitor will count as "Campaign" traffic even if they arrived through search.
+
+        Direct:  Includes all users who do not have any external referrer in their URL.
+
+        Referral: Includes all users that come from another URL that doesn''t count as Campaign.
+
+        '
+      in: query
+      name: source
+      schema:
+        enum:
+        - campaign
+        - direct
+        - referral
+        - search
+        type: string
   schemas:
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
+      properties:
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
+      type: object
     Report:
       description: Report with results for the active rule for a flag in a project.
       properties:
@@ -728,31 +806,6 @@ components:
     UrlValue:
       description: A single url.
       type: string
-    ProblemDetail:
-      additionalProperties: true
-      description: https://tools.ietf.org/html/rfc7807#section-3.1
-      properties:
-        detail:
-          description: A human-readable explanation specific to this occurrence of the problem.
-          type: string
-        status:
-          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
-          type: integer
-        title:
-          description: A short, human-readable summary of the problem type.
-          type: string
-        type:
-          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
-          type: string
-        uuid:
-          description: Error reference for customer support
-          type: string
-      required:
-      - detail
-      - status
-      - title
-      - type
-      type: object
     UrlList:
       description: A list of urls.
       items:
@@ -795,124 +848,59 @@ components:
           format: date-time
           type: string
       type: object
-  parameters:
-    environmentKey:
-      description: The Environment identifier
-      example: production
-      in: path
-      name: environment_key
-      required: true
-      schema:
-        type: string
-    projectId:
-      description: The project identifier
-      example: 12345
-      in: path
-      name: project_id
-      required: true
-      schema:
-        type: integer
-    pageWindow:
-      description: Number of previous and next page links to supply for the request (defaults to 1).
-      in: query
-      name: page_window
-      schema:
-        type: integer
-    reportKey:
-      description: The Report identifier. Get the key from the List Reports endpoint (key is not displayed in the Optimizely app)
-      example: paid_users_45633910
-      in: path
-      name: report_key
-      required: true
-      schema:
-        type: string
-    pageToken:
-      description: Pagination page token. Implements prev, next, last, first
-      in: query
-      name: page_token
-      schema:
-        type: string
-    perPage:
-      description: The max number of items to include per page or results.
-      in: query
-      name: per_page
-      schema:
-        format: int64
-        type: integer
-    device_segment:
-      description: Device to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, source, attribute_id, attribute_value].
-      in: query
-      name: device
-      schema:
-        enum:
-        - desktop
-        - ipad
-        - iphone
-        - mobile
-        - tablet
-        type: string
-    attribute_id_segment:
-      description: 'ID of the attribute to segment results by. Requests containing attribute_id will return the results for all visitors that have attribute_value for the attribute represented by attribute_id. If present, the attribute_value parameter must also be present, and it cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
+  responses:
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
+    ReportSuccessResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Report'
+      description: 'Successful retrieval of a Report.
+
+
+        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+        link is not present in the response, it indicates a user is not authorized to access
+
+        the related resource.
 
         '
-      in: query
-      name: attribute_id
-      schema:
-        format: int64
-        type: integer
-    browser_segment:
-      description: Browser to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [device, source, attribute_id, attribute_value].
-      in: query
-      name: browser
-      schema:
-        enum:
-        - firefox
-        - chrome
-        - internet_explorer
-        - opera
-        - safari
-        type: string
-    segment_conditions:
-      description: '(BETA) A string representation of a JSON Segment Conditions Expression. This parameter can be either URL-escaped stringified JSON or Base64-encoded stringified JSON using URL-safe alphabet (preferred).
-
-        Segment Conditions Expressions consist of Logical Expressions and Match Expressions.
-
-        Logical Expressions are represented as an array of the format [<operator>, <expression>...], where the supported operators are "and", "or" and "not".
-
-        Match Expressions are represented as an object of the format {"attribute_id": <attribute_id>, "attribute_value": <value>[, "match_type": <match_type>]}, where supported values for match_type are "exact" match type will match only an exact string match between "value" string and the attribute value. "substring" match type will match if "value" is a substring of the attribute value. "prefix" match type will match if "value" is a string prefix of the attribute value. "regex" match type will match if "value" is a regular expression match for the attribute value. The default match_type is "exact".
-
-        '
-      in: query
-      name: segment_conditions
-      schema:
-        type: string
-    source_segment:
-      description: 'Source to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, device, attribute_id, attribute_value].
-
-        Campaign: Contains users that arrive on a URL containing a ''utm_campaign,'' ''utm_source,'' ''gclid,'' or ''otm_source'' query parameter. If the URL contains one of these parameters, the visitor will count as "Campaign" traffic even if they arrived through search.
-
-        Direct:  Includes all users who do not have any external referrer in their URL.
-
-        Referral: Includes all users that come from another URL that doesn''t count as Campaign.
-
-        '
-      in: query
-      name: source
-      schema:
-        enum:
-        - campaign
-        - direct
-        - referral
-        - search
-        type: string
-    attribute_value_segment:
-      description: 'UTF-8 encoded value correlating to attribute_id. If present, the attribute_id parameter must also be present. This parameter also requires attribute_id to be set, and cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
-
-        '
-      in: query
-      name: attribute_value
-      schema:
-        type: string
+    NoContentResponse:
+      description: No content in the response
+    ConflictResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Conflicting resource state with requested action
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
+    NotFoundResponse:
+      description: Not found. No content
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
   securitySchemes:
     BearerAuth:
       description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token

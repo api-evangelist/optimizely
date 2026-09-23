@@ -231,7 +231,7 @@ paths:
     get:
       tags:
       - Warehouses
-      summary: Call operation  Default
+      summary: Call operation Default
       operationId: Warehouses_Default
       responses:
         '200':
@@ -249,7 +249,7 @@ paths:
     post:
       tags:
       - Warehouses
-      summary: Call operation  archive
+      summary: Call operation archive
       operationId: Warehouses_Archive
       parameters:
       - name: ids
@@ -300,6 +300,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Warehouses archive route
+      x-summary-source: derived
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
   /api/v1/admin/warehouses/delete:
@@ -327,6 +329,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Warehouses delete route
+      x-summary-source: derived
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
   /api/v1/admin/warehouses({key})/alternateofwarehouses({warehouseKey}):
@@ -369,6 +373,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Warehouses get alternate of warehouse by key and warehousekey
+      x-summary-source: derived
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
   /api/v1/admin/warehouses({key})/alternatewarehouses({warehouseKey}):
@@ -411,6 +417,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Warehouses get alternate warehouse by key and warehousekey
+      x-summary-source: derived
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
   /api/v1/admin/warehouses({key})/customproperties({custompropertyKey}):
@@ -453,6 +461,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Warehouses get custom property by key and custompropertykey
+      x-summary-source: derived
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
   /api/v1/admin/warehouses({key})/productwarehouses({productwarehouseKey}):
@@ -495,6 +505,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Warehouses get product warehouse by key and productwarehousekey
+      x-summary-source: derived
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
   /api/v1/admin/warehouses({key})/websites({websiteKey}):
@@ -537,6 +549,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Warehouses get website by key and websitekey
+      x-summary-source: derived
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
   /api/v1/warehouses:
@@ -625,6 +639,8 @@ paths:
             text/html:
               schema:
                 $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.WarehouseCollectionModel'
+      summary: Warehouses V1 get collection async
+      x-summary-source: derived
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
   /api/v1/warehouses/{warehouseId}:
@@ -657,17 +673,11 @@ paths:
             text/html:
               schema:
                 $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel'
+      summary: Warehouses V1 get async
+      x-summary-source: derived
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
 components:
-  requestBodies:
-    Affiliates_ArchiveParameters:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties: {}
-      description: archive action parameters
   schemas:
     Insite.Data.Entities.Warehouse:
       required:
@@ -762,6 +772,44 @@ components:
           format: date-time
           type: string
         modifiedBy:
+          type: string
+    Insite.Core.WebApi.PaginationModel:
+      type: object
+      properties:
+        currentPage:
+          format: int32
+          type: integer
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        defaultPageSize:
+          format: int32
+          type: integer
+        totalItemCount:
+          format: int32
+          type: integer
+        numberOfPages:
+          format: int32
+          type: integer
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
+        sortType:
+          type: string
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
           type: string
     Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel:
       type: object
@@ -859,44 +907,14 @@ components:
           type: string
         sortType:
           type: string
-    Insite.Core.WebApi.PaginationModel:
-      type: object
-      properties:
-        currentPage:
-          format: int32
-          type: integer
-        page:
-          format: int32
-          type: integer
-        pageSize:
-          format: int32
-          type: integer
-        defaultPageSize:
-          format: int32
-          type: integer
-        totalItemCount:
-          format: int32
-          type: integer
-        numberOfPages:
-          format: int32
-          type: integer
-        pageSizeOptions:
-          type: array
-          items:
-            format: int32
-            type: integer
-        sortOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
-        sortType:
-          type: string
-        nextPageUri:
-          type: string
-        prevPageUri:
-          type: string
-        nextPageToken:
-          type: string
+  requestBodies:
+    Affiliates_ArchiveParameters:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: {}
+      description: archive action parameters
   securitySchemes:
     access_token:
       type: apiKey

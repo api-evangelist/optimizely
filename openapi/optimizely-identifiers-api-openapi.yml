@@ -159,77 +159,6 @@ paths:
               example: '{"message": "Forbidden"}'
 components:
   schemas:
-    Error:
-      type: object
-      properties:
-        title:
-          type: string
-          example: Bad Request
-        status:
-          type: integer
-          example: 400
-          default: 0
-        timestamp:
-          type: string
-          example: '2018-08-07T13:44:17.659Z'
-        detail:
-          type: object
-          properties:
-            invalids:
-              type: array
-              items:
-                type: object
-                properties:
-                  field:
-                    type: string
-                    example: name
-                  reason:
-                    type: string
-                    example: already used by another object
-    UpdateIdentifier:
-      required:
-      - identifier_value
-      - identifier_field_name
-      type: object
-      properties:
-        identifier_value:
-          type: string
-          description: Any valid identifier of this type (for example, test@optimizely.com).
-        identifier_field_name:
-          type: string
-          description: The field name for the identifier you want to update (for example, email).
-        metadata:
-          type: array
-          items:
-            type: object
-            properties: {}
-            description: Object containing the metadata fields you want to update. The metadata fields must already exist on the identifier field.
-    IdenfitierMetadata:
-      type: object
-      properties:
-        identifier_value:
-          type: string
-          example: john@example.com
-        identifier_field_name:
-          type: string
-          example: email
-        zaius_id:
-          type: string
-          example: abcd
-        metadata:
-          type: object
-          properties:
-            mailbox_provider:
-              type: string
-              example: google
-            primary_mailbox:
-              type: boolean
-              example: true
-              default: true
-        metadata_update_ts:
-          type: integer
-          example: 1556582935
-          default: 0
     IdentifierCreated:
       type: object
       properties:
@@ -261,6 +190,33 @@ components:
               type:
                 type: string
                 example: identifier
+    Error:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Bad Request
+        status:
+          type: integer
+          example: 400
+          default: 0
+        timestamp:
+          type: string
+          example: '2018-08-07T13:44:17.659Z'
+        detail:
+          type: object
+          properties:
+            invalids:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                    example: name
+                  reason:
+                    type: string
+                    example: already used by another object
     Identifier:
       type: object
       required:
@@ -284,6 +240,50 @@ components:
         messaging:
           type: boolean
           description: Whether this identifier can be used to message customers in campaigns.
+    IdenfitierMetadata:
+      type: object
+      properties:
+        identifier_value:
+          type: string
+          example: john@example.com
+        identifier_field_name:
+          type: string
+          example: email
+        zaius_id:
+          type: string
+          example: abcd
+        metadata:
+          type: object
+          properties:
+            mailbox_provider:
+              type: string
+              example: google
+            primary_mailbox:
+              type: boolean
+              example: true
+              default: true
+        metadata_update_ts:
+          type: integer
+          example: 1556582935
+          default: 0
+    UpdateIdentifier:
+      required:
+      - identifier_value
+      - identifier_field_name
+      type: object
+      properties:
+        identifier_value:
+          type: string
+          description: Any valid identifier of this type (for example, test@optimizely.com).
+        identifier_field_name:
+          type: string
+          description: The field name for the identifier you want to update (for example, email).
+        metadata:
+          type: array
+          items:
+            type: object
+            properties: {}
+            description: Object containing the metadata fields you want to update. The metadata fields must already exist on the identifier field.
   securitySchemes:
     x-api-key:
       type: apiKey

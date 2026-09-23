@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   title: Optimizely Campaign REST Click profiles API
-  description: 'This documentation lists all available resources and endpoints of the Optimizely Campaign REST API. The REST API lets you integrate Optimizely Campaign with your business applications and third-party software. Use Optimizely Campaign features and functionalities remotely to manage your recipient data, campaigns and mailings.<br><br>To use the REST API, set up your Optimizely Campaign client first. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#client-setup" target="_blank">Client setup</a> on Optimizely World.<br><br>The base URL for all API requests is as follows: <i>https://api.campaign.episerver.net/rest/{clientId}/{component}/{path}?{parameters}</i><br><br><b>Try it out</b><br>The "Try it out" feature lets you test the API before you implement it in the target system. To perform real API requests against your client, authorize with your Base64-encoded credentials. See <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/getting-started#authenticate" target="_blank">Authentication</a> on Optimizely World.<br><br>To learn more about the Optimizely Campaign REST API, see <a href="https://docs.developers.optimizely.com/optimizely-campaign/docs/rest-api" target="_blank">Optimizely World</a>.<br><br><br>If you want to import the API definition in Postman, download the <a href="https://api.campaign.episerver.net/rest/openapi.json" target="_blank" download> source file</a> and import it in Postman as a collection.'
+  description: This documentation lists all available resources and endpoints of the Optimizely Campaign REST API.
   version: '1'
 servers:
 - url: https://api.campaign.episerver.net/rest
@@ -292,7 +292,7 @@ paths:
     delete:
       tags:
       - Click profiles
-      summary: Unassign specific links from  a click profile
+      summary: Unassign specific links from a click profile
       operationId: unAssignLinksFromClickProfile
       parameters:
       - name: clientId
@@ -408,52 +408,6 @@ paths:
       - Authorization: []
 components:
   schemas:
-    ClickProfileRequestData:
-      required:
-      - name
-      type: object
-      properties:
-        rulePattern:
-          type: string
-          description: Rule pattern of the click profile
-        name:
-          type: string
-          description: Name of the click profile
-        description:
-          type: string
-          description: Description of the click profile
-        ruleType:
-          type: string
-          description: Rule type of the click profile
-          default: NONE
-          enum:
-          - REGEXP
-          - WILDCARDS
-          - NONE
-    RestLink:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Link ID
-          format: int64
-        name:
-          type: string
-          description: Link name
-        url:
-          type: string
-          description: Link URL
-        type:
-          type: string
-          description: Link type
-        created:
-          type: string
-          description: Creation date
-          format: date-time
-        modified:
-          type: string
-          description: Modification date
-          format: date-time
     RestClickProfile:
       type: object
       properties:
@@ -507,27 +461,37 @@ components:
                 type: string
                 format: uri
             description: Restful links
-    RestLinkStreamingCollection:
+    RestLink:
       type: object
       properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestLink'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
+        id:
           type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
+          description: Link ID
+          format: int64
+        name:
+          type: string
+          description: Link name
+        url:
+          type: string
+          description: Link URL
+        type:
+          type: string
+          description: Link type
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
     RestClickProfileStreamingCollection:
       type: object
       properties:
@@ -549,13 +513,27 @@ components:
         limit:
           type: integer
           format: int32
-    RestApiLink:
+    RestLinkStreamingCollection:
       type: object
       properties:
-        href:
-          type: string
-        rel:
-          type: string
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestLink'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     AssignLinksToClickProfileRequestData:
       required:
       - linkIds
@@ -568,6 +546,28 @@ components:
             type: integer
             description: Comma-separated list of link IDs
             format: int64
+    ClickProfileRequestData:
+      required:
+      - name
+      type: object
+      properties:
+        rulePattern:
+          type: string
+          description: Rule pattern of the click profile
+        name:
+          type: string
+          description: Name of the click profile
+        description:
+          type: string
+          description: Description of the click profile
+        ruleType:
+          type: string
+          description: Rule type of the click profile
+          default: NONE
+          enum:
+          - REGEXP
+          - WILDCARDS
+          - NONE
   securitySchemes:
     Authorization:
       type: apiKey

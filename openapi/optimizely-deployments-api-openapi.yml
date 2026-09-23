@@ -60,7 +60,7 @@ paths:
     post:
       tags:
       - Deployments
-      summary: Reset or Complete reset a specified deployment.
+      summary: Reset or Complete reset a specified deployment
       description: 'Operation is available after start deployment has finished during the verification stage or reset-verification stage of the deployment.
 
         This will abort deployment and reset the staging slot to allow for a new deployment.
@@ -169,7 +169,7 @@ paths:
     get:
       tags:
       - Deployments
-      summary: Get deployment details.
+      summary: Get deployment details
       operationId: GetDeploymentDetailsApi_GetDeploymentDetails
       parameters:
       - name: projectId
@@ -266,7 +266,7 @@ paths:
     post:
       tags:
       - Deployments
-      summary: Complete specified deployment.
+      summary: Complete specified deployment
       description: 'Operation is available only after start deployment has finished during the verification stage of the deployment.
 
         This will complete deployment and swap it into the production slot.'
@@ -366,7 +366,7 @@ paths:
     get:
       tags:
       - Deployments
-      summary: Gets a list of deployments for specified project.
+      summary: Gets a list of deployments for specified project
       operationId: DeploymentApi_GetDeploymentList
       parameters:
       - name: projectId
@@ -455,7 +455,7 @@ paths:
     post:
       tags:
       - Deployments
-      summary: Starts deployment to target environment.
+      summary: Starts deployment to target environment
       description: Deployment can use either deployment package or environment as source.
       operationId: DeploymentApi_StartCodeDeployment
       parameters:
@@ -551,6 +551,57 @@ paths:
                     result: null
 components:
   schemas:
+    ResetDeploymentResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/DeploymentApiResponseModel'
+        success:
+          type: boolean
+    StartDeploymentResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/DeploymentApiResponseModel'
+        success:
+          type: boolean
+    NotFoundApiErrorResponseExample:
+      type: object
+      properties: {}
+    ResetDeploymentRequestParameters:
+      type: object
+      properties:
+        validateBeforeSwap:
+          type: boolean
+        complete:
+          type: boolean
+        resetWithDbRollback:
+          type: boolean
+      example:
+        resetWithDbRollback: true
+        validateBeforeSwap: true
+        complete: false
+    DeploymentListResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeploymentApiResponseModel'
+        success:
+          type: boolean
     UploadPackageLocationResponse:
       type: object
       properties:
@@ -567,64 +618,6 @@ components:
       properties:
         location:
           type: string
-    InternalServerErrorApiErrorResponseExample:
-      type: object
-      properties: {}
-    DeploymentListResponse:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            type: string
-        result:
-          type: array
-          items:
-            $ref: '#/components/schemas/DeploymentApiResponseModel'
-        success:
-          type: boolean
-    UnauthorizedApiErrorResponseExample:
-      type: object
-      properties: {}
-    ApiErrorResponseExample:
-      type: object
-      properties: {}
-    NotFoundApiErrorResponseExample:
-      type: object
-      properties: {}
-    StartDeploymentResponse:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            type: string
-        result:
-          $ref: '#/components/schemas/DeploymentApiResponseModel'
-        success:
-          type: boolean
-    CompleteDeploymentResponse:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            type: string
-        result:
-          $ref: '#/components/schemas/DeploymentApiResponseModel'
-        success:
-          type: boolean
-    DeploymentDetailsResponse:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            type: string
-        result:
-          $ref: '#/components/schemas/DeploymentApiResponseModel'
-        success:
-          type: boolean
     DeploymentApiResponseModel:
       type: object
       properties:
@@ -659,7 +652,47 @@ components:
         id:
           format: uuid
           type: string
+    CompleteDeploymentResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/DeploymentApiResponseModel'
+        success:
+          type: boolean
+    ApiErrorResponseExample:
+      type: object
+      properties: {}
+    DeploymentDetailsResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/DeploymentApiResponseModel'
+        success:
+          type: boolean
+    CodeDeploymentRequest:
+      type: object
+      properties:
+        maintenancePage:
+          type: boolean
+        zeroDowntimeMode:
+          type: string
+        targetEnvironment:
+          type: string
+    UnauthorizedApiErrorResponseExample:
+      type: object
+      properties: {}
     BadRequestApiErrorResponseExample:
+      type: object
+      properties: {}
+    InternalServerErrorApiErrorResponseExample:
       type: object
       properties: {}
     StartCodeDeploymentRequestParameters:
@@ -696,39 +729,6 @@ components:
         packages:
         - site.cms.app.1.0.0.nupkg
         zeroDowntimeMode: ReadOnly
-    CodeDeploymentRequest:
-      type: object
-      properties:
-        maintenancePage:
-          type: boolean
-        zeroDowntimeMode:
-          type: string
-        targetEnvironment:
-          type: string
-    ResetDeploymentRequestParameters:
-      type: object
-      properties:
-        validateBeforeSwap:
-          type: boolean
-        complete:
-          type: boolean
-        resetWithDbRollback:
-          type: boolean
-      example:
-        resetWithDbRollback: true
-        validateBeforeSwap: true
-        complete: false
-    ResetDeploymentResponse:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            type: string
-        result:
-          $ref: '#/components/schemas/DeploymentApiResponseModel'
-        success:
-          type: boolean
 x-readme:
   explorer-enabled: true
   proxy-enabled: true

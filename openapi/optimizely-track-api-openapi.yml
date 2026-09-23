@@ -15,7 +15,7 @@ tags:
 paths:
   /v1/track:
     post:
-      summary: Track event for the given user.
+      summary: Track event for the given user
       description: Send event and user details to Optimizely analytics backend, so you can see metrics for an experiment. You can view metrics either on your Results page or as a data export.
       operationId: trackEvent
       parameters:
@@ -57,13 +57,14 @@ paths:
       tags:
       - Track
 components:
+  responses:
+    Forbidden:
+      description: You do not have necessary permissions for the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
-    Error:
-      title: Error
-      type: object
-      properties:
-        error:
-          type: string
     TrackContext:
       title: TrackContext
       type: object
@@ -74,13 +75,12 @@ components:
           type: string
         userAttributes:
           type: object
-  responses:
-    Forbidden:
-      description: You do not have necessary permissions for the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
+          type: string
   securitySchemes:
     SdkKeyAuth:
       type: apiKey

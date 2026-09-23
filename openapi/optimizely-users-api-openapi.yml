@@ -25,7 +25,7 @@ paths:
     get:
       tags:
       - Users
-      summary: Get basic information of an authenticated user.
+      summary: Get basic information of an authenticated user
       operationId: getAuthenticatedUser
       parameters:
       - name: clientId
@@ -53,7 +53,7 @@ paths:
     post:
       tags:
       - Users
-      summary: Rotate a password. Please be aware that after rotation it can take some minutes until the new password can be used.
+      summary: Rotate a password.
       operationId: rotatePassword
       parameters:
       - name: clientId
@@ -357,18 +357,6 @@ paths:
           - api.usea01.idio.episerver.net
 components:
   schemas:
-    UserRequestData:
-      required:
-      - password
-      - username
-      type: object
-      properties:
-        username:
-          type: string
-          description: Campaign user name
-        password:
-          type: string
-          description: New password
     AuthenticatedUser:
       type: object
       properties:
@@ -392,6 +380,34 @@ components:
           type: string
           description: Date of last password change
           format: date-time
+    UserRequestData:
+      required:
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+          description: Campaign user name
+        password:
+          type: string
+          description: New password
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
     UserListResponseItem:
       type: object
       additionalProperties: false
@@ -450,70 +466,6 @@ components:
       - full_name
       - image_url
       - links
-    Error:
-      type: object
-      additionalProperties: true
-      description: Error payload
-      properties:
-        message:
-          type: string
-          description: Message describing the error
-          example: Not found
-        errors:
-          type: object
-          description: Additional information
-          additionalProperties: true
-          properties: {}
-      required:
-      - message
-    UserResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: Unique identifier of the user
-          example: 5fe4925ef8a9378056bf4e37
-        first_name:
-          type: string
-          description: First name of the user
-          example: John
-        last_name:
-          type: string
-          description: Last name of the user
-          example: Doe
-        full_name:
-          type: string
-          description: Full name of the user
-          example: John Doe
-        email:
-          type:
-          - string
-          - 'null'
-          description: Email of the user – null unless the application is configured to expose the user email
-          example: john.doe@example.com
-        image_url:
-          type:
-          - string
-          - 'null'
-          description: URL of the profile picture of the user – null if the user has not provided an image
-          example: https://images.cmp.optimizely.com/6a485f72ba424f9397c71ddf0cfb8f59
-        links:
-          type: object
-          additionalProperties: false
-          description: Meta links
-          properties:
-            self:
-              type: string
-              description: URL of the user
-              example: https://api.cmp.optimizely.com/v3/users/5fe4925ef8a9378056bf4e37
-      required:
-      - id
-      - first_name
-      - last_name
-      - full_name
-      - email
-      - image_url
     UserListResponse:
       type: object
       additionalProperties: false
@@ -571,28 +523,128 @@ components:
       required:
       - next
       - previous
-    UserContentList:
+    UserResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the user
+          example: 5fe4925ef8a9378056bf4e37
+        first_name:
+          type: string
+          description: First name of the user
+          example: John
+        last_name:
+          type: string
+          description: Last name of the user
+          example: Doe
+        full_name:
+          type: string
+          description: Full name of the user
+          example: John Doe
+        email:
+          type:
+          - string
+          - 'null'
+          description: Email of the user – null unless the application is configured to expose the user email
+          example: john.doe@example.com
+        image_url:
+          type:
+          - string
+          - 'null'
+          description: URL of the profile picture of the user – null if the user has not provided an image
+          example: https://images.cmp.optimizely.com/6a485f72ba424f9397c71ddf0cfb8f59
+        links:
+          type: object
+          additionalProperties: false
+          description: Meta links
+          properties:
+            self:
+              type: string
+              description: URL of the user
+              example: https://api.cmp.optimizely.com/v3/users/5fe4925ef8a9378056bf4e37
+      required:
+      - id
+      - first_name
+      - last_name
+      - full_name
+      - email
+      - image_url
+    List:
+      type: object
+      description: Base pagination metadata object.
+      additionalProperties: false
+      required:
+      - total_hits
+      properties:
+        total_hits:
+          type: integer
+          description: Total number of items matching the query.
+        next_page:
+          type: string
+          format: url
+          description: Link to the next page of results, if available.
+        previous_page:
+          type: string
+          format: url
+          description: Link to the previous page of results, if available.
+    User:
       allOf:
-      - $ref: '#/components/schemas/ContentList'
+      - $ref: '#/components/schemas/UserCore'
       - type: object
         additionalProperties: false
         required:
-        - model
-        - group
+        - first_name
+        - last_name
+        - name
+        - service_credentials
+        - additional_info
+        - identifiers
         properties:
-          recommendation_id:
+          name:
             type: string
-            format: uuid
-            description: Unique identifier for the recommendation set.
-          model:
-            type: boolean
-            description: Indicates whether a recommendation model was applied.
-          group:
-            type: string
-            enum:
-            - control
-            - test
-            description: A/B test group identifier.
+            description: Full name of the user.
+            example: Jordan Lee
+    ContentMetadata:
+      type: object
+      description: Metadata for a content item, such as language and tags.
+      properties:
+        language:
+          type: string
+          enum:
+          - de
+          - en
+          - es
+          - fr
+          - it
+          description: Language of the content.
+        tags:
+          type: object
+          description: Arbitrary namespaced tags associated with the content. Values may be strings or arrays of strings (for example, multiple authors).
+          additionalProperties: true
+    Map:
+      type: object
+      additionalProperties:
+        type: string
+    ContentAuthor:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the author.
+        title:
+          type: string
+          description: Name of the author.
+        full_details_url:
+          type: string
+          format: url
+          description: API URL for full author details.
     UserCore:
       type: object
       additionalProperties: false
@@ -618,24 +670,83 @@ components:
           $ref: '#/components/schemas/Map'
         identifiers:
           $ref: '#/components/schemas/Map'
-    ContentTopic:
+    ContentList:
+      description: A paginated list of content items with navigation metadata.
+      allOf:
+      - $ref: '#/components/schemas/List'
+      - type: object
+        additionalProperties: false
+        required:
+        - content
+        properties:
+          content:
+            type: array
+            description: The list of content items for the current page.
+            uniqueItems: true
+            items:
+              $ref: '#/components/schemas/ContentItem'
+    UserContentList:
+      allOf:
+      - $ref: '#/components/schemas/ContentList'
+      - type: object
+        additionalProperties: false
+        required:
+        - model
+        - group
+        properties:
+          recommendation_id:
+            type: string
+            format: uuid
+            description: Unique identifier for the recommendation set.
+          model:
+            type: boolean
+            description: Indicates whether a recommendation model was applied.
+          group:
+            type: string
+            enum:
+            - control
+            - test
+            description: A/B test group identifier.
+    ContentMainImage:
+      type: object
+      additionalProperties: false
+      required:
+      - width
+      - height
+      properties:
+        width:
+          type: integer
+          description: Image width in pixels.
+        height:
+          type: integer
+          description: Image height in pixels.
+    ContentSource:
       type: object
       additionalProperties: false
       required:
       - id
       - title
       - full_details_url
+      - display
+      description: The source (origin) of the content.
       properties:
         id:
           type: integer
-          description: Unique identifier of the topic.
+          description: Unique identifier of the source.
         title:
           type: string
-          description: Topic title.
+          description: Display name of the source.
         full_details_url:
           type: string
           format: url
-          description: API link to full topic details.
+          description: API URL for full source details.
+        display:
+          type: string
+          enum:
+          - full
+          - abstract
+          - link
+          description: How the source should be displayed.
     ContentItem:
       allOf:
       - $ref: '#/components/schemas/ContentItemMinimal'
@@ -687,27 +798,6 @@ components:
             $ref: '#/components/schemas/ContentSource'
           author:
             $ref: '#/components/schemas/ContentAuthor'
-    UserPartial:
-      allOf:
-      - $ref: '#/components/schemas/UserCore'
-      - type: object
-        additionalProperties: false
-    UserStub:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - full_details_url
-      properties:
-        id:
-          type: integer
-          description: Unique identifier of the user.
-          example: 301
-        full_details_url:
-          type: string
-          format: url
-          description: API URL to fetch full user details.
-          example: https://api.usea01.idio.episerver.net/1.0/users/301
     ContentItemMinimal:
       type: object
       additionalProperties: false
@@ -739,24 +829,49 @@ components:
           type: string
           format: url
           description: Original source URL of the content.
-    List:
+    UserStub:
       type: object
-      description: Base pagination metadata object.
       additionalProperties: false
       required:
-      - total_hits
+      - id
+      - full_details_url
       properties:
-        total_hits:
+        id:
           type: integer
-          description: Total number of items matching the query.
-        next_page:
+          description: Unique identifier of the user.
+          example: 301
+        full_details_url:
           type: string
           format: url
-          description: Link to the next page of results, if available.
-        previous_page:
+          description: API URL to fetch full user details.
+          example: https://api.usea01.idio.episerver.net/1.0/users/301
+    ContentQuery:
+      type: object
+      additionalProperties: false
+      required:
+      - query
+      description: Object containing a Lucene query string used to search or filter content.
+      properties:
+        query:
           type: string
-          format: url
-          description: Link to the previous page of results, if available.
+          description: Lucene query string. Use the platform's Lucene dialect for advanced filtering.
+          example: title:AI AND language:en
+    Message:
+      type: object
+      additionalProperties: false
+      required:
+      - message
+      description: Generic message response object returned by the API.
+      properties:
+        message:
+          type: string
+          description: The message content.
+          example: User updated successfully.
+    UserPartial:
+      allOf:
+      - $ref: '#/components/schemas/UserCore'
+      - type: object
+        additionalProperties: false
     ServiceCredential:
       type: object
       additionalProperties: false
@@ -772,35 +887,7 @@ components:
           description: The third-party service this credential belongs to.
       discriminator:
         propertyName: service
-    ContentMainImage:
-      type: object
-      additionalProperties: false
-      required:
-      - width
-      - height
-      properties:
-        width:
-          type: integer
-          description: Image width in pixels.
-        height:
-          type: integer
-          description: Image height in pixels.
-    Map:
-      type: object
-      additionalProperties:
-        type: string
-    Message:
-      type: object
-      additionalProperties: false
-      required:
-      - message
-      description: Generic message response object returned by the API.
-      properties:
-        message:
-          type: string
-          description: The message content.
-          example: User updated successfully.
-    ContentAuthor:
+    ContentTopic:
       type: object
       additionalProperties: false
       required:
@@ -810,131 +897,20 @@ components:
       properties:
         id:
           type: integer
-          description: Unique identifier of the author.
+          description: Unique identifier of the topic.
         title:
           type: string
-          description: Name of the author.
+          description: Topic title.
         full_details_url:
           type: string
           format: url
-          description: API URL for full author details.
-    ContentSource:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - title
-      - full_details_url
-      - display
-      description: The source (origin) of the content.
-      properties:
-        id:
-          type: integer
-          description: Unique identifier of the source.
-        title:
-          type: string
-          description: Display name of the source.
-        full_details_url:
-          type: string
-          format: url
-          description: API URL for full source details.
-        display:
-          type: string
-          enum:
-          - full
-          - abstract
-          - link
-          description: How the source should be displayed.
-    ContentList:
-      description: A paginated list of content items with navigation metadata.
-      allOf:
-      - $ref: '#/components/schemas/List'
-      - type: object
-        additionalProperties: false
-        required:
-        - content
-        properties:
-          content:
-            type: array
-            description: The list of content items for the current page.
-            uniqueItems: true
-            items:
-              $ref: '#/components/schemas/ContentItem'
-    User:
-      allOf:
-      - $ref: '#/components/schemas/UserCore'
-      - type: object
-        additionalProperties: false
-        required:
-        - first_name
-        - last_name
-        - name
-        - service_credentials
-        - additional_info
-        - identifiers
-        properties:
-          name:
-            type: string
-            description: Full name of the user.
-            example: Jordan Lee
-    ContentQuery:
-      type: object
-      additionalProperties: false
-      required:
-      - query
-      description: Object containing a Lucene query string used to search or filter content.
-      properties:
-        query:
-          type: string
-          description: Lucene query string. Use the platform's Lucene dialect for advanced filtering.
-          example: title:AI AND language:en
-    ContentMetadata:
-      type: object
-      description: Metadata for a content item, such as language and tags.
-      properties:
-        language:
-          type: string
-          enum:
-          - de
-          - en
-          - es
-          - fr
-          - it
-          description: Language of the content.
-        tags:
-          type: object
-          description: Arbitrary namespaced tags associated with the content. Values may be strings or arrays of strings (for example, multiple authors).
-          additionalProperties: true
+          description: API link to full topic details.
     ServiceCredentials:
       type: array
       uniqueItems: true
       items:
         $ref: '#/components/schemas/ServiceCredential'
   responses:
-    ClientError:
-      description: Client error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: 'Unsupported arguments: a,b,c'
-    NotFound:
-      description: Not found error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Resource not found
-    Forbidden:
-      description: Permission error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: You do not have the permission to perform this operation
     Unauthorized:
       description: Authorization error
       content:
@@ -943,6 +919,30 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: Unauthorized
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
     UserContentList:
       description: A list of content accompanied by metadata for navigation and recommendation tracking.
       content:
@@ -987,15 +987,6 @@ components:
                 title: Personalisation
                 full_details_url: https://api.usea01.idio.episerver.net/1.0/topics/301
   parameters:
-    offset:
-      name: offset
-      in: query
-      description: Starting index of results (zero indexed)
-      schema:
-        type: integer
-        minimum: 0
-        default: 0
-      example: 5
     page_size:
       name: page_size
       in: query
@@ -1006,19 +997,22 @@ components:
         maximum: 100
         default: 10
       example: 15
-    page:
-      name: page
+    offset:
+      name: offset
       in: query
-      description: Page number for pagination (1-based index).
+      description: Starting index of results (zero indexed)
       schema:
         type: integer
-        example: 2
-    rpp:
-      name: rpp
+        minimum: 0
+        default: 0
+      example: 5
+    topics:
+      name: include_topics
       in: query
-      description: Results per page for pagination.
+      description: Whether to include topic information in the response.
+      allowEmptyValue: true
       schema:
-        type: integer
+        type: boolean
     userID:
       name: id
       in: path
@@ -1044,13 +1038,19 @@ components:
       allowEmptyValue: true
       schema:
         type: boolean
-    topics:
-      name: include_topics
+    rpp:
+      name: rpp
       in: query
-      description: Whether to include topic information in the response.
-      allowEmptyValue: true
+      description: Results per page for pagination.
       schema:
-        type: boolean
+        type: integer
+    page:
+      name: page
+      in: query
+      description: Page number for pagination (1-based index).
+      schema:
+        type: integer
+        example: 2
   securitySchemes:
     Authorization:
       type: apiKey

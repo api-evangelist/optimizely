@@ -106,9 +106,7 @@ paths:
     post:
       tags:
       - Blob Storage Containers
-      summary: 'Generate a new SAS link for the projectId, environment and containerName combination.
-
-        The generated link is valid for 24 hours by default if not requested by user (retention hours) otherwise.'
+      summary: Generate a new SAS link for the projectId, environment and containerName…
       operationId: BlobStorageContainersApi_GenerateSasLink
       parameters:
       - name: projectId
@@ -209,6 +207,14 @@ paths:
                     result: null
 components:
   schemas:
+    GenerateBlobContainerSasLinkRequestParameters:
+      type: object
+      properties:
+        retentionHours:
+          format: int32
+          type: integer
+      example:
+        retentionHours: 24
     GenerateBlobContainerSasLinkApiResponse:
       type: object
       properties:
@@ -220,35 +226,9 @@ components:
           $ref: '#/components/schemas/GenerateBlobContainerSasLinkResponse'
         success:
           type: boolean
-    GetBlobStorageContainersApiResponse:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            type: string
-        result:
-          $ref: '#/components/schemas/GetBlobStorageContainersResponse'
-        success:
-          type: boolean
-    UnauthorizedApiErrorResponseExample:
-      type: object
-      properties: {}
     NotFoundApiErrorResponseExample:
       type: object
       properties: {}
-    GetBlobStorageContainersResponse:
-      type: object
-      properties:
-        environment:
-          type: string
-        storageContainers:
-          type: array
-          items:
-            type: string
-        projectId:
-          format: uuid
-          type: string
     GenerateBlobContainerSasLinkResponse:
       type: object
       properties:
@@ -264,14 +244,32 @@ components:
         projectId:
           format: uuid
           type: string
-    GenerateBlobContainerSasLinkRequestParameters:
+    GetBlobStorageContainersApiResponse:
       type: object
       properties:
-        retentionHours:
-          format: int32
-          type: integer
-      example:
-        retentionHours: 24
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/GetBlobStorageContainersResponse'
+        success:
+          type: boolean
+    GetBlobStorageContainersResponse:
+      type: object
+      properties:
+        environment:
+          type: string
+        storageContainers:
+          type: array
+          items:
+            type: string
+        projectId:
+          format: uuid
+          type: string
+    UnauthorizedApiErrorResponseExample:
+      type: object
+      properties: {}
     BadRequestApiErrorResponseExample:
       type: object
       properties: {}

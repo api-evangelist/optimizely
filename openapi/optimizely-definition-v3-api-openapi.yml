@@ -1,15 +1,14 @@
 openapi: 3.2.0
 info:
-  title: Optimizely 📖 Definition ( v3 ) API
+  title: Optimizely Graph 📖 Definition ( v3 ) API
+  version: 3.24.0
+  description: Optimizely Graph API definition
+  license:
+    name: ' '
   contact:
     name: Documentation
     url: https://cg.optimizely.com/
-  license:
-    name: ' '
-  version: '1.0'
-  description: 'Operations tagged 📖 Definition ( v3 ) across 2 of this provider''s published API definitions: optimizely-platform-optimizely-optimizely-graph-api-openapi.json, optimizely-platform-optimizely-swagger-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://cg.optimizely.com
 - url: https://prod.cg.optimizely.com
 tags:
 - name: 📖 Definition ( v3 )
@@ -150,8 +149,6 @@ paths:
             schema:
               $ref: '#/components/schemas/SourceMetadata'
               description: The new metadata source
-    servers:
-    - url: https://cg.optimizely.com
   /api/content/v3/types:
     get:
       operationId: get-ContentV3TypeHandler
@@ -236,118 +233,29 @@ paths:
             schema:
               $ref: '#/components/schemas/ContentSource_V3'
               description: Content type definitions
-    servers:
-    - url: https://cg.optimizely.com
 components:
   schemas:
-    Slot:
-      enum:
-      - new
-      - old
-      type: string
-    PropertyType_V3:
+    LinkConfig:
       properties:
-        base:
+        to:
           type: string
-        abstract:
-          type: boolean
-        properties:
-          properties: {}
-          additionalProperties:
-            $ref: '#/components/schemas/Property_V3'
-          type: object
-      type: object
-      additionalProperties: false
-    ContentType_V3:
-      properties:
-        contentType:
-          items:
-            type: string
-          type: array
-        properties:
-          properties: {}
-          additionalProperties:
-            $ref: '#/components/schemas/ContentTypeProperty_V3'
-          type: object
-        displayName:
-          $ref: '#/components/schemas/Optional_string_'
-        sortOrder:
-          type: number
-          format: double
-        description:
-          $ref: '#/components/schemas/Optional_string_'
-        base:
+        from:
           type: string
-        abstract:
-          type: boolean
       required:
-      - contentType
+      - to
+      - from
       type: object
-      additionalProperties: false
-    DeleteMode:
-      enum:
-      - types
-      - data
-      - reset
-      type: string
-    LinkMap:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/LinkConfig'
-      type: object
-    Optional_string_:
-      type:
-      - string
-      - 'null'
-    SourceInfo:
+    SourceMetadata:
       properties:
-        languages:
-          items:
-            type: string
-          type: array
-        description:
-          type: string
         label:
           type: string
-        id:
+        description:
           type: string
       required:
-      - languages
-      - description
       - label
-      - id
-      type: object
-    Property_V3:
-      properties:
-        type:
-          type: string
-        searchable:
-          type: boolean
-        index:
-          type: boolean
-        ref:
-          $ref: '#/components/schemas/FieldRef'
-      required:
-      - type
+      - description
       type: object
       additionalProperties: false
-    SourceInfoMap:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/SourceInfo'
-      type: object
-      example:
-        default:
-          id: default
-          label: default
-          description: ''
-          languages:
-          - en
-    ContentTypeMap_V3:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/ContentType_V3'
-      type: object
     ContentSource_V3:
       properties:
         preset:
@@ -394,27 +302,24 @@ components:
                 type: Float
               Longitude:
                 type: Float
+    Property_V3:
+      properties:
+        type:
+          type: string
+        searchable:
+          type: boolean
+        index:
+          type: boolean
+        ref:
+          $ref: '#/components/schemas/FieldRef'
+      required:
+      - type
+      type: object
+      additionalProperties: false
     PropertyTypeMap_V3:
       properties: {}
       additionalProperties:
         $ref: '#/components/schemas/PropertyType_V3'
-      type: object
-    LinkConfig:
-      properties:
-        to:
-          type: string
-        from:
-          type: string
-      required:
-      - to
-      - from
-      type: object
-    FieldRef:
-      properties:
-        id:
-          type: string
-        type:
-          type: string
       type: object
     ContentTypeProperty_V3:
       properties:
@@ -437,17 +342,107 @@ components:
       enum:
       - legacy
       - next
-    SourceMetadata:
+    SourceInfoMap:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/SourceInfo'
+      type: object
+      example:
+        default:
+          id: default
+          label: default
+          description: ''
+          languages:
+          - en
+    LinkMap:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/LinkConfig'
+      type: object
+    Optional_string_:
+      type:
+      - string
+      - 'null'
+    SourceInfo:
       properties:
-        label:
-          type: string
+        languages:
+          items:
+            type: string
+          type: array
         description:
           type: string
+        label:
+          type: string
+        id:
+          type: string
       required:
-      - label
+      - languages
       - description
+      - label
+      - id
+      type: object
+    ContentTypeMap_V3:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/ContentType_V3'
+      type: object
+    PropertyType_V3:
+      properties:
+        base:
+          type: string
+        abstract:
+          type: boolean
+        properties:
+          properties: {}
+          additionalProperties:
+            $ref: '#/components/schemas/Property_V3'
+          type: object
       type: object
       additionalProperties: false
+    FieldRef:
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+      type: object
+    DeleteMode:
+      enum:
+      - types
+      - data
+      - reset
+      type: string
+    ContentType_V3:
+      properties:
+        contentType:
+          items:
+            type: string
+          type: array
+        properties:
+          properties: {}
+          additionalProperties:
+            $ref: '#/components/schemas/ContentTypeProperty_V3'
+          type: object
+        displayName:
+          $ref: '#/components/schemas/Optional_string_'
+        sortOrder:
+          type: number
+          format: double
+        description:
+          $ref: '#/components/schemas/Optional_string_'
+        base:
+          type: string
+        abstract:
+          type: boolean
+      required:
+      - contentType
+      type: object
+      additionalProperties: false
+    Slot:
+      enum:
+      - new
+      - old
+      type: string
   securitySchemes:
     epi-single:
       type: apiKey
@@ -468,6 +463,3 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT token
-x-refined-from:
-- optimizely-platform-optimizely-optimizely-graph-api-openapi.json
-- optimizely-platform-optimizely-swagger-openapi.json

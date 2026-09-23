@@ -15,8 +15,12 @@ tags:
 paths:
   /v1/batch:
     post:
-      summary: Batch multiple API endpoints into one request.
-      description: "You can use the Batch endpoint to do things like   \n1. Make activate decisions for a batch of users in a short timeframe for testing purposes\n2. Gather responses from a bunch of activate calls into one response for comparison or analysis\n"
+      summary: Batch multiple API endpoints into one request
+      description: 'You can use the Batch endpoint to do things like
+
+        1. Make activate decisions for a batch of users in a short timeframe for testing purposes
+
+        2. Gather responses from a bunch of activate calls into one response for comparison or analysis'
       operationId: BatchmultipleAPIendpointsintoonerequest.
       requestBody:
         description: ''
@@ -45,12 +49,22 @@ paths:
       - Batch
 components:
   schemas:
-    Method1:
-      title: Method1
-      enum:
-      - GET
-      - POST
-      type: string
+    BatchResponse:
+      title: BatchResponse
+      type: object
+      properties:
+        startedAt:
+          type: string
+        endedAt:
+          type: string
+        errorCount:
+          type: integer
+          contentEncoding: int32
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchResponseItem'
+          description: ''
     Method:
       title: Method
       enum:
@@ -58,58 +72,6 @@ components:
       - POST
       type: string
       description: The REST request method
-    BatchContext:
-      title: BatchContext
-      required:
-      - operations
-      type: object
-      properties:
-        operations:
-          type: array
-          items:
-            $ref: '#/components/schemas/BatchOperation'
-          description: Array of requests to Agent endpoints, batched into one request
-    BatchOperation:
-      title: BatchOperation
-      type: object
-      properties:
-        method:
-          allOf:
-          - $ref: '#/components/schemas/Method'
-          - description: The REST request method
-        url:
-          type: string
-          description: The base and endpoint components of the API request's path
-        operationID:
-          type: string
-          description: Index of the request in the batch
-        body:
-          type: object
-          description: The body for the request as JSON
-        parameters:
-          type: object
-          description: The parameters for the request as JSON
-        headers:
-          type: object
-          description: The headers for the request as JSON
-      examples:
-      - method: POST
-        url: /v1/activate
-        operationID: '1'
-        body:
-          userId: user1
-        parameters:
-          type: feature
-          experimentKey: ab_test_experiment
-        headers:
-          X-Optimizely-SDK-Key: <sdk_key>
-          Content-Type: application/json
-    Status:
-      title: Status
-      enum:
-      - 200
-      - 400
-      type: integer
     BatchResponseItem:
       title: BatchResponseItem
       type: object
@@ -162,22 +124,64 @@ components:
           variationKey: ''
         startedAt: '2020-09-10T10:50:37.466121-07:00'
         endedAt: '2020-09-10T10:50:37.466192-07:00'
-    BatchResponse:
-      title: BatchResponse
+    Status:
+      title: Status
+      enum:
+      - 200
+      - 400
+      type: integer
+    BatchOperation:
+      title: BatchOperation
       type: object
       properties:
-        startedAt:
+        method:
+          allOf:
+          - $ref: '#/components/schemas/Method'
+          - description: The REST request method
+        url:
           type: string
-        endedAt:
+          description: The base and endpoint components of the API request's path
+        operationID:
           type: string
-        errorCount:
-          type: integer
-          contentEncoding: int32
-        response:
+          description: Index of the request in the batch
+        body:
+          type: object
+          description: The body for the request as JSON
+        parameters:
+          type: object
+          description: The parameters for the request as JSON
+        headers:
+          type: object
+          description: The headers for the request as JSON
+      examples:
+      - method: POST
+        url: /v1/activate
+        operationID: '1'
+        body:
+          userId: user1
+        parameters:
+          type: feature
+          experimentKey: ab_test_experiment
+        headers:
+          X-Optimizely-SDK-Key: <sdk_key>
+          Content-Type: application/json
+    BatchContext:
+      title: BatchContext
+      required:
+      - operations
+      type: object
+      properties:
+        operations:
           type: array
           items:
-            $ref: '#/components/schemas/BatchResponseItem'
-          description: ''
+            $ref: '#/components/schemas/BatchOperation'
+          description: Array of requests to Agent endpoints, batched into one request
+    Method1:
+      title: Method1
+      enum:
+      - GET
+      - POST
+      type: string
   securitySchemes:
     SdkKeyAuth:
       type: apiKey

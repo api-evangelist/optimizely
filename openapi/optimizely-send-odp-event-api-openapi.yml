@@ -15,7 +15,7 @@ tags:
 paths:
   /v1/send-odp-event:
     post:
-      summary: Send event to Optimizely Data Platform (ODP).
+      summary: Send event to Optimizely Data Platform (ODP)
       description: Send ODP event to Optimizely Data Platform. Clients can send arbitrary events to the ODP server. For instance, they can bind an email to the FS userId via this API.
       operationId: sendOdpEvent
       requestBody:
@@ -52,13 +52,14 @@ paths:
       tags:
       - Send Odp Event
 components:
+  responses:
+    Forbidden:
+      description: You do not have necessary permissions for the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
-    Error:
-      title: Error
-      type: object
-      properties:
-        error:
-          type: string
     SendOdpEventContext:
       title: SendOdpEventContext
       required:
@@ -83,13 +84,12 @@ components:
               format: int32
             - type: number
             - type: boolean
-  responses:
-    Forbidden:
-      description: You do not have necessary permissions for the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
+          type: string
   securitySchemes:
     SdkKeyAuth:
       type: apiKey

@@ -2,7 +2,9 @@ openapi: 3.2.0
 info:
   title: Optimizely Flags Scheduling Change Approvals API
   version: 1.0.0
-  description: "This page documents how to use Optimizely Flags Scheduling API. These APIs allow you to turn a flag on/off, turn a \nrule on/off, change the traffic allocation of a rule and change the audience conditions of a rule.\n"
+  description: 'This page documents how to use Optimizely Flags Scheduling API. These APIs allow you to turn a flag on/off, turn a
+
+    rule on/off, change the traffic allocation of a rule and change the audience conditions of a rule.'
   x-logo:
     url: https://app.optimizely.com/static/img/rebrand/logo.svg
 servers:
@@ -58,8 +60,22 @@ paths:
           description: The id of the environment for which the schedule is set.
         name: environment_id
         in: path
+      summary: Get environment approval settings
+      x-summary-source: derived
 components:
   schemas:
+    ApproversResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          description: The user id of the approver user
+        email:
+          type: string
+          description: The email of the approver user
+      required:
+      - user_id
+      - email
     ErrorResponse:
       title: ErrorResponse
       required:
@@ -90,18 +106,6 @@ components:
           type: integer
           description: Status code of the response.
           example: 422
-    ApproversResponse:
-      type: object
-      properties:
-        user_id:
-          type: integer
-          description: The user id of the approver user
-        email:
-          type: string
-          description: The email of the approver user
-      required:
-      - user_id
-      - email
     ValidationError:
       title: ValidationError
       required:

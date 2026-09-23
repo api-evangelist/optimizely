@@ -226,7 +226,7 @@ paths:
     get:
       tags:
       - Promotions
-      summary: Call operation  Default
+      summary: Call operation Default
       operationId: Promotions_Default
       responses:
         '200':
@@ -242,7 +242,7 @@ paths:
     post:
       tags:
       - Promotions
-      summary: Call operation  archive
+      summary: Call operation archive
       operationId: Promotions_Archive
       parameters:
       - name: ids
@@ -270,7 +270,7 @@ paths:
     post:
       tags:
       - Promotions
-      summary: Call operation  results
+      summary: Call operation results
       operationId: Promotions_SetResultsById
       parameters:
       - name: id
@@ -323,6 +323,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Promotions set results by key
+      x-summary-source: derived
   /api/v1/admin/promotions/archive:
     delete:
       tags:
@@ -348,6 +350,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Promotions archive route
+      x-summary-source: derived
   /api/v1/admin/promotions/delete:
     delete:
       tags:
@@ -373,6 +377,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Promotions delete route
+      x-summary-source: derived
   /api/v1/admin/promotions({key})/customerorderpromotions({customerorderpromotionKey}):
     get:
       tags:
@@ -413,6 +419,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Promotions get customer order promotion by key and customerorderpromotionkey
+      x-summary-source: derived
   /api/v1/admin/promotions({key})/customproperties({custompropertyKey}):
     get:
       tags:
@@ -453,6 +461,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Promotions get custom property by key and custompropertykey
+      x-summary-source: derived
   /api/v1/admin/promotions({key})/promotionresults({promotionresultKey}):
     get:
       tags:
@@ -493,6 +503,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Promotions get promotion result by key and promotionresultkey
+      x-summary-source: derived
   /api/v1/admin/promotions({key})/websites({websiteKey}):
     get:
       tags:
@@ -533,8 +545,63 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Promotions get website by key and websitekey
+      x-summary-source: derived
 components:
   schemas:
+    Insite.Data.Entities.Promotion:
+      required:
+      - description
+      - displayMessage
+      - name
+      - promoCode
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        activateOn:
+          format: date-time
+          type: string
+        deactivateOn:
+          format: date-time
+          type: string
+        description:
+          maxLength: 1024
+          minLength: 0
+          type: string
+        displayMessage:
+          maxLength: 1024
+          minLength: 0
+          type: string
+        isLive:
+          type: boolean
+        name:
+          maxLength: 50
+          minLength: 0
+          type: string
+        promoCode:
+          maxLength: 50
+          minLength: 0
+          type: string
+        rank:
+          format: decimal
+          type: number
+        ruleManagerId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        modifiedOn:
+          format: date-time
+          type: string
+        modifiedBy:
+          type: string
     Insite.Data.Entities.PromotionResult:
       required:
       - promotionResultType
@@ -604,59 +671,6 @@ components:
           maxLength: 255
           minLength: 0
           type: string
-        createdOn:
-          format: date-time
-          type: string
-        createdBy:
-          type: string
-        modifiedOn:
-          format: date-time
-          type: string
-        modifiedBy:
-          type: string
-    Insite.Data.Entities.Promotion:
-      required:
-      - description
-      - displayMessage
-      - name
-      - promoCode
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        activateOn:
-          format: date-time
-          type: string
-        deactivateOn:
-          format: date-time
-          type: string
-        description:
-          maxLength: 1024
-          minLength: 0
-          type: string
-        displayMessage:
-          maxLength: 1024
-          minLength: 0
-          type: string
-        isLive:
-          type: boolean
-        name:
-          maxLength: 50
-          minLength: 0
-          type: string
-        promoCode:
-          maxLength: 50
-          minLength: 0
-          type: string
-        rank:
-          format: decimal
-          type: number
-        ruleManagerId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
         createdOn:
           format: date-time
           type: string

@@ -501,6 +501,13 @@ components:
           type: string
           format: date-time
           description: Timestamp when the asset was created
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
     RestMultiPartRequestSchema:
       required:
       - file
@@ -592,13 +599,6 @@ components:
               uri:
                 type: string
                 format: uri
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
     RestImageStreamingCollection:
       type: object
       properties:
@@ -620,6 +620,21 @@ components:
         limit:
           type: integer
           format: int32
+    AssetInput:
+      type: object
+      description: Input for updating an asset
+      properties:
+        title:
+          type: string
+          description: Title of the asset
+        description:
+          type: string
+          description: Description of the asset
+        labels:
+          type: array
+          description: Labels to associate with the asset
+          items:
+            type: string
     Asset_2:
       type: object
       description: A digital asset in the CMP library
@@ -683,21 +698,6 @@ components:
         offset:
           type: integer
           description: Current offset
-    AssetInput:
-      type: object
-      description: Input for updating an asset
-      properties:
-        title:
-          type: string
-          description: Title of the asset
-        description:
-          type: string
-          description: Description of the asset
-        labels:
-          type: array
-          description: Labels to associate with the asset
-          items:
-            type: string
     Error:
       type: object
       additionalProperties: true
@@ -722,6 +722,13 @@ components:
       description: The unique identifier for the Optimizely Campaign client
       schema:
         type: string
+    assetId:
+      name: assetId
+      in: path
+      required: true
+      description: The unique identifier for the asset
+      schema:
+        type: string
     offset:
       name: offset
       in: query
@@ -741,22 +748,15 @@ components:
         default: 25
         minimum: 1
         maximum: 100
-    assetId:
-      name: assetId
-      in: path
-      required: true
-      description: The unique identifier for the asset
-      schema:
-        type: string
   responses:
-    NotFound:
-      description: Not found error
+    Unauthorized:
+      description: Authorization error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            message: Resource not found
+            message: Unauthorized
     ClientError:
       description: Client error
       content:
@@ -773,14 +773,14 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: You do not have the permission to perform this operation
-    Unauthorized:
-      description: Authorization error
+    NotFound:
+      description: Not found error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            message: Unauthorized
+            message: Resource not found
   securitySchemes:
     basicAuth:
       type: http

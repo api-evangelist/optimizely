@@ -53,6 +53,8 @@ paths:
             text/html:
               schema:
                 type: object
+      summary: Device tokens V1 register device token
+      x-summary-source: derived
   /api/v1/admin/device-tokens/unregister:
     post:
       tags:
@@ -98,6 +100,8 @@ paths:
             text/html:
               schema:
                 type: object
+      summary: Device tokens V1 unregister device token
+      x-summary-source: derived
   /api/v1/admin/DeviceTokens:
     get:
       tags:
@@ -316,7 +320,7 @@ paths:
     get:
       tags:
       - Device Tokens
-      summary: Call operation  Default
+      summary: Call operation Default
       operationId: DeviceTokens_Default
       responses:
         '200':
@@ -353,6 +357,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Device tokens delete route
+      x-summary-source: derived
   /api/v1/admin/devicetokens({key})/customproperties({custompropertyKey}):
     get:
       tags:
@@ -393,8 +399,19 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: Device tokens get custom property by key and custompropertykey
+      x-summary-source: derived
 components:
   schemas:
+    Insite.Admin.Controllers.Api.UnregisterDeviceTokenDto:
+      required:
+      - deviceToken
+      type: object
+      properties:
+        deviceToken:
+          maxLength: 256
+          minLength: 1
+          type: string
     Insite.Data.Entities.DeviceToken:
       required:
       - token
@@ -425,15 +442,6 @@ components:
         modifiedBy:
           type: string
     Insite.Admin.Controllers.Api.RegisterDeviceTokenDto:
-      required:
-      - deviceToken
-      type: object
-      properties:
-        deviceToken:
-          maxLength: 256
-          minLength: 1
-          type: string
-    Insite.Admin.Controllers.Api.UnregisterDeviceTokenDto:
       required:
       - deviceToken
       type: object

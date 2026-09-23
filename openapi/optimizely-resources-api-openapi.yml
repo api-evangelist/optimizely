@@ -1,18 +1,17 @@
 openapi: 3.2.0
 info:
-  title: Optimizely 📝 Resources API
+  title: Optimizely Graph 📝 Resources API
+  version: 3.24.0
+  description: Optimizely Graph API definition
+  license:
+    name: ' '
   contact:
     name: Documentation
     url: https://cg.optimizely.com/
-  license:
-    name: ' '
-  version: '1.0'
-  description: 'Operations tagged 📝 Resources across 2 of this provider''s published API definitions: optimizely-platform-optimizely-optimizely-graph-api-openapi.json, optimizely-platform-optimizely-swagger-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
-- url: https://cg.optimizely.com
 - url: https://prod.cg.optimizely.com
 tags:
-- name: 📝 Resources
+- name: Resources
 paths:
   /resources/stopwords:
     put:
@@ -23,7 +22,7 @@ paths:
       description: Stop words are the words in a stop list (or stop list or negative dictionary) which are filtered out (stopped) before or after processing of natural language data (text) because they are insignificant
       summary: Store stop words
       tags:
-      - 📝 Resources
+      - Resources
       security:
       - epi-hmac: []
       - Basic: []
@@ -52,7 +51,7 @@ paths:
           description: No content
       summary: Delete stop words
       tags:
-      - 📝 Resources
+      - Resources
       security:
       - epi-hmac: []
       - Basic: []
@@ -68,8 +67,6 @@ paths:
         required: false
         schema:
           type: string
-    servers:
-    - url: https://cg.optimizely.com
   /resources/synonyms:
     get:
       operationId: list-SynonymHandler
@@ -83,7 +80,7 @@ paths:
       description: Get synonyms for a given slot
       summary: List synonyms
       tags:
-      - 📝 Resources
+      - Resources
       security:
       - epi-hmac: []
       - Basic: []
@@ -122,7 +119,7 @@ paths:
         This happens when you store synonyms in Optimizely Graph and enable them per field in your query. Otherwise, many relevant results may not be retrieved.'
       summary: Store synonyms
       tags:
-      - 📝 Resources
+      - Resources
       security:
       - epi-hmac: []
       - Basic: []
@@ -160,7 +157,7 @@ paths:
           description: No content
       summary: Delete synonyms
       tags:
-      - 📝 Resources
+      - Resources
       security:
       - epi-hmac: []
       - Basic: []
@@ -176,19 +173,8 @@ paths:
         required: false
         schema:
           type: string
-    servers:
-    - url: https://cg.optimizely.com
 components:
   schemas:
-    StopwordsBody:
-      type: string
-      example: 'the
-
-        Schwarzenegger
-
-        amy
-
-        Bob'
     Response:
       description: 'This Fetch API interface represents the response to a request.
 
@@ -204,6 +190,15 @@ components:
         Siteseeker, Welcome, Episerver => Optimizely
 
         William Henry Gates III => Bill Gates'
+    StopwordsBody:
+      type: string
+      example: 'the
+
+        Schwarzenegger
+
+        amy
+
+        Bob'
   securitySchemes:
     epi-single:
       type: apiKey
@@ -224,6 +219,3 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT token
-x-refined-from:
-- optimizely-platform-optimizely-optimizely-graph-api-openapi.json
-- optimizely-platform-optimizely-swagger-openapi.json

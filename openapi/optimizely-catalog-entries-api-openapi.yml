@@ -112,32 +112,22 @@ paths:
         '404':
           description: Catalog entry not found
 components:
+  parameters:
+    entryCode:
+      name: entryCode
+      in: path
+      required: true
+      description: The unique code of the catalog entry
+      schema:
+        type: string
+    language:
+      name: language
+      in: path
+      required: true
+      description: The language code for the content version
+      schema:
+        type: string
   schemas:
-    CatalogEntryInput:
-      type: object
-      description: Input for creating or updating a catalog entry
-      properties:
-        code:
-          type: string
-          description: Unique code for the catalog entry
-        name:
-          type: string
-          description: Display name of the entry
-        entry_type:
-          type: string
-          description: Type of catalog entry
-          enum:
-          - Product
-          - Variation
-          - Package
-          - Bundle
-        is_active:
-          type: boolean
-          description: Whether the entry is active
-        properties:
-          type: object
-          description: Dynamic properties specific to the entry type
-          additionalProperties: true
     CatalogEntry:
       type: object
       description: A catalog entry (product, variant, package, or bundle)
@@ -186,21 +176,31 @@ components:
               market_id:
                 type: string
                 description: Market identifier
-  parameters:
-    language:
-      name: language
-      in: path
-      required: true
-      description: The language code for the content version
-      schema:
-        type: string
-    entryCode:
-      name: entryCode
-      in: path
-      required: true
-      description: The unique code of the catalog entry
-      schema:
-        type: string
+    CatalogEntryInput:
+      type: object
+      description: Input for creating or updating a catalog entry
+      properties:
+        code:
+          type: string
+          description: Unique code for the catalog entry
+        name:
+          type: string
+          description: Display name of the entry
+        entry_type:
+          type: string
+          description: Type of catalog entry
+          enum:
+          - Product
+          - Variation
+          - Package
+          - Bundle
+        is_active:
+          type: boolean
+          description: Whether the entry is active
+        properties:
+          type: object
+          description: Dynamic properties specific to the entry type
+          additionalProperties: true
   securitySchemes:
     bearerAuth:
       type: http

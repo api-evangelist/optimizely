@@ -226,7 +226,7 @@ paths:
     get:
       tags:
       - System List Values
-      summary: Call operation  Default
+      summary: Call operation Default
       operationId: SystemListValues_Default
       responses:
         '200':
@@ -242,7 +242,7 @@ paths:
     post:
       tags:
       - System List Values
-      summary: Call operation  archive
+      summary: Call operation archive
       operationId: SystemListValues_Archive
       parameters:
       - name: ids
@@ -291,6 +291,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: System list values archive route
+      x-summary-source: derived
   /api/v1/admin/systemlistvalues/delete:
     delete:
       tags:
@@ -316,6 +318,8 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: System list values delete route
+      x-summary-source: derived
   /api/v1/admin/systemlistvalues({key})/customproperties({custompropertyKey}):
     get:
       tags:
@@ -356,7 +360,17 @@ paths:
       deprecated: false
       security:
       - access_token: []
+      summary: System list values get custom property by key and custompropertykey
+      x-summary-source: derived
 components:
+  requestBodies:
+    Affiliates_ArchiveParameters:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: {}
+      description: archive action parameters
   schemas:
     Insite.Data.Entities.SystemListValue:
       required:
@@ -398,14 +412,6 @@ components:
           type: string
         modifiedBy:
           type: string
-  requestBodies:
-    Affiliates_ArchiveParameters:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties: {}
-      description: archive action parameters
   securitySchemes:
     access_token:
       type: apiKey
