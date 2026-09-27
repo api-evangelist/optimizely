@@ -272,13 +272,15 @@ components:
         entry:
           type: string
           description: Pattern of the blocklist entry. You can use * for multiple character matching or ? for single character matching. If this characters should be matched as literals they need to be escaped with a backslash (\* or \?)
-    RestApiLink:
+    RestBlacklistedEntry:
       type: object
       properties:
-        href:
+        blacklisted:
+          type: boolean
+          description: If true, the entry is blocklisted
+        pattern:
           type: string
-        rel:
-          type: string
+          description: Address pattern
     RestBlacklistEntry:
       type: object
       properties:
@@ -324,15 +326,34 @@ components:
               uri:
                 type: string
                 format: uri
-    RestBlacklistedEntry:
+    RestApiLink:
       type: object
       properties:
-        blacklisted:
-          type: boolean
-          description: If true, the entry is blocklisted
-        pattern:
+        href:
           type: string
-          description: Address pattern
+        rel:
+          type: string
+    RestBlacklistEntryStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestBlacklistEntry'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     RestCount:
       type: object
       properties:
@@ -364,27 +385,6 @@ components:
           type: integer
           description: Total number
           format: int64
-    RestBlacklistEntryStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestBlacklistEntry'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
   securitySchemes:
     Authorization:
       type: apiKey

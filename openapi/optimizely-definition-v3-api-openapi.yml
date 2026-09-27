@@ -235,27 +235,6 @@ paths:
               description: Content type definitions
 components:
   schemas:
-    LinkConfig:
-      properties:
-        to:
-          type: string
-        from:
-          type: string
-      required:
-      - to
-      - from
-      type: object
-    SourceMetadata:
-      properties:
-        label:
-          type: string
-        description:
-          type: string
-      required:
-      - label
-      - description
-      type: object
-      additionalProperties: false
     ContentSource_V3:
       properties:
         preset:
@@ -302,67 +281,6 @@ components:
                 type: Float
               Longitude:
                 type: Float
-    Property_V3:
-      properties:
-        type:
-          type: string
-        searchable:
-          type: boolean
-        index:
-          type: boolean
-        ref:
-          $ref: '#/components/schemas/FieldRef'
-      required:
-      - type
-      type: object
-      additionalProperties: false
-    PropertyTypeMap_V3:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/PropertyType_V3'
-      type: object
-    ContentTypeProperty_V3:
-      properties:
-        type:
-          type: string
-        searchable:
-          type: boolean
-        index:
-          type: boolean
-        ref:
-          $ref: '#/components/schemas/FieldRef'
-        helpText:
-          $ref: '#/components/schemas/Optional_string_'
-      required:
-      - type
-      type: object
-      additionalProperties: false
-    Preset:
-      type: string
-      enum:
-      - legacy
-      - next
-    SourceInfoMap:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/SourceInfo'
-      type: object
-      example:
-        default:
-          id: default
-          label: default
-          description: ''
-          languages:
-          - en
-    LinkMap:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/LinkConfig'
-      type: object
-    Optional_string_:
-      type:
-      - string
-      - 'null'
     SourceInfo:
       properties:
         languages:
@@ -381,11 +299,37 @@ components:
       - label
       - id
       type: object
+    LinkMap:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/LinkConfig'
+      type: object
+    PropertyTypeMap_V3:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/PropertyType_V3'
+      type: object
     ContentTypeMap_V3:
       properties: {}
       additionalProperties:
         $ref: '#/components/schemas/ContentType_V3'
       type: object
+    ContentTypeProperty_V3:
+      properties:
+        type:
+          type: string
+        searchable:
+          type: boolean
+        index:
+          type: boolean
+        ref:
+          $ref: '#/components/schemas/FieldRef'
+        helpText:
+          $ref: '#/components/schemas/Optional_string_'
+      required:
+      - type
+      type: object
+      additionalProperties: false
     PropertyType_V3:
       properties:
         base:
@@ -399,6 +343,25 @@ components:
           type: object
       type: object
       additionalProperties: false
+    Property_V3:
+      properties:
+        type:
+          type: string
+        searchable:
+          type: boolean
+        index:
+          type: boolean
+        ref:
+          $ref: '#/components/schemas/FieldRef'
+      required:
+      - type
+      type: object
+      additionalProperties: false
+    Preset:
+      type: string
+      enum:
+      - legacy
+      - next
     FieldRef:
       properties:
         id:
@@ -406,12 +369,25 @@ components:
         type:
           type: string
       type: object
-    DeleteMode:
+    Slot:
       enum:
-      - types
-      - data
-      - reset
+      - new
+      - old
       type: string
+    Optional_string_:
+      type:
+      - string
+      - 'null'
+    LinkConfig:
+      properties:
+        to:
+          type: string
+        from:
+          type: string
+      required:
+      - to
+      - from
+      type: object
     ContentType_V3:
       properties:
         contentType:
@@ -438,10 +414,34 @@ components:
       - contentType
       type: object
       additionalProperties: false
-    Slot:
+    SourceMetadata:
+      properties:
+        label:
+          type: string
+        description:
+          type: string
+      required:
+      - label
+      - description
+      type: object
+      additionalProperties: false
+    SourceInfoMap:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/SourceInfo'
+      type: object
+      example:
+        default:
+          id: default
+          label: default
+          description: ''
+          languages:
+          - en
+    DeleteMode:
       enum:
-      - new
-      - old
+      - types
+      - data
+      - reset
       type: string
   securitySchemes:
     epi-single:

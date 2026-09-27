@@ -74,6 +74,12 @@ components:
         the related resource.
 
         '
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
     ForbiddenResponse:
       content:
         application/problem+json:
@@ -84,13 +90,23 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Do not have permission to perform the operation
-    UnauthorizedResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Invalid credentials
   schemas:
+    ChangeHistory:
+      items:
+        properties:
+          entity_ids:
+            description: Array of entity IDs
+            items:
+              anyOf:
+              - type: integer
+              - type: string
+            type: array
+          entity_type:
+            description: Flag Key
+            readOnly: true
+            type: string
+        type: object
+      type: array
     ProblemDetail:
       additionalProperties: true
       description: https://tools.ietf.org/html/rfc7807#section-3.1
@@ -116,22 +132,6 @@ components:
       - title
       - type
       type: object
-    ChangeHistory:
-      items:
-        properties:
-          entity_ids:
-            description: Array of entity IDs
-            items:
-              anyOf:
-              - type: integer
-              - type: string
-            type: array
-          entity_type:
-            description: Flag Key
-            readOnly: true
-            type: string
-        type: object
-      type: array
   parameters:
     flagId:
       description: The Flag identifier

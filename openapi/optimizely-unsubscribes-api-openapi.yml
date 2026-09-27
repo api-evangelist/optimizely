@@ -146,6 +146,16 @@ paths:
     - url: https://api.campaign.episerver.net/rest
 components:
   schemas:
+    UnsubscribeInput:
+      type: object
+      description: Input for adding an unsubscribe
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address to unsubscribe
     Unsubscribe:
       type: object
       description: An unsubscribed recipient
@@ -161,16 +171,6 @@ components:
         reason:
           type: string
           description: Reason for the unsubscription
-    UnsubscribeInput:
-      type: object
-      description: Input for adding an unsubscribe
-      required:
-      - email
-      properties:
-        email:
-          type: string
-          format: email
-          description: Email address to unsubscribe
     CreateUnsubscribesRequestData:
       type: object
       properties:
@@ -199,80 +199,6 @@ components:
         recipientListId:
           type: integer
           description: ID of the recipient list to which the recipients are assigned (only if recipient list based unsubscribe is set)
-          format: int64
-    RestUnsubscribesCreateResult:
-      type: object
-      properties:
-        successfulIds:
-          type: array
-          description: Successfully unsubscribed IDs
-          items:
-            type: string
-            description: Successfully unsubscribed IDs
-        unsuccessfulIds:
-          type: array
-          description: Unsuccessfully unsubscribed IDs
-          items:
-            type: string
-            description: Unsuccessfully unsubscribed IDs
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
-    RestUnsubscribeStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestUnsubscribe'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    RestCount:
-      type: object
-      properties:
-        links:
-          type: array
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-        count:
-          type: integer
-          description: Total number
           format: int64
     RestUnsubscribe:
       type: object
@@ -322,6 +248,80 @@ components:
         mediaType:
           type: string
           description: 'Media type of the delivery channel<p><i>Default value</i> : GLOBAL</p>'
+    RestUnsubscribesCreateResult:
+      type: object
+      properties:
+        successfulIds:
+          type: array
+          description: Successfully unsubscribed IDs
+          items:
+            type: string
+            description: Successfully unsubscribed IDs
+        unsuccessfulIds:
+          type: array
+          description: Unsuccessfully unsubscribed IDs
+          items:
+            type: string
+            description: Unsuccessfully unsubscribed IDs
+    RestUnsubscribeStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestUnsubscribe'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestCount:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+        count:
+          type: integer
+          description: Total number
+          format: int64
   parameters:
     clientId:
       name: clientId

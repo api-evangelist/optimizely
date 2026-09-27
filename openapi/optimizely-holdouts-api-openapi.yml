@@ -1036,116 +1036,199 @@ paths:
     - url: https://api.optimizely.com/v2
 components:
   schemas:
-    Metric:
+    HoldoutRequestBody:
+      description: "Request body schema for creating or updating a holdout. \n\nHoldouts are experiments that reserve a portion of your traffic to measure the impact of your feature flags and experiments. They help establish a control group by excluding a percentage of users from seeing any experiments, allowing you to measure the overall impact of your experimentation program.\n"
+      example:
+        audience_conditions:
+        - or
+        - audience_id: 5340810295
+        description: Holdout group to measure the overall impact of our growth experiments throughout the year
+        environment_key: production
+        key: annual_growth_holdout
+        metrics:
+        - aggregator: unique
+          display_title: Conversion Rate
+          scope: visitor
+          winning_direction: increasing
+        name: Annual Growth Control Group
+        scope: global
+        scope_type: exclude
+        start_time: '2024-01-01T00:00:00.000Z'
+        traffic_allocation: 500
       properties:
-        aggregator:
-          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
-          enum:
-          - unique
-          - count
-          - sum
-          - ratio
+        archived:
+          description: Whether the holdout is archived. New holdouts are created as unarchived by default.
+          example: false
+          readOnly: true
+          type: boolean
+        audience_conditions:
+          description: 'Defines which audiences this holdout should apply to. If omitted, the holdout applies to all users.
+
+            Uses the same structure as audience conditions in experiments - supports logical operators like ''and'', ''or'', ''not''.
+
+            '
+          externalDocs:
+            description: Audience conditions structure documentation
+            url: https://developers.optimizely.com/x/rest/guides/conditions/
+          items:
+            example:
+            - or
+            - audience_id: 5340810295
+            - audience_id: 1234567890
+          type: array
+        audience_ids:
+          deprecated: true
+          description: 'DEPRECATED: Use audience_conditions instead. List of audience IDs that this holdout should apply to.
+
+            This field is maintained for backward compatibility.
+
+            '
+          example:
+          - 5340810295
+          - 1234567890
+          items:
+            type: integer
+          type: array
+        created_by_user_email:
+          description: Email of the user who created the holdout.
+          example: user@company.com
+          readOnly: true
           type: string
-        display_title:
-          description: An optional title for the unique metric configuration. If not provided, the event name will be used.
-          type: string
-        display_unit:
-          description: An optional name for the unit of the unique metric configuration.
-          type: string
-        event_id:
-          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
-          example: 32334454244
-          format: int64
-          type: integer
-        event_properties:
-          properties:
-            filter:
-              properties:
-                combine_operator:
-                  enum:
-                  - or
-                  - and
-                  type: string
-                conditions:
-                  items:
-                    $ref: '#/components/schemas/EventPropertyCondition'
-              type: object
-          type: object
-        event_type:
-          type: string
-        field:
-          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
-          enum:
-          - revenue
-          - value
+        created_time:
+          description: Timestamp when the holdout was created.
+          example: '2024-01-01T10:00:00.000Z'
+          format: date-time
+          readOnly: true
           type:
           - string
           - 'null'
+        description:
+          description: "Optional detailed description explaining the purpose and context of this holdout. \nHelps team members understand what this holdout is measuring.\n"
+          example: Holdout group to measure the overall impact of our growth experiments throughout the year
+          maxLength: 1000
+          type: string
+        end_time:
+          description: Timestamp when the holdout finished or will finish.
+          example: '2024-12-31T23:59:59.000Z'
+          format: date-time
+          readOnly: true
+          type: string
+        environment_key:
+          description: "The environment where this holdout will be active (e.g., 'production', 'staging'). \nThe holdout will only affect traffic in this specific environment.\n"
+          example: production
+          type: string
         id:
-          description: A unique identifier for the metric configuration.
+          description: System-generated unique identifier for the holdout.
+          example: 12345
+          readOnly: true
+          type: integer
+        key:
+          description: "Unique identifier for the holdout. Must be unique within the project. \nUse alphanumeric characters, underscores, and hyphens only.\n"
+          example: annual_growth_holdout
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\-]+$
           type: string
         metrics:
+          description: 'List of metrics that will be tracked and analyzed for this holdout.
+
+            These metrics help measure the impact of experiments on your control group.
+
+            '
+          example:
+          - aggregator: unique
+            display_title: Conversion Rate
+            scope: visitor
+            winning_direction: increasing
+          - aggregator: sum
+            display_title: Revenue per Visitor
+            field: revenue
+            scope: visitor
+            winning_direction: increasing
           items:
-            $ref: '#/components/schemas/SubMetric'
-            type: object
+            $ref: '#/components/schemas/Metric'
           type: array
+        name:
+          description: Human-readable name for the holdout that will be displayed in the UI.
+          example: Annual Growth Control Group
+          maxLength: 255
+          type: string
         project_id:
-          description: A unique identifier for the project associated with the metric.
+          description: The ID of the project this holdout belongs to.
+          example: 98765
+          format: int64
+          readOnly: true
+          type: integer
+        revision:
+          description: Revision number for tracking changes to the holdout.
+          example: 1
+          readOnly: true
           type: integer
         scope:
-          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
+          default: global
+          description: 'Defines the scope of the holdout:
+
+            - ''global'': Affects all experiments across the entire project
+
+            - ''local'': Affects only specific experiments or flags (requires additional configuration)
+
+            '
           enum:
-          - session
-          - visitor
-          - event
+          - global
+          - local
+          example: global
           type: string
-        visibility:
-          description: The visibility of the metric.
+        scope_type:
+          default: exclude
+          description: 'Defines how the holdout scope is applied:
+
+            - ''exclude'': Users in holdout are excluded from seeing experiments (most common)
+
+            - ''include'': Users in holdout are included in experiments (less common)
+
+            '
           enum:
-          - account
-          - experiment
-          - project
+          - exclude
+          - include
+          example: exclude
           type: string
-        winning_direction:
-          description: The winning direction of this metric
-          enum:
-          - increasing
-          - decreasing
-          type: string
-      required:
-      - winning_direction
-      - aggregator
-      type: object
-    ProblemDetail:
-      additionalProperties: true
-      description: https://tools.ietf.org/html/rfc7807#section-3.1
-      properties:
-        detail:
-          description: A human-readable explanation specific to this occurrence of the problem.
+        start_time:
+          description: 'When the holdout should become active. If not specified, the holdout will be active immediately upon creation.
+
+            Must be in ISO 8601 format.
+
+            '
+          example: '2024-01-01T00:00:00.000Z'
+          format: date-time
           type: string
         status:
-          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          description: Current status of the holdout.
+          enum:
+          - draft
+          - running
+          - concluded
+          example: draft
+          readOnly: true
+          type: string
+        traffic_allocation:
+          description: 'Percentage of traffic to allocate to this holdout, expressed in basis points (1/100th of a percent).
+
+            For example: 100 = 1%, 1000 = 10%, 5000 = 50%. The remaining traffic will see experiments normally.
+
+            '
+          example: 1000
+          maximum: 10000
+          minimum: 0
           type: integer
-        title:
-          description: A short, human-readable summary of the problem type.
-          type: string
-        type:
-          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
-          type: string
-        uuid:
-          description: Error reference for customer support
+        updated_time:
+          description: Timestamp when the holdout was last updated.
+          example: '2024-01-01T10:00:00.000Z'
+          format: date-time
+          readOnly: true
           type: string
       required:
-      - detail
-      - status
-      - title
-      - type
+      - key
+      - name
       type: object
-    AudienceConditions:
-      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
-      oneOf:
-      - $ref: '#/components/schemas/AudienceConditionsArray'
-      - $ref: '#/components/schemas/AudienceConditionsString'
     Holdout:
       description: 'Represents a holdout experiment that reserves a portion of traffic to measure the impact of feature flags and experiments.
 
@@ -1401,95 +1484,13 @@ components:
       - name
       - key
       type: object
-    HoldoutMap:
-      additionalProperties:
-        $ref: '#/components/schemas/Holdout'
-      description: 'A dictionary/map of holdouts where each key is the holdout ID and the value is the holdout object.
-
-
-        This structure is used internally for efficient lookups and when representing holdout
-
-        relationships. The keys are string representations of holdout IDs.
-
-        '
-      example:
-        '12345':
-          description: Control group for measuring overall impact of Q4 growth experiments
-          environment_key: production
-          id: 12345
-          key: growth_experiment_holdout
-          name: Q4 Growth Experiment Control
-          project_id: 98765
-          scope: global
-          scope_type: exclude
-          status: running
-          traffic_allocation: 1000
-        '12346':
-          description: Holdout for measuring checkout conversion experiments
-          environment_key: staging
-          id: 12346
-          key: checkout_flow_holdout
-          name: Checkout Flow Holdout Group
-          project_id: 98765
-          scope: local
-          scope_type: exclude
-          status: draft
-          traffic_allocation: 500
-      type: object
-    EventPropertyCondition:
-      properties:
-        name:
-          type: string
-        operator:
-          enum:
-          - equal_to
-          - not_equal_to
-          - greater_than
-          - greater_than_or_equal_to
-          - less_than
-          - less_than_or_equal_to
-          - contains
-          - does_not_contain
-          type: string
-        type:
-          enum:
-          - string
-          - number
-          - boolean
-          type: string
-        value:
-          type: string
-      required:
-      - name
-      - type
-      - value
-      - operator
-      type: object
-    AudienceConditionsArray:
-      example:
-      - or
-      - audience_id: 123
-      - - and
-        - audience_id: 456
-        - audience_id: 789
-      items:
-        anyOf:
-        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
-          type: string
-        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
-          properties:
-            audience_id:
-              type: integer
-          required:
-          - audience_id
-          type: object
-        - $ref: '#/components/schemas/AudienceConditionsArray'
-          description: A nested AudienceConditionsArray
-          example:
-          - - and
-            - audience_id: 456
-            - audience_id: 789
-      type: array
+    UrlValue:
+      description: A single url.
+      type: string
+    AudienceConditionsString:
+      description: A valid AudienceConditionsArray represented as a JSON string
+      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
+      type: string
     HoldoutExperiment:
       description: 'Represents a single experiment rule that is connected to a holdout configuration.
 
@@ -1543,6 +1544,43 @@ components:
           - 'null'
       required:
       - experiment_id
+      type: object
+    PatchRequestBody:
+      description: A JSONPatch document as defined by RFC 6902
+      properties:
+        from:
+          description: A JSON Pointer to the resource attribute
+          type: string
+        op:
+          description: The operation to be performed
+          enum:
+          - add
+          - remove
+          - replace
+          - move
+          - copy
+          - test
+          type: string
+        path:
+          description: A JSON-Pointer to the resource or the resource attribute
+          type: string
+        value:
+          anyOf:
+          - type: object
+          - items:
+              type: string
+            type: array
+          - $ref: '#/components/schemas/AudienceConditions'
+          - type: string
+          - type: integer
+          - type: boolean
+          - items:
+              $ref: '#/components/schemas/SubMetric'
+            type: array
+          description: The value to be used within the operations.
+      required:
+      - op
+      - path
       type: object
     HoldoutsPaginatedList:
       description: 'Paginated response structure for holdout collections with navigation links and metadata.
@@ -1702,253 +1740,31 @@ components:
       - first_url
       - last_url
       type: object
-    PatchRequestBody:
-      description: A JSONPatch document as defined by RFC 6902
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
       properties:
-        from:
-          description: A JSON Pointer to the resource attribute
-          type: string
-        op:
-          description: The operation to be performed
-          enum:
-          - add
-          - remove
-          - replace
-          - move
-          - copy
-          - test
-          type: string
-        path:
-          description: A JSON-Pointer to the resource or the resource attribute
-          type: string
-        value:
-          anyOf:
-          - type: object
-          - items:
-              type: string
-            type: array
-          - $ref: '#/components/schemas/AudienceConditions'
-          - type: string
-          - type: integer
-          - type: boolean
-          - items:
-              $ref: '#/components/schemas/SubMetric'
-            type: array
-          description: The value to be used within the operations.
-      required:
-      - op
-      - path
-      type: object
-    HoldoutExperiments:
-      description: "A collection of experiment rules associated with a holdout.\n\nEach item represents an experiment that is connected to the holdout through database \nrelationships between holdouts, flags, rulesets, rules, and reports. The list contains \nexperiment timing information and deployed variation details.\n"
-      items:
-        $ref: '#/components/schemas/HoldoutExperiment'
-      type: array
-    UrlValue:
-      description: A single url.
-      type: string
-    HoldoutRequestBody:
-      description: "Request body schema for creating or updating a holdout. \n\nHoldouts are experiments that reserve a portion of your traffic to measure the impact of your feature flags and experiments. They help establish a control group by excluding a percentage of users from seeing any experiments, allowing you to measure the overall impact of your experimentation program.\n"
-      example:
-        audience_conditions:
-        - or
-        - audience_id: 5340810295
-        description: Holdout group to measure the overall impact of our growth experiments throughout the year
-        environment_key: production
-        key: annual_growth_holdout
-        metrics:
-        - aggregator: unique
-          display_title: Conversion Rate
-          scope: visitor
-          winning_direction: increasing
-        name: Annual Growth Control Group
-        scope: global
-        scope_type: exclude
-        start_time: '2024-01-01T00:00:00.000Z'
-        traffic_allocation: 500
-      properties:
-        archived:
-          description: Whether the holdout is archived. New holdouts are created as unarchived by default.
-          example: false
-          readOnly: true
-          type: boolean
-        audience_conditions:
-          description: 'Defines which audiences this holdout should apply to. If omitted, the holdout applies to all users.
-
-            Uses the same structure as audience conditions in experiments - supports logical operators like ''and'', ''or'', ''not''.
-
-            '
-          externalDocs:
-            description: Audience conditions structure documentation
-            url: https://developers.optimizely.com/x/rest/guides/conditions/
-          items:
-            example:
-            - or
-            - audience_id: 5340810295
-            - audience_id: 1234567890
-          type: array
-        audience_ids:
-          deprecated: true
-          description: 'DEPRECATED: Use audience_conditions instead. List of audience IDs that this holdout should apply to.
-
-            This field is maintained for backward compatibility.
-
-            '
-          example:
-          - 5340810295
-          - 1234567890
-          items:
-            type: integer
-          type: array
-        created_by_user_email:
-          description: Email of the user who created the holdout.
-          example: user@company.com
-          readOnly: true
-          type: string
-        created_time:
-          description: Timestamp when the holdout was created.
-          example: '2024-01-01T10:00:00.000Z'
-          format: date-time
-          readOnly: true
-          type:
-          - string
-          - 'null'
-        description:
-          description: "Optional detailed description explaining the purpose and context of this holdout. \nHelps team members understand what this holdout is measuring.\n"
-          example: Holdout group to measure the overall impact of our growth experiments throughout the year
-          maxLength: 1000
-          type: string
-        end_time:
-          description: Timestamp when the holdout finished or will finish.
-          example: '2024-12-31T23:59:59.000Z'
-          format: date-time
-          readOnly: true
-          type: string
-        environment_key:
-          description: "The environment where this holdout will be active (e.g., 'production', 'staging'). \nThe holdout will only affect traffic in this specific environment.\n"
-          example: production
-          type: string
-        id:
-          description: System-generated unique identifier for the holdout.
-          example: 12345
-          readOnly: true
-          type: integer
-        key:
-          description: "Unique identifier for the holdout. Must be unique within the project. \nUse alphanumeric characters, underscores, and hyphens only.\n"
-          example: annual_growth_holdout
-          maxLength: 64
-          pattern: ^[a-zA-Z0-9_\-]+$
-          type: string
-        metrics:
-          description: 'List of metrics that will be tracked and analyzed for this holdout.
-
-            These metrics help measure the impact of experiments on your control group.
-
-            '
-          example:
-          - aggregator: unique
-            display_title: Conversion Rate
-            scope: visitor
-            winning_direction: increasing
-          - aggregator: sum
-            display_title: Revenue per Visitor
-            field: revenue
-            scope: visitor
-            winning_direction: increasing
-          items:
-            $ref: '#/components/schemas/Metric'
-          type: array
-        name:
-          description: Human-readable name for the holdout that will be displayed in the UI.
-          example: Annual Growth Control Group
-          maxLength: 255
-          type: string
-        project_id:
-          description: The ID of the project this holdout belongs to.
-          example: 98765
-          format: int64
-          readOnly: true
-          type: integer
-        revision:
-          description: Revision number for tracking changes to the holdout.
-          example: 1
-          readOnly: true
-          type: integer
-        scope:
-          default: global
-          description: 'Defines the scope of the holdout:
-
-            - ''global'': Affects all experiments across the entire project
-
-            - ''local'': Affects only specific experiments or flags (requires additional configuration)
-
-            '
-          enum:
-          - global
-          - local
-          example: global
-          type: string
-        scope_type:
-          default: exclude
-          description: 'Defines how the holdout scope is applied:
-
-            - ''exclude'': Users in holdout are excluded from seeing experiments (most common)
-
-            - ''include'': Users in holdout are included in experiments (less common)
-
-            '
-          enum:
-          - exclude
-          - include
-          example: exclude
-          type: string
-        start_time:
-          description: 'When the holdout should become active. If not specified, the holdout will be active immediately upon creation.
-
-            Must be in ISO 8601 format.
-
-            '
-          example: '2024-01-01T00:00:00.000Z'
-          format: date-time
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
           type: string
         status:
-          description: Current status of the holdout.
-          enum:
-          - draft
-          - running
-          - concluded
-          example: draft
-          readOnly: true
-          type: string
-        traffic_allocation:
-          description: 'Percentage of traffic to allocate to this holdout, expressed in basis points (1/100th of a percent).
-
-            For example: 100 = 1%, 1000 = 10%, 5000 = 50%. The remaining traffic will see experiments normally.
-
-            '
-          example: 1000
-          maximum: 10000
-          minimum: 0
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
           type: integer
-        updated_time:
-          description: Timestamp when the holdout was last updated.
-          example: '2024-01-01T10:00:00.000Z'
-          format: date-time
-          readOnly: true
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
           type: string
       required:
-      - key
-      - name
+      - detail
+      - status
+      - title
+      - type
       type: object
-    AudienceConditionsString:
-      description: A valid AudienceConditionsArray represented as a JSON string
-      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
-      type: string
-    UrlList:
-      description: A list of urls.
-      items:
-        type: string
-      type: array
     SubMetric:
       properties:
         aggregator:
@@ -1969,6 +1785,190 @@ components:
         scope:
           type: string
       type: object
+    AudienceConditions:
+      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
+      oneOf:
+      - $ref: '#/components/schemas/AudienceConditionsArray'
+      - $ref: '#/components/schemas/AudienceConditionsString'
+    AudienceConditionsArray:
+      example:
+      - or
+      - audience_id: 123
+      - - and
+        - audience_id: 456
+        - audience_id: 789
+      items:
+        anyOf:
+        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+          type: string
+        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
+          properties:
+            audience_id:
+              type: integer
+          required:
+          - audience_id
+          type: object
+        - $ref: '#/components/schemas/AudienceConditionsArray'
+          description: A nested AudienceConditionsArray
+          example:
+          - - and
+            - audience_id: 456
+            - audience_id: 789
+      type: array
+    HoldoutMap:
+      additionalProperties:
+        $ref: '#/components/schemas/Holdout'
+      description: 'A dictionary/map of holdouts where each key is the holdout ID and the value is the holdout object.
+
+
+        This structure is used internally for efficient lookups and when representing holdout
+
+        relationships. The keys are string representations of holdout IDs.
+
+        '
+      example:
+        '12345':
+          description: Control group for measuring overall impact of Q4 growth experiments
+          environment_key: production
+          id: 12345
+          key: growth_experiment_holdout
+          name: Q4 Growth Experiment Control
+          project_id: 98765
+          scope: global
+          scope_type: exclude
+          status: running
+          traffic_allocation: 1000
+        '12346':
+          description: Holdout for measuring checkout conversion experiments
+          environment_key: staging
+          id: 12346
+          key: checkout_flow_holdout
+          name: Checkout Flow Holdout Group
+          project_id: 98765
+          scope: local
+          scope_type: exclude
+          status: draft
+          traffic_allocation: 500
+      type: object
+    HoldoutExperiments:
+      description: "A collection of experiment rules associated with a holdout.\n\nEach item represents an experiment that is connected to the holdout through database \nrelationships between holdouts, flags, rulesets, rules, and reports. The list contains \nexperiment timing information and deployed variation details.\n"
+      items:
+        $ref: '#/components/schemas/HoldoutExperiment'
+      type: array
+    Metric:
+      properties:
+        aggregator:
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
+          enum:
+          - unique
+          - count
+          - sum
+          - ratio
+          type: string
+        display_title:
+          description: An optional title for the unique metric configuration. If not provided, the event name will be used.
+          type: string
+        display_unit:
+          description: An optional name for the unit of the unique metric configuration.
+          type: string
+        event_id:
+          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
+          example: 32334454244
+          format: int64
+          type: integer
+        event_properties:
+          properties:
+            filter:
+              properties:
+                combine_operator:
+                  enum:
+                  - or
+                  - and
+                  type: string
+                conditions:
+                  items:
+                    $ref: '#/components/schemas/EventPropertyCondition'
+              type: object
+          type: object
+        event_type:
+          type: string
+        field:
+          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
+          enum:
+          - revenue
+          - value
+          type:
+          - string
+          - 'null'
+        id:
+          description: A unique identifier for the metric configuration.
+          type: string
+        metrics:
+          items:
+            $ref: '#/components/schemas/SubMetric'
+            type: object
+          type: array
+        project_id:
+          description: A unique identifier for the project associated with the metric.
+          type: integer
+        scope:
+          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
+          enum:
+          - session
+          - visitor
+          - event
+          type: string
+        visibility:
+          description: The visibility of the metric.
+          enum:
+          - account
+          - experiment
+          - project
+          type: string
+        winning_direction:
+          description: The winning direction of this metric
+          enum:
+          - increasing
+          - decreasing
+          type: string
+      required:
+      - winning_direction
+      - aggregator
+      type: object
+    EventPropertyCondition:
+      properties:
+        name:
+          type: string
+        operator:
+          enum:
+          - equal_to
+          - not_equal_to
+          - greater_than
+          - greater_than_or_equal_to
+          - less_than
+          - less_than_or_equal_to
+          - contains
+          - does_not_contain
+          type: string
+        type:
+          enum:
+          - string
+          - number
+          - boolean
+          type: string
+        value:
+          type: string
+      required:
+      - name
+      - type
+      - value
+      - operator
+      type: object
+    UrlList:
+      description: A list of urls.
+      items:
+        type: string
+      type: array
     Error:
       properties:
         code:
@@ -1981,33 +1981,7 @@ components:
           format: uuid
           type: string
       type: object
-  requestBodies:
-    HoldoutRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/HoldoutRequestBody'
-      required: true
   parameters:
-    pageWindow:
-      description: Number of previous and next page links to supply for the request (defaults to 1).
-      in: query
-      name: page_window
-      schema:
-        type: integer
-    pageToken:
-      description: Pagination page token. Implements prev, next, last, first
-      in: query
-      name: page_token
-      schema:
-        type: string
-    perPage:
-      description: The max number of items to include per page or results.
-      in: query
-      name: per_page
-      schema:
-        format: int64
-        type: integer
     holdoutId:
       description: The holdout identifier
       example: 54321
@@ -2016,10 +1990,16 @@ components:
       required: true
       schema:
         type: integer
-    page:
-      description: Page number for pagination
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
       in: query
-      name: page
+      name: page_window
+      schema:
+        type: integer
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
       schema:
         format: int64
         type: integer
@@ -2031,6 +2011,33 @@ components:
       required: true
       schema:
         type: integer
+    page:
+      description: Page number for pagination
+      in: query
+      name: page
+      schema:
+        format: int64
+        type: integer
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    segment_conditions:
+      description: '(BETA) A string representation of a JSON Segment Conditions Expression. This parameter can be either URL-escaped stringified JSON or Base64-encoded stringified JSON using URL-safe alphabet (preferred).
+
+        Segment Conditions Expressions consist of Logical Expressions and Match Expressions.
+
+        Logical Expressions are represented as an array of the format [<operator>, <expression>...], where the supported operators are "and", "or" and "not".
+
+        Match Expressions are represented as an object of the format {"attribute_id": <attribute_id>, "attribute_value": <value>[, "match_type": <match_type>]}, where supported values for match_type are "exact" match type will match only an exact string match between "value" string and the attribute value. "substring" match type will match if "value" is a substring of the attribute value. "prefix" match type will match if "value" is a string prefix of the attribute value. "regex" match type will match if "value" is a regular expression match for the attribute value. The default match_type is "exact".
+
+        '
+      in: query
+      name: segment_conditions
+      schema:
+        type: string
     attribute_id_segment:
       description: 'ID of the attribute to segment results by. Requests containing attribute_id will return the results for all visitors that have attribute_value for the attribute represented by attribute_id. If present, the attribute_value parameter must also be present, and it cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
 
@@ -2040,17 +2047,24 @@ components:
       schema:
         format: int64
         type: integer
-    browser_segment:
-      description: Browser to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [device, source, attribute_id, attribute_value].
+    source_segment:
+      description: 'Source to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, device, attribute_id, attribute_value].
+
+        Campaign: Contains users that arrive on a URL containing a ''utm_campaign,'' ''utm_source,'' ''gclid,'' or ''otm_source'' query parameter. If the URL contains one of these parameters, the visitor will count as "Campaign" traffic even if they arrived through search.
+
+        Direct:  Includes all users who do not have any external referrer in their URL.
+
+        Referral: Includes all users that come from another URL that doesn''t count as Campaign.
+
+        '
       in: query
-      name: browser
+      name: source
       schema:
         enum:
-        - firefox
-        - chrome
-        - internet_explorer
-        - opera
-        - safari
+        - campaign
+        - direct
+        - referral
+        - search
         type: string
     device_segment:
       description: Device to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, source, attribute_id, attribute_value].
@@ -2072,50 +2086,26 @@ components:
       name: attribute_value
       schema:
         type: string
-    segment_conditions:
-      description: '(BETA) A string representation of a JSON Segment Conditions Expression. This parameter can be either URL-escaped stringified JSON or Base64-encoded stringified JSON using URL-safe alphabet (preferred).
-
-        Segment Conditions Expressions consist of Logical Expressions and Match Expressions.
-
-        Logical Expressions are represented as an array of the format [<operator>, <expression>...], where the supported operators are "and", "or" and "not".
-
-        Match Expressions are represented as an object of the format {"attribute_id": <attribute_id>, "attribute_value": <value>[, "match_type": <match_type>]}, where supported values for match_type are "exact" match type will match only an exact string match between "value" string and the attribute value. "substring" match type will match if "value" is a substring of the attribute value. "prefix" match type will match if "value" is a string prefix of the attribute value. "regex" match type will match if "value" is a regular expression match for the attribute value. The default match_type is "exact".
-
-        '
+    browser_segment:
+      description: Browser to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [device, source, attribute_id, attribute_value].
       in: query
-      name: segment_conditions
-      schema:
-        type: string
-    source_segment:
-      description: 'Source to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, device, attribute_id, attribute_value].
-
-        Campaign: Contains users that arrive on a URL containing a ''utm_campaign,'' ''utm_source,'' ''gclid,'' or ''otm_source'' query parameter. If the URL contains one of these parameters, the visitor will count as "Campaign" traffic even if they arrived through search.
-
-        Direct:  Includes all users who do not have any external referrer in their URL.
-
-        Referral: Includes all users that come from another URL that doesn''t count as Campaign.
-
-        '
-      in: query
-      name: source
+      name: browser
       schema:
         enum:
-        - campaign
-        - direct
-        - referral
-        - search
+        - firefox
+        - chrome
+        - internet_explorer
+        - opera
+        - safari
         type: string
-  responses:
-    ForbiddenResponse:
+  requestBodies:
+    HoldoutRequest:
       content:
-        application/problem+json:
-          example:
-            detail: Permission denied
-            status: 403
-            title: Forbidden
+        application/json:
           schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Do not have permission to perform the operation
+            $ref: '#/components/schemas/HoldoutRequestBody'
+      required: true
+  responses:
     ConflictResponse:
       content:
         application/problem+json:
@@ -2133,21 +2123,6 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Malformed requests and invalid parameter names and types
-    HoldoutsPaginatedListSuccessResponse:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/HoldoutsPaginatedList'
-      description: 'Successful retrieval of a list of holdouts.
-
-
-        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
-
-        link is not present in the response, it indicates a user is not authorized to access
-
-        the related resource.
-
-        '
     HoldoutSuccessResponse:
       content:
         application/json:
@@ -2165,12 +2140,37 @@ components:
         '
     NotFoundResponse:
       description: Not found. No content
+    HoldoutsPaginatedListSuccessResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HoldoutsPaginatedList'
+      description: 'Successful retrieval of a list of holdouts.
+
+
+        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+        link is not present in the response, it indicates a user is not authorized to access
+
+        the related resource.
+
+        '
     UnauthorizedResponse:
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Invalid credentials
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
   securitySchemes:
     BearerAuth:
       description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token

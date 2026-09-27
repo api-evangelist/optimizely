@@ -139,53 +139,6 @@ paths:
     - url: https://api.optimizely.com/flags/v1
       description: Optimizely Flags API v1 Server
 components:
-  parameters:
-    page:
-      name: page
-      in: query
-      required: false
-      description: Page number for pagination
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-    perPage:
-      name: per_page
-      in: query
-      required: false
-      description: Number of results per page
-      schema:
-        type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
-    projectId:
-      name: project_id
-      in: path
-      required: true
-      description: The unique identifier for the project
-      schema:
-        type: integer
-        format: int64
-    page_2:
-      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
-
-        '
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        type: integer
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
-        type: integer
   schemas:
     ProjectInput:
       type: object
@@ -309,18 +262,6 @@ components:
             js_file_size:
               type: integer
               description: Size of the JavaScript file in bytes
-    Error:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
-          type: string
-      type: object
     WebSnippetUpdate:
       properties:
         enable_force_variation:
@@ -384,42 +325,17 @@ components:
           - string
           - 'null'
       type: object
-    ProjectUpdate:
+    Error:
       properties:
-        account_id:
-          description: The ID of the account the Project is associated with
-          example: 12345
-          format: int64
-          readOnly: true
-          type: integer
-        confidence_threshold:
-          description: The significance level at which you would like to declare winning and losing variations. A lower number minimizes the time needed to declare a winning or losing variation, but increases the risk that your results aren't true winners and losers. The precision for this number is up to 4 decimal places.
-          example: 0.9
-          format: double
-          maximum: 1
-          minimum: 0.5
-          type: number
-        dcp_service_id:
-          description: The ID of a Dynamic Customer Profile Service associated with this Project
-          example: 121234
-          format: int64
-          type: integer
-        description:
-          description: A short description of the Project
-          example: Project for user sign up flow
+        code:
           type: string
-        name:
-          description: The name of the Project
-          example: Test Project
+        message:
           type: string
-        status:
-          description: The current status of the Project
-          enum:
-          - active
-          - archived
+        messages:
+          type: object
+        uuid:
+          format: uuid
           type: string
-        web_snippet:
-          $ref: '#/components/schemas/WebSnippetUpdate'
       type: object
     WebSnippet:
       properties:
@@ -498,6 +414,43 @@ components:
           type:
           - string
           - 'null'
+      type: object
+    ProjectUpdate:
+      properties:
+        account_id:
+          description: The ID of the account the Project is associated with
+          example: 12345
+          format: int64
+          readOnly: true
+          type: integer
+        confidence_threshold:
+          description: The significance level at which you would like to declare winning and losing variations. A lower number minimizes the time needed to declare a winning or losing variation, but increases the risk that your results aren't true winners and losers. The precision for this number is up to 4 decimal places.
+          example: 0.9
+          format: double
+          maximum: 1
+          minimum: 0.5
+          type: number
+        dcp_service_id:
+          description: The ID of a Dynamic Customer Profile Service associated with this Project
+          example: 121234
+          format: int64
+          type: integer
+        description:
+          description: A short description of the Project
+          example: Project for user sign up flow
+          type: string
+        name:
+          description: The name of the Project
+          example: Test Project
+          type: string
+        status:
+          description: The current status of the Project
+          enum:
+          - active
+          - archived
+          type: string
+        web_snippet:
+          $ref: '#/components/schemas/WebSnippetUpdate'
       type: object
     Project_3:
       properties:
@@ -608,6 +561,53 @@ components:
       required:
       - name
       type: object
+  parameters:
+    page:
+      name: page
+      in: query
+      required: false
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    projectId:
+      name: project_id
+      in: path
+      required: true
+      description: The unique identifier for the project
+      schema:
+        type: integer
+        format: int64
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
   securitySchemes:
     bearerAuth:
       type: http

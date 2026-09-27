@@ -290,7 +290,7 @@ paths:
     - url: https://api.campaign.episerver.net/rest
   /assets:
     get:
-      operationId: listAssets
+      operationId: getAssets
       summary: List assets
       description: Returns a list of digital assets in the CMP library, including images, videos, and raw files. Supports filtering and pagination.
       tags:
@@ -317,6 +317,8 @@ paths:
           description: Authentication credentials are missing or invalid
       security:
       - oauth2: []
+      x-operation-id-source: normalized
+      x-operation-id-original: listAssets
     post:
       operationId: createAsset
       summary: Create an asset
@@ -501,13 +503,27 @@ components:
           type: string
           format: date-time
           description: Timestamp when the asset was created
-    RestApiLink:
+    RestImageStreamingCollection:
       type: object
       properties:
-        href:
-          type: string
-        rel:
-          type: string
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestImage'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     RestMultiPartRequestSchema:
       required:
       - file
@@ -520,37 +536,6 @@ components:
         name:
           type: string
           description: name of the attachment
-    RestCount:
-      type: object
-      properties:
-        links:
-          type: array
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-        count:
-          type: integer
-          description: Total number
-          format: int64
     RestImage:
       type: object
       properties:
@@ -599,42 +584,44 @@ components:
               uri:
                 type: string
                 format: uri
-    RestImageStreamingCollection:
+    RestApiLink:
       type: object
       properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestImage'
+        href:
+          type: string
+        rel:
+          type: string
+    RestCount:
+      type: object
+      properties:
         links:
           type: array
-          writeOnly: true
           items:
-            $ref: '#/components/schemas/RestApiLink'
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
         count:
           type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    AssetInput:
-      type: object
-      description: Input for updating an asset
-      properties:
-        title:
-          type: string
-          description: Title of the asset
-        description:
-          type: string
-          description: Description of the asset
-        labels:
-          type: array
-          description: Labels to associate with the asset
-          items:
-            type: string
+          description: Total number
+          format: int64
     Asset_2:
       type: object
       description: A digital asset in the CMP library
@@ -685,6 +672,21 @@ components:
           type: string
           format: date-time
           description: Timestamp when the asset was last updated
+    AssetInput:
+      type: object
+      description: Input for updating an asset
+      properties:
+        title:
+          type: string
+          description: Title of the asset
+        description:
+          type: string
+          description: Description of the asset
+        labels:
+          type: array
+          description: Labels to associate with the asset
+          items:
+            type: string
     Pagination:
       type: object
       description: Pagination metadata
@@ -729,15 +731,6 @@ components:
       description: The unique identifier for the asset
       schema:
         type: string
-    offset:
-      name: offset
-      in: query
-      required: false
-      description: Number of items to skip for pagination
-      schema:
-        type: integer
-        default: 0
-        minimum: 0
     limit:
       name: limit
       in: query
@@ -748,6 +741,15 @@ components:
         default: 25
         minimum: 1
         maximum: 100
+    offset:
+      name: offset
+      in: query
+      required: false
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
   responses:
     Unauthorized:
       description: Authorization error
@@ -757,14 +759,6 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: Unauthorized
-    ClientError:
-      description: Client error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: 'Unsupported arguments: a,b,c'
     Forbidden:
       description: Permission error
       content:
@@ -773,6 +767,14 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: You do not have the permission to perform this operation
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
     NotFound:
       description: Not found error
       content:

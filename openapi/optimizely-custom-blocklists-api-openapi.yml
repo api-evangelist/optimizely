@@ -468,19 +468,27 @@ components:
               uri:
                 type: string
                 format: uri
-    CustomBlacklistEntryRequestData:
+    RestCustomBlacklistStreamingCollection:
       type: object
       properties:
-        reason:
-          type: string
-          description: Reason for creating a custom blocklist entry
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestCustomBlacklist'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     RestCustomBlacklist:
       type: object
       properties:
@@ -553,6 +561,27 @@ components:
           - SHA2_256
           - SHA2_512
           - SHA2_256_OF_MD5_AND_DATA
+    CreateCustomBlacklistEntriesRequestData:
+      required:
+      - patterns
+      type: object
+      properties:
+        patterns:
+          type: array
+          description: Patterns of the custom blocklist entries
+          items:
+            type: string
+            description: Patterns of the custom blocklist entries
+        reason:
+          type: string
+          description: Reason for creating a custom blocklist entry
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
     RestCustomBlacklistEntryStreamingCollection:
       type: object
       properties:
@@ -574,38 +603,9 @@ components:
         limit:
           type: integer
           format: int32
-    RestCustomBlacklistStreamingCollection:
+    CustomBlacklistEntryRequestData:
       type: object
       properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestCustomBlacklist'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    CreateCustomBlacklistEntriesRequestData:
-      required:
-      - patterns
-      type: object
-      properties:
-        patterns:
-          type: array
-          description: Patterns of the custom blocklist entries
-          items:
-            type: string
-            description: Patterns of the custom blocklist entries
         reason:
           type: string
           description: Reason for creating a custom blocklist entry

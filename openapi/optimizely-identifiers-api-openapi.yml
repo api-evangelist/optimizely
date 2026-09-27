@@ -217,29 +217,24 @@ components:
                   reason:
                     type: string
                     example: already used by another object
-    Identifier:
-      type: object
+    UpdateIdentifier:
       required:
-      - name
-      - display_name
-      - merge_confidence
+      - identifier_value
+      - identifier_field_name
+      type: object
       properties:
-        name:
+        identifier_value:
           type: string
-          description: 'The field name of the identifier, ending with one of the known suffixes: id, hash, number, token, alias, address, key.'
-        display_name:
+          description: Any valid identifier of this type (for example, test@optimizely.com).
+        identifier_field_name:
           type: string
-          description: 'The human-readable name, ending with the title case version of the name suffix: ID, Hash, Number, Token, Alias, Address, Key.'
-        public_read:
-          type: boolean
-          description: Enable access with the API public key.
-          default: false
-        merge_confidence:
-          type: string
-          description: The level of confidence (`high` or `low`) that this identifier can be used to merge customer profiles together.
-        messaging:
-          type: boolean
-          description: Whether this identifier can be used to message customers in campaigns.
+          description: The field name for the identifier you want to update (for example, email).
+        metadata:
+          type: array
+          items:
+            type: object
+            properties: {}
+            description: Object containing the metadata fields you want to update. The metadata fields must already exist on the identifier field.
     IdenfitierMetadata:
       type: object
       properties:
@@ -266,24 +261,29 @@ components:
           type: integer
           example: 1556582935
           default: 0
-    UpdateIdentifier:
-      required:
-      - identifier_value
-      - identifier_field_name
+    Identifier:
       type: object
+      required:
+      - name
+      - display_name
+      - merge_confidence
       properties:
-        identifier_value:
+        name:
           type: string
-          description: Any valid identifier of this type (for example, test@optimizely.com).
-        identifier_field_name:
+          description: 'The field name of the identifier, ending with one of the known suffixes: id, hash, number, token, alias, address, key.'
+        display_name:
           type: string
-          description: The field name for the identifier you want to update (for example, email).
-        metadata:
-          type: array
-          items:
-            type: object
-            properties: {}
-            description: Object containing the metadata fields you want to update. The metadata fields must already exist on the identifier field.
+          description: 'The human-readable name, ending with the title case version of the name suffix: ID, Hash, Number, Token, Alias, Address, Key.'
+        public_read:
+          type: boolean
+          description: Enable access with the API public key.
+          default: false
+        merge_confidence:
+          type: string
+          description: The level of confidence (`high` or `low`) that this identifier can be used to merge customer profiles together.
+        messaging:
+          type: boolean
+          description: Whether this identifier can be used to message customers in campaigns.
   securitySchemes:
     x-api-key:
       type: apiKey

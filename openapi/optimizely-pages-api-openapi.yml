@@ -534,6 +534,34 @@ components:
           type: string
         modifiedBy:
           type: string
+    PageInput:
+      type: object
+      description: Input for creating or updating a page
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this page belongs to
+        name:
+          type: string
+          description: Human-readable name of the page
+        edit_url:
+          type: string
+          format: uri
+          description: URL used in the visual editor for this page
+        conditions:
+          type: string
+          description: JSON-encoded URL targeting conditions
+        activation_type:
+          type: string
+          description: How the page is activated
+          enum:
+          - immediate
+          - polling
+          - callback
+          - manual
+          - dom_changed
+          - url_changed
     Page:
       type: object
       description: A page definition that specifies URL targeting conditions
@@ -574,34 +602,6 @@ components:
           type: string
           format: date-time
           description: Timestamp when the page was last modified
-    PageInput:
-      type: object
-      description: Input for creating or updating a page
-      properties:
-        project_id:
-          type: integer
-          format: int64
-          description: The project this page belongs to
-        name:
-          type: string
-          description: Human-readable name of the page
-        edit_url:
-          type: string
-          format: uri
-          description: URL used in the visual editor for this page
-        conditions:
-          type: string
-          description: JSON-encoded URL targeting conditions
-        activation_type:
-          type: string
-          description: How the page is activated
-          enum:
-          - immediate
-          - polling
-          - callback
-          - manual
-          - dom_changed
-          - url_changed
     Error:
       properties:
         code:
@@ -827,23 +827,6 @@ components:
           type: string
       type: object
   parameters:
-    page:
-      name: page
-      in: query
-      required: false
-      description: Page number for pagination
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-    pageId:
-      name: page_id
-      in: path
-      required: true
-      description: The unique identifier for the page
-      schema:
-        type: integer
-        format: int64
     projectIdQuery:
       name: project_id
       in: query
@@ -862,6 +845,32 @@ components:
         default: 25
         minimum: 1
         maximum: 100
+    page:
+      name: page
+      in: query
+      required: false
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    pageId:
+      name: page_id
+      in: path
+      required: true
+      description: The unique identifier for the page
+      schema:
+        type: integer
+        format: int64
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
     page_2:
       description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
 
@@ -871,15 +880,6 @@ components:
       required: false
       schema:
         default: 1
-        type: integer
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
         type: integer
   securitySchemes:
     access_token:

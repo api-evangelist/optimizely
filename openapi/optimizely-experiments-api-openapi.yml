@@ -827,6 +827,28 @@ components:
           type: string
         modifiedBy:
           type: string
+    ExperimentInput:
+      type: object
+      description: Input for creating or updating an experiment
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this experiment belongs to
+        name:
+          type: string
+          description: Human-readable name of the experiment
+        description:
+          type: string
+          description: Description of the experiment
+        status:
+          type: string
+          description: Current status
+          enum:
+          - active
+          - paused
+          - not_started
+          - archived
     Experiment:
       type: object
       description: A Feature Experimentation experiment
@@ -896,59 +918,6 @@ components:
           type: string
           format: date-time
           description: Timestamp when the experiment was last modified
-    ExperimentInput:
-      type: object
-      description: Input for creating or updating an experiment
-      properties:
-        project_id:
-          type: integer
-          format: int64
-          description: The project this experiment belongs to
-        name:
-          type: string
-          description: Human-readable name of the experiment
-        description:
-          type: string
-          description: Description of the experiment
-        status:
-          type: string
-          description: Current status
-          enum:
-          - active
-          - paused
-          - not_started
-          - archived
-    Metric:
-      type: object
-      description: A metric used to measure experiment results
-      properties:
-        event_id:
-          type: integer
-          format: int64
-          description: The event ID this metric tracks
-        aggregator:
-          type: string
-          description: How to aggregate the metric
-          enum:
-          - unique
-          - count
-          - sum
-        field:
-          type: string
-          description: The field to aggregate on
-        scope:
-          type: string
-          description: The scope of the metric
-          enum:
-          - visitor
-          - session
-          - event
-        winning_direction:
-          type: string
-          description: The direction that indicates improvement
-          enum:
-          - increasing
-          - decreasing
     ExperimentResults:
       type: object
       description: Statistical results for an experiment
@@ -1014,6 +983,128 @@ components:
                         significance:
                           type: number
                           description: Statistical significance level
+    Variation:
+      type: object
+      description: A variation within an experiment
+      properties:
+        variation_id:
+          type: integer
+          format: int64
+          description: Unique identifier for the variation
+        name:
+          type: string
+          description: Name of the variation
+        weight:
+          type: integer
+          description: Traffic allocation weight for the variation
+          minimum: 0
+          maximum: 10000
+        actions:
+          type: array
+          description: List of actions (changes) applied in this variation
+          items:
+            type: object
+            properties:
+              page_id:
+                type: integer
+                format: int64
+                description: The page this action applies to
+              changes:
+                type: array
+                description: List of changes applied on the page
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: The type of change
+                    value:
+                      type: string
+                      description: The change value
+    Metric:
+      type: object
+      description: A metric used to measure experiment results
+      properties:
+        event_id:
+          type: integer
+          format: int64
+          description: The event ID this metric tracks
+        aggregator:
+          type: string
+          description: How to aggregate the metric
+          enum:
+          - unique
+          - count
+          - sum
+        field:
+          type: string
+          description: The field to aggregate on
+        scope:
+          type: string
+          description: The scope of the metric
+          enum:
+          - visitor
+          - session
+          - event
+        winning_direction:
+          type: string
+          description: The direction that indicates improvement
+          enum:
+          - increasing
+          - decreasing
+    ExperimentInput_2:
+      type: object
+      description: Input for creating or updating an experiment
+      properties:
+        project_id:
+          type: integer
+          format: int64
+          description: The project this experiment belongs to
+        name:
+          type: string
+          description: Human-readable name of the experiment
+        description:
+          type: string
+          description: Description of the experiment purpose
+        status:
+          type: string
+          description: Current status of the experiment
+          enum:
+          - active
+          - paused
+          - not_started
+          - archived
+        type:
+          type: string
+          description: The type of experiment
+          enum:
+          - a/b
+          - multiarmed_bandit
+          - multivariate
+        holdback:
+          type: integer
+          description: Percentage of traffic held back from the experiment
+          minimum: 0
+          maximum: 10000
+        variations:
+          type: array
+          description: List of variations in the experiment
+          items:
+            $ref: '#/components/schemas/VariationInput'
+        metrics:
+          type: array
+          description: List of metrics tracked by the experiment
+          items:
+            $ref: '#/components/schemas/Metric'
+        audience_conditions:
+          type: string
+          description: JSON-encoded audience targeting conditions
+        page_ids:
+          type: array
+          description: List of page IDs the experiment runs on
+          items:
+            type: integer
+            format: int64
     Experiment_2:
       type: object
       description: An A/B test experiment with variations and targeting
@@ -1079,44 +1170,6 @@ components:
           type: string
           format: date-time
           description: Timestamp when the experiment was last modified
-    Variation:
-      type: object
-      description: A variation within an experiment
-      properties:
-        variation_id:
-          type: integer
-          format: int64
-          description: Unique identifier for the variation
-        name:
-          type: string
-          description: Name of the variation
-        weight:
-          type: integer
-          description: Traffic allocation weight for the variation
-          minimum: 0
-          maximum: 10000
-        actions:
-          type: array
-          description: List of actions (changes) applied in this variation
-          items:
-            type: object
-            properties:
-              page_id:
-                type: integer
-                format: int64
-                description: The page this action applies to
-              changes:
-                type: array
-                description: List of changes applied on the page
-                items:
-                  type: object
-                  properties:
-                    type:
-                      type: string
-                      description: The type of change
-                    value:
-                      type: string
-                      description: The change value
     VariationInput:
       type: object
       description: Input for creating or updating a variation
@@ -1129,74 +1182,337 @@ components:
           description: Traffic allocation weight for the variation
           minimum: 0
           maximum: 10000
-    ExperimentInput_2:
-      type: object
-      description: Input for creating or updating an experiment
+    ScheduleUpdate:
       properties:
-        project_id:
-          type: integer
+        start_time:
+          description: The start time for the Experiment, in date-time or date format (as defined by ISO 8601), and rounded to the nearest minute. If only date is supplied without time, the start time defaults to 00:00 on the specified start date.
+          example: 2019-02-20T15:00
+          externalDocs:
+            description: ISO 8601
+            url: https://en.wikipedia.org/wiki/ISO_8601
+          pattern: ^\d{4}-\d{2}-\d{2}(T\d{2}(:\d{2}(:00(.000)?)?)?((Z)?))?$
+          type: string
+        stop_time:
+          description: "The stop time for the Experiment, in date-time or full-date format (as defined by ISO 8601), and rounded to the nearest minute. If only date is supplied without time, the stop time defaults to 00:00 on the specified\n stop date."
+          example: 2019-02-20T18:00
+          externalDocs:
+            description: ISO 8601
+            url: https://en.wikipedia.org/wiki/ISO_8601
+          pattern: ^\d{4}-\d{2}-\d{2}(T\d{2}(:\d{2}(:00(.000)?)?)?((Z)?))?$
+          type: string
+        time_zone:
+          description: The time zone to use for Experiment start and stop times with respect to an IANA time zone (ex. "America/New_York"). The time zones expressed by GMT (e.g. "GMT-08:00") are no longer supported.
+          example: America/New_York
+          pattern: ^[A-Za-z\-\_\/]+$
+          type: string
+      type: object
+    VariantTimeseries:
+      properties:
+        experiment_id:
+          description: The unique identifier for the Experiment this entity contains results for (if applicable)
           format: int64
-          description: The project this experiment belongs to
-        name:
-          type: string
-          description: Human-readable name of the experiment
-        description:
-          type: string
-          description: Description of the experiment purpose
-        status:
-          type: string
-          description: Current status of the experiment
-          enum:
-          - active
-          - paused
-          - not_started
-          - archived
-        type:
-          type: string
-          description: The type of experiment
-          enum:
-          - a/b
-          - multiarmed_bandit
-          - multivariate
-        holdback:
           type: integer
-          description: Percentage of traffic held back from the experiment
-          minimum: 0
-          maximum: 10000
-        variations:
-          type: array
-          description: List of variations in the experiment
-          items:
-            $ref: '#/components/schemas/VariationInput'
-        metrics:
-          type: array
-          description: List of metrics tracked by the experiment
-          items:
-            $ref: '#/components/schemas/Metric'
-        audience_conditions:
+        is_baseline:
+          description: Indicates that this variant is the baseline that all other entities will be compared against. Also referred to as the 'Control' or 'Control Group'
+          type: boolean
+        level:
+          description: The level of entity that this variant represents
+          enum:
+          - variation
+          - experiment
+          - campaign
           type: string
-          description: JSON-encoded audience targeting conditions
-        page_ids:
-          type: array
-          description: List of page IDs the experiment runs on
+        name:
+          description: The name of the variant
+          example: Blue Button
+          type: string
+        timeseries:
+          description: The results time series data points
           items:
-            type: integer
-            format: int64
-    Metric_2:
+            $ref: '#/components/schemas/TimeseriesDatapoint'
+          type: array
+        variation_id:
+          description: The unique identifier for the variation this entity contains results for (if applicable)
+          type: string
+      type: object
+    TimeseriesDatapoint:
+      properties:
+        lift:
+          $ref: '#/components/schemas/Datapoint'
+        rate:
+          description: The value of the metric after dividing the numerator value over the denominator value
+          format: double
+          type: number
+        samples:
+          description: The value of the denominator
+          format: int64
+          type: number
+        time:
+          description: Time of this data point formatted in ISO 8601
+          format: date-time
+          type: string
+        value:
+          description: The value of the numerator
+          format: int64
+          type: number
+        variance:
+          description: The variance of the metric value
+          format: double
+          type: number
+      type: object
+    ExperimentVariationReach:
+      properties:
+        baseline_count:
+          description: Baseline count
+          format: int64
+          type: integer
+        baseline_reach:
+          description: Baseline reach
+          format: double
+          type: number
+        total_count:
+          description: Total number of visitors exposed to the Experiment
+          format: int64
+          type: integer
+        treatment_count:
+          description: Treatment count
+          format: int64
+          type: integer
+        treatment_reach:
+          description: Treatment reach
+          format: double
+          type: number
+        variations:
+          additionalProperties:
+            $ref: '#/components/schemas/VariationReach'
+          description: A map of reach for each variation keyed by variation ID
+          type: object
+          x-map-key:
+            description: The ID for the variation
+            example: '9000'
+            type: string
+      type: object
+    Change:
+      properties:
+        allow_additional_redirect:
+          description: Whether or not to allow additional redirects after redirecting to destination. Required for changes of type 'redirect'
+          type: boolean
+        async:
+          description: Indicates whether or not to execute the change asyncronously. If true, src will be returned in the response. Otherwise, it will be not included.
+          type: boolean
+        attributes:
+          $ref: '#/components/schemas/ChangeAttribute'
+        config:
+          description: Configuration properties for the extension
+          example: '{"name": "Flash Sale Today!", "color": "blue"}'
+          type: object
+        css:
+          $ref: '#/components/schemas/CSSAttribute'
+        dependencies:
+          description: A list of dependent change IDs that must happen before this change
+          example:
+          - ad1f6acb-78f2-4653-b955-913abd777e16
+          - ad20a6dd-2083-4964-8ed2-f0dc7baef687
+          items:
+            format: uuid
+            type: string
+          type: array
+        destination:
+          description: URL to redirect to. Required for changes of type 'redirect'. `destination` and `destination_function` cannot be used at the same time
+          example: https://app.optimizely.com/
+          type: string
+        destination_function:
+          description: A function string to redirect to. Required for changes of type 'redirect'. `destination` and `destination_function` cannot be used at the same time
+          example: https://app.optimizely.com/
+          type: string
+        extension_id:
+          description: ID of the extension to insert. Required for changes of type 'extension'
+          readOnly: true
+          type: string
+        id:
+          description: The ID of the change
+          format: uuid
+          readOnly: true
+          type: string
+        name:
+          description: Name of the change
+          example: Setting button text
+          type: string
+        operator:
+          description: Where to instert HTML or image for types 'insert_html' and 'insert_image' with respect to the element(s) matched by 'selector'
+          example: after
+          type: string
+        preserve_parameters:
+          description: Whether or not to preserve parameters from original request when redirecting to new destination URL. Required for changes of type 'redirect'. For redirects using `destination_function`, `preserve_parameters` must be false.
+          type: boolean
+        rearrange:
+          description: A directive to place the DOM element(s) matched by 'selector' to the position of the element matched by 'insertSelector', with the relation specified by 'operator'. The supplied example moves element matched by 'selector' above the element of class .greyBox
+          example: '{"insertSelector": ".greyBox", "operator": "before"}'
+          type: object
+        selector:
+          description: CSS selector to determine where changes are applied. Required for changes of type 'attribute', 'insert_html', and 'insert_image'
+          example: a[href*="optimizely"]
+          type: string
+        src:
+          description: The path to the change payload on the CDN. Only present if 'async' is True.
+          readOnly: true
+          type: string
+        type:
+          description: 'The type of this change.
+
+            - Changes of type ''attribute'' have required fields ''selector'' and ''attributes''
+
+            - Changes of type ''custom_code'' have required field ''value''
+
+            - Changes of type ''custom_css'' have required field ''value''
+
+            - Changes of type ''extension'' have required field ''extension_id''
+
+            - Changes of type ''insert_html'' have required field ''selector''
+
+            - Changes of type ''insert_image'' have required field ''selector''
+
+            - Changes of type ''redirect'' have required fields ''destination'', ''preserve_parameters'', and ''allow_additional_redirect''
+
+            '
+          enum:
+          - attribute
+          - custom_code
+          - custom_css
+          - extension
+          - insert_html
+          - insert_image
+          - redirect
+          type: string
+        value:
+          description: The value for the change can be custom Javascript or CSS as a string. Required for changes of type 'custom_css' and 'custom_code'
+          example: window.someGlobalFunction();
+          type: string
+      required:
+      - type
+      type: object
+    CompoundSubMetric:
+      description: A metric that is used only as part of the calculation for a ratio metric.
       properties:
         aggregator:
-          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
+          default: unique
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value.
           enum:
           - unique
           - count
           - sum
-          - bounce
+          type: string
+        event_id:
+          description: The ID for the Event to select data from.
+          format: int64
+          type:
+          - integer
+          - 'null'
+        event_type:
+          description: The type of this Event.
+          enum:
+          - custom
+          - click
+          - pageview
+          type: string
+        field:
+          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted.
+          enum:
+          - revenue
+          - value
+          type:
+          - string
+          - 'null'
+        scope:
+          default: visitor
+          description: Specifies how Events should be grouped. Can also be thought of as the denominator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event.
+          enum:
+          - session
+          - visitor
+          - event
+          type: string
+      type: object
+    Variation_2:
+      properties:
+        actions:
+          description: A collection of changes to run for each page in an experiment. Only applicable to Optimizely X Web.
+          items:
+            $ref: '#/components/schemas/Action'
+          type: array
+        archived:
+          description: Whether the variation is archived
+          type: boolean
+        description:
+          description: A description of the variation.
+          type: string
+        feature_enabled:
+          description: For Feature Tests, indicates if the feature should be enabled for the variation
+          type: boolean
+        key:
+          description: Unique string identifier for this variation within the Experiment. Only applicable for Full Stack and Mobile projects.
+          example: blue_button_variation
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\-]+$
+          type: string
+        name:
+          description: The name of the variation. Required for Web Experiments and Personalization experiences. Not required for Full Stack Experiments.
+          example: Blue Button
+          type: string
+        status:
+          description: Current status of the variation
+          enum:
+          - active
+          - paused
+          - archived
+          type: string
+        variable_values:
+          additionalProperties:
+            type: string
+          description: For Feature Tests, the variable values for the variation represented as a map of Variable keys to their values.
+          type: object
+        variation_id:
+          description: The unique identifier for the variation
+          format: int64
+          readOnly: true
+          type: integer
+        weight:
+          description: The percentage of your visitors that should see this variation, measured in basis points. 100 basis points = 1% traffic. Variation weights must add up to 10000.
+          maximum: 10000
+          minimum: 0
+          type: integer
+      required:
+      - weight
+      type: object
+    StatsConfig:
+      description: Stats Engine configuration settings
+      properties:
+        confidence_level:
+          type: number
+        difference_type:
+          description: The type of test to compare the variant to baseline
+          enum:
+          - absolute
+          - relative
+          type: string
+        epoch_enabled:
+          description: Indicates if epoch-based statistics were used
+          type: boolean
+      type: object
+    ExperimentMetricResults:
+      description: Results specific to an Event
+      properties:
+        aggregator:
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value. 'exit' measures the ratio of sessions with last activation occurring on the target page to the sessions that activated the target page at least once during the session. 'bounce' measures the ratio of sessions that with first and last activation occurring on the target page to the sessions with first activation on the target page. For both 'exit' and 'bounce', the eventId must be the ID of a Page.
+          enum:
+          - unique
+          - count
+          - sum
           - exit
+          - bounce
           - ratio
           type: string
-        display_title:
-          description: Display title for the metric
-          type: string
+        conclusion:
+          $ref: '#/components/schemas/ExperimentMetricConclusion'
         event_id:
           description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
           format: int64
@@ -1217,6 +1533,18 @@ components:
           items:
             $ref: '#/components/schemas/CompoundSubMetric'
           type: array
+        name:
+          description: The name of the Metric
+          type: string
+        results:
+          additionalProperties:
+            $ref: '#/components/schemas/VariantResults'
+          description: A map of results for each variation in the Experiment keyed by variation ID. For Personalization Campaigns, the special variant 'baseline' represents visitors that have been held back from any change in experience for the Experiment
+          type: object
+          x-map-key:
+            description: The ID for the variation
+            example: '9000'
+            type: string
         scope:
           description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
           enum:
@@ -1246,85 +1574,77 @@ components:
       required:
       - status
       type: object
-    Error:
+    CSSAttribute:
       properties:
-        code:
+        background-color:
           type: string
-        message:
+        background-image:
           type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
+        border-color:
+          type: string
+        border-style:
+          type: string
+        border-width:
+          type: string
+        color:
+          type: string
+        font-family:
+          type: string
+        font-size:
+          type: string
+        font-weight:
+          type: string
+        height:
+          type: string
+        position:
+          type: string
+        width:
           type: string
       type: object
-    ExperimentResults_2:
+    ExperimentEnvironment:
       properties:
-        confidence_threshold:
-          description: The significance level at which you would like to declare winning and losing variations. A lower number minimizes the time needed to declare a winning or losing variation, but increases the risk that your results aren't true winners and losers.
-          example: 0.9
-          format: double
-          type: number
-        end_time:
-          description: End of the time interval (exclusive) used to calculated the results. The time is formatted in ISO 8601.
-          format: date-time
+        status:
+          description: The Experiment's status in different Environments based on the environment key.
+          enum:
+          - running
+          - paused
+          - not_started
+          - archived
           type: string
-        experiment_id:
-          description: The unique identifier for the Experiment
-          example: 3000
+      required:
+      - status
+      type: object
+    Action:
+      properties:
+        changes:
+          description: The list of changes to apply to the Page. If 'dependencies' is supplied in a Change within 'changes', each ID in 'dependencies' must also be in 'changes'.
+          items:
+            $ref: '#/components/schemas/Change'
+          type: array
+        page_id:
+          description: The ID of the Page to apply changes to
           format: int64
           type: integer
-        is_stale:
-          description: When true, indicates the results were delivered from a cache that is out of date.
-          type: boolean
-        metrics:
-          description: The breakdown of Experiment results by metric. ExperimentMetricResults object ordering in the array is consistent with the order that metrics are attached to the Experiment in the Optimizely UI and REST API (i.e. index 0 is the primary metric, indices 1-4 are secondary metrics, indices 5+ are monitoring metrics). See here for an explantion of the impact of metric ordering on results calculations.
+        share_link:
+          description: The share link for the provided Variation and Page combination
           externalDocs:
-            description: See here
-            url: https://help.optimizely.com/Ideate_and_Hypothesize/Primary_and_secondary_metrics_and_monitoring_metrics
-          items:
-            $ref: '#/components/schemas/ExperimentMetricResults'
-          type: array
-        reach:
-          $ref: '#/components/schemas/ExperimentVariationReach'
-        start_time:
-          description: Start of the time interval (inclusive) used to calculate the results. The time is formatted in ISO 8601.
-          format: date-time
+            description: share link
+            url: https://help.optimizely.com/QA_Campaigns_and_Experiments/QA%3A_Share_draft_variations_or_experiences
+          format: url
+          readOnly: true
           type: string
-        stats_config:
-          $ref: '#/components/schemas/StatsConfig'
+      required:
+      - page_id
       type: object
-    ChangeAttribute:
+    ExperimentMetricConclusion:
       properties:
-        class:
-          description: Name of the class to set the element(s) matched by a selector to
-          example: intro
+        loser:
+          description: ID of the variation that has reached statistical significance and has performed worse than all other variations.
+          readOnly: true
           type: string
-        hide:
-          description: Whether or not to hide the element(s) matched by a selector
-          type: boolean
-        href:
-          description: Value of href attribute to add to element(s) matched by a selector
-          example: example.com
-          type: string
-        html:
-          description: Value of HTML attribute to add to element(s) matched by a selector
-          example: New Title
-          type: string
-        remove:
-          description: Whether or not to remove the element(s) matched by a selector
-          type: boolean
-        src:
-          description: Value of src attribute to add to element(s) matched by a selector
-          example: song.mp3
-          type: string
-        style:
-          description: Value of style attribute to add to element(s) matched by a selector
-          example: background-color:blue;
-          type: string
-        text:
-          description: Value of text attribute to add to the element(s) matched by a selector
-          example: Some nice message
+        winner:
+          description: ID of the variation that has reached statistical significance and has performed better than all other variations.
+          readOnly: true
           type: string
       type: object
     VariantResults:
@@ -1371,28 +1691,87 @@ components:
           description: The unique identifier for the variation this entity contains results for (if applicable)
           type: string
       type: object
-    MetricEventProperties:
-      description: The conditions used to filter the metric on specific event property values.
+    MetricFilter:
+      description: The set of event property conditions a conversion must match to be counted toward the metric.
       properties:
-        filter:
-          $ref: '#/components/schemas/MetricFilter'
-          description: The set of event property conditions a conversion must match to be counted toward the metric.
+        combine_operator:
+          description: Determines whether all conditions (and) or any condition (or) must be met.
+          enum:
+          - and
+          - or
+          type: string
+        conditions:
+          items:
+            $ref: '#/components/schemas/MetricFilterCondition'
+          type: array
       type: object
-    ExperimentMetricResults:
-      description: Results specific to an Event
+    Datapoint:
+      description: A value with statistical context
+      properties:
+        confidence_interval:
+          description: The confidence interval measures the uncertainty around improvement. It starts out wide and shrinks as more data comes in. Significance means that the confidence interval is completely above or completely below 0. If the result is significant and positive, the confidence interval will be above 0. If the result is significant and negative, confidence interval will be below 0. If the result is inconclusive, confidence interval includes 0
+          example:
+          - 0.010399560300730457
+          - 0.0850821459929161
+          items:
+            format: double
+            type: number
+          maxItems: 2
+          minItems: 2
+          type: array
+        confidence_interval_scaled:
+          description: The confidence interval with bounds that are scaled by the baseline conversion rate.
+          items:
+            format: double
+            type: number
+          maxItems: 2
+          minItems: 2
+          type: array
+        end_of_epoch:
+          type: boolean
+        is_most_conclusive:
+          description: Indicates that this is the best performing variant for this metric. Also referred to as the 'Winner'
+          type: boolean
+        is_significant:
+          description: Indicates if significance is above your confidence threshold
+          type: boolean
+        lift_status:
+          description: Indicates whether a variation is doing better/worse than the baseline after taking the metric's winning direction into account.
+          enum:
+          - equal
+          - better
+          - worse
+          type: string
+        significance:
+          description: The likelihood that the observed difference in conversion rate is not due to chance
+          format: double
+          type: number
+        value:
+          description: The estimated improvement for this variant compared to the baseline
+          format: double
+          type: number
+        value_scaled:
+          description: The estimated improvement scaled by the baseline conversion rate.
+          format: double
+          type: number
+        visitors_remaining:
+          description: The number of estimated visitors remaining before result becomes statistically significant. A value of 9223372036854775807 means the value is not available.
+          format: int64
+          type: integer
+      type: object
+    ExperimentMetricTimeseries:
+      description: Results time series specific to an Event
       properties:
         aggregator:
-          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value. 'exit' measures the ratio of sessions with last activation occurring on the target page to the sessions that activated the target page at least once during the session. 'bounce' measures the ratio of sessions that with first and last activation occurring on the target page to the sessions with first activation on the target page. For both 'exit' and 'bounce', the eventId must be the ID of a Page.
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
           enum:
           - unique
           - count
           - sum
-          - exit
           - bounce
+          - exit
           - ratio
           type: string
-        conclusion:
-          $ref: '#/components/schemas/ExperimentMetricConclusion'
         event_id:
           description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
           format: int64
@@ -1418,7 +1797,7 @@ components:
           type: string
         results:
           additionalProperties:
-            $ref: '#/components/schemas/VariantResults'
+            $ref: '#/components/schemas/VariantTimeseries'
           description: A map of results for each variation in the Experiment keyed by variation ID. For Personalization Campaigns, the special variant 'baseline' represents visitors that have been held back from any change in experience for the Experiment
           type: object
           x-map-key:
@@ -1535,287 +1914,12 @@ components:
             type: object
           type: array
       type: object
-    VariationReach:
+    MetricEventProperties:
+      description: The conditions used to filter the metric on specific event property values.
       properties:
-        count:
-          description: Total number of visitors exposed to this particular variation
-          format: int64
-          type: integer
-        name:
-          description: The name of the variation
-          example: Blue Button
-          type: string
-        variation_id:
-          description: The unique identifier for the variation
-          type: string
-        variation_reach:
-          format: double
-          type: number
-      type: object
-    SharedCodeChange:
-      properties:
-        async:
-          description: Indicates whether or not to execute the change asyncronously. If true, src will be returned in the response. Otherwise, it will be not included.
-          type: boolean
-        dependencies:
-          description: A list of dependent change IDs that must happen before this change
-          example:
-          - 993fd09c-b64a-4c13-95a9-13b3ed2c454e
-          - 95cf0144-fb63-431d-829b-193fe55ada18
-          items:
-            format: uuid
-            type: string
-          type: array
-        id:
-          description: The ID of the change
-          format: uuid
-          readOnly: true
-          type: string
-        name:
-          description: Name of the change
-          example: Setting button text
-          type: string
-        selector:
-          description: CSS selector to determine where changes are applied. Required for changes of type 'custom_css'.
-          example: head
-          type: string
-        src:
-          description: The path to the change payload on the CDN. Only present if 'async' is True.
-          readOnly: true
-          type: string
-        type:
-          description: The type of this change.
-          enum:
-          - custom_code
-          - custom_css
-          type: string
-        value:
-          description: The value for the change can be JavaScript or CSS as a string.
-          example: window.someGlobalFunction();
-          type: string
-      required:
-      - type
-      - value
-      type: object
-    VariantTimeseries:
-      properties:
-        experiment_id:
-          description: The unique identifier for the Experiment this entity contains results for (if applicable)
-          format: int64
-          type: integer
-        is_baseline:
-          description: Indicates that this variant is the baseline that all other entities will be compared against. Also referred to as the 'Control' or 'Control Group'
-          type: boolean
-        level:
-          description: The level of entity that this variant represents
-          enum:
-          - variation
-          - experiment
-          - campaign
-          type: string
-        name:
-          description: The name of the variant
-          example: Blue Button
-          type: string
-        timeseries:
-          description: The results time series data points
-          items:
-            $ref: '#/components/schemas/TimeseriesDatapoint'
-          type: array
-        variation_id:
-          description: The unique identifier for the variation this entity contains results for (if applicable)
-          type: string
-      type: object
-    Datapoint:
-      description: A value with statistical context
-      properties:
-        confidence_interval:
-          description: The confidence interval measures the uncertainty around improvement. It starts out wide and shrinks as more data comes in. Significance means that the confidence interval is completely above or completely below 0. If the result is significant and positive, the confidence interval will be above 0. If the result is significant and negative, confidence interval will be below 0. If the result is inconclusive, confidence interval includes 0
-          example:
-          - 0.010399560300730457
-          - 0.0850821459929161
-          items:
-            format: double
-            type: number
-          maxItems: 2
-          minItems: 2
-          type: array
-        confidence_interval_scaled:
-          description: The confidence interval with bounds that are scaled by the baseline conversion rate.
-          items:
-            format: double
-            type: number
-          maxItems: 2
-          minItems: 2
-          type: array
-        end_of_epoch:
-          type: boolean
-        is_most_conclusive:
-          description: Indicates that this is the best performing variant for this metric. Also referred to as the 'Winner'
-          type: boolean
-        is_significant:
-          description: Indicates if significance is above your confidence threshold
-          type: boolean
-        lift_status:
-          description: Indicates whether a variation is doing better/worse than the baseline after taking the metric's winning direction into account.
-          enum:
-          - equal
-          - better
-          - worse
-          type: string
-        significance:
-          description: The likelihood that the observed difference in conversion rate is not due to chance
-          format: double
-          type: number
-        value:
-          description: The estimated improvement for this variant compared to the baseline
-          format: double
-          type: number
-        value_scaled:
-          description: The estimated improvement scaled by the baseline conversion rate.
-          format: double
-          type: number
-        visitors_remaining:
-          description: The number of estimated visitors remaining before result becomes statistically significant. A value of 9223372036854775807 means the value is not available.
-          format: int64
-          type: integer
-      type: object
-    ResultsShareLink:
-      properties:
-        url:
-          description: The share link for the results of this Campaign
-          format: url
-          readOnly: true
-          type: string
-      type: object
-    ExperimentTimeseries:
-      properties:
-        confidence_threshold:
-          description: The significance level at which you would like to declare winning and losing variations. A lower number minimizes the time needed to declare a winning or losing variation, but increases the risk that your results aren't true winners and losers.
-          example: 0.9
-          format: double
-          type: number
-        end_time:
-          description: End of the time interval (exclusive) used to calculated the results. The time is formatted in ISO 8601.
-          format: date-time
-          type: string
-        experiment_id:
-          description: The unique identifier for the Experiment
-          example: 3000
-          format: int64
-          type: integer
-        is_stale:
-          description: When true, indicates the results were delivered from a cache that is out of date.
-          type: boolean
-        metrics:
-          description: The breakdown of Experiment results time series by metric
-          items:
-            $ref: '#/components/schemas/ExperimentMetricTimeseries'
-          type: array
-        start_time:
-          description: Start of the time interval (inclusive) used to calculate the results. The time is formatted in ISO 8601.
-          format: date-time
-          type: string
-        stats_config:
-          $ref: '#/components/schemas/StatsConfig'
-      type: object
-    Action:
-      properties:
-        changes:
-          description: The list of changes to apply to the Page. If 'dependencies' is supplied in a Change within 'changes', each ID in 'dependencies' must also be in 'changes'.
-          items:
-            $ref: '#/components/schemas/Change'
-          type: array
-        page_id:
-          description: The ID of the Page to apply changes to
-          format: int64
-          type: integer
-        share_link:
-          description: The share link for the provided Variation and Page combination
-          externalDocs:
-            description: share link
-            url: https://help.optimizely.com/QA_Campaigns_and_Experiments/QA%3A_Share_draft_variations_or_experiences
-          format: url
-          readOnly: true
-          type: string
-      required:
-      - page_id
-      type: object
-    Variation_2:
-      properties:
-        actions:
-          description: A collection of changes to run for each page in an experiment. Only applicable to Optimizely X Web.
-          items:
-            $ref: '#/components/schemas/Action'
-          type: array
-        archived:
-          description: Whether the variation is archived
-          type: boolean
-        description:
-          description: A description of the variation.
-          type: string
-        feature_enabled:
-          description: For Feature Tests, indicates if the feature should be enabled for the variation
-          type: boolean
-        key:
-          description: Unique string identifier for this variation within the Experiment. Only applicable for Full Stack and Mobile projects.
-          example: blue_button_variation
-          maxLength: 64
-          pattern: ^[a-zA-Z0-9_\-]+$
-          type: string
-        name:
-          description: The name of the variation. Required for Web Experiments and Personalization experiences. Not required for Full Stack Experiments.
-          example: Blue Button
-          type: string
-        status:
-          description: Current status of the variation
-          enum:
-          - active
-          - paused
-          - archived
-          type: string
-        variable_values:
-          additionalProperties:
-            type: string
-          description: For Feature Tests, the variable values for the variation represented as a map of Variable keys to their values.
-          type: object
-        variation_id:
-          description: The unique identifier for the variation
-          format: int64
-          readOnly: true
-          type: integer
-        weight:
-          description: The percentage of your visitors that should see this variation, measured in basis points. 100 basis points = 1% traffic. Variation weights must add up to 10000.
-          maximum: 10000
-          minimum: 0
-          type: integer
-      required:
-      - weight
-      type: object
-    TimeseriesDatapoint:
-      properties:
-        lift:
-          $ref: '#/components/schemas/Datapoint'
-        rate:
-          description: The value of the metric after dividing the numerator value over the denominator value
-          format: double
-          type: number
-        samples:
-          description: The value of the denominator
-          format: int64
-          type: number
-        time:
-          description: Time of this data point formatted in ISO 8601
-          format: date-time
-          type: string
-        value:
-          description: The value of the numerator
-          format: int64
-          type: number
-        variance:
-          description: The variance of the metric value
-          format: double
-          type: number
+        filter:
+          $ref: '#/components/schemas/MetricFilter'
+          description: The set of event property conditions a conversion must match to be counted toward the metric.
       type: object
     URLTargeting:
       properties:
@@ -1863,6 +1967,82 @@ components:
       required:
       - edit_url
       type: object
+    ExperimentTimeseries:
+      properties:
+        confidence_threshold:
+          description: The significance level at which you would like to declare winning and losing variations. A lower number minimizes the time needed to declare a winning or losing variation, but increases the risk that your results aren't true winners and losers.
+          example: 0.9
+          format: double
+          type: number
+        end_time:
+          description: End of the time interval (exclusive) used to calculated the results. The time is formatted in ISO 8601.
+          format: date-time
+          type: string
+        experiment_id:
+          description: The unique identifier for the Experiment
+          example: 3000
+          format: int64
+          type: integer
+        is_stale:
+          description: When true, indicates the results were delivered from a cache that is out of date.
+          type: boolean
+        metrics:
+          description: The breakdown of Experiment results time series by metric
+          items:
+            $ref: '#/components/schemas/ExperimentMetricTimeseries'
+          type: array
+        start_time:
+          description: Start of the time interval (inclusive) used to calculate the results. The time is formatted in ISO 8601.
+          format: date-time
+          type: string
+        stats_config:
+          $ref: '#/components/schemas/StatsConfig'
+      type: object
+    ChangeAttribute:
+      properties:
+        class:
+          description: Name of the class to set the element(s) matched by a selector to
+          example: intro
+          type: string
+        hide:
+          description: Whether or not to hide the element(s) matched by a selector
+          type: boolean
+        href:
+          description: Value of href attribute to add to element(s) matched by a selector
+          example: example.com
+          type: string
+        html:
+          description: Value of HTML attribute to add to element(s) matched by a selector
+          example: New Title
+          type: string
+        remove:
+          description: Whether or not to remove the element(s) matched by a selector
+          type: boolean
+        src:
+          description: Value of src attribute to add to element(s) matched by a selector
+          example: song.mp3
+          type: string
+        style:
+          description: Value of style attribute to add to element(s) matched by a selector
+          example: background-color:blue;
+          type: string
+        text:
+          description: Value of text attribute to add to the element(s) matched by a selector
+          example: Some nice message
+          type: string
+      type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
     Schedule:
       properties:
         start_time:
@@ -1887,295 +2067,6 @@ components:
           example: America/New_York
           pattern: ^[A-Za-z\-\_\/]+$
           type: string
-      type: object
-    ExperimentEnvironment:
-      properties:
-        status:
-          description: The Experiment's status in different Environments based on the environment key.
-          enum:
-          - running
-          - paused
-          - not_started
-          - archived
-          type: string
-      required:
-      - status
-      type: object
-    CSSAttribute:
-      properties:
-        background-color:
-          type: string
-        background-image:
-          type: string
-        border-color:
-          type: string
-        border-style:
-          type: string
-        border-width:
-          type: string
-        color:
-          type: string
-        font-family:
-          type: string
-        font-size:
-          type: string
-        font-weight:
-          type: string
-        height:
-          type: string
-        position:
-          type: string
-        width:
-          type: string
-      type: object
-    StatsConfig:
-      description: Stats Engine configuration settings
-      properties:
-        confidence_level:
-          type: number
-        difference_type:
-          description: The type of test to compare the variant to baseline
-          enum:
-          - absolute
-          - relative
-          type: string
-        epoch_enabled:
-          description: Indicates if epoch-based statistics were used
-          type: boolean
-      type: object
-    CompoundSubMetric:
-      description: A metric that is used only as part of the calculation for a ratio metric.
-      properties:
-        aggregator:
-          default: unique
-          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value.
-          enum:
-          - unique
-          - count
-          - sum
-          type: string
-        event_id:
-          description: The ID for the Event to select data from.
-          format: int64
-          type:
-          - integer
-          - 'null'
-        event_type:
-          description: The type of this Event.
-          enum:
-          - custom
-          - click
-          - pageview
-          type: string
-        field:
-          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted.
-          enum:
-          - revenue
-          - value
-          type:
-          - string
-          - 'null'
-        scope:
-          default: visitor
-          description: Specifies how Events should be grouped. Can also be thought of as the denominator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event.
-          enum:
-          - session
-          - visitor
-          - event
-          type: string
-      type: object
-    ExperimentVariationReach:
-      properties:
-        baseline_count:
-          description: Baseline count
-          format: int64
-          type: integer
-        baseline_reach:
-          description: Baseline reach
-          format: double
-          type: number
-        total_count:
-          description: Total number of visitors exposed to the Experiment
-          format: int64
-          type: integer
-        treatment_count:
-          description: Treatment count
-          format: int64
-          type: integer
-        treatment_reach:
-          description: Treatment reach
-          format: double
-          type: number
-        variations:
-          additionalProperties:
-            $ref: '#/components/schemas/VariationReach'
-          description: A map of reach for each variation keyed by variation ID
-          type: object
-          x-map-key:
-            description: The ID for the variation
-            example: '9000'
-            type: string
-      type: object
-    ExperimentMetricTimeseries:
-      description: Results time series specific to an Event
-      properties:
-        aggregator:
-          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
-          enum:
-          - unique
-          - count
-          - sum
-          - bounce
-          - exit
-          - ratio
-          type: string
-        event_id:
-          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
-          format: int64
-          type:
-          - integer
-          - 'null'
-        event_properties:
-          $ref: '#/components/schemas/MetricEventProperties'
-          description: The conditions used to filter the metric on specific event property values.
-        field:
-          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
-          enum:
-          - revenue
-          - value
-          type: string
-        metrics:
-          description: A list of all metrics that will be used in the calculation of a ratio metric.
-          items:
-            $ref: '#/components/schemas/CompoundSubMetric'
-          type: array
-        name:
-          description: The name of the Metric
-          type: string
-        results:
-          additionalProperties:
-            $ref: '#/components/schemas/VariantTimeseries'
-          description: A map of results for each variation in the Experiment keyed by variation ID. For Personalization Campaigns, the special variant 'baseline' represents visitors that have been held back from any change in experience for the Experiment
-          type: object
-          x-map-key:
-            description: The ID for the variation
-            example: '9000'
-            type: string
-        scope:
-          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
-          enum:
-          - session
-          - visitor
-          - event
-          type: string
-        time_window:
-          description: The maximum amount of time a numerator event can differ from a denominator event in order to be included in a ratio metric. This can be an integer, or an integer followed by a letter denoting the unit of time (d = days, h = hours, m = minutes). If no unit of time is supplied, hours is assumed. If no value is supplied, a time window of 48 hours is assumed.
-          type: string
-        winning_direction:
-          description: The winning direction of this metric
-          enum:
-          - increasing
-          - decreasing
-          type: string
-      type: object
-    Change:
-      properties:
-        allow_additional_redirect:
-          description: Whether or not to allow additional redirects after redirecting to destination. Required for changes of type 'redirect'
-          type: boolean
-        async:
-          description: Indicates whether or not to execute the change asyncronously. If true, src will be returned in the response. Otherwise, it will be not included.
-          type: boolean
-        attributes:
-          $ref: '#/components/schemas/ChangeAttribute'
-        config:
-          description: Configuration properties for the extension
-          example: '{"name": "Flash Sale Today!", "color": "blue"}'
-          type: object
-        css:
-          $ref: '#/components/schemas/CSSAttribute'
-        dependencies:
-          description: A list of dependent change IDs that must happen before this change
-          example:
-          - ad1f6acb-78f2-4653-b955-913abd777e16
-          - ad20a6dd-2083-4964-8ed2-f0dc7baef687
-          items:
-            format: uuid
-            type: string
-          type: array
-        destination:
-          description: URL to redirect to. Required for changes of type 'redirect'. `destination` and `destination_function` cannot be used at the same time
-          example: https://app.optimizely.com/
-          type: string
-        destination_function:
-          description: A function string to redirect to. Required for changes of type 'redirect'. `destination` and `destination_function` cannot be used at the same time
-          example: https://app.optimizely.com/
-          type: string
-        extension_id:
-          description: ID of the extension to insert. Required for changes of type 'extension'
-          readOnly: true
-          type: string
-        id:
-          description: The ID of the change
-          format: uuid
-          readOnly: true
-          type: string
-        name:
-          description: Name of the change
-          example: Setting button text
-          type: string
-        operator:
-          description: Where to instert HTML or image for types 'insert_html' and 'insert_image' with respect to the element(s) matched by 'selector'
-          example: after
-          type: string
-        preserve_parameters:
-          description: Whether or not to preserve parameters from original request when redirecting to new destination URL. Required for changes of type 'redirect'. For redirects using `destination_function`, `preserve_parameters` must be false.
-          type: boolean
-        rearrange:
-          description: A directive to place the DOM element(s) matched by 'selector' to the position of the element matched by 'insertSelector', with the relation specified by 'operator'. The supplied example moves element matched by 'selector' above the element of class .greyBox
-          example: '{"insertSelector": ".greyBox", "operator": "before"}'
-          type: object
-        selector:
-          description: CSS selector to determine where changes are applied. Required for changes of type 'attribute', 'insert_html', and 'insert_image'
-          example: a[href*="optimizely"]
-          type: string
-        src:
-          description: The path to the change payload on the CDN. Only present if 'async' is True.
-          readOnly: true
-          type: string
-        type:
-          description: 'The type of this change.
-
-            - Changes of type ''attribute'' have required fields ''selector'' and ''attributes''
-
-            - Changes of type ''custom_code'' have required field ''value''
-
-            - Changes of type ''custom_css'' have required field ''value''
-
-            - Changes of type ''extension'' have required field ''extension_id''
-
-            - Changes of type ''insert_html'' have required field ''selector''
-
-            - Changes of type ''insert_image'' have required field ''selector''
-
-            - Changes of type ''redirect'' have required fields ''destination'', ''preserve_parameters'', and ''allow_additional_redirect''
-
-            '
-          enum:
-          - attribute
-          - custom_code
-          - custom_css
-          - extension
-          - insert_html
-          - insert_image
-          - redirect
-          type: string
-        value:
-          description: The value for the change can be custom Javascript or CSS as a string. Required for changes of type 'custom_css' and 'custom_code'
-          example: window.someGlobalFunction();
-          type: string
-      required:
-      - type
       type: object
     Experiment_3:
       properties:
@@ -2359,6 +2250,147 @@ components:
       required:
       - project_id
       type: object
+    SharedCodeChange:
+      properties:
+        async:
+          description: Indicates whether or not to execute the change asyncronously. If true, src will be returned in the response. Otherwise, it will be not included.
+          type: boolean
+        dependencies:
+          description: A list of dependent change IDs that must happen before this change
+          example:
+          - 993fd09c-b64a-4c13-95a9-13b3ed2c454e
+          - 95cf0144-fb63-431d-829b-193fe55ada18
+          items:
+            format: uuid
+            type: string
+          type: array
+        id:
+          description: The ID of the change
+          format: uuid
+          readOnly: true
+          type: string
+        name:
+          description: Name of the change
+          example: Setting button text
+          type: string
+        selector:
+          description: CSS selector to determine where changes are applied. Required for changes of type 'custom_css'.
+          example: head
+          type: string
+        src:
+          description: The path to the change payload on the CDN. Only present if 'async' is True.
+          readOnly: true
+          type: string
+        type:
+          description: The type of this change.
+          enum:
+          - custom_code
+          - custom_css
+          type: string
+        value:
+          description: The value for the change can be JavaScript or CSS as a string.
+          example: window.someGlobalFunction();
+          type: string
+      required:
+      - type
+      - value
+      type: object
+    ExperimentResults_2:
+      properties:
+        confidence_threshold:
+          description: The significance level at which you would like to declare winning and losing variations. A lower number minimizes the time needed to declare a winning or losing variation, but increases the risk that your results aren't true winners and losers.
+          example: 0.9
+          format: double
+          type: number
+        end_time:
+          description: End of the time interval (exclusive) used to calculated the results. The time is formatted in ISO 8601.
+          format: date-time
+          type: string
+        experiment_id:
+          description: The unique identifier for the Experiment
+          example: 3000
+          format: int64
+          type: integer
+        is_stale:
+          description: When true, indicates the results were delivered from a cache that is out of date.
+          type: boolean
+        metrics:
+          description: The breakdown of Experiment results by metric. ExperimentMetricResults object ordering in the array is consistent with the order that metrics are attached to the Experiment in the Optimizely UI and REST API (i.e. index 0 is the primary metric, indices 1-4 are secondary metrics, indices 5+ are monitoring metrics). See here for an explantion of the impact of metric ordering on results calculations.
+          externalDocs:
+            description: See here
+            url: https://help.optimizely.com/Ideate_and_Hypothesize/Primary_and_secondary_metrics_and_monitoring_metrics
+          items:
+            $ref: '#/components/schemas/ExperimentMetricResults'
+          type: array
+        reach:
+          $ref: '#/components/schemas/ExperimentVariationReach'
+        start_time:
+          description: Start of the time interval (inclusive) used to calculate the results. The time is formatted in ISO 8601.
+          format: date-time
+          type: string
+        stats_config:
+          $ref: '#/components/schemas/StatsConfig'
+      type: object
+    Metric_2:
+      properties:
+        aggregator:
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
+          enum:
+          - unique
+          - count
+          - sum
+          - bounce
+          - exit
+          - ratio
+          type: string
+        display_title:
+          description: Display title for the metric
+          type: string
+        event_id:
+          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
+          format: int64
+          type:
+          - integer
+          - 'null'
+        event_properties:
+          $ref: '#/components/schemas/MetricEventProperties'
+          description: The conditions used to filter the metric on specific event property values.
+        field:
+          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
+          enum:
+          - revenue
+          - value
+          type: string
+        metrics:
+          description: A list of all metrics that will be used in the calculation of a ratio metric.
+          items:
+            $ref: '#/components/schemas/CompoundSubMetric'
+          type: array
+        scope:
+          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
+          enum:
+          - session
+          - visitor
+          - event
+          type: string
+        time_window:
+          description: The maximum amount of time a numerator event can differ from a denominator event in order to be included in a ratio metric. This can be an integer, or an integer followed by a letter denoting the unit of time (d = days, h = hours, m = minutes). If no unit of time is supplied, hours is assumed. If no value is supplied, a time window of 48 hours is assumed.
+          type: string
+        winning_direction:
+          description: The winning direction of this metric
+          enum:
+          - increasing
+          - decreasing
+          type: string
+      type: object
+    ResultsShareLink:
+      properties:
+        url:
+          description: The share link for the results of this Campaign
+          format: url
+          readOnly: true
+          type: string
+      type: object
     VariationUpdate:
       example:
         actions:
@@ -2424,40 +2456,22 @@ components:
       required:
       - weight
       type: object
-    ExperimentMetricConclusion:
+    VariationReach:
       properties:
-        loser:
-          description: ID of the variation that has reached statistical significance and has performed worse than all other variations.
-          readOnly: true
+        count:
+          description: Total number of visitors exposed to this particular variation
+          format: int64
+          type: integer
+        name:
+          description: The name of the variation
+          example: Blue Button
           type: string
-        winner:
-          description: ID of the variation that has reached statistical significance and has performed better than all other variations.
-          readOnly: true
+        variation_id:
+          description: The unique identifier for the variation
           type: string
-      type: object
-    ScheduleUpdate:
-      properties:
-        start_time:
-          description: The start time for the Experiment, in date-time or date format (as defined by ISO 8601), and rounded to the nearest minute. If only date is supplied without time, the start time defaults to 00:00 on the specified start date.
-          example: 2019-02-20T15:00
-          externalDocs:
-            description: ISO 8601
-            url: https://en.wikipedia.org/wiki/ISO_8601
-          pattern: ^\d{4}-\d{2}-\d{2}(T\d{2}(:\d{2}(:00(.000)?)?)?((Z)?))?$
-          type: string
-        stop_time:
-          description: "The stop time for the Experiment, in date-time or full-date format (as defined by ISO 8601), and rounded to the nearest minute. If only date is supplied without time, the stop time defaults to 00:00 on the specified\n stop date."
-          example: 2019-02-20T18:00
-          externalDocs:
-            description: ISO 8601
-            url: https://en.wikipedia.org/wiki/ISO_8601
-          pattern: ^\d{4}-\d{2}-\d{2}(T\d{2}(:\d{2}(:00(.000)?)?)?((Z)?))?$
-          type: string
-        time_zone:
-          description: The time zone to use for Experiment start and stop times with respect to an IANA time zone (ex. "America/New_York"). The time zones expressed by GMT (e.g. "GMT-08:00") are no longer supported.
-          example: America/New_York
-          pattern: ^[A-Za-z\-\_\/]+$
-          type: string
+        variation_reach:
+          format: double
+          type: number
       type: object
     MetricFilterCondition:
       description: defines the event property values and operator used to check whether the conversion meets the condition.
@@ -2488,38 +2502,7 @@ components:
           description: The value the conversion's property should match, according to the operator.
           type: string
       type: object
-    MetricFilter:
-      description: The set of event property conditions a conversion must match to be counted toward the metric.
-      properties:
-        combine_operator:
-          description: Determines whether all conditions (and) or any condition (or) must be met.
-          enum:
-          - and
-          - or
-          type: string
-        conditions:
-          items:
-            $ref: '#/components/schemas/MetricFilterCondition'
-          type: array
-      type: object
   parameters:
-    page:
-      name: page
-      in: query
-      required: false
-      description: Page number for pagination
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-    experimentId:
-      name: experiment_id
-      in: path
-      required: true
-      description: The unique identifier for the experiment
-      schema:
-        type: integer
-        format: int64
     projectIdQuery:
       name: project_id
       in: query
@@ -2538,37 +2521,32 @@ components:
         default: 25
         minimum: 1
         maximum: 100
-    attribute_value_segment:
-      description: 'UTF-8 encoded value correlating to attribute_id. If present, the attribute_id parameter must also be present. This parameter also requires attribute_id to be set, and cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
-
-        '
+    page:
+      name: page
       in: query
-      name: attribute_value
-      schema:
-        type: string
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
       required: false
+      description: Page number for pagination
       schema:
-        default: 25
-        maximum: 100
         type: integer
-    segment_conditions:
-      description: '(BETA) A string representation of a JSON Segment Conditions Expression. This parameter can be either URL-escaped stringified JSON or Base64-encoded stringified JSON using URL-safe alphabet (preferred).
-
-        Segment Conditions Expressions consist of Logical Expressions and Match Expressions.
-
-        Logical Expressions are represented as an array of the format [<operator>, <expression>...], where the supported operators are "and", "or" and "not".
-
-        Match Expressions are represented as an object of the format {"attribute_id": <attribute_id>, "attribute_value": <value>[, "match_type": <match_type>]}, where supported values for match_type are "exact" match type will match only an exact string match between "value" string and the attribute value. "substring" match type will match if "value" is a substring of the attribute value. "prefix" match type will match if "value" is a string prefix of the attribute value. "regex" match type will match if "value" is a regular expression match for the attribute value. The default match_type is "exact".
+        default: 1
+        minimum: 1
+    experimentId:
+      name: experiment_id
+      in: path
+      required: true
+      description: The unique identifier for the experiment
+      schema:
+        type: integer
+        format: int64
+    attribute_id_segment:
+      description: 'ID of the attribute to segment results by. Requests containing attribute_id will return the results for all visitors that have attribute_value for the attribute represented by attribute_id. If present, the attribute_value parameter must also be present, and it cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
 
         '
       in: query
-      name: segment_conditions
+      name: attribute_id
       schema:
-        type: string
+        format: int64
+        type: integer
     source_segment:
       description: 'Source to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, device, attribute_id, attribute_value].
 
@@ -2588,25 +2566,14 @@ components:
         - referral
         - search
         type: string
-    attribute_id_segment:
-      description: 'ID of the attribute to segment results by. Requests containing attribute_id will return the results for all visitors that have attribute_value for the attribute represented by attribute_id. If present, the attribute_value parameter must also be present, and it cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
+    attribute_value_segment:
+      description: 'UTF-8 encoded value correlating to attribute_id. If present, the attribute_id parameter must also be present. This parameter also requires attribute_id to be set, and cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
 
         '
       in: query
-      name: attribute_id
+      name: attribute_value
       schema:
-        format: int64
-        type: integer
-    page_2:
-      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
-
-        '
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        type: integer
+        type: string
     browser_segment:
       description: Browser to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [device, source, attribute_id, attribute_value].
       in: query
@@ -2618,6 +2585,20 @@ components:
         - internet_explorer
         - opera
         - safari
+        type: string
+    segment_conditions:
+      description: '(BETA) A string representation of a JSON Segment Conditions Expression. This parameter can be either URL-escaped stringified JSON or Base64-encoded stringified JSON using URL-safe alphabet (preferred).
+
+        Segment Conditions Expressions consist of Logical Expressions and Match Expressions.
+
+        Logical Expressions are represented as an array of the format [<operator>, <expression>...], where the supported operators are "and", "or" and "not".
+
+        Match Expressions are represented as an object of the format {"attribute_id": <attribute_id>, "attribute_value": <value>[, "match_type": <match_type>]}, where supported values for match_type are "exact" match type will match only an exact string match between "value" string and the attribute value. "substring" match type will match if "value" is a substring of the attribute value. "prefix" match type will match if "value" is a string prefix of the attribute value. "regex" match type will match if "value" is a regular expression match for the attribute value. The default match_type is "exact".
+
+        '
+      in: query
+      name: segment_conditions
+      schema:
         type: string
     device_segment:
       description: Device to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, source, attribute_id, attribute_value].
@@ -2631,6 +2612,25 @@ components:
         - mobile
         - tablet
         type: string
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
   securitySchemes:
     access_token:
       type: apiKey

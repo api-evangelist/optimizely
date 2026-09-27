@@ -130,7 +130,72 @@ paths:
     - url: https://api.optimizely.com/flags/v1
       description: Optimizely Flags API v1 Server
 components:
+  parameters:
+    environmentKey:
+      name: environment_key
+      in: path
+      required: true
+      description: The unique key for the environment
+      schema:
+        type: string
+    flagKey:
+      name: flag_key
+      in: path
+      required: true
+      description: The unique key for the feature flag
+      schema:
+        type: string
+    projectId:
+      name: project_id
+      in: path
+      required: true
+      description: The unique identifier for the project
+      schema:
+        type: integer
+        format: int64
+    environmentKey_2:
+      description: The Environment identifier
+      example: production
+      in: path
+      name: environment_key
+      required: true
+      schema:
+        type: string
+    flagKey_2:
+      description: The Flag identifier
+      example: recurring_deposit
+      in: path
+      name: flag_key
+      required: true
+      schema:
+        type: string
+    projectId_2:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
   schemas:
+    Ruleset:
+      type: object
+      description: A collection of rules that determine flag variation delivery
+      properties:
+        rules:
+          type: array
+          description: Ordered list of rules in the ruleset
+          items:
+            $ref: '#/components/schemas/Rule'
+    RulesetInput:
+      type: object
+      description: Input for updating a ruleset
+      properties:
+        rules:
+          type: array
+          description: Ordered list of rules in the ruleset
+          items:
+            $ref: '#/components/schemas/RuleInput'
     RuleInput:
       type: object
       description: Input for creating or updating a rule
@@ -167,15 +232,6 @@ components:
                 description: Traffic weight
                 minimum: 0
                 maximum: 10000
-    Ruleset:
-      type: object
-      description: A collection of rules that determine flag variation delivery
-      properties:
-        rules:
-          type: array
-          description: Ordered list of rules in the ruleset
-          items:
-            $ref: '#/components/schemas/Rule'
     Rule:
       type: object
       description: A rule that determines which variation to deliver
@@ -215,211 +271,6 @@ components:
                 description: Traffic weight for this variation
                 minimum: 0
                 maximum: 10000
-    RulesetInput:
-      type: object
-      description: Input for updating a ruleset
-      properties:
-        rules:
-          type: array
-          description: Ordered list of rules in the ruleset
-          items:
-            $ref: '#/components/schemas/RuleInput'
-    Metric:
-      properties:
-        aggregator:
-          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
-          enum:
-          - unique
-          - count
-          - sum
-          - ratio
-          type: string
-        display_title:
-          description: An optional title for the unique metric configuration. If not provided, the event name will be used.
-          type: string
-        display_unit:
-          description: An optional name for the unit of the unique metric configuration.
-          type: string
-        event_id:
-          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
-          example: 32334454244
-          format: int64
-          type: integer
-        event_properties:
-          properties:
-            filter:
-              properties:
-                combine_operator:
-                  enum:
-                  - or
-                  - and
-                  type: string
-                conditions:
-                  items:
-                    $ref: '#/components/schemas/EventPropertyCondition'
-              type: object
-          type: object
-        event_type:
-          type: string
-        field:
-          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
-          enum:
-          - revenue
-          - value
-          type:
-          - string
-          - 'null'
-        id:
-          description: A unique identifier for the metric configuration.
-          type: string
-        metrics:
-          items:
-            $ref: '#/components/schemas/SubMetric'
-            type: object
-          type: array
-        project_id:
-          description: A unique identifier for the project associated with the metric.
-          type: integer
-        scope:
-          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
-          enum:
-          - session
-          - visitor
-          - event
-          type: string
-        visibility:
-          description: The visibility of the metric.
-          enum:
-          - account
-          - experiment
-          - project
-          type: string
-        winning_direction:
-          description: The winning direction of this metric
-          enum:
-          - increasing
-          - decreasing
-          type: string
-      required:
-      - winning_direction
-      - aggregator
-      type: object
-    RuleMap:
-      additionalProperties:
-        $ref: '#/components/schemas/RulesetRule'
-      example:
-        landing_page_callout:
-          archived: false
-          audience_conditions:
-          - or
-          - audience_id: 5340810295
-          audience_ids:
-          - 5340810295
-          created_time: '2021-02-03 19:57:31.357168+00:00'
-          description: null
-          distribution_mode: stats_accelerator
-          enabled: true
-          fetch_results_ui_url: '...'
-          id: 1
-          key: landing_page_callout
-          metrics:
-          - aggregator: sum
-            display_title: Increasing Revenue by Session
-            event_id: 33333333
-            event_type: custom
-            field: revenue
-            scope: session
-            winning_direction: increasing
-          name: Landing Page Callout
-          percentage_included: 5000
-          type: a/b
-          updated_time: '2021-02-03 20:14:21.494855+00:00'
-          urn: rules.flags.optimizely.com::1
-          variations:
-            'false':
-              key: false
-              name: false
-              percentage_included: 5000
-            'true':
-              key: true
-              name: true
-              percentage_included: 5000
-        paid_users:
-          archived: false
-          audience_conditions:
-          - or
-          - audience_id: 123456
-          audience_ids:
-          - 123456
-          created_time: '2021-02-03 19:57:31.366368+00:00'
-          description: null
-          enabled: true
-          id: 2
-          key: paid_users
-          metrics: []
-          name: Paid Users
-          percentage_included: 10000
-          type: targeted_delivery
-          updated_time: '2021-02-03 20:14:21.530632+00:00'
-          urn: rules.flags.optimizely.com::2
-          variations:
-            'true':
-              key: true
-              name: true
-              percentage_included: 10000
-      type: object
-    ProblemDetail:
-      additionalProperties: true
-      description: https://tools.ietf.org/html/rfc7807#section-3.1
-      properties:
-        detail:
-          description: A human-readable explanation specific to this occurrence of the problem.
-          type: string
-        status:
-          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
-          type: integer
-        title:
-          description: A short, human-readable summary of the problem type.
-          type: string
-        type:
-          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
-          type: string
-        uuid:
-          description: Error reference for customer support
-          type: string
-      required:
-      - detail
-      - status
-      - title
-      - type
-      type: object
-    RuleAllowList:
-      example:
-        user_id: xyz123
-        variation:
-          key: false
-          name: false
-      properties:
-        user_id:
-          description: User identifier
-          type: string
-        variation:
-          description: Variations to be added to user (key and name)
-          properties:
-            key:
-              type: string
-            name:
-              type: string
-          type: object
-      required:
-      - user_id
-      - variation
-      type: object
-    AudienceConditions:
-      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
-      oneOf:
-      - $ref: '#/components/schemas/AudienceConditionsArray'
-      - $ref: '#/components/schemas/AudienceConditionsString'
     RulesetRule:
       description: Configuration which contains audiences, metrics and variations.
       properties:
@@ -579,60 +430,34 @@ components:
       - name
       - type
       type: object
-    EventPropertyCondition:
-      properties:
-        name:
-          type: string
-        operator:
-          enum:
-          - equal_to
-          - not_equal_to
-          - greater_than
-          - greater_than_or_equal_to
-          - less_than
-          - less_than_or_equal_to
-          - contains
-          - does_not_contain
-          type: string
-        type:
-          enum:
-          - string
-          - number
-          - boolean
-          type: string
-        value:
-          type: string
-      required:
-      - name
-      - type
-      - value
-      - operator
-      type: object
-    AudienceConditionsArray:
+    UrlValue:
+      description: A single url.
+      type: string
+    AudienceConditionsString:
+      description: A valid AudienceConditionsArray represented as a JSON string
+      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
+      type: string
+    RuleGroupRule:
       example:
-      - or
-      - audience_id: 123
-      - - and
-        - audience_id: 456
-        - audience_id: 789
-      items:
-        anyOf:
-        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+        id: 73915
+        name: My Group
+        traffic_allocation: 5000
+      properties:
+        group_id:
+          description: Group id
+          type: integer
+        group_name:
+          description: Name of the Group
+          readOnly: true
           type: string
-        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
-          properties:
-            audience_id:
-              type: integer
-          required:
-          - audience_id
-          type: object
-        - $ref: '#/components/schemas/AudienceConditionsArray'
-          description: A nested AudienceConditionsArray
-          example:
-          - - and
-            - audience_id: 456
-            - audience_id: 789
-      type: array
+        traffic_allocation:
+          description: The traffic allocation for the GroupRule
+          maximum: 10000
+          minimum: 0
+          type: integer
+      required:
+      - group_id
+      type: object
     PatchRequestBody:
       description: A JSONPatch document as defined by RFC 6902
       properties:
@@ -670,9 +495,85 @@ components:
       - op
       - path
       type: object
-    UrlValue:
-      description: A single url.
-      type: string
+    RulesetRuleVariation:
+      example:
+        key: high_discount
+        name: High Discount
+        percentage_included: 10000
+      properties:
+        id:
+          description: Id of the RuleVariation
+          readOnly: true
+          type: integer
+        key:
+          description: User-facing Unique identifier of the Variation
+          type: string
+        name:
+          description: User-facing name of the Variation
+          type: string
+        percentage_included:
+          default: 0
+          description: The percentage of the designated audiences that should get this variation, measured in basis points. 100 basis points = 1% traffic
+          maximum: 10000
+          minimum: 0
+          type: integer
+        revision:
+          description: Revision number for tracking changes
+          readOnly: true
+          type: integer
+      required:
+      - key
+      type: object
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
+      properties:
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
+      type: object
+    SubMetric:
+      properties:
+        aggregator:
+          type: string
+        event_id:
+          type: integer
+        event_type:
+          type: string
+        field:
+          type:
+          - string
+          - 'null'
+        role:
+          enum:
+          - numerator
+          - denominator
+          type: string
+        scope:
+          type: string
+      type: object
+    AudienceConditions:
+      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
+      oneOf:
+      - $ref: '#/components/schemas/AudienceConditionsArray'
+      - $ref: '#/components/schemas/AudienceConditionsString'
     Ruleset_2:
       description: Rules configuration specific to an environment.
       properties:
@@ -789,138 +690,227 @@ components:
       - urn
       - url
       type: object
-    AudienceConditionsString:
-      description: A valid AudienceConditionsArray represented as a JSON string
-      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
-      type: string
-    SubMetric:
+    AudienceConditionsArray:
+      example:
+      - or
+      - audience_id: 123
+      - - and
+        - audience_id: 456
+        - audience_id: 789
+      items:
+        anyOf:
+        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+          type: string
+        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
+          properties:
+            audience_id:
+              type: integer
+          required:
+          - audience_id
+          type: object
+        - $ref: '#/components/schemas/AudienceConditionsArray'
+          description: A nested AudienceConditionsArray
+          example:
+          - - and
+            - audience_id: 456
+            - audience_id: 789
+      type: array
+    RuleMap:
+      additionalProperties:
+        $ref: '#/components/schemas/RulesetRule'
+      example:
+        landing_page_callout:
+          archived: false
+          audience_conditions:
+          - or
+          - audience_id: 5340810295
+          audience_ids:
+          - 5340810295
+          created_time: '2021-02-03 19:57:31.357168+00:00'
+          description: null
+          distribution_mode: stats_accelerator
+          enabled: true
+          fetch_results_ui_url: '...'
+          id: 1
+          key: landing_page_callout
+          metrics:
+          - aggregator: sum
+            display_title: Increasing Revenue by Session
+            event_id: 33333333
+            event_type: custom
+            field: revenue
+            scope: session
+            winning_direction: increasing
+          name: Landing Page Callout
+          percentage_included: 5000
+          type: a/b
+          updated_time: '2021-02-03 20:14:21.494855+00:00'
+          urn: rules.flags.optimizely.com::1
+          variations:
+            'false':
+              key: false
+              name: false
+              percentage_included: 5000
+            'true':
+              key: true
+              name: true
+              percentage_included: 5000
+        paid_users:
+          archived: false
+          audience_conditions:
+          - or
+          - audience_id: 123456
+          audience_ids:
+          - 123456
+          created_time: '2021-02-03 19:57:31.366368+00:00'
+          description: null
+          enabled: true
+          id: 2
+          key: paid_users
+          metrics: []
+          name: Paid Users
+          percentage_included: 10000
+          type: targeted_delivery
+          updated_time: '2021-02-03 20:14:21.530632+00:00'
+          urn: rules.flags.optimizely.com::2
+          variations:
+            'true':
+              key: true
+              name: true
+              percentage_included: 10000
+      type: object
+    Metric:
       properties:
         aggregator:
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
+          enum:
+          - unique
+          - count
+          - sum
+          - ratio
+          type: string
+        display_title:
+          description: An optional title for the unique metric configuration. If not provided, the event name will be used.
+          type: string
+        display_unit:
+          description: An optional name for the unit of the unique metric configuration.
           type: string
         event_id:
+          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
+          example: 32334454244
+          format: int64
           type: integer
+        event_properties:
+          properties:
+            filter:
+              properties:
+                combine_operator:
+                  enum:
+                  - or
+                  - and
+                  type: string
+                conditions:
+                  items:
+                    $ref: '#/components/schemas/EventPropertyCondition'
+              type: object
+          type: object
         event_type:
           type: string
         field:
+          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
+          enum:
+          - revenue
+          - value
           type:
           - string
           - 'null'
-        role:
-          enum:
-          - numerator
-          - denominator
-          type: string
-        scope:
-          type: string
-      type: object
-    RulesetRuleVariation:
-      example:
-        key: high_discount
-        name: High Discount
-        percentage_included: 10000
-      properties:
         id:
-          description: Id of the RuleVariation
-          readOnly: true
-          type: integer
-        key:
-          description: User-facing Unique identifier of the Variation
+          description: A unique identifier for the metric configuration.
           type: string
-        name:
-          description: User-facing name of the Variation
+        metrics:
+          items:
+            $ref: '#/components/schemas/SubMetric'
+            type: object
+          type: array
+        project_id:
+          description: A unique identifier for the project associated with the metric.
+          type: integer
+        scope:
+          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
+          enum:
+          - session
+          - visitor
+          - event
           type: string
-        percentage_included:
-          default: 0
-          description: The percentage of the designated audiences that should get this variation, measured in basis points. 100 basis points = 1% traffic
-          maximum: 10000
-          minimum: 0
-          type: integer
-        revision:
-          description: Revision number for tracking changes
-          readOnly: true
-          type: integer
+        visibility:
+          description: The visibility of the metric.
+          enum:
+          - account
+          - experiment
+          - project
+          type: string
+        winning_direction:
+          description: The winning direction of this metric
+          enum:
+          - increasing
+          - decreasing
+          type: string
       required:
-      - key
+      - winning_direction
+      - aggregator
       type: object
-    RuleGroupRule:
-      example:
-        id: 73915
-        name: My Group
-        traffic_allocation: 5000
+    EventPropertyCondition:
       properties:
-        group_id:
-          description: Group id
-          type: integer
-        group_name:
-          description: Name of the Group
-          readOnly: true
+        name:
           type: string
-        traffic_allocation:
-          description: The traffic allocation for the GroupRule
-          maximum: 10000
-          minimum: 0
-          type: integer
+        operator:
+          enum:
+          - equal_to
+          - not_equal_to
+          - greater_than
+          - greater_than_or_equal_to
+          - less_than
+          - less_than_or_equal_to
+          - contains
+          - does_not_contain
+          type: string
+        type:
+          enum:
+          - string
+          - number
+          - boolean
+          type: string
+        value:
+          type: string
       required:
-      - group_id
+      - name
+      - type
+      - value
+      - operator
       type: object
-  parameters:
-    environmentKey:
-      name: environment_key
-      in: path
-      required: true
-      description: The unique key for the environment
-      schema:
-        type: string
-    flagKey:
-      name: flag_key
-      in: path
-      required: true
-      description: The unique key for the feature flag
-      schema:
-        type: string
-    projectId:
-      name: project_id
-      in: path
-      required: true
-      description: The unique identifier for the project
-      schema:
-        type: integer
-        format: int64
-    environmentKey_2:
-      description: The Environment identifier
-      example: production
-      in: path
-      name: environment_key
-      required: true
-      schema:
-        type: string
-    flagKey_2:
-      description: The Flag identifier
-      example: recurring_deposit
-      in: path
-      name: flag_key
-      required: true
-      schema:
-        type: string
-    projectId_2:
-      description: The project identifier
-      example: 12345
-      in: path
-      name: project_id
-      required: true
-      schema:
-        type: integer
+    RuleAllowList:
+      example:
+        user_id: xyz123
+        variation:
+          key: false
+          name: false
+      properties:
+        user_id:
+          description: User identifier
+          type: string
+        variation:
+          description: Variations to be added to user (key and name)
+          properties:
+            key:
+              type: string
+            name:
+              type: string
+          type: object
+      required:
+      - user_id
+      - variation
+      type: object
   responses:
-    ForbiddenResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Permission denied
-            status: 403
-            title: Forbidden
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Do not have permission to perform the operation
     ConflictResponse:
       content:
         application/problem+json:
@@ -938,6 +928,14 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Malformed requests and invalid parameter names and types
+    NotFoundResponse:
+      description: Not found. No content
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
     RulesetSuccessResponse:
       content:
         application/json:
@@ -953,14 +951,16 @@ components:
         the related resource.
 
         '
-    NotFoundResponse:
-      description: Not found. No content
-    UnauthorizedResponse:
+    ForbiddenResponse:
       content:
         application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
           schema:
             $ref: '#/components/schemas/ProblemDetail'
-      description: Invalid credentials
+      description: Do not have permission to perform the operation
   securitySchemes:
     bearerAuth:
       type: http

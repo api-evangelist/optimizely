@@ -204,6 +204,75 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    EntityPermission:
+      type: string
+      enum:
+      - admin
+      - publish
+      - toggle
+      - edit
+      - view
+      - none
+      - unknown
+      title: EntityPermission
+    src__api__dtos__permissions__UserPermissionsForEntityTypeResponse__ItemInfo:
+      properties:
+        role:
+          type: string
+          title: Role
+        role_inherited:
+          type: string
+          title: Role Inherited
+        id:
+          type: integer
+          title: Id
+        key:
+          type: string
+          title: Key
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - role
+      - role_inherited
+      - id
+      - name
+      title: ItemInfo
+    OperationType:
+      type: string
+      enum:
+      - replace
+      - remove
+      title: OperationType
+    EntityTypeInPath:
+      type: string
+      enum:
+      - flags
+      - environments
+      - audiences
+      title: EntityTypeInPath
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     TeamPermissionsForEntityTypeResponse:
       properties:
         total:
@@ -251,23 +320,6 @@ components:
       - page
       - items
       title: TeamPermissionsForEntityTypeResponse
-    EntityPermission:
-      type: string
-      enum:
-      - admin
-      - publish
-      - toggle
-      - edit
-      - view
-      - none
-      - unknown
-      title: EntityPermission
-    OperationType:
-      type: string
-      enum:
-      - replace
-      - remove
-      title: OperationType
     UserPermissionsForEntityTypeResponse:
       properties:
         total:
@@ -315,29 +367,6 @@ components:
       - page
       - items
       title: UserPermissionsForEntityTypeResponse
-    TeamPermission:
-      properties:
-        team_id:
-          type: string
-          title: Team Id
-        name:
-          type: string
-          title: Name
-        role:
-          type: string
-          title: Role
-        external_ref:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: External Ref
-      type: object
-      required:
-      - team_id
-      - name
-      - role
-      - external_ref
-      title: TeamPermission
     UserPermission:
       properties:
         role:
@@ -370,6 +399,26 @@ components:
       - user_id
       - email
       title: UserPermission
+    src__api__dtos__permissions__TeamPermissionsForEntityTypeResponse__ItemInfo:
+      properties:
+        role:
+          type: string
+          title: Role
+        id:
+          type: integer
+          title: Id
+        key:
+          type: string
+          title: Key
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - role
+      - id
+      - name
+      title: ItemInfo
     EntityPermissionsResponse:
       properties:
         users:
@@ -387,46 +436,6 @@ components:
       - users
       - teams
       title: EntityPermissionsResponse
-    src__api__dtos__permissions__UserPermissionsForEntityTypeResponse__ItemInfo:
-      properties:
-        role:
-          type: string
-          title: Role
-        role_inherited:
-          type: string
-          title: Role Inherited
-        id:
-          type: integer
-          title: Id
-        key:
-          type: string
-          title: Key
-        name:
-          type: string
-          title: Name
-      type: object
-      required:
-      - role
-      - role_inherited
-      - id
-      - name
-      title: ItemInfo
-    EntityTypeInPath:
-      type: string
-      enum:
-      - flags
-      - environments
-      - audiences
-      title: EntityTypeInPath
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     PatchOperation:
       properties:
         op:
@@ -453,47 +462,38 @@ components:
         value: edit
       - op: remove
         path: /users/user_abc/role
-    src__api__dtos__permissions__TeamPermissionsForEntityTypeResponse__ItemInfo:
+    HTTPValidationError:
       properties:
-        role:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    TeamPermission:
+      properties:
+        team_id:
           type: string
-          title: Role
-        id:
-          type: integer
-          title: Id
-        key:
-          type: string
-          title: Key
+          title: Team Id
         name:
           type: string
           title: Name
+        role:
+          type: string
+          title: Role
+        external_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: External Ref
       type: object
       required:
-      - role
-      - id
+      - team_id
       - name
-      title: ItemInfo
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - role
+      - external_ref
+      title: TeamPermission
   securitySchemes:
     BearerAuth:
       description: To get an API token, see https://docs.developers.optimizely.com/web/docs/personal-token

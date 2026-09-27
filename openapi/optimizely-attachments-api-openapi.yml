@@ -356,13 +356,65 @@ components:
         mimeType:
           type: string
           description: Mime type of the attachment
-    RestApiLink:
+    RestMultiPartRequestSchema:
+      required:
+      - file
       type: object
       properties:
-        href:
+        file:
           type: string
-        rel:
+          description: file to be uploaded
+          format: binary
+        name:
           type: string
+          description: name of the attachment
+    RestAttachmentStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestAttachment'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestPersonalizedAttachment:
+      type: object
+      properties:
+        fileName:
+          type: string
+          description: File name
+        fileSize:
+          type: integer
+          description: File size in bytes
+          format: int64
+        id:
+          type: integer
+          description: Attachment ID
+          format: int64
+        contentType:
+          type: string
+          description: File content type
+        expiresAt:
+          type: string
+          description: Expiry date
+          format: date-time
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+      description: List of uploaded attachments
     RestAttachment:
       type: object
       properties:
@@ -425,6 +477,13 @@ components:
               uri:
                 type: string
                 format: uri
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
     RestPersonalizedAttachmentUpload:
       type: object
       properties:
@@ -436,18 +495,6 @@ components:
         token:
           type: string
           description: Personalized attachment token for all files uploaded - can be used when sending transactional mailings
-    RestMultiPartRequestSchema:
-      required:
-      - file
-      type: object
-      properties:
-        file:
-          type: string
-          description: file to be uploaded
-          format: binary
-        name:
-          type: string
-          description: name of the attachment
     RestCount:
       type: object
       properties:
@@ -479,53 +526,6 @@ components:
           type: integer
           description: Total number
           format: int64
-    RestAttachmentStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestAttachment'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    RestPersonalizedAttachment:
-      type: object
-      properties:
-        fileName:
-          type: string
-          description: File name
-        fileSize:
-          type: integer
-          description: File size in bytes
-          format: int64
-        id:
-          type: integer
-          description: Attachment ID
-          format: int64
-        contentType:
-          type: string
-          description: File content type
-        expiresAt:
-          type: string
-          description: Expiry date
-          format: date-time
-        created:
-          type: string
-          description: Creation date
-          format: date-time
-      description: List of uploaded attachments
   securitySchemes:
     Authorization:
       type: apiKey

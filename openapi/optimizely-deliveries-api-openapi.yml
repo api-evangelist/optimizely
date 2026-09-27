@@ -69,53 +69,6 @@ components:
         me:
           value: me
   schemas:
-    Map:
-      type: object
-      additionalProperties:
-        type: string
-    DeliveryMap:
-      type: object
-      description: A map of delivery identifiers to their corresponding API keys.
-      properties:
-        deliveries:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/Map'
-          description: Key-value pairs where key is the delivery ID or name and value is the API key.
-    Delivery:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - title
-      - active
-      - configuration
-      - content_selection
-      - sections
-      description: Represents a content delivery configuration, such as a widget or feed.
-      properties:
-        id:
-          type: integer
-          description: Unique identifier of the delivery.
-          example: 101
-        title:
-          type: string
-          description: Display title of the delivery.
-          example: Homepage Recommendations
-        active:
-          type: boolean
-          description: Indicates whether this delivery is currently active.
-          example: true
-        configuration:
-          $ref: '#/components/schemas/Map'
-        content_selection:
-          $ref: '#/components/schemas/DeliveryContentSelection'
-        sections:
-          type: array
-          uniqueItems: true
-          description: List of sections included in this delivery.
-          items:
-            $ref: '#/components/schemas/ContentSection'
     ContentSection:
       type: object
       additionalProperties: false
@@ -162,6 +115,53 @@ components:
           - all
           description: Filter content by featured status.
           example: featured
+    DeliveryMap:
+      type: object
+      description: A map of delivery identifiers to their corresponding API keys.
+      properties:
+        deliveries:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Map'
+          description: Key-value pairs where key is the delivery ID or name and value is the API key.
+    Delivery:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - active
+      - configuration
+      - content_selection
+      - sections
+      description: Represents a content delivery configuration, such as a widget or feed.
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the delivery.
+          example: 101
+        title:
+          type: string
+          description: Display title of the delivery.
+          example: Homepage Recommendations
+        active:
+          type: boolean
+          description: Indicates whether this delivery is currently active.
+          example: true
+        configuration:
+          $ref: '#/components/schemas/Map'
+        content_selection:
+          $ref: '#/components/schemas/DeliveryContentSelection'
+        sections:
+          type: array
+          uniqueItems: true
+          description: List of sections included in this delivery.
+          items:
+            $ref: '#/components/schemas/ContentSection'
+    Map:
+      type: object
+      additionalProperties:
+        type: string
   securitySchemes:
     key:
       type: apiKey

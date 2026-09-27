@@ -354,125 +354,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    Insite.Core.WebApi.PaginationModel:
-      type: object
-      properties:
-        currentPage:
-          format: int32
-          type: integer
-        page:
-          format: int32
-          type: integer
-        pageSize:
-          format: int32
-          type: integer
-        defaultPageSize:
-          format: int32
-          type: integer
-        totalItemCount:
-          format: int32
-          type: integer
-        numberOfPages:
-          format: int32
-          type: integer
-        pageSizeOptions:
-          type: array
-          items:
-            format: int32
-            type: integer
-        sortOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
-        sortType:
-          type: string
-        nextPageUri:
-          type: string
-        prevPageUri:
-          type: string
-        nextPageToken:
-          type: string
-    Insite.Websites.WebApi.V1.ApiModels.CountryModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          type: string
-        name:
-          type: string
-        abbreviation:
-          type: string
-        states:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Websites.WebApi.V1.ApiModels.StateModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          type: string
-        name:
-          type: string
-        abbreviation:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Core.WebApi.SortOptionModel:
-      type: object
-      properties:
-        displayName:
-          type: string
-        sortType:
-          type: string
-    Insite.Customers.WebApi.V1.ApiModels.BillToCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        billTos:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.BillToModel'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Customers.WebApi.V1.ApiModels.ShipToCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        shipTos:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.ShipToModel'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Customers.Services.Dtos.AgingBucketDto:
-      type: object
-      properties:
-        amount:
-          format: decimal
-          type: number
-        amountDisplay:
-          type: string
-        label:
-          type: string
     Insite.Customers.WebApi.V1.ApiModels.ShipToModel:
       type: object
       properties:
@@ -536,6 +417,101 @@ components:
           type: object
           additionalProperties:
             type: string
+    Insite.Customers.WebApi.V1.ApiModels.BillToCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        billTos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.BillToModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Customers.Services.Dtos.AccountsReceivableDto:
+      type: object
+      properties:
+        agingBuckets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
+        agingBucketTotal:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
+        agingBucketFuture:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
+    Insite.Websites.WebApi.V1.ApiModels.StateModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        abbreviation:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Customers.Services.Dtos.AgingBucketDto:
+      type: object
+      properties:
+        amount:
+          format: decimal
+          type: number
+        amountDisplay:
+          type: string
+        label:
+          type: string
+    Insite.Websites.WebApi.V1.ApiModels.CountryModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        abbreviation:
+          type: string
+        states:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Customers.Services.Dtos.FieldValidationDto:
+      type: object
+      properties:
+        isRequired:
+          type: boolean
+        isDisabled:
+          type: boolean
+        maxLength:
+          format: int32
+          type: integer
+    Insite.Customers.WebApi.V1.ApiModels.ShipToCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        shipTos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.ShipToModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
     Insite.Customers.WebApi.V1.ApiModels.CostCodeModel:
       type: object
       properties:
@@ -549,6 +525,44 @@ components:
           type: string
         isActive:
           type: boolean
+    Insite.Core.WebApi.PaginationModel:
+      type: object
+      properties:
+        currentPage:
+          format: int32
+          type: integer
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        defaultPageSize:
+          format: int32
+          type: integer
+        totalItemCount:
+          format: int32
+          type: integer
+        numberOfPages:
+          format: int32
+          type: integer
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
+        sortType:
+          type: string
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
+          type: string
     Insite.Customers.Services.Dtos.CustomerValidationDto:
       type: object
       properties:
@@ -582,6 +596,13 @@ components:
           $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
         fax:
           $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+    Insite.Core.WebApi.SortOptionModel:
+      type: object
+      properties:
+        displayName:
+          type: string
+        sortType:
+          type: string
     Insite.Customers.WebApi.V1.ApiModels.BillToModel:
       type: object
       properties:
@@ -661,27 +682,6 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Customers.Services.Dtos.FieldValidationDto:
-      type: object
-      properties:
-        isRequired:
-          type: boolean
-        isDisabled:
-          type: boolean
-        maxLength:
-          format: int32
-          type: integer
-    Insite.Customers.Services.Dtos.AccountsReceivableDto:
-      type: object
-      properties:
-        agingBuckets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
-        agingBucketTotal:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
-        agingBucketFuture:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
   requestBodies:
     Insite.Customers.WebApi.V1.ApiModels.BillToModel:
       content:

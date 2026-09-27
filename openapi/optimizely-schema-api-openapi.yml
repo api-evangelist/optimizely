@@ -109,6 +109,18 @@ paths:
           description: Schema object not found
 components:
   schemas:
+    SchemaObjectInput:
+      type: object
+      description: Input for creating a domain object type
+      required:
+      - display_name
+      properties:
+        display_name:
+          type: string
+          description: Human-readable display name
+        description:
+          type: string
+          description: Description of the object type
     SchemaObject:
       type: object
       description: A domain object type definition in the ODP schema
@@ -127,13 +139,9 @@ components:
           description: Fields defined on the object type
           items:
             $ref: '#/components/schemas/SchemaField'
-    SchemaFieldInput:
+    SchemaField:
       type: object
-      description: Input for creating a schema field
-      required:
-      - name
-      - display_name
-      - type
+      description: A field definition within a domain object type
       properties:
         name:
           type: string
@@ -152,21 +160,13 @@ components:
         description:
           type: string
           description: Description of the field
-    SchemaObjectInput:
+    SchemaFieldInput:
       type: object
-      description: Input for creating a domain object type
+      description: Input for creating a schema field
       required:
+      - name
       - display_name
-      properties:
-        display_name:
-          type: string
-          description: Human-readable display name
-        description:
-          type: string
-          description: Description of the object type
-    SchemaField:
-      type: object
-      description: A field definition within a domain object type
+      - type
       properties:
         name:
           type: string

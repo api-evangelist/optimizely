@@ -364,6 +364,122 @@ paths:
               $ref: '#/components/schemas/PinnedResultMatchParams'
 components:
   schemas:
+    PinnedItemPayload:
+      properties:
+        phrases:
+          type: string
+          description: Phrase or keyword to match
+        targetKey:
+          type: string
+          description: Document id to pin
+        language:
+          type:
+          - string
+          - 'null'
+          description: 'Language code (e.g. `en`, `fr`, `de`, etc.)
+
+
+            - `null` value means the pinned item is applicable to all languages
+
+
+            - Empty string (`""`) value is for NEUTRAL locale'
+          default: null
+        priority:
+          type: number
+          format: double
+          description: 'Priority of the pinned item (lower number means lower priority)
+
+
+            - Default value is `1000`
+
+
+            - Example: `1`, `10`, `100`, etc.'
+          default: 1000
+        isActive:
+          type: boolean
+          default: true
+      required:
+      - phrases
+      - targetKey
+      type: object
+      additionalProperties: false
+    Partial_PinnedCollectionPayload_:
+      properties:
+        title:
+          type: string
+        key:
+          type: string
+        isActive:
+          type: boolean
+          default: false
+      type: object
+      description: Make all properties in T optional
+    PinnedResultMatchParams:
+      properties:
+        phrase:
+          type: string
+        collectionIds:
+          items:
+            type: string
+          type: array
+        collectionKeys:
+          items:
+            type: string
+          type: array
+        languages:
+          items:
+            type:
+            - string
+            - 'null'
+          type:
+          - array
+          - 'null'
+        onlyActive:
+          type: boolean
+        limit:
+          type: number
+          format: double
+      required:
+      - phrase
+      type: object
+      additionalProperties: false
+    PinnedCollectionPayload:
+      properties:
+        title:
+          type: string
+        key:
+          type: string
+        isActive:
+          type: boolean
+          default: false
+      required:
+      - title
+      - key
+      type: object
+      additionalProperties: false
+    PinnedCollectionResult:
+      properties:
+        title:
+          type: string
+        key:
+          type: string
+        isActive:
+          type: boolean
+          default: false
+        id:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+      - title
+      - key
+      - id
+      - createdAt
+      - updatedAt
+      type: object
+      additionalProperties: false
     PinnedItemResult:
       properties:
         phrases:
@@ -413,122 +529,6 @@ components:
       - collectionId
       - createdAt
       - updatedAt
-      type: object
-      additionalProperties: false
-    PinnedCollectionResult:
-      properties:
-        title:
-          type: string
-        key:
-          type: string
-        isActive:
-          type: boolean
-          default: false
-        id:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-      required:
-      - title
-      - key
-      - id
-      - createdAt
-      - updatedAt
-      type: object
-      additionalProperties: false
-    Partial_PinnedCollectionPayload_:
-      properties:
-        title:
-          type: string
-        key:
-          type: string
-        isActive:
-          type: boolean
-          default: false
-      type: object
-      description: Make all properties in T optional
-    PinnedCollectionPayload:
-      properties:
-        title:
-          type: string
-        key:
-          type: string
-        isActive:
-          type: boolean
-          default: false
-      required:
-      - title
-      - key
-      type: object
-      additionalProperties: false
-    PinnedItemPayload:
-      properties:
-        phrases:
-          type: string
-          description: Phrase or keyword to match
-        targetKey:
-          type: string
-          description: Document id to pin
-        language:
-          type:
-          - string
-          - 'null'
-          description: 'Language code (e.g. `en`, `fr`, `de`, etc.)
-
-
-            - `null` value means the pinned item is applicable to all languages
-
-
-            - Empty string (`""`) value is for NEUTRAL locale'
-          default: null
-        priority:
-          type: number
-          format: double
-          description: 'Priority of the pinned item (lower number means lower priority)
-
-
-            - Default value is `1000`
-
-
-            - Example: `1`, `10`, `100`, etc.'
-          default: 1000
-        isActive:
-          type: boolean
-          default: true
-      required:
-      - phrases
-      - targetKey
-      type: object
-      additionalProperties: false
-    PinnedResultMatchParams:
-      properties:
-        phrase:
-          type: string
-        collectionIds:
-          items:
-            type: string
-          type: array
-        collectionKeys:
-          items:
-            type: string
-          type: array
-        languages:
-          items:
-            type:
-            - string
-            - 'null'
-          type:
-          - array
-          - 'null'
-        onlyActive:
-          type: boolean
-        limit:
-          type: number
-          format: double
-      required:
-      - phrase
       type: object
       additionalProperties: false
   securitySchemes:

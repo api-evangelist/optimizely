@@ -491,6 +491,22 @@ paths:
       - Authorization: []
 components:
   schemas:
+    RestCouponBlockCounter:
+      type: object
+      properties:
+        codeCount:
+          type: integer
+          description: Number of all coupon codes
+          format: int64
+        assigned:
+          type: integer
+          description: Number of all assigned coupon codes
+          format: int64
+        unassigned:
+          type: integer
+          description: Number of all available coupon codes
+          format: int64
+      description: Counter of coupon codes
     CouponCodeRequestData:
       required:
       - codes
@@ -502,95 +518,6 @@ components:
           items:
             type: string
             description: List of coupon codes
-    RestAssignedMailings:
-      type: object
-      properties:
-        mailingIds:
-          type: array
-          items:
-            type: integer
-            format: int64
-    RestCouponCodeStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestCouponCode'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    RestCouponCode:
-      type: object
-      properties:
-        code:
-          type: string
-          description: Coupon code
-        assignedMailing:
-          type: integer
-          description: Mailing assigned to the coupon code
-          format: int64
-        assignedRecipient:
-          type: string
-          description: Recipient assigned to the coupon code
-        assigned:
-          type: boolean
-          description: If true, the code of the coupon block is assigned to a mailing
-        used:
-          type: boolean
-          description: If true, the code of the coupon block was used
-        created:
-          type: string
-          description: Creation date
-          format: date-time
-        modified:
-          type: string
-          description: Modification date
-          format: date-time
-        links:
-          type: array
-          description: Restful links
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-            description: Restful links
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
     RestCouponBlockStreamingCollection:
       type: object
       properties:
@@ -664,22 +591,74 @@ components:
                 type: string
                 format: uri
             description: Restful links
-    RestCouponBlockCounter:
+    RestApiLink:
       type: object
       properties:
-        codeCount:
+        href:
+          type: string
+        rel:
+          type: string
+    RestCouponCode:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Coupon code
+        assignedMailing:
           type: integer
-          description: Number of all coupon codes
+          description: Mailing assigned to the coupon code
           format: int64
+        assignedRecipient:
+          type: string
+          description: Recipient assigned to the coupon code
         assigned:
-          type: integer
-          description: Number of all assigned coupon codes
-          format: int64
-        unassigned:
-          type: integer
-          description: Number of all available coupon codes
-          format: int64
-      description: Counter of coupon codes
+          type: boolean
+          description: If true, the code of the coupon block is assigned to a mailing
+        used:
+          type: boolean
+          description: If true, the code of the coupon block was used
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+    RestAssignedMailings:
+      type: object
+      properties:
+        mailingIds:
+          type: array
+          items:
+            type: integer
+            format: int64
     CouponBlockRequestData:
       required:
       - couponSource
@@ -704,6 +683,27 @@ components:
         name:
           type: string
           description: Internal name of the coupon block
+    RestCouponCodeStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestCouponCode'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
   securitySchemes:
     Authorization:
       type: apiKey

@@ -330,20 +330,18 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.AdditionalDataModel:
+    Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.AmountModel:
       type: object
       properties:
-        threeDs2CardEnrolled:
+        currency:
           type: string
-        checkoutSessionId:
-          type: string
-        hmacSignature:
-          type: string
-        cardSummary:
-          type: string
-        expiryDate:
-          type: string
-        authCode:
+        value:
+          format: int32
+          type: integer
+    Insite.Payments.WebApi.V1.ApiModels.AdyenPaymentDetails.Details:
+      type: object
+      properties:
+        redirectResult:
           type: string
     Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.WebhookModel:
       type: object
@@ -354,19 +352,6 @@ components:
             $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.NotificationItemModel'
         live:
           type: boolean
-    Insite.Payments.WebApi.V1.ApiModels.AdyenPaymentDetails.Details:
-      type: object
-      properties:
-        redirectResult:
-          type: string
-    Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.AmountModel:
-      type: object
-      properties:
-        currency:
-          type: string
-        value:
-          format: int32
-          type: integer
     Insite.Payments.WebApi.V1.ApiModels.ThreeDSChallengeRreq:
       type: object
       properties:
@@ -398,6 +383,28 @@ components:
           type: string
         transStatus:
           type: string
+    Insite.Payments.WebApi.V1.ApiModels.AdyenRefundParameter:
+      type: object
+      properties:
+        pspReference:
+          type: string
+        orderNumber:
+          type: string
+        amount:
+          $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.AmountModel'
+    Insite.Payments.WebApi.V1.ApiModels.ThreeDsChallengeResult:
+      type: object
+      properties:
+        messageId:
+          type: string
+        threeDSServerTransID:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        valid:
+          type: boolean
+        rReq:
+          $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.ThreeDSChallengeRreq'
     Insite.Payments.WebApi.V1.ApiModels.PaymentAuthenticationParameter:
       type: object
       properties:
@@ -429,33 +436,71 @@ components:
           type: string
         resume3Ds:
           type: boolean
+    Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.NotificationItemModel:
+      type: object
+      properties:
+        notificationRequestItem:
+          $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.NotificationRequestItemModel'
     Insite.Payments.WebApi.V1.ApiModels.AdyenPaymentDetails.PaymentDetailsRequest:
       type: object
       properties:
         details:
           $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.AdyenPaymentDetails.Details'
-    Insite.Payments.WebApi.V1.ApiModels.AdyenRefundParameter:
+    Insite.Core.Plugins.PaymentGateway.Dtos.ThreeDsDto:
       type: object
       properties:
-        pspReference:
-          type: string
-        orderNumber:
-          type: string
-        amount:
-          $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.AmountModel'
-    Insite.Payments.WebApi.V1.ApiModels.ThreeDsChallengeResult:
-      type: object
-      properties:
-        messageId:
-          type: string
-        threeDSServerTransID:
+        dsTransId:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        valid:
+        iframeIsChallenge:
           type: boolean
-        rReq:
-          $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.ThreeDSChallengeRreq'
+        iframeIsHidden:
+          type: boolean
+        rejected:
+          type: boolean
+        acsEci:
+          type: string
+        authenticationToken:
+          type: string
+        authenticationVersion:
+          type: string
+        iframe:
+          type: string
+        messageId:
+          type: string
+        transStatus:
+          type: string
+    Insite.Payments.WebApi.V1.ApiModels.PaymentAuthenticationModel:
+      type: object
+      properties:
+        transactionId:
+          type: string
+        webOrderNumber:
+          type: string
+        threeDs:
+          $ref: '#/components/schemas/Insite.Core.Plugins.PaymentGateway.Dtos.ThreeDsDto'
+        sessionData:
+          type: string
+        action:
+          type: string
+        region:
+          type: string
+    Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.AdditionalDataModel:
+      type: object
+      properties:
+        threeDs2CardEnrolled:
+          type: string
+        checkoutSessionId:
+          type: string
+        hmacSignature:
+          type: string
+        cardSummary:
+          type: string
+        expiryDate:
+          type: string
+        authCode:
+          type: string
     Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.NotificationRequestItemModel:
       type: object
       properties:
@@ -485,51 +530,6 @@ components:
           type: string
         success:
           type: boolean
-    Insite.Payments.WebApi.V1.ApiModels.PaymentAuthenticationModel:
-      type: object
-      properties:
-        transactionId:
-          type: string
-        webOrderNumber:
-          type: string
-        threeDs:
-          $ref: '#/components/schemas/Insite.Core.Plugins.PaymentGateway.Dtos.ThreeDsDto'
-        sessionData:
-          type: string
-        action:
-          type: string
-        region:
-          type: string
-    Insite.Core.Plugins.PaymentGateway.Dtos.ThreeDsDto:
-      type: object
-      properties:
-        dsTransId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        iframeIsChallenge:
-          type: boolean
-        iframeIsHidden:
-          type: boolean
-        rejected:
-          type: boolean
-        acsEci:
-          type: string
-        authenticationToken:
-          type: string
-        authenticationVersion:
-          type: string
-        iframe:
-          type: string
-        messageId:
-          type: string
-        transStatus:
-          type: string
-    Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.NotificationItemModel:
-      type: object
-      properties:
-        notificationRequestItem:
-          $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.NotificationRequestItemModel'
   requestBodies:
     PaymentAuthenticationV1_Post2Parameter:
       content:

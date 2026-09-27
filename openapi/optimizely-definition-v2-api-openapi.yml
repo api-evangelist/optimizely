@@ -93,16 +93,6 @@ paths:
               $ref: '#/components/schemas/ContentSource_V2'
 components:
   schemas:
-    LinkConfig:
-      properties:
-        to:
-          type: string
-        from:
-          type: string
-      required:
-      - to
-      - from
-      type: object
     PropertyType_V2:
       properties:
         properties:
@@ -114,19 +104,10 @@ components:
       required:
       - name
       type: object
-    Property_V2:
-      properties:
-        index:
-          type: boolean
-        searchable:
-          type: boolean
-        type:
-          type: string
-        name:
-          type: string
-      required:
-      - type
-      - name
+    LinkMap:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/LinkConfig'
       type: object
     ContentSource_V2:
       properties:
@@ -172,10 +153,19 @@ components:
           - name: MainContentArea
             type: string
         propertyTypes: []
-    LinkMap:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/LinkConfig'
+    Optional_string_:
+      type:
+      - string
+      - 'null'
+    LinkConfig:
+      properties:
+        to:
+          type: string
+        from:
+          type: string
+      required:
+      - to
+      - from
       type: object
     ContentTypeProperty_V2:
       allOf:
@@ -184,10 +174,6 @@ components:
           helpText:
             $ref: '#/components/schemas/Optional_string_'
         type: object
-    Optional_string_:
-      type:
-      - string
-      - 'null'
     ContentType_V2:
       properties:
         properties:
@@ -214,6 +200,20 @@ components:
       required:
       - properties
       - contentType
+      - name
+      type: object
+    Property_V2:
+      properties:
+        index:
+          type: boolean
+        searchable:
+          type: boolean
+        type:
+          type: string
+        name:
+          type: string
+      required:
+      - type
       - name
       type: object
   securitySchemes:

@@ -125,6 +125,99 @@ paths:
         required: true
 components:
   schemas:
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - details
+      - status
+      type: object
+      properties:
+        details:
+          title: Details
+          type: string
+          description: Details of Error.
+        status:
+          title: Status
+          type: integer
+          description: Status code of the response.
+          example: 400
+    ScheduledTimeWithUTC:
+      title: ScheduledTimeWithUTC
+      required:
+      - time_zone
+      - time
+      - date
+      - utc_time
+      type: object
+      properties:
+        time:
+          title: Time
+          type: string
+          description: 'The schedule will run at this time. Expected format: hh:MM (24 hour)'
+          example: 07:02
+        time_zone:
+          title: Time Zone
+          type: string
+          description: The timezone information for the scheduled time. Must be an IANA timezone.
+          example: Etc/UTC
+        date:
+          title: Date
+          type: string
+          description: 'The schedule will run at this date. Expected format: yyyy-mm-dd.'
+          example: '2023-07-30'
+        utc_time:
+          title: UTC Time
+          type: string
+          description: The utc timestamp when the scheduled job will be executed.
+          example: 2023-07-30T07:02:00+0000
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+        status:
+          title: Status
+          type: integer
+          description: Status code of the response.
+          example: 422
+    ActionValue:
+      title: ActionValue
+      description: "The value of a schedule action.\n\nFor status change, value can be on/off. \n\nFor changing traffic percentage, value should be integer. For example, for 40% traffic, value should be 4000.\n"
+      anyOf:
+      - type: string
+        enum:
+        - 'on'
+        - 'off'
+      - type: integer
+        example: 5000
+    ValidationError:
+      title: ValidationError
+      required:
+      - loc
+      - msg
+      - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          description: Path to the invalid value
+        msg:
+          title: Message
+          type: string
+          description: Error message
+        type:
+          title: Error Type
+          type: string
+          description: Error type
     ScheduledChange:
       title: ScheduledChange
       type: object
@@ -206,63 +299,6 @@ components:
           title: Created By
           type: string
           description: The user who created the schedule.
-    ActionValue:
-      title: ActionValue
-      description: "The value of a schedule action.\n\nFor status change, value can be on/off. \n\nFor changing traffic percentage, value should be integer. For example, for 40% traffic, value should be 4000.\n"
-      anyOf:
-      - type: string
-        enum:
-        - 'on'
-        - 'off'
-      - type: integer
-        example: 5000
-    ScheduledChangeUpdateRequest:
-      title: ScheduledChangeUpdateRequest
-      type: object
-      properties:
-        actions:
-          title: Actions
-          type: array
-          items:
-            $ref: '#/components/schemas/ScheduleAction'
-          description: Schedule action details.
-        schedule:
-          title: ScheduledTime
-          allOf:
-          - $ref: '#/components/schemas/ScheduledTime'
-          description: Schedule details.
-        environment:
-          title: Environment
-          type: string
-    ScheduledTimeWithUTC:
-      title: ScheduledTimeWithUTC
-      required:
-      - time_zone
-      - time
-      - date
-      - utc_time
-      type: object
-      properties:
-        time:
-          title: Time
-          type: string
-          description: 'The schedule will run at this time. Expected format: hh:MM (24 hour)'
-          example: 07:02
-        time_zone:
-          title: Time Zone
-          type: string
-          description: The timezone information for the scheduled time. Must be an IANA timezone.
-          example: Etc/UTC
-        date:
-          title: Date
-          type: string
-          description: 'The schedule will run at this date. Expected format: yyyy-mm-dd.'
-          example: '2023-07-30'
-        utc_time:
-          title: UTC Time
-          type: string
-          description: The utc timestamp when the scheduled job will be executed.
-          example: 2023-07-30T07:02:00+0000
     ScheduledTime:
       title: ScheduledTime
       required:
@@ -286,6 +322,24 @@ components:
           type: string
           description: 'The schedule will run at this date. Expected format: yyyy-mm-dd.'
           example: '2023-07-30'
+    ScheduledChangeUpdateRequest:
+      title: ScheduledChangeUpdateRequest
+      type: object
+      properties:
+        actions:
+          title: Actions
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleAction'
+          description: Schedule action details.
+        schedule:
+          title: ScheduledTime
+          allOf:
+          - $ref: '#/components/schemas/ScheduledTime'
+          description: Schedule details.
+        environment:
+          title: Environment
+          type: string
     ScheduleAction:
       title: ScheduleAction
       required:
@@ -317,60 +371,6 @@ components:
           description: Value of the action. Can be of any type.
           type: object
           $ref: '#/components/schemas/ActionValue'
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - details
-      - status
-      type: object
-      properties:
-        details:
-          title: Details
-          type: string
-          description: Details of Error.
-        status:
-          title: Status
-          type: integer
-          description: Status code of the response.
-          example: 400
-    HTTPValidationError:
-      title: HTTPValidationError
-      type: object
-      properties:
-        detail:
-          title: Detail
-          type: array
-          items:
-            $ref: '#/components/schemas/ValidationError'
-        status:
-          title: Status
-          type: integer
-          description: Status code of the response.
-          example: 422
-    ValidationError:
-      title: ValidationError
-      required:
-      - loc
-      - msg
-      - type
-      type: object
-      properties:
-        loc:
-          title: Location
-          type: array
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          description: Path to the invalid value
-        msg:
-          title: Message
-          type: string
-          description: Error message
-        type:
-          title: Error Type
-          type: string
-          description: Error type
   securitySchemes:
     BearerAuth:
       description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token

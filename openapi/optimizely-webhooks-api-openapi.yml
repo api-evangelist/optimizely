@@ -651,82 +651,6 @@ paths:
     - url: https://api.optimizely.com/v2
 components:
   schemas:
-    WebhookRequestData:
-      required:
-      - format
-      - targetUrl
-      - type
-      type: object
-      properties:
-        basicAuthUsername:
-          type: string
-          description: User name for Basic HTTP Authentication. This parameter is deprecated and might be removed in the near future. Please use &lt;authentication&gt; instead.
-        basicAuthPassword:
-          type: string
-          description: Password for Basic HTTP Authentication. This parameter is deprecated and might be removed in the near future. Please use &lt;authentication&gt; instead.
-        type:
-          type: string
-          description: Event data type
-          enum:
-          - open
-          - click
-          - sent
-          - bounce
-          - unsubscribe
-          - spamcomplaint
-          - singleoptin
-          - confirmedoptin
-          - doubleoptin
-          - blocklist
-          - archive
-          - filteredbyblocklist
-        format:
-          type: string
-          description: Data format in which the event data is to be sent
-          enum:
-          - json
-        authentication:
-          type: string
-          description: 'Authentication method and attributes as json.<br>
-
-            Current types are:
-
-            <pre>
-
-            {"type":"none"}
-
-            </pre>
-
-            or
-
-            <pre>
-
-            {"type":"basicAuth","userName":"xxxxxxx","password":"xxxxxxx"}
-
-            </pre>
-
-            or
-
-            <pre>
-
-            {"type":"keyAuth","key":"Authorization","passphrase":"Bearer xxxxxxx"}
-
-            </pre>
-
-            '
-        targetUrl:
-          type: string
-          description: Target URL to which the event data is to be sent<p><b>Note:</b> The URL must be accessible and able to receive data via HTTP POST requests from the IP address 193.169.180.1 at any time. Use the current HTTPS version and standard port 443 for HTTPS connections.</p>
-    WebhookAuthentication:
-      required:
-      - type
-      type: object
-      properties:
-        type:
-          type: string
-      description: Authentication method and attributes
-      discriminator:
-        propertyName: type
     RestWebhook:
       type: object
       properties:
@@ -799,6 +723,134 @@ components:
         targetUrl:
           type: string
           description: Target URL
+    WebhookAuthentication:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+      description: Authentication method and attributes
+      discriminator:
+        propertyName: type
+    WebhookRequestData:
+      required:
+      - format
+      - targetUrl
+      - type
+      type: object
+      properties:
+        basicAuthUsername:
+          type: string
+          description: User name for Basic HTTP Authentication. This parameter is deprecated and might be removed in the near future. Please use &lt;authentication&gt; instead.
+        basicAuthPassword:
+          type: string
+          description: Password for Basic HTTP Authentication. This parameter is deprecated and might be removed in the near future. Please use &lt;authentication&gt; instead.
+        type:
+          type: string
+          description: Event data type
+          enum:
+          - open
+          - click
+          - sent
+          - bounce
+          - unsubscribe
+          - spamcomplaint
+          - singleoptin
+          - confirmedoptin
+          - doubleoptin
+          - blocklist
+          - archive
+          - filteredbyblocklist
+        format:
+          type: string
+          description: Data format in which the event data is to be sent
+          enum:
+          - json
+        authentication:
+          type: string
+          description: 'Authentication method and attributes as json.<br>
+
+            Current types are:
+
+            <pre>
+
+            {"type":"none"}
+
+            </pre>
+
+            or
+
+            <pre>
+
+            {"type":"basicAuth","userName":"xxxxxxx","password":"xxxxxxx"}
+
+            </pre>
+
+            or
+
+            <pre>
+
+            {"type":"keyAuth","key":"Authorization","passphrase":"Bearer xxxxxxx"}
+
+            </pre>
+
+            '
+        targetUrl:
+          type: string
+          description: Target URL to which the event data is to be sent<p><b>Note:</b> The URL must be accessible and able to receive data via HTTP POST requests from the IP address 193.169.180.1 at any time. Use the current HTTPS version and standard port 443 for HTTPS connections.</p>
+    Preset:
+      type: string
+      enum:
+      - legacy
+      - next
+    Webhook:
+      allOf:
+      - $ref: '#/components/schemas/WebhookPayload'
+      - properties:
+          preset:
+            $ref: '#/components/schemas/Preset'
+          id:
+            type: string
+        required:
+        - preset
+        - id
+        type: object
+    Partial_Record_string.OperationMap__:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/OperationMap'
+      type: object
+      description: Make all properties in T optional
+    Record_string.string_:
+      properties: {}
+      additionalProperties:
+        type: string
+      type: object
+      description: Construct a type with a set of properties K of type T
+    Request:
+      properties:
+        url:
+          type: string
+        method:
+          type: string
+        headers:
+          $ref: '#/components/schemas/Record_string.string_'
+      required:
+      - url
+      type: object
+      additionalProperties: false
+    OperationMap:
+      properties:
+        in:
+          anyOf:
+          - type: string
+          - items:
+              type: string
+            type: array
+        eq:
+          type: string
+      type: object
     WebhookPayload:
       description: 'The `WebhookPayload` type represents the payload of a webhook request, which includes information
 
@@ -836,140 +888,6 @@ components:
             in:
             - Published
             - Created
-    Preset:
-      type: string
-      enum:
-      - legacy
-      - next
-    Webhook:
-      allOf:
-      - $ref: '#/components/schemas/WebhookPayload'
-      - properties:
-          preset:
-            $ref: '#/components/schemas/Preset'
-          id:
-            type: string
-        required:
-        - preset
-        - id
-        type: object
-    Request:
-      properties:
-        url:
-          type: string
-        method:
-          type: string
-        headers:
-          $ref: '#/components/schemas/Record_string.string_'
-      required:
-      - url
-      type: object
-      additionalProperties: false
-    Record_string.string_:
-      properties: {}
-      additionalProperties:
-        type: string
-      type: object
-      description: Construct a type with a set of properties K of type T
-    OperationMap:
-      properties:
-        in:
-          anyOf:
-          - type: string
-          - items:
-              type: string
-            type: array
-        eq:
-          type: string
-      type: object
-    Partial_Record_string.OperationMap__:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/OperationMap'
-      type: object
-      description: Make all properties in T optional
-    WebhookRequestBody:
-      description: Webhook request body
-      properties:
-        description:
-          description: A short description of the Webhook.
-          example: Webhook description
-          type: string
-        events:
-          description: List of events subscribed to the webhook.
-          items:
-            enum:
-            - project.datafile_updated
-            - project.snippet_updated
-            - project.attribute_created
-            - project.attribute_updated
-            - project.attribute_deleted
-            - project.attribute_archived
-            - project.audience_created
-            - project.audience_updated
-            - project.audience_archived
-            - project.environment_created
-            - project.environment_updated
-            - project.environment_archived
-            - project.event_created
-            - project.event_updated
-            - project.event_deleted
-            - project.event_archived
-            - project.flag_created
-            - project.flag_updated
-            - project.flag_deleted
-            - project.flag_archived
-            - project.project_setting_created
-            - project.project_setting_updated
-            - project.project_setting_deleted
-            - project.ruleset_created
-            - project.ruleset_updated
-            - project.ruleset_deleted
-            - project.rule_created
-            - project.rule_updated
-            - project.rule_deleted
-            - project.variation_created
-            - project.variation_updated
-            - project.variation_deleted
-            - project.variation_archived
-            - project.variable_created
-            - project.variable_updated
-            - project.variable_deleted
-            - project.group_created
-            - project.group_updated
-            - project.group_deleted
-            - project.group_archived
-            type: string
-          type: array
-        name:
-          description: Name of the Webhook.
-          type: string
-        url:
-          description: Webhook URL
-          type: string
-      required:
-      - description
-      - events
-      - name
-      - url
-      type: object
-    Error:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
-          type: string
-      type: object
-    Webhooks:
-      description: List of webhooks.
-      items:
-        $ref: '#/components/schemas/Webhook_2'
-      type: array
     Webhook_2:
       properties:
         active:
@@ -1052,24 +970,94 @@ components:
       - project_id
       - url
       type: object
+    Webhooks:
+      description: List of webhooks.
+      items:
+        $ref: '#/components/schemas/Webhook_2'
+      type: array
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    WebhookRequestBody:
+      description: Webhook request body
+      properties:
+        description:
+          description: A short description of the Webhook.
+          example: Webhook description
+          type: string
+        events:
+          description: List of events subscribed to the webhook.
+          items:
+            enum:
+            - project.datafile_updated
+            - project.snippet_updated
+            - project.attribute_created
+            - project.attribute_updated
+            - project.attribute_deleted
+            - project.attribute_archived
+            - project.audience_created
+            - project.audience_updated
+            - project.audience_archived
+            - project.environment_created
+            - project.environment_updated
+            - project.environment_archived
+            - project.event_created
+            - project.event_updated
+            - project.event_deleted
+            - project.event_archived
+            - project.flag_created
+            - project.flag_updated
+            - project.flag_deleted
+            - project.flag_archived
+            - project.project_setting_created
+            - project.project_setting_updated
+            - project.project_setting_deleted
+            - project.ruleset_created
+            - project.ruleset_updated
+            - project.ruleset_deleted
+            - project.rule_created
+            - project.rule_updated
+            - project.rule_deleted
+            - project.variation_created
+            - project.variation_updated
+            - project.variation_deleted
+            - project.variation_archived
+            - project.variable_created
+            - project.variable_updated
+            - project.variable_deleted
+            - project.group_created
+            - project.group_updated
+            - project.group_deleted
+            - project.group_archived
+            type: string
+          type: array
+        name:
+          description: Name of the Webhook.
+          type: string
+        url:
+          description: Webhook URL
+          type: string
+      required:
+      - description
+      - events
+      - name
+      - url
+      type: object
   parameters:
-    page_window:
-      description: Number of previous and next page links to supply for the request (defaults to 1).
-      in: query
-      name: page_window
-      schema:
-        type: integer
-    page_token:
-      description: Pagination page token. Implements prev, next, last, first
-      in: query
-      name: page_token
-      schema:
-        type: string
-    project_id:
-      description: The project identifier
+    webhook_id:
+      description: The webhook identifier
       example: 12345
       in: path
-      name: project_id
+      name: webhook_id
       required: true
       schema:
         type: integer
@@ -1090,11 +1078,23 @@ components:
         default: 25
         maximum: 100
         type: integer
-    webhook_id:
-      description: The webhook identifier
+    page_window:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
+    page_token:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    project_id:
+      description: The project identifier
       example: 12345
       in: path
-      name: webhook_id
+      name: project_id
       required: true
       schema:
         type: integer

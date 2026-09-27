@@ -444,6 +444,22 @@ paths:
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
 components:
+  parameters:
+    orderGroupId:
+      name: orderGroupId
+      in: path
+      required: true
+      description: The unique identifier for the order group
+      schema:
+        type: integer
+        format: int64
+    customerId:
+      name: customerId
+      in: path
+      required: true
+      description: The unique identifier for the customer
+      schema:
+        type: string
   schemas:
     Order:
       type: object
@@ -500,147 +516,230 @@ components:
                     placed_price:
                       type: number
                       description: Price at time of purchase
-    Insite.Core.WebApi.PaginationModel:
+    Insite.Catalog.Services.Dtos.AvailabilityDto:
       type: object
       properties:
-        currentPage:
+        messageType:
           format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
           type: integer
-        page:
-          format: int32
-          type: integer
-        pageSize:
-          format: int32
-          type: integer
-        defaultPageSize:
-          format: int32
-          type: integer
-        totalItemCount:
-          format: int32
-          type: integer
-        numberOfPages:
-          format: int32
-          type: integer
-        pageSizeOptions:
-          type: array
-          items:
-            format: int32
-            type: integer
-        sortOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
-        sortType:
+        message:
           type: string
-        nextPageUri:
-          type: string
-        prevPageUri:
-          type: string
-        nextPageToken:
-          type: string
-    Insite.Order.WebApi.V1.ApiModels.OrderPromotionModel:
+        requiresRealTimeInventory:
+          type: boolean
+    Insite.Order.WebApi.V1.ApiModels.OrderModel:
       type: object
       properties:
         uri:
           type: string
         id:
           type: string
-        amount:
-          format: double
-          type: number
-        amountDisplay:
+        erpOrderNumber:
           type: string
-        name:
+        webOrderNumber:
           type: string
-        orderHistoryLineId:
-          format: uuid
+        orderDate:
+          format: date-time
           type: string
-          example: 00000000-0000-0000-0000-000000000000
-        promotionResultType:
+        status:
           type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Order.WebApi.V1.ApiModels.RmaModel:
-      type: object
-      properties:
-        uri:
+        statusDisplay:
           type: string
-        orderNumber:
+        customerNumber:
+          type: string
+        customerSequence:
+          type: string
+        customerPO:
+          type: string
+        currencyCode:
+          type: string
+        currencySymbol:
+          type: string
+        terms:
+          type: string
+        shipCode:
+          type: string
+        salesperson:
+          type: string
+        btCompanyName:
+          type: string
+        btAddress1:
+          type: string
+        btAddress2:
+          type: string
+        btAddress3:
+          type: string
+        btAddress4:
+          type: string
+        billToCity:
+          type: string
+        billToState:
+          type: string
+        billToPostalCode:
+          type: string
+        btCountry:
+          type: string
+        stCompanyName:
+          type: string
+        stAddress1:
+          type: string
+        stAddress2:
+          type: string
+        stAddress3:
+          type: string
+        stAddress4:
+          type: string
+        shipToCity:
+          type: string
+        shipToState:
+          type: string
+        shipToPostalCode:
+          type: string
+        stCountry:
           type: string
         notes:
           type: string
-        message:
+        productTotal:
+          format: decimal
+          type: number
+        orderSubTotal:
+          format: decimal
+          type: number
+        discountAmount:
+          format: decimal
+          type: number
+          readOnly: true
+        orderDiscountAmount:
+          format: decimal
+          type: number
+        productDiscountAmount:
+          format: decimal
+          type: number
+        shippingAndHandling:
+          format: decimal
+          type: number
+          readOnly: true
+        shippingCharges:
+          format: decimal
+          type: number
+        handlingCharges:
+          format: decimal
+          type: number
+        otherCharges:
+          format: decimal
+          type: number
+        taxAmount:
+          format: decimal
+          type: number
+        orderTotal:
+          format: decimal
+          type: number
+        modifyDate:
+          format: date-time
           type: string
-        rmaLines:
+        requestedDeliveryDateDisplay:
+          format: date-time
+          type: string
+        orderLines:
           type: array
           items:
-            $ref: '#/components/schemas/Insite.Order.Services.Dtos.RmaLineDto'
-        properties:
-          type: object
-          additionalProperties:
+            $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderLineModel'
+        orderPromotions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderPromotionModel'
+        shipmentPackages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Order.Services.Dtos.ShipmentPackageDto'
+        returnReasons:
+          type: array
+          items:
             type: string
-    Insite.Order.WebApi.V1.ApiModels.OrderCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        orders:
+        orderHistoryTaxes:
           type: array
           items:
-            $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderModel'
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        showErpOrderNumber:
+            $ref: '#/components/schemas/Insite.Order.Services.Dtos.OrderHistoryTaxDto'
+        productTotalDisplay:
+          type: string
+        orderSubTotalDisplay:
+          type: string
+        orderTotalDisplay:
+          type: string
+        orderGrandTotalDisplay:
+          type: string
+        discountAmountDisplay:
+          type: string
+          readOnly: true
+        orderDiscountAmountDisplay:
+          type: string
+        productDiscountAmountDisplay:
+          type: string
+        taxAmountDisplay:
+          type: string
+        totalTaxDisplay:
+          type: string
+        shippingAndHandlingDisplay:
+          type: string
+        shippingChargesDisplay:
+          type: string
+        handlingChargesDisplay:
+          type: string
+        otherChargesDisplay:
+          type: string
+        canAddToCart:
           type: boolean
+        canAddAllToCart:
+          type: boolean
+        showTaxAndShipping:
+          type: boolean
+        shipViaDescription:
+          type: string
+        fulfillmentMethod:
+          type: string
+        customerVatNumber:
+          type: string
+        vmiLocationId:
+          type: string
+        vmiLocationName:
+          type: string
         properties:
           type: object
           additionalProperties:
             type: string
-    Insite.Order.Services.Dtos.SectionOptionDto:
-      type: object
-      properties:
-        sectionOptionId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        sectionName:
-          type: string
-        optionName:
-          type: string
-    Insite.Order.Services.Dtos.ShipmentPackageDto:
+    Insite.Catalog.Services.Dtos.BrandDto:
       type: object
       properties:
         id:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        shipmentDate:
-          format: date-time
+        name:
           type: string
-        packageNumber:
+        urlSegment:
           type: string
-        carrier:
+        logoSmallImagePath:
           type: string
-        shipVia:
+        logoLargeImagePath:
           type: string
-        trackingUrl:
+        logoImageAltText:
           type: string
-        trackingNumber:
+        detailPagePath:
           type: string
-        packSlip:
-          type: string
-        shipmentPackageLineDtos:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Order.Services.Dtos.ShipmentPackageLineDto'
-    Insite.Core.WebApi.SortOptionModel:
+    Insite.Order.Services.Dtos.RmaLineDto:
       type: object
       properties:
-        displayName:
-          type: string
-        sortType:
+        line:
+          format: decimal
+          type: number
+        rmaQtyRequested:
+          format: int32
+          type: integer
+        rmaReasonCode:
           type: string
     Insite.Order.WebApi.V1.ApiModels.OrderLineModel:
       type: object
@@ -845,6 +944,60 @@ components:
           type: object
           additionalProperties:
             type: string
+    Insite.Order.Services.Dtos.OrderHistoryTaxDto:
+      type: object
+      properties:
+        taxCode:
+          type: string
+        taxDescription:
+          type: string
+        taxRate:
+          format: decimal
+          type: number
+        taxAmount:
+          format: decimal
+          type: number
+        taxAmountDisplay:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+    Insite.Order.WebApi.V1.ApiModels.OrderCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        showErpOrderNumber:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Order.WebApi.V1.ApiModels.RmaModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        orderNumber:
+          type: string
+        notes:
+          type: string
+        message:
+          type: string
+        rmaLines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Order.Services.Dtos.RmaLineDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
     Insite.Order.Services.Dtos.ShipmentPackageLineDto:
       type: object
       properties:
@@ -871,24 +1024,86 @@ components:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-    Insite.Order.Services.Dtos.OrderHistoryTaxDto:
+    Insite.Order.WebApi.V1.ApiModels.OrderPromotionModel:
       type: object
       properties:
-        taxCode:
+        uri:
           type: string
-        taxDescription:
+        id:
           type: string
-        taxRate:
-          format: decimal
+        amount:
+          format: double
           type: number
-        taxAmount:
-          format: decimal
-          type: number
-        taxAmountDisplay:
+        amountDisplay:
           type: string
-        sortOrder:
+        name:
+          type: string
+        orderHistoryLineId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        promotionResultType:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.WebApi.PaginationModel:
+      type: object
+      properties:
+        currentPage:
           format: int32
           type: integer
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        defaultPageSize:
+          format: int32
+          type: integer
+        totalItemCount:
+          format: int32
+          type: integer
+        numberOfPages:
+          format: int32
+          type: integer
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
+        sortType:
+          type: string
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
+          type: string
+    Insite.Order.Services.Dtos.SectionOptionDto:
+      type: object
+      properties:
+        sectionOptionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sectionName:
+          type: string
+        optionName:
+          type: string
+    Insite.Core.WebApi.SortOptionModel:
+      type: object
+      properties:
+        displayName:
+          type: string
+        sortType:
+          type: string
     Insite.Email.WebApi.V1.ApiModels.ShareEntityModel:
       type: object
       properties:
@@ -910,32 +1125,6 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Order.Services.Dtos.RmaLineDto:
-      type: object
-      properties:
-        line:
-          format: decimal
-          type: number
-        rmaQtyRequested:
-          format: int32
-          type: integer
-        rmaReasonCode:
-          type: string
-    Insite.Catalog.Services.Dtos.AvailabilityDto:
-      type: object
-      properties:
-        messageType:
-          format: int32
-          enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          type: integer
-        message:
-          type: string
-        requiresRealTimeInventory:
-          type: boolean
     Insite.Order.WebApi.V1.ApiModels.ShareOrderModel:
       type: object
       properties:
@@ -961,221 +1150,32 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Order.WebApi.V1.ApiModels.OrderModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          type: string
-        erpOrderNumber:
-          type: string
-        webOrderNumber:
-          type: string
-        orderDate:
-          format: date-time
-          type: string
-        status:
-          type: string
-        statusDisplay:
-          type: string
-        customerNumber:
-          type: string
-        customerSequence:
-          type: string
-        customerPO:
-          type: string
-        currencyCode:
-          type: string
-        currencySymbol:
-          type: string
-        terms:
-          type: string
-        shipCode:
-          type: string
-        salesperson:
-          type: string
-        btCompanyName:
-          type: string
-        btAddress1:
-          type: string
-        btAddress2:
-          type: string
-        btAddress3:
-          type: string
-        btAddress4:
-          type: string
-        billToCity:
-          type: string
-        billToState:
-          type: string
-        billToPostalCode:
-          type: string
-        btCountry:
-          type: string
-        stCompanyName:
-          type: string
-        stAddress1:
-          type: string
-        stAddress2:
-          type: string
-        stAddress3:
-          type: string
-        stAddress4:
-          type: string
-        shipToCity:
-          type: string
-        shipToState:
-          type: string
-        shipToPostalCode:
-          type: string
-        stCountry:
-          type: string
-        notes:
-          type: string
-        productTotal:
-          format: decimal
-          type: number
-        orderSubTotal:
-          format: decimal
-          type: number
-        discountAmount:
-          format: decimal
-          type: number
-          readOnly: true
-        orderDiscountAmount:
-          format: decimal
-          type: number
-        productDiscountAmount:
-          format: decimal
-          type: number
-        shippingAndHandling:
-          format: decimal
-          type: number
-          readOnly: true
-        shippingCharges:
-          format: decimal
-          type: number
-        handlingCharges:
-          format: decimal
-          type: number
-        otherCharges:
-          format: decimal
-          type: number
-        taxAmount:
-          format: decimal
-          type: number
-        orderTotal:
-          format: decimal
-          type: number
-        modifyDate:
-          format: date-time
-          type: string
-        requestedDeliveryDateDisplay:
-          format: date-time
-          type: string
-        orderLines:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderLineModel'
-        orderPromotions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Order.WebApi.V1.ApiModels.OrderPromotionModel'
-        shipmentPackages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Order.Services.Dtos.ShipmentPackageDto'
-        returnReasons:
-          type: array
-          items:
-            type: string
-        orderHistoryTaxes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Order.Services.Dtos.OrderHistoryTaxDto'
-        productTotalDisplay:
-          type: string
-        orderSubTotalDisplay:
-          type: string
-        orderTotalDisplay:
-          type: string
-        orderGrandTotalDisplay:
-          type: string
-        discountAmountDisplay:
-          type: string
-          readOnly: true
-        orderDiscountAmountDisplay:
-          type: string
-        productDiscountAmountDisplay:
-          type: string
-        taxAmountDisplay:
-          type: string
-        totalTaxDisplay:
-          type: string
-        shippingAndHandlingDisplay:
-          type: string
-        shippingChargesDisplay:
-          type: string
-        handlingChargesDisplay:
-          type: string
-        otherChargesDisplay:
-          type: string
-        canAddToCart:
-          type: boolean
-        canAddAllToCart:
-          type: boolean
-        showTaxAndShipping:
-          type: boolean
-        shipViaDescription:
-          type: string
-        fulfillmentMethod:
-          type: string
-        customerVatNumber:
-          type: string
-        vmiLocationId:
-          type: string
-        vmiLocationName:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.BrandDto:
+    Insite.Order.Services.Dtos.ShipmentPackageDto:
       type: object
       properties:
         id:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        name:
+        shipmentDate:
+          format: date-time
           type: string
-        urlSegment:
+        packageNumber:
           type: string
-        logoSmallImagePath:
+        carrier:
           type: string
-        logoLargeImagePath:
+        shipVia:
           type: string
-        logoImageAltText:
+        trackingUrl:
           type: string
-        detailPagePath:
+        trackingNumber:
           type: string
-  parameters:
-    customerId:
-      name: customerId
-      in: path
-      required: true
-      description: The unique identifier for the customer
-      schema:
-        type: string
-    orderGroupId:
-      name: orderGroupId
-      in: path
-      required: true
-      description: The unique identifier for the order group
-      schema:
-        type: integer
-        format: int64
+        packSlip:
+          type: string
+        shipmentPackageLineDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Order.Services.Dtos.ShipmentPackageLineDto'
   securitySchemes:
     bearerAuth:
       type: http

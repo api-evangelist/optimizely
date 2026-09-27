@@ -838,210 +838,56 @@ paths:
       - Authorization: []
 components:
   schemas:
-    MessageRequestData:
+    TestMailingRequestData:
+      required:
+      - recipientIds
+      - recipientListId
       type: object
       properties:
-        deepLinkName:
+        recipientIds:
+          type: array
+          description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the recipient list, no test mailing will be sent to this recipient.
+          items:
+            type: string
+            description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the recipient list, no test mailing will be sent to this recipient.
+        mimeType:
           type: string
-          description: This parameter is deprecated. Use "payload.[name]" instead.
-        mediaType:
-          type: string
-          description: Media type of the mailing (required only for creation)
-          enum:
-          - email
-          - sms
-          - push
-        subjectForTargetGroup:
-          type: string
-          description: Subject for a specific target group. Set "subject.[targetGroupId]" in request data (only email).<p>Does not work with the "Try it out" feature.</p>
-        replyToAddress:
-          type: string
-          description: Reply-to address (only email)
-        archiveEnabled:
-          type: boolean
-          description: Toggle whether a mailing can be archived or not
-        iconMetaData:
-          type: string
-          description: Icon meta data. Configure "icon.[attribute]".<p>Does not work with the "Try it out" feature.</p>
-        archivePeriod:
-          type: string
-          description: Period suggesting for how long a mailing should be archived
-          enum:
-          - ONE_MONTH
-          - TWO_MONTHS
-          - THREE_MONTHS
-          - SIX_MONTHS
-          - ONE_YEAR
-          - TWO_YEARS
-        resetReplyToAddress:
-          type: boolean
-          description: If true, the local part of the reply-to address is reset
-        resetTargetedSubjects:
-          type: boolean
-          description: If true, all target group subjects are deleted (only email)
-        replyToName:
-          type: string
-          description: Reply-to mailing name (only email)
-        resetDeeplinks:
-          type: boolean
-          description: This parameter is deprecated. Use "resetPayload" instead.
-        resetPayload:
-          type: boolean
-          description: If true, all payload parameters are deleted. All set parameters within this request remain (only Web Push mailings).
-        name:
-          type: string
-          description: Mailing name
-        content:
-          type: string
-          description: Mailing content (plain text)
-        payload:
-          type: string
-          description: Payload parameters for Mobile Push and Web Push. Set "payload.[name]" in request data.<p>Does not work with the "Try it out" feature.</p>
-        description:
-          type: string
-          description: Mailing description
-        senderName:
-          type: string
-          description: Mailing sender name (only email)
+          description: Mime type of the mailing during sending (use empty string to use the mime type of the mailing).
+          example: text/plain, text/html, text/multipart
         subject:
           type: string
-          description: Mailing subject
-        mediaCode:
-          type: string
-          description: Media code (only email)
-        expiry:
-          type: string
-          description: Expiry date (only push mailings, use ISO 8601 format without milliseconds, e.g. 2022-03-03T08:45:07+01:00)
-          format: date-time
-        image:
-          type: string
-          description: Image for the Web Push message
+          description: Subject of the test mailing (if mailing has a subject).
         senderAddress:
           type: string
-          description: Mailing sender address
-        clickAction:
+          description: Sender address for test mailing (if mailing has a sender address). Must not be empty if specified.
+        recipientListId:
           type: string
-          description: Click action for the Web Push message
-        pushType:
-          type: string
-          description: Push type
-          enum:
-          - MOBILE
-          - WEB
-        icon:
-          type: string
-          description: Icon for the Web Push message
-        predecessorNodeId:
-          type: string
-          description: Predecessor node
-        successorNodeId:
-          type: string
-          description: Successor node
-    TestMailingReport:
+          description: Recipient list ID of the recipient list to be used for the test mailing.
+    TestMailingStartedReport:
       type: object
       properties:
-        recipientStatus:
-          type: object
-          additionalProperties:
-            type: string
-            description: Sending status of the recipients
-            enum:
-            - enqueued
-            - sending
-            - sent
-            - failed
-          description: Sending status of the recipients
         mailingId:
           type: integer
           description: Mailing ID
           format: int64
-        reportDate:
-          type: string
-          description: Report date
-          format: date-time
-        mediaType:
-          type: string
-          description: Media type
-        status:
-          type: string
-          description: Current status of the mailing
-          enum:
-          - invalid
-          - activationRequired
-          - activated
-          - canceled
-          - paused
-          - running
-          - finished
-        started:
-          type: string
-          description: Start date of the mailing
-          format: date-time
-        finished:
-          type: string
-          description: Finish date of the mailing
-          format: date-time
-    RestOpens:
-      type: object
-      properties:
-        total:
-          type: integer
-          format: int32
-        unique:
-          type: integer
-          format: int32
-      description: Number of unique and total opens
-    RestSmartCampaign:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Campaign ID
-          format: int64
-        name:
-          type: string
-          description: Campaign name
-        mailingGroupId:
-          type: integer
-          description: Client ID
-          format: int64
-        description:
-          type: string
-          description: Mailing description
-        status:
-          type: string
-          description: Current campaign status
-          enum:
-          - invalid
-          - activationRequired
-          - activated
-          - canceled
-          - paused
-          - running
-          - finished
-        type:
-          type: string
-          description: Campaign type
-          enum:
-          - regular
-          - event
-          - confirmation
-        created:
-          type: string
-          description: Creation date
-          format: date-time
-        modified:
-          type: string
-          description: Modification date
-          format: date-time
-        started:
-          type: string
-          description: Start date of the campaign
-          format: date-time
-        finished:
-          type: string
-          description: Finish date of the campaign
-          format: date-time
+        validRecipientAddresses:
+          type: array
+          description: Valid recipient addresses
+          items:
+            type: string
+            description: Valid recipient addresses
+        userIdsOfRecipientsWithoutValidAddresses:
+          type: array
+          description: User IDs of recipients without valid addresses
+          items:
+            type: string
+            description: User IDs of recipients without valid addresses
+        blacklistedRecipientAddresses:
+          type: array
+          description: Blacklisted recipient addresses
+          items:
+            type: string
+            description: Blacklisted recipient addresses
         links:
           type: array
           items:
@@ -1066,43 +912,55 @@ components:
               uri:
                 type: string
                 format: uri
-        recipientLists:
-          $ref: '#/components/schemas/RestRecipientListsNode'
-        targetGroups:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestTargetGroupNode'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestMessageNode'
-        message:
-          $ref: '#/components/schemas/RestMessageNode'
-    RecipientListsRequestData:
-      required:
-      - recipientListIds
+    RestClicks:
       type: object
       properties:
-        recipientListIds:
-          type: array
-          description: Comma-separated list of recipient list IDs
-          items:
-            type: integer
-            description: Comma-separated list of recipient list IDs
-            format: int64
-        successorNodeId:
-          type: string
-          description: Successor node
-    RestBounces:
+        total:
+          type: integer
+          format: int32
+        unique:
+          type: integer
+          format: int32
+      description: Number of unique and total clicks
+    RestSmartCampaignStreamingCollection:
       type: object
       properties:
-        hard:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestSmartCampaign'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
           type: integer
           format: int32
-        soft:
+        offset:
           type: integer
           format: int32
-      description: Number of hard and soft bounces
+        limit:
+          type: integer
+          format: int32
+    TrackingConfigurationRequestData:
+      type: object
+      properties:
+        defaultTextLinkTrackingEnabled:
+          type: boolean
+          description: If true, links are tracked for the text version by default
+        defaultHtmlLinkTrackingEnabled:
+          type: boolean
+          description: If true, links are tracked for the HTML version by default
+        clickTrackingEnabled:
+          type: boolean
+          description: If true, clicks are tracked
+        openTrackingEnabled:
+          type: boolean
+          description: If true, opens are tracked
+        openTrackingOfPartiallyLoadedMessagesEnabled:
+          type: boolean
+          description: If true, opens of partially loaded messages are tracked
     RestMessageNode:
       type: object
       properties:
@@ -1280,33 +1138,23 @@ components:
             format: int64
         gridLocation:
           $ref: '#/components/schemas/Point'
-    TestMailingStartedReport:
+    RestTargetGroupNode:
       type: object
       properties:
-        mailingId:
-          type: integer
-          description: Mailing ID
-          format: int64
-        validRecipientAddresses:
-          type: array
-          description: Valid recipient addresses
-          items:
-            type: string
-            description: Valid recipient addresses
-        userIdsOfRecipientsWithoutValidAddresses:
-          type: array
-          description: User IDs of recipients without valid addresses
-          items:
-            type: string
-            description: User IDs of recipients without valid addresses
-        blacklistedRecipientAddresses:
-          type: array
-          description: Blacklisted recipient addresses
-          items:
-            type: string
-            description: Blacklisted recipient addresses
+        nodeId:
+          type: string
+          description: Node ID
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        name:
+          type: string
+          description: Target group name
+        targetGroup:
+          $ref: '#/components/schemas/Filter'
         links:
           type: array
+          description: Links for further requests
           items:
             type: object
             properties:
@@ -1329,57 +1177,9 @@ components:
               uri:
                 type: string
                 format: uri
-    RestTrackingConfiguration:
-      type: object
-      properties:
-        openTracking:
-          type: boolean
-          description: If true, opens are tracked
-        clickTracking:
-          type: boolean
-          description: If true, clicks are tracked
-        openTrackingOfPartiallyLoadedMessages:
-          type: boolean
-          description: If true, opens of partially loaded messages are tracked
-        defaultHtmlLinkTracking:
-          type: boolean
-          description: If true, links are tracked for the HTML version by default
-        defaultTextLinkTracking:
-          type: boolean
-          description: If true, links are tracked for the text version by default
-        links:
-          type: array
-          description: Restful links
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-            description: Restful links
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
     CampaignMailingRestReport:
       type: object
       properties:
@@ -1426,37 +1226,294 @@ components:
               uri:
                 type: string
                 format: uri
-    RestSmartCampaignStreamingCollection:
+    Point:
       type: object
       properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestSmartCampaign'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
+        x:
           type: integer
           format: int32
-        offset:
+          xml:
+            attribute: true
+        y:
           type: integer
           format: int32
-        limit:
-          type: integer
-          format: int32
-    RestClicks:
+          xml:
+            attribute: true
+      description: Grid location point
+      xml:
+        name: Point
+    MessageRequestData:
       type: object
       properties:
+        deepLinkName:
+          type: string
+          description: This parameter is deprecated. Use "payload.[name]" instead.
+        mediaType:
+          type: string
+          description: Media type of the mailing (required only for creation)
+          enum:
+          - email
+          - sms
+          - push
+        subjectForTargetGroup:
+          type: string
+          description: Subject for a specific target group. Set "subject.[targetGroupId]" in request data (only email).<p>Does not work with the "Try it out" feature.</p>
+        replyToAddress:
+          type: string
+          description: Reply-to address (only email)
+        archiveEnabled:
+          type: boolean
+          description: Toggle whether a mailing can be archived or not
+        iconMetaData:
+          type: string
+          description: Icon meta data. Configure "icon.[attribute]".<p>Does not work with the "Try it out" feature.</p>
+        archivePeriod:
+          type: string
+          description: Period suggesting for how long a mailing should be archived
+          enum:
+          - ONE_MONTH
+          - TWO_MONTHS
+          - THREE_MONTHS
+          - SIX_MONTHS
+          - ONE_YEAR
+          - TWO_YEARS
+        resetReplyToAddress:
+          type: boolean
+          description: If true, the local part of the reply-to address is reset
+        resetTargetedSubjects:
+          type: boolean
+          description: If true, all target group subjects are deleted (only email)
+        replyToName:
+          type: string
+          description: Reply-to mailing name (only email)
+        resetDeeplinks:
+          type: boolean
+          description: This parameter is deprecated. Use "resetPayload" instead.
+        resetPayload:
+          type: boolean
+          description: If true, all payload parameters are deleted. All set parameters within this request remain (only Web Push mailings).
+        name:
+          type: string
+          description: Mailing name
+        content:
+          type: string
+          description: Mailing content (plain text)
+        payload:
+          type: string
+          description: Payload parameters for Mobile Push and Web Push. Set "payload.[name]" in request data.<p>Does not work with the "Try it out" feature.</p>
+        description:
+          type: string
+          description: Mailing description
+        senderName:
+          type: string
+          description: Mailing sender name (only email)
+        subject:
+          type: string
+          description: Mailing subject
+        mediaCode:
+          type: string
+          description: Media code (only email)
+        expiry:
+          type: string
+          description: Expiry date (only push mailings, use ISO 8601 format without milliseconds, e.g. 2022-03-03T08:45:07+01:00)
+          format: date-time
+        image:
+          type: string
+          description: Image for the Web Push message
+        senderAddress:
+          type: string
+          description: Mailing sender address
+        clickAction:
+          type: string
+          description: Click action for the Web Push message
+        pushType:
+          type: string
+          description: Push type
+          enum:
+          - MOBILE
+          - WEB
+        icon:
+          type: string
+          description: Icon for the Web Push message
+        predecessorNodeId:
+          type: string
+          description: Predecessor node
+        successorNodeId:
+          type: string
+          description: Successor node
+    RestBounces:
+      type: object
+      properties:
+        hard:
+          type: integer
+          format: int32
+        soft:
+          type: integer
+          format: int32
+      description: Number of hard and soft bounces
+    RestRecipients:
+      type: object
+      properties:
+        net:
+          type: integer
+          format: int32
         total:
           type: integer
           format: int32
-        unique:
+        skipped:
           type: integer
           format: int32
-      description: Number of unique and total clicks
+        inQueue:
+          type: integer
+          format: int32
+      description: Number of total, skipped and in-queue recipients
+    RestRecipientListsNode:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node ID
+        successorNodeId:
+          type: string
+          description: Successor node ID
+        recipientListIds:
+          type: array
+          description: List of recipient list IDs
+          items:
+            type: integer
+            description: List of recipient list IDs
+            format: int64
+        links:
+          type: array
+          description: Links for further requests
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Links for further requests
+        gridLocation:
+          $ref: '#/components/schemas/Point'
+    RestTrackingConfiguration:
+      type: object
+      properties:
+        openTracking:
+          type: boolean
+          description: If true, opens are tracked
+        clickTracking:
+          type: boolean
+          description: If true, clicks are tracked
+        openTrackingOfPartiallyLoadedMessages:
+          type: boolean
+          description: If true, opens of partially loaded messages are tracked
+        defaultHtmlLinkTracking:
+          type: boolean
+          description: If true, links are tracked for the HTML version by default
+        defaultTextLinkTracking:
+          type: boolean
+          description: If true, links are tracked for the text version by default
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
+    TestMailingReport:
+      type: object
+      properties:
+        recipientStatus:
+          type: object
+          additionalProperties:
+            type: string
+            description: Sending status of the recipients
+            enum:
+            - enqueued
+            - sending
+            - sent
+            - failed
+          description: Sending status of the recipients
+        mailingId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        reportDate:
+          type: string
+          description: Report date
+          format: date-time
+        mediaType:
+          type: string
+          description: Media type
+        status:
+          type: string
+          description: Current status of the mailing
+          enum:
+          - invalid
+          - activationRequired
+          - activated
+          - canceled
+          - paused
+          - running
+          - finished
+        started:
+          type: string
+          description: Start date of the mailing
+          format: date-time
+        finished:
+          type: string
+          description: Finish date of the mailing
+          format: date-time
+    RecipientListsRequestData:
+      required:
+      - recipientListIds
+      type: object
+      properties:
+        recipientListIds:
+          type: array
+          description: Comma-separated list of recipient list IDs
+          items:
+            type: integer
+            description: Comma-separated list of recipient list IDs
+            format: int64
+        successorNodeId:
+          type: string
+          description: Successor node
     ConfirmationMailingRequestData:
       required:
       - content
@@ -1542,105 +1599,28 @@ components:
         icon:
           type: string
           description: Icon for the Web Push message
-    TestMailingRequestData:
-      required:
-      - recipientIds
-      - recipientListId
+    Filter:
       type: object
       properties:
-        recipientIds:
-          type: array
-          description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the recipient list, no test mailing will be sent to this recipient.
-          items:
-            type: string
-            description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the recipient list, no test mailing will be sent to this recipient.
-        mimeType:
-          type: string
-          description: Mime type of the mailing during sending (use empty string to use the mime type of the mailing).
-          example: text/plain, text/html, text/multipart
-        subject:
-          type: string
-          description: Subject of the test mailing (if mailing has a subject).
-        senderAddress:
-          type: string
-          description: Sender address for test mailing (if mailing has a sender address). Must not be empty if specified.
-        recipientListId:
-          type: string
-          description: Recipient list ID of the recipient list to be used for the test mailing.
-    RestTargetGroupNode:
-      type: object
-      properties:
-        nodeId:
-          type: string
-          description: Node ID
-        successorNodeId:
-          type: string
-          description: Successor node ID
         name:
           type: string
-          description: Target group name
-        targetGroup:
-          $ref: '#/components/schemas/Filter'
-        links:
-          type: array
-          description: Links for further requests
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-            description: Links for further requests
-        gridLocation:
-          $ref: '#/components/schemas/Point'
-    RestRecipients:
+    RestOpens:
       type: object
       properties:
-        net:
-          type: integer
-          format: int32
         total:
           type: integer
           format: int32
-        skipped:
+        unique:
           type: integer
           format: int32
-        inQueue:
-          type: integer
-          format: int32
-      description: Number of total, skipped and in-queue recipients
-    Point:
+      description: Number of unique and total opens
+    RestApiLink:
       type: object
       properties:
-        x:
-          type: integer
-          format: int32
-          xml:
-            attribute: true
-        y:
-          type: integer
-          format: int32
-          xml:
-            attribute: true
-      description: Grid location point
-      xml:
-        name: Point
+        href:
+          type: string
+        rel:
+          type: string
     RestTrackingLink:
       type: object
       properties:
@@ -1709,25 +1689,59 @@ components:
                 type: string
                 format: uri
             description: Restful links
-    RestRecipientListsNode:
+    RestSmartCampaign:
       type: object
       properties:
-        nodeId:
+        id:
+          type: integer
+          description: Campaign ID
+          format: int64
+        name:
           type: string
-          description: Node ID
-        successorNodeId:
+          description: Campaign name
+        mailingGroupId:
+          type: integer
+          description: Client ID
+          format: int64
+        description:
           type: string
-          description: Successor node ID
-        recipientListIds:
-          type: array
-          description: List of recipient list IDs
-          items:
-            type: integer
-            description: List of recipient list IDs
-            format: int64
+          description: Mailing description
+        status:
+          type: string
+          description: Current campaign status
+          enum:
+          - invalid
+          - activationRequired
+          - activated
+          - canceled
+          - paused
+          - running
+          - finished
+        type:
+          type: string
+          description: Campaign type
+          enum:
+          - regular
+          - event
+          - confirmation
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        started:
+          type: string
+          description: Start date of the campaign
+          format: date-time
+        finished:
+          type: string
+          description: Finish date of the campaign
+          format: date-time
         links:
           type: array
-          description: Links for further requests
           items:
             type: object
             properties:
@@ -1750,9 +1764,18 @@ components:
               uri:
                 type: string
                 format: uri
-            description: Links for further requests
-        gridLocation:
-          $ref: '#/components/schemas/Point'
+        recipientLists:
+          $ref: '#/components/schemas/RestRecipientListsNode'
+        targetGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestTargetGroupNode'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestMessageNode'
+        message:
+          $ref: '#/components/schemas/RestMessageNode'
     TrackingLinkConfigurationRequestData:
       type: object
       properties:
@@ -1780,29 +1803,6 @@ components:
         description:
           type: string
           description: Tracking link description
-    Filter:
-      type: object
-      properties:
-        name:
-          type: string
-    TrackingConfigurationRequestData:
-      type: object
-      properties:
-        defaultTextLinkTrackingEnabled:
-          type: boolean
-          description: If true, links are tracked for the text version by default
-        defaultHtmlLinkTrackingEnabled:
-          type: boolean
-          description: If true, links are tracked for the HTML version by default
-        clickTrackingEnabled:
-          type: boolean
-          description: If true, clicks are tracked
-        openTrackingEnabled:
-          type: boolean
-          description: If true, opens are tracked
-        openTrackingOfPartiallyLoadedMessagesEnabled:
-          type: boolean
-          description: If true, opens of partially loaded messages are tracked
   securitySchemes:
     Authorization:
       type: apiKey

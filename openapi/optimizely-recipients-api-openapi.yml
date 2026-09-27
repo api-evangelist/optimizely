@@ -812,6 +812,13 @@ components:
       schema:
         type: integer
         format: int64
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
     recipientId:
       name: recipientId
       in: path
@@ -820,13 +827,6 @@ components:
       schema:
         type: integer
         format: int64
-    clientId:
-      name: clientId
-      in: path
-      required: true
-      description: The unique identifier for the Optimizely Campaign client
-      schema:
-        type: string
   schemas:
     RecipientInput:
       type: object
@@ -887,25 +887,6 @@ components:
           type: string
           format: date-time
           description: Timestamp when the recipient was last modified
-    ModifyRecipientsAttributesRequestData:
-      required:
-      - targetGroup
-      type: object
-      properties:
-        targetGroup:
-          type: integer
-          description: ID of the matching target group
-          format: int64
-        data:
-          type: string
-          description: Recipient data. Configure "data.[attribute]" according to the corresponding recipient list field.<p>Does not work with the "Try it out" feature.</p>
-        mode:
-          type: string
-          description: Mode for adding parameters to fields of type "String"<p><i>Available values:</i> set (to overwrite existing), prepend (to place before existing), append (to place after existing)</p>
-          enum:
-          - set
-          - prepend
-          - append
     RestAttributeValuesWithCount:
       type: object
       properties:
@@ -933,16 +914,55 @@ components:
               uri:
                 type: string
                 format: uri
-    CreateRecipientsRequestData:
+    RestRecipientsCreationModify:
       type: object
       properties:
-        recipients:
+        count:
+          type: integer
+          format: int32
+        failedIds:
           type: array
           items:
-            $ref: '#/components/schemas/ExtendedRecipient'
-        optinProcessId:
-          type: integer
-          format: int64
+            type: string
+    RecipientBasedRequestData:
+      required:
+      - recipientId
+      type: object
+      properties:
+        recipientId:
+          type: string
+          description: Recipient ID (usually the email address)
+    RestAttributeValues:
+      type: object
+      properties:
+        attributeValues:
+          type: array
+          items:
+            type: object
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
     RestRecipient:
       type: object
       properties:
@@ -986,69 +1006,6 @@ components:
                 type: string
                 format: uri
             description: Restful links
-    UpdateRecipientsRequestData:
-      type: object
-      properties:
-        updateMode:
-          type: string
-          enum:
-          - set
-          - prepend
-          - append
-        recipients:
-          type: array
-          items:
-            $ref: '#/components/schemas/Recipient_2'
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
-    UpdateRecipientIdRequestData:
-      required:
-      - newRecipientId
-      - recipientId
-      type: object
-      properties:
-        newRecipientId:
-          type: string
-          description: New recipient ID
-        recipientId:
-          type: string
-          description: Recipient ID (usually the email address)
-    RestAttributeValues:
-      type: object
-      properties:
-        attributeValues:
-          type: array
-          items:
-            type: object
-        links:
-          type: array
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
     RestRecipientValid:
       type: object
       properties:
@@ -1093,27 +1050,122 @@ components:
           - bounced
           - unsubscribed
           - not_found
-    RestRecipientStreamingCollection:
+    CreateRecipientRequestData:
+      required:
+      - recipientId
       type: object
       properties:
-        elements:
+        returnOptInMailId:
+          type: boolean
+          description: Retrieve the mail ID for an opt-in process of type "double" or "confirmed"
+          default: false
+        address:
+          type: string
+          description: Address of the recipient. Required if ID attribute differs from the address.
+        data:
+          type: string
+          description: Recipient data. Configure "data.[attribute]" according to the corresponding recipient list field.<p>Does not work with the "Try it out" feature.</p>
+        optinProcessId:
+          type: integer
+          description: ID of the opt-in process
+          format: int64
+        recipientId:
+          type: string
+          description: Recipient ID (usually the email address)
+    UpdateRecipientsRequestData:
+      type: object
+      properties:
+        updateMode:
+          type: string
+          enum:
+          - set
+          - prepend
+          - append
+        recipients:
           type: array
           items:
-            $ref: '#/components/schemas/RestRecipient'
-        links:
+            $ref: '#/components/schemas/Recipient_2'
+    ModifyRecipientAttributesRequestData:
+      type: object
+      properties:
+        data:
+          type: string
+          description: Recipient data. Configure "data.[attribute]" according to the corresponding recipient list field.<p>Does not work with the "Try it out" feature.</p>
+        mode:
+          type: string
+          description: Mode for adding parameters to fields of type "String"<p><i>Available values:</i> set (to overwrite existing), prepend (to place before existing), append (to place after existing)</p>
+          enum:
+          - set
+          - prepend
+          - append
+    CreateRecipientsRequestData:
+      type: object
+      properties:
+        recipients:
           type: array
-          writeOnly: true
           items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
+            $ref: '#/components/schemas/ExtendedRecipient'
+        optinProcessId:
           type: integer
-          format: int32
-        offset:
+          format: int64
+    ExtendedRecipient:
+      type: object
+      properties:
+        address:
+          type: string
+        data:
+          type: object
+          additionalProperties:
+            type: object
+        id:
+          type: string
+    UpdateRecipientIdRequestData:
+      required:
+      - newRecipientId
+      - recipientId
+      type: object
+      properties:
+        newRecipientId:
+          type: string
+          description: New recipient ID
+        recipientId:
+          type: string
+          description: Recipient ID (usually the email address)
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    ModifyRecipientsAttributesRequestData:
+      required:
+      - targetGroup
+      type: object
+      properties:
+        targetGroup:
           type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
+          description: ID of the matching target group
+          format: int64
+        data:
+          type: string
+          description: Recipient data. Configure "data.[attribute]" according to the corresponding recipient list field.<p>Does not work with the "Try it out" feature.</p>
+        mode:
+          type: string
+          description: Mode for adding parameters to fields of type "String"<p><i>Available values:</i> set (to overwrite existing), prepend (to place before existing), append (to place after existing)</p>
+          enum:
+          - set
+          - prepend
+          - append
+    Recipient_2:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties:
+            type: object
+        id:
+          type: string
     RestCount:
       type: object
       properties:
@@ -1145,79 +1197,27 @@ components:
           type: integer
           description: Total number
           format: int64
-    ExtendedRecipient:
+    RestRecipientStreamingCollection:
       type: object
       properties:
-        address:
-          type: string
-        data:
-          type: object
-          additionalProperties:
-            type: object
-        id:
-          type: string
-    Recipient_2:
-      type: object
-      properties:
-        data:
-          type: object
-          additionalProperties:
-            type: object
-        id:
-          type: string
-    RestRecipientsCreationModify:
-      type: object
-      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestRecipient'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
         count:
           type: integer
           format: int32
-        failedIds:
-          type: array
-          items:
-            type: string
-    CreateRecipientRequestData:
-      required:
-      - recipientId
-      type: object
-      properties:
-        returnOptInMailId:
-          type: boolean
-          description: Retrieve the mail ID for an opt-in process of type "double" or "confirmed"
-          default: false
-        address:
-          type: string
-          description: Address of the recipient. Required if ID attribute differs from the address.
-        data:
-          type: string
-          description: Recipient data. Configure "data.[attribute]" according to the corresponding recipient list field.<p>Does not work with the "Try it out" feature.</p>
-        optinProcessId:
+        offset:
           type: integer
-          description: ID of the opt-in process
-          format: int64
-        recipientId:
-          type: string
-          description: Recipient ID (usually the email address)
-    RecipientBasedRequestData:
-      required:
-      - recipientId
-      type: object
-      properties:
-        recipientId:
-          type: string
-          description: Recipient ID (usually the email address)
-    ModifyRecipientAttributesRequestData:
-      type: object
-      properties:
-        data:
-          type: string
-          description: Recipient data. Configure "data.[attribute]" according to the corresponding recipient list field.<p>Does not work with the "Try it out" feature.</p>
-        mode:
-          type: string
-          description: Mode for adding parameters to fields of type "String"<p><i>Available values:</i> set (to overwrite existing), prepend (to place before existing), append (to place after existing)</p>
-          enum:
-          - set
-          - prepend
-          - append
+          format: int32
+        limit:
+          type: integer
+          format: int32
   securitySchemes:
     basicAuth:
       type: http

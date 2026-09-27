@@ -61,34 +61,6 @@ paths:
       x-release-state: alpha
 components:
   schemas:
-    AccountFeature:
-      properties:
-        feature_id:
-          type: string
-        sources:
-          items:
-            $ref: '#/components/schemas/AccountFeatureSource'
-          type: array
-      type: object
-    Error:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
-          type: string
-      type: object
-    AccountFeatureSource:
-      properties:
-        type:
-          type: string
-        value:
-          type: string
-      type: object
     UserProfile:
       properties:
         email:
@@ -109,15 +81,46 @@ components:
           format: url
           type: string
       type: object
-    Account:
+    AccountFeatureSource:
       properties:
-        id:
-          description: The unique identifier of the Account
+        type:
+          type: string
+        value:
+          type: string
+      type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
+    ProjectRole:
+      properties:
+        invitation_status:
+          enum:
+          - pending
+          readOnly: true
+          type: string
+        project_id:
+          description: The unique identifier of the Project
           format: int64
           readOnly: true
           type: integer
-        name:
-          description: The name of the Account
+        role:
+          enum:
+          - administrator
+          - viewer
+          - restricted_editor
+          - editor
+          - restricted_publisher
+          - publisher
+          - project_owner
           readOnly: true
           type: string
       type: object
@@ -146,27 +149,15 @@ components:
           readOnly: true
           type: array
       type: object
-    ProjectRole:
+    Account:
       properties:
-        invitation_status:
-          enum:
-          - pending
-          readOnly: true
-          type: string
-        project_id:
-          description: The unique identifier of the Project
+        id:
+          description: The unique identifier of the Account
           format: int64
           readOnly: true
           type: integer
-        role:
-          enum:
-          - administrator
-          - viewer
-          - restricted_editor
-          - editor
-          - restricted_publisher
-          - publisher
-          - project_owner
+        name:
+          description: The name of the Account
           readOnly: true
           type: string
       type: object
@@ -183,6 +174,15 @@ components:
           format: int64
           readOnly: true
           type: integer
+      type: object
+    AccountFeature:
+      properties:
+        feature_id:
+          type: string
+        sources:
+          items:
+            $ref: '#/components/schemas/AccountFeatureSource'
+          type: array
       type: object
   securitySchemes:
     OAuth2:

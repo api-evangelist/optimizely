@@ -40,45 +40,6 @@ paths:
       - Config
 components:
   schemas:
-    OptimizelyConfig:
-      title: OptimizelyConfig
-      type: object
-      properties:
-        environmentKey:
-          type: string
-        sdkKey:
-          type: string
-        revision:
-          type: string
-        experimentsMap:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/OptimizelyExperiment'
-        featuresMap:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/OptimizelyFeature'
-        attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/OptimizelyAttribute'
-          description: ''
-        audiences:
-          type: array
-          items:
-            $ref: '#/components/schemas/OptimizelyAudience'
-          description: ''
-        events:
-          type: array
-          items:
-            $ref: '#/components/schemas/OptimizelyEvent'
-          description: ''
-    Error:
-      title: Error
-      type: object
-      properties:
-        error:
-          type: string
     OptimizelyExperiment:
       title: OptimizelyExperiment
       required:
@@ -128,6 +89,25 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/OptimizelyVariable'
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
+          type: string
+    OptimizelyEvent:
+      title: OptimizelyEvent
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        experimentIds:
+          type: array
+          items:
+            type: string
+          description: ''
     OptimizelyFeature:
       title: OptimizelyFeature
       required:
@@ -157,6 +137,14 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/OptimizelyExperiment'
+    OptimizelyAttribute:
+      title: OptimizelyAttribute
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
     OptimizelyAudience:
       title: OptimizelyAudience
       type: object
@@ -167,27 +155,39 @@ components:
           type: string
         conditions:
           type: string
-    OptimizelyEvent:
-      title: OptimizelyEvent
+    OptimizelyConfig:
+      title: OptimizelyConfig
       type: object
       properties:
-        id:
+        environmentKey:
           type: string
-        key:
+        sdkKey:
           type: string
-        experimentIds:
+        revision:
+          type: string
+        experimentsMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/OptimizelyExperiment'
+        featuresMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/OptimizelyFeature'
+        attributes:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/OptimizelyAttribute'
           description: ''
-    OptimizelyAttribute:
-      title: OptimizelyAttribute
-      type: object
-      properties:
-        id:
-          type: string
-        key:
-          type: string
+        audiences:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptimizelyAudience'
+          description: ''
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptimizelyEvent'
+          description: ''
   securitySchemes:
     SdkKeyAuth:
       type: apiKey

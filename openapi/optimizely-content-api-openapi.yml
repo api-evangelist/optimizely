@@ -1036,6 +1036,135 @@ paths:
           - api.emea01.idio.episerver.net
           - api.usea01.idio.episerver.net
 components:
+  parameters:
+    contentId:
+      name: contentId
+      in: path
+      required: true
+      description: The unique identifier for the content item
+      schema:
+        type: string
+    limit:
+      name: limit
+      in: query
+      required: false
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    offset:
+      name: offset
+      in: query
+      required: false
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+    contentId_2:
+      name: contentId
+      in: path
+      required: true
+      description: The unique identifier or content reference for the content item
+      schema:
+        type: string
+    top:
+      name: top
+      in: query
+      required: false
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        minimum: 1
+    orderby:
+      name: orderby
+      in: query
+      required: false
+      description: OData-style ordering expression
+      schema:
+        type: string
+    skip:
+      name: skip
+      in: query
+      required: false
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        minimum: 0
+    filter:
+      name: filter
+      in: query
+      required: false
+      description: OData-style filter expression for content items
+      schema:
+        type: string
+    expand:
+      name: expand
+      in: query
+      required: false
+      description: Comma-separated list of content references to expand inline
+      schema:
+        type: string
+    language:
+      name: language
+      in: query
+      required: false
+      description: The language code for content retrieval
+      schema:
+        type: string
+        example: en
+    select:
+      name: select
+      in: query
+      required: false
+      description: Comma-separated list of properties to include in the response
+      schema:
+        type: string
+    contentReference:
+      name: contentReference
+      in: path
+      required: true
+      description: The numeric content reference identifier
+      schema:
+        type: integer
+    contentGuid:
+      name: contentGuid
+      in: path
+      required: true
+      description: The GUID of the content item
+      schema:
+        type: string
+        format: uuid
+    topics:
+      name: include_topics
+      in: query
+      description: Whether to include topic information in the response.
+      allowEmptyValue: true
+      schema:
+        type: boolean
+    page:
+      name: page
+      in: query
+      description: Page number for pagination (1-based index).
+      schema:
+        type: integer
+        example: 2
+    contentID:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier of the content item.
+      schema:
+        type: integer
+        example: 101
+    rpp:
+      name: rpp
+      in: query
+      description: Results per page for pagination.
+      schema:
+        type: integer
   schemas:
     CmpContent:
       type: object
@@ -1112,73 +1241,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Insite.Spire.Models.PageLinkModel'
-    Insite.Spire.Services.RetrievePageResult:
-      type: object
-      properties:
-        page:
-          $ref: '#/components/schemas/Insite.Spire.Models.PageModel'
-        statusCode:
-          format: int32
-          enum:
-          - 100
-          - 101
-          - 200
-          - 201
-          - 202
-          - 203
-          - 204
-          - 205
-          - 206
-          - 300
-          - 301
-          - 302
-          - 303
-          - 304
-          - 305
-          - 306
-          - 307
-          - 400
-          - 401
-          - 402
-          - 403
-          - 404
-          - 405
-          - 406
-          - 407
-          - 408
-          - 409
-          - 410
-          - 411
-          - 412
-          - 413
-          - 414
-          - 415
-          - 416
-          - 417
-          - 426
-          - 500
-          - 501
-          - 502
-          - 503
-          - 504
-          - 505
-          type: integer
-        redirectTo:
-          type: string
-        authorizationFailed:
-          type: boolean
-        isAuthenticatedOnServer:
-          type: boolean
-        bypassedAuthorization:
-          type: boolean
-        requiresAuthorization:
-          type: boolean
-        alternateLanguageUrls:
-          type: object
-          additionalProperties:
-            type: string
-        canonicalUrl:
-          type: string
     Insite.Spire.Models.WidgetModel:
       type: object
       properties:
@@ -1266,6 +1328,73 @@ components:
             type: object
             additionalProperties:
               type: object
+    Insite.Spire.Services.RetrievePageResult:
+      type: object
+      properties:
+        page:
+          $ref: '#/components/schemas/Insite.Spire.Models.PageModel'
+        statusCode:
+          format: int32
+          enum:
+          - 100
+          - 101
+          - 200
+          - 201
+          - 202
+          - 203
+          - 204
+          - 205
+          - 206
+          - 300
+          - 301
+          - 302
+          - 303
+          - 304
+          - 305
+          - 306
+          - 307
+          - 400
+          - 401
+          - 402
+          - 403
+          - 404
+          - 405
+          - 406
+          - 407
+          - 408
+          - 409
+          - 410
+          - 411
+          - 412
+          - 413
+          - 414
+          - 415
+          - 416
+          - 417
+          - 426
+          - 500
+          - 501
+          - 502
+          - 503
+          - 504
+          - 505
+          type: integer
+        redirectTo:
+          type: string
+        authorizationFailed:
+          type: boolean
+        isAuthenticatedOnServer:
+          type: boolean
+        bypassedAuthorization:
+          type: boolean
+        requiresAuthorization:
+          type: boolean
+        alternateLanguageUrls:
+          type: object
+          additionalProperties:
+            type: string
+        canonicalUrl:
+          type: string
     ContentItem:
       type: object
       description: A content item such as a page, block, or media file
@@ -1376,13 +1505,36 @@ components:
         status:
           type: string
           description: Publication status of the content
-    ContentPatch:
+    ContentInput:
       type: object
-      description: Input for partially updating a content item
+      description: Input for creating or fully updating a content item
+      required:
+      - name
+      - contentType
+      - parentLink
       properties:
         name:
           type: string
           description: Display name of the content item
+        contentType:
+          type: array
+          description: Content type hierarchy
+          items:
+            type: string
+        parentLink:
+          type: object
+          description: Reference to the parent content item
+          properties:
+            id:
+              type: integer
+              description: Parent content ID
+        language:
+          type: object
+          description: Language information
+          properties:
+            name:
+              type: string
+              description: Language code
         status:
           type: string
           description: Content status
@@ -1390,9 +1542,13 @@ components:
           - CheckedOut
           - CheckedIn
           - Published
+        startPublish:
+          type: string
+          format: date-time
+          description: Scheduled publish start time
         properties:
           type: object
-          description: Dynamic content properties to update
+          description: Dynamic content properties specific to the content type
           additionalProperties: true
     ContentItem_2:
       type: object
@@ -1467,36 +1623,13 @@ components:
           type: object
           description: Dynamic content properties specific to the content type
           additionalProperties: true
-    ContentInput:
+    ContentPatch:
       type: object
-      description: Input for creating or fully updating a content item
-      required:
-      - name
-      - contentType
-      - parentLink
+      description: Input for partially updating a content item
       properties:
         name:
           type: string
           description: Display name of the content item
-        contentType:
-          type: array
-          description: Content type hierarchy
-          items:
-            type: string
-        parentLink:
-          type: object
-          description: Reference to the parent content item
-          properties:
-            id:
-              type: integer
-              description: Parent content ID
-        language:
-          type: object
-          description: Language information
-          properties:
-            name:
-              type: string
-              description: Language code
         status:
           type: string
           description: Content status
@@ -1504,26 +1637,10 @@ components:
           - CheckedOut
           - CheckedIn
           - Published
-        startPublish:
-          type: string
-          format: date-time
-          description: Scheduled publish start time
         properties:
           type: object
-          description: Dynamic content properties specific to the content type
+          description: Dynamic content properties to update
           additionalProperties: true
-    language:
-      type: object
-      properties:
-        displayName:
-          type:
-          - string
-          - 'null'
-        name:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
     content:
       type: object
       properties:
@@ -1589,31 +1706,18 @@ components:
           - string
           - 'null'
       additionalProperties: {}
-    problemDetails:
+    language:
       type: object
       properties:
-        type:
+        displayName:
           type:
           - string
           - 'null'
-        title:
+        name:
           type:
           - string
           - 'null'
-        status:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        detail:
-          type:
-          - string
-          - 'null'
-        instance:
-          type:
-          - string
-          - 'null'
-      additionalProperties: {}
+      additionalProperties: false
     contentReference:
       type: object
       properties:
@@ -1645,24 +1749,48 @@ components:
         expanded:
           $ref: '#/components/schemas/content'
       additionalProperties: false
-    List:
+    problemDetails:
       type: object
-      description: Base pagination metadata object.
-      additionalProperties: false
-      required:
-      - total_hits
       properties:
-        total_hits:
-          type: integer
-          description: Total number of items matching the query.
-        next_page:
-          type: string
-          format: url
-          description: Link to the next page of results, if available.
-        previous_page:
-          type: string
-          format: url
-          description: Link to the previous page of results, if available.
+        type:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        detail:
+          type:
+          - string
+          - 'null'
+        instance:
+          type:
+          - string
+          - 'null'
+      additionalProperties: {}
+    ContentItemVerbose:
+      allOf:
+      - $ref: '#/components/schemas/ContentItem_3'
+      - $ref: '#/components/schemas/ContentItemContent'
+      - type: object
+        additionalProperties: false
+        required:
+        - content
+        - images
+        - topics
+        properties:
+          images:
+            type: array
+            uniqueItems: true
+            description: Additional images associated with the content.
+            items:
+              $ref: '#/components/schemas/ContentImage'
     ContentMetadata:
       type: object
       description: Metadata for a content item, such as language and tags.
@@ -1680,44 +1808,51 @@ components:
           type: object
           description: Arbitrary namespaced tags associated with the content. Values may be strings or arrays of strings (for example, multiple authors).
           additionalProperties: true
-    ContentAuthor:
+    ContentImage:
       type: object
       additionalProperties: false
       required:
-      - id
-      - title
-      - full_details_url
+      - url
+      - width
+      - height
       properties:
-        id:
-          type: integer
-          description: Unique identifier of the author.
-        title:
-          type: string
-          description: Name of the author.
-        full_details_url:
+        url:
           type: string
           format: url
-          description: API URL for full author details.
-    ContentSectionList:
+          description: Image URL.
+        width:
+          type: integer
+          description: Image width in pixels.
+        height:
+          type: integer
+          description: Image height in pixels.
+    ContentQuery:
       type: object
       additionalProperties: false
       required:
-      - sections
-      description: A list of content sections.
+      - query
+      description: Object containing a Lucene query string used to search or filter content.
       properties:
-        sections:
-          type: array
-          uniqueItems: true
-          description: Array of section objects.
-          items:
-            $ref: '#/components/schemas/ContentSection'
-    ContentItemContent:
+        query:
+          type: string
+          description: Lucene query string. Use the platform's Lucene dialect for advanced filtering.
+          example: title:AI AND language:en
+    ContentURL:
       type: object
       additionalProperties: false
+      required:
+      - original_url
+      description: Schema for submitting a new content item by URL.
       properties:
-        content:
+        original_url:
           type: string
-          description: Full content body (if available).
+          format: url
+          description: The original URL of the content to be ingested.
+          example: https://example.com/news/article123
+    ContentItemPartial:
+      allOf:
+      - $ref: '#/components/schemas/ContentItemMinimal'
+      - $ref: '#/components/schemas/ContentItemContent'
     ContentList:
       description: A paginated list of content items with navigation metadata.
       allOf:
@@ -1733,19 +1868,6 @@ components:
             uniqueItems: true
             items:
               $ref: '#/components/schemas/ContentItem_3'
-    ContentMainImage:
-      type: object
-      additionalProperties: false
-      required:
-      - width
-      - height
-      properties:
-        width:
-          type: integer
-          description: Image width in pixels.
-        height:
-          type: integer
-          description: Image height in pixels.
     ContentSource:
       type: object
       additionalProperties: false
@@ -1773,6 +1895,95 @@ components:
           - abstract
           - link
           description: How the source should be displayed.
+    Message:
+      type: object
+      additionalProperties: false
+      required:
+      - message
+      description: Generic message response object returned by the API.
+      properties:
+        message:
+          type: string
+          description: The message content.
+          example: User updated successfully.
+    ContentTopic:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the topic.
+        title:
+          type: string
+          description: Topic title.
+        full_details_url:
+          type: string
+          format: url
+          description: API link to full topic details.
+    ContentSection:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      description: Represents a section that groups related content.
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the section.
+          example: 42
+        title:
+          type: string
+          description: The display title of the section.
+          example: Technology
+        full_details_url:
+          type: string
+          format: url
+          description: API link to fetch full details of this section.
+          example: https://api.usea01.idio.episerver.net/1.0/sections/42
+    ContentItemMinimal:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the content item.
+        abstract:
+          type: string
+          description: Short summary or abstract of the content.
+        featured:
+          type: boolean
+          description: Indicates whether the content is featured.
+        approved:
+          type: string
+          enum:
+          - approved
+          - unapproved
+          - binned
+          description: Approval status of the content.
+        read:
+          type: boolean
+          description: Whether the content is marked as read.
+        published:
+          type: string
+          format: date-time
+          description: Date and time when the content was published.
+        original_url:
+          type: string
+          format: url
+          description: Original source URL of the content.
+    ContentItemContent:
+      type: object
+      additionalProperties: false
+      properties:
+        content:
+          type: string
+          description: Full content body (if available).
     ContentItem_3:
       allOf:
       - $ref: '#/components/schemas/ContentItemMinimal'
@@ -1824,133 +2035,51 @@ components:
             $ref: '#/components/schemas/ContentSource'
           author:
             $ref: '#/components/schemas/ContentAuthor'
-    ContentItemMinimal:
-      type: object
-      additionalProperties: false
-      properties:
-        title:
-          type: string
-          description: Title of the content item.
-        abstract:
-          type: string
-          description: Short summary or abstract of the content.
-        featured:
-          type: boolean
-          description: Indicates whether the content is featured.
-        approved:
-          type: string
-          enum:
-          - approved
-          - unapproved
-          - binned
-          description: Approval status of the content.
-        read:
-          type: boolean
-          description: Whether the content is marked as read.
-        published:
-          type: string
-          format: date-time
-          description: Date and time when the content was published.
-        original_url:
-          type: string
-          format: url
-          description: Original source URL of the content.
-    ContentItemPartial:
-      allOf:
-      - $ref: '#/components/schemas/ContentItemMinimal'
-      - $ref: '#/components/schemas/ContentItemContent'
-    ContentQuery:
+    ContentSectionList:
       type: object
       additionalProperties: false
       required:
-      - query
-      description: Object containing a Lucene query string used to search or filter content.
+      - sections
+      description: A list of content sections.
       properties:
-        query:
-          type: string
-          description: Lucene query string. Use the platform's Lucene dialect for advanced filtering.
-          example: title:AI AND language:en
-    ContentSection:
+        sections:
+          type: array
+          uniqueItems: true
+          description: Array of section objects.
+          items:
+            $ref: '#/components/schemas/ContentSection'
+    ContentMainImage:
       type: object
       additionalProperties: false
       required:
-      - id
-      - title
-      - full_details_url
-      description: Represents a section that groups related content.
-      properties:
-        id:
-          type: integer
-          description: Unique identifier of the section.
-          example: 42
-        title:
-          type: string
-          description: The display title of the section.
-          example: Technology
-        full_details_url:
-          type: string
-          format: url
-          description: API link to fetch full details of this section.
-          example: https://api.usea01.idio.episerver.net/1.0/sections/42
-    Message:
-      type: object
-      additionalProperties: false
-      required:
-      - message
-      description: Generic message response object returned by the API.
-      properties:
-        message:
-          type: string
-          description: The message content.
-          example: User updated successfully.
-    ContentItemVerbose:
-      allOf:
-      - $ref: '#/components/schemas/ContentItem_3'
-      - $ref: '#/components/schemas/ContentItemContent'
-      - type: object
-        additionalProperties: false
-        required:
-        - content
-        - images
-        - topics
-        properties:
-          images:
-            type: array
-            uniqueItems: true
-            description: Additional images associated with the content.
-            items:
-              $ref: '#/components/schemas/ContentImage'
-    ContentImage:
-      type: object
-      additionalProperties: false
-      required:
-      - url
       - width
       - height
       properties:
-        url:
-          type: string
-          format: url
-          description: Image URL.
         width:
           type: integer
           description: Image width in pixels.
         height:
           type: integer
           description: Image height in pixels.
-    ContentURL:
+    List:
       type: object
+      description: Base pagination metadata object.
       additionalProperties: false
       required:
-      - original_url
-      description: Schema for submitting a new content item by URL.
+      - total_hits
       properties:
-        original_url:
+        total_hits:
+          type: integer
+          description: Total number of items matching the query.
+        next_page:
           type: string
           format: url
-          description: The original URL of the content to be ingested.
-          example: https://example.com/news/article123
-    ContentTopic:
+          description: Link to the next page of results, if available.
+        previous_page:
+          type: string
+          format: url
+          description: Link to the previous page of results, if available.
+    ContentAuthor:
       type: object
       additionalProperties: false
       required:
@@ -1960,144 +2089,55 @@ components:
       properties:
         id:
           type: integer
-          description: Unique identifier of the topic.
+          description: Unique identifier of the author.
         title:
           type: string
-          description: Topic title.
+          description: Name of the author.
         full_details_url:
           type: string
           format: url
-          description: API link to full topic details.
-  parameters:
-    offset:
-      name: offset
-      in: query
-      required: false
-      description: Number of items to skip for pagination
-      schema:
-        type: integer
-        default: 0
-        minimum: 0
-    contentId:
-      name: contentId
-      in: path
-      required: true
-      description: The unique identifier for the content item
-      schema:
-        type: string
-    limit:
-      name: limit
-      in: query
-      required: false
-      description: Maximum number of items to return
-      schema:
-        type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
-    orderby:
-      name: orderby
-      in: query
-      required: false
-      description: OData-style ordering expression
-      schema:
-        type: string
-    select:
-      name: select
-      in: query
-      required: false
-      description: Comma-separated list of properties to include in the response
-      schema:
-        type: string
-    top:
-      name: top
-      in: query
-      required: false
-      description: Maximum number of items to return
-      schema:
-        type: integer
-        minimum: 1
-    expand:
-      name: expand
-      in: query
-      required: false
-      description: Comma-separated list of content references to expand inline
-      schema:
-        type: string
-    filter:
-      name: filter
-      in: query
-      required: false
-      description: OData-style filter expression for content items
-      schema:
-        type: string
-    skip:
-      name: skip
-      in: query
-      required: false
-      description: Number of items to skip for pagination
-      schema:
-        type: integer
-        minimum: 0
-    contentId_2:
-      name: contentId
-      in: path
-      required: true
-      description: The unique identifier or content reference for the content item
-      schema:
-        type: string
-    language:
-      name: language
-      in: query
-      required: false
-      description: The language code for content retrieval
-      schema:
-        type: string
-        example: en
-    contentReference:
-      name: contentReference
-      in: path
-      required: true
-      description: The numeric content reference identifier
-      schema:
-        type: integer
-    contentGuid:
-      name: contentGuid
-      in: path
-      required: true
-      description: The GUID of the content item
-      schema:
-        type: string
-        format: uuid
-    topics:
-      name: include_topics
-      in: query
-      description: Whether to include topic information in the response.
-      allowEmptyValue: true
-      schema:
-        type: boolean
-    contentID:
-      name: id
-      in: path
-      required: true
-      description: Unique identifier of the content item.
-      schema:
-        type: integer
-        example: 101
-    rpp:
-      name: rpp
-      in: query
-      description: Results per page for pagination.
-      schema:
-        type: integer
-    page:
-      name: page
-      in: query
-      description: Page number for pagination (1-based index).
-      schema:
-        type: integer
-        example: 2
+          description: API URL for full author details.
   responses:
+    ContentList:
+      description: A paginated list of content items, including metadata for navigation, such as total hits and page links.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ContentList'
+          example:
+            total_hits: 124
+            next_page: https://api.usea01.idio.episerver.net/1.0/content?page=2&rpp=10
+            previous_page: null
+            content:
+            - id: 987654
+              title: The Future of Enterprise Personalisation
+              abstract: How content recommendations drive engagement across digital channels.
+              featured: true
+              approved: approved
+              read: false
+              published: '2026-05-14T09:30:00Z'
+              original_url: https://www.example.com/blog/future-of-personalisation
+              link_url: https://www.example.com/blog/future-of-personalisation
+              full_details_url: https://api.usea01.idio.episerver.net/1.0/content/987654
+              main_image_url: https://images.example.com/987654/main.jpg
+              main_image:
+                width: 1200
+                height: 630
+              metadata:
+                language: en
+              source:
+                id: 55
+                title: Company Blog
+                full_details_url: https://api.usea01.idio.episerver.net/1.0/sources/55
+                display: full
+              author:
+                id: 21
+                title: Jordan Lee
+                full_details_url: https://api.usea01.idio.episerver.net/1.0/authors/21
+              topics:
+              - id: 301
+                title: Personalisation
+                full_details_url: https://api.usea01.idio.episerver.net/1.0/topics/301
     ContentItem:
       description: Detailed information about a single content item, including metadata, author, source, and media links.
       content:
@@ -2139,46 +2179,6 @@ components:
             - url: https://images.example.com/101/inline-1.jpg
               width: 800
               height: 450
-    ContentList:
-      description: A paginated list of content items, including metadata for navigation, such as total hits and page links.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ContentList'
-          example:
-            total_hits: 124
-            next_page: https://api.usea01.idio.episerver.net/1.0/content?page=2&rpp=10
-            previous_page: null
-            content:
-            - id: 987654
-              title: The Future of Enterprise Personalisation
-              abstract: How content recommendations drive engagement across digital channels.
-              featured: true
-              approved: approved
-              read: false
-              published: '2026-05-14T09:30:00Z'
-              original_url: https://www.example.com/blog/future-of-personalisation
-              link_url: https://www.example.com/blog/future-of-personalisation
-              full_details_url: https://api.usea01.idio.episerver.net/1.0/content/987654
-              main_image_url: https://images.example.com/987654/main.jpg
-              main_image:
-                width: 1200
-                height: 630
-              metadata:
-                language: en
-              source:
-                id: 55
-                title: Company Blog
-                full_details_url: https://api.usea01.idio.episerver.net/1.0/sources/55
-                display: full
-              author:
-                id: 21
-                title: Jordan Lee
-                full_details_url: https://api.usea01.idio.episerver.net/1.0/authors/21
-              topics:
-              - id: 301
-                title: Personalisation
-                full_details_url: https://api.usea01.idio.episerver.net/1.0/topics/301
   securitySchemes:
     oauth2:
       type: oauth2

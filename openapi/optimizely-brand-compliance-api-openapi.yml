@@ -166,14 +166,6 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: Unauthorized
-    ClientError:
-      description: Client error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: 'Unsupported arguments: a,b,c'
     Forbidden:
       description: Permission error
       content:
@@ -182,6 +174,14 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: You do not have the permission to perform this operation
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
     NotFound:
       description: Not found error
       content:
@@ -191,22 +191,6 @@ components:
           example:
             message: Resource not found
   schemas:
-    Error:
-      type: object
-      additionalProperties: true
-      description: Error payload
-      properties:
-        message:
-          type: string
-          description: Message describing the error
-          example: Not found
-        errors:
-          type: object
-          description: Additional information
-          additionalProperties: true
-          properties: {}
-      required:
-      - message
     TaskAssetDraftBrandComplianceRequest:
       type: object
       additionalProperties: false
@@ -316,6 +300,22 @@ components:
       required:
       - id
       - criteria
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
     TaskAssetDraftBrandComplianceResponse:
       type: object
       additionalProperties: false

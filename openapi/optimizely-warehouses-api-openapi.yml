@@ -678,6 +678,14 @@ paths:
     servers:
     - url: https://dogfood.commerce.insitesandbox.com
 components:
+  requestBodies:
+    Affiliates_ArchiveParameters:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: {}
+      description: archive action parameters
   schemas:
     Insite.Data.Entities.Warehouse:
       required:
@@ -773,43 +781,38 @@ components:
           type: string
         modifiedBy:
           type: string
-    Insite.Core.WebApi.PaginationModel:
+    Insite.Catalog.WebApi.V1.ApiModels.WarehouseCollectionModel:
       type: object
       properties:
-        currentPage:
-          format: int32
-          type: integer
-        page:
-          format: int32
-          type: integer
-        pageSize:
-          format: int32
-          type: integer
-        defaultPageSize:
-          format: int32
-          type: integer
-        totalItemCount:
-          format: int32
-          type: integer
-        numberOfPages:
-          format: int32
-          type: integer
-        pageSizeOptions:
+        uri:
+          type: string
+        warehouses:
           type: array
           items:
-            format: int32
-            type: integer
-        sortOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        distanceUnitOfMeasure:
+          type: string
+        defaultLatitude:
+          format: double
+          type: number
+        defaultLongitude:
+          format: double
+          type: number
+        defaultRadius:
+          format: int32
+          type: integer
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.WebApi.SortOptionModel:
+      type: object
+      properties:
+        displayName:
+          type: string
         sortType:
-          type: string
-        nextPageUri:
-          type: string
-        prevPageUri:
-          type: string
-        nextPageToken:
           type: string
     Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel:
       type: object
@@ -874,47 +877,44 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Catalog.WebApi.V1.ApiModels.WarehouseCollectionModel:
+    Insite.Core.WebApi.PaginationModel:
       type: object
       properties:
-        uri:
-          type: string
-        warehouses:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel'
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        distanceUnitOfMeasure:
-          type: string
-        defaultLatitude:
-          format: double
-          type: number
-        defaultLongitude:
-          format: double
-          type: number
-        defaultRadius:
+        currentPage:
           format: int32
           type: integer
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Core.WebApi.SortOptionModel:
-      type: object
-      properties:
-        displayName:
-          type: string
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        defaultPageSize:
+          format: int32
+          type: integer
+        totalItemCount:
+          format: int32
+          type: integer
+        numberOfPages:
+          format: int32
+          type: integer
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
         sortType:
           type: string
-  requestBodies:
-    Affiliates_ArchiveParameters:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties: {}
-      description: archive action parameters
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
+          type: string
   securitySchemes:
     access_token:
       type: apiKey

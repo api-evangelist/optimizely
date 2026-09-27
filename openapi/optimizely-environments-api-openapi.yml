@@ -294,6 +294,19 @@ paths:
     - url: https://api.optimizely.com/v2
 components:
   schemas:
+    EnvironmentInput:
+      type: object
+      description: Input for creating or updating an environment
+      properties:
+        key:
+          type: string
+          description: Unique key for the environment
+        name:
+          type: string
+          description: Human-readable name of the environment
+        is_primary:
+          type: boolean
+          description: Whether this is the primary environment
     Environment:
       type: object
       description: An environment within a project for managing flag configurations
@@ -326,74 +339,6 @@ components:
           type: string
           format: date-time
           description: Timestamp when the environment was created
-    EnvironmentInput:
-      type: object
-      description: Input for creating or updating an environment
-      properties:
-        key:
-          type: string
-          description: Unique key for the environment
-        name:
-          type: string
-          description: Human-readable name of the environment
-        is_primary:
-          type: boolean
-          description: Whether this is the primary environment
-    Environment_2:
-      properties:
-        account_id:
-          description: The ID of the Account
-          format: int64
-          readOnly: true
-          type: integer
-        archived:
-          example: false
-          type: boolean
-        id:
-          description: The ID of the Environment
-          format: int64
-          readOnly: true
-          type: integer
-        key:
-          description: User-facing key to identify this Environment.
-          example: production
-          maxLength: 64
-          pattern: ^[a-zA-Z0-9_\-]+$
-          type: string
-        name:
-          description: Name of the Environment.
-          example: Production
-          type: string
-        priority:
-          description: Integer representing the priority of the Environment. This is used for ordering in the UI.
-          example: 1
-          type: integer
-        project_id:
-          description: The ID of the Project this Flag belongs to
-          format: int64
-          readOnly: true
-          type: integer
-        revision:
-          description: Revision number for tracking changes
-          readOnly: true
-          type: integer
-        role:
-          description: Granular permission role
-          example: admin
-          readOnly: true
-          type: string
-      required:
-      - key
-      - name
-      - archived
-      - priority
-      - project_id
-      type: object
-    UrlList:
-      description: A list of urls.
-      items:
-        type: string
-      type: array
     Environments:
       properties:
         count:
@@ -469,6 +414,59 @@ components:
       - total_pages
       - items
       type: object
+    UrlValue:
+      description: A single url.
+      type: string
+    Environment_2:
+      properties:
+        account_id:
+          description: The ID of the Account
+          format: int64
+          readOnly: true
+          type: integer
+        archived:
+          example: false
+          type: boolean
+        id:
+          description: The ID of the Environment
+          format: int64
+          readOnly: true
+          type: integer
+        key:
+          description: User-facing key to identify this Environment.
+          example: production
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\-]+$
+          type: string
+        name:
+          description: Name of the Environment.
+          example: Production
+          type: string
+        priority:
+          description: Integer representing the priority of the Environment. This is used for ordering in the UI.
+          example: 1
+          type: integer
+        project_id:
+          description: The ID of the Project this Flag belongs to
+          format: int64
+          readOnly: true
+          type: integer
+        revision:
+          description: Revision number for tracking changes
+          readOnly: true
+          type: integer
+        role:
+          description: Granular permission role
+          example: admin
+          readOnly: true
+          type: string
+      required:
+      - key
+      - name
+      - archived
+      - priority
+      - project_id
+      type: object
     ProblemDetail:
       additionalProperties: true
       description: https://tools.ietf.org/html/rfc7807#section-3.1
@@ -494,9 +492,54 @@ components:
       - title
       - type
       type: object
-    UrlValue:
-      description: A single url.
-      type: string
+    UrlList:
+      description: A list of urls.
+      items:
+        type: string
+      type: array
+    Datafile:
+      properties:
+        id:
+          description: ID of Datafile.
+          readOnly: true
+          type: integer
+        latest_file_size:
+          description: The current size in bytes of the Datafile.
+          readOnly: true
+          type: integer
+        other_urls:
+          description: List of other URLs where this Datafile is also available.
+          items:
+            format: url
+            type: string
+          readOnly: true
+          type: array
+        revision:
+          description: Current revision number.
+          readOnly: true
+          type: integer
+        sdk_key:
+          description: Unique key to identify this specific Environment and Datafile programmatically in our SDKs.
+          readOnly: true
+          type: string
+        url:
+          description: URL where this Datafile is available.
+          format: url
+          readOnly: true
+          type: string
+      type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
     Environment_3:
       properties:
         archived:
@@ -550,18 +593,6 @@ components:
       - project_id
       - key
       type: object
-    Error:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
-          type: string
-      type: object
     EnvironmentUpdate:
       properties:
         archived:
@@ -590,46 +621,7 @@ components:
           example: 3
           type: integer
       type: object
-    Datafile:
-      properties:
-        id:
-          description: ID of Datafile.
-          readOnly: true
-          type: integer
-        latest_file_size:
-          description: The current size in bytes of the Datafile.
-          readOnly: true
-          type: integer
-        other_urls:
-          description: List of other URLs where this Datafile is also available.
-          items:
-            format: url
-            type: string
-          readOnly: true
-          type: array
-        revision:
-          description: Current revision number.
-          readOnly: true
-          type: integer
-        sdk_key:
-          description: Unique key to identify this specific Environment and Datafile programmatically in our SDKs.
-          readOnly: true
-          type: string
-        url:
-          description: URL where this Datafile is available.
-          format: url
-          readOnly: true
-          type: string
-      type: object
   parameters:
-    projectIdQuery:
-      name: project_id
-      in: query
-      required: true
-      description: The unique identifier for the project to filter by
-      schema:
-        type: integer
-        format: int64
     environmentId:
       name: environment_id
       in: path
@@ -638,18 +630,26 @@ components:
       schema:
         type: integer
         format: int64
-    pageWindow:
-      description: Number of previous and next page links to supply for the request (defaults to 1).
+    projectIdQuery:
+      name: project_id
       in: query
-      name: page_window
+      required: true
+      description: The unique identifier for the project to filter by
       schema:
         type: integer
+        format: int64
     pageToken:
       description: Pagination page token. Implements prev, next, last, first
       in: query
       name: page_token
       schema:
         type: string
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
     perPage:
       description: The max number of items to include per page or results.
       in: query
@@ -665,6 +665,15 @@ components:
       required: true
       schema:
         type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
     page:
       description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
 
@@ -674,15 +683,6 @@ components:
       required: false
       schema:
         default: 1
-        type: integer
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
         type: integer
   responses:
     BadRequestResponse:
@@ -696,6 +696,12 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Malformed requests and invalid parameter names and types
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
     ForbiddenResponse:
       content:
         application/problem+json:
@@ -706,12 +712,6 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Do not have permission to perform the operation
-    UnauthorizedResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Invalid credentials
   securitySchemes:
     bearerAuth:
       type: http

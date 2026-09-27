@@ -130,90 +130,6 @@ paths:
       - Change History
 components:
   schemas:
-    User:
-      properties:
-        display_name:
-          description: Display name of the user, most commonly the Optimizely user's email.
-          type:
-          - string
-          - 'null'
-        email:
-          description: Email of the user.
-          type: string
-        first_name:
-          description: First name of the user.
-          type:
-          - string
-          - 'null'
-        id:
-          description: ID of the user.
-          type: string
-        last_name:
-          description: Last name of the user.
-          type:
-          - string
-          - 'null'
-        profile_image_url:
-          description: URL to the user profile image.
-          type:
-          - string
-          - 'null'
-      required:
-      - email
-      - id
-      type: object
-    Entity:
-      properties:
-        api_url:
-          description: Generated URL to access the entity by using the public API.
-          format: url
-          type: string
-        id:
-          description: ID of the entity.
-          format: int64
-          type: integer
-        name:
-          description: Name of the entity.
-          type: string
-        sub_type:
-          description: Optional field for entities that have sub_types (projects, experiments, extensions, pages, etc)
-          type: string
-        type:
-          description: Type of the entity as defined by the public API.
-          type: string
-        ui_url:
-          description: Generated URL to access the entity using Optimizely UI.
-          format: url
-          type: string
-      type: object
-    Revision:
-      properties:
-        id:
-          description: Reference to a revision of the entity.
-          type:
-          - integer
-          - 'null'
-      type: object
-    ChangeDetail:
-      properties:
-        after:
-          description: Value of the property after modification.
-        before:
-          description: Value of the property before modification.
-        description:
-          description: Human readable description of the change.
-          type: string
-        property:
-          description: The name of the property modified.
-          type: string
-      type: object
-    ChangeRevision:
-      properties:
-        current:
-          $ref: '#/components/schemas/Revision'
-        previous:
-          $ref: '#/components/schemas/Revision'
-      type: object
     ChangeHistoryChange:
       properties:
         change_type:
@@ -260,7 +176,100 @@ components:
       required:
       - project_id
       type: object
+    ChangeDetail:
+      properties:
+        after:
+          description: Value of the property after modification.
+        before:
+          description: Value of the property before modification.
+        description:
+          description: Human readable description of the change.
+          type: string
+        property:
+          description: The name of the property modified.
+          type: string
+      type: object
+    User:
+      properties:
+        display_name:
+          description: Display name of the user, most commonly the Optimizely user's email.
+          type:
+          - string
+          - 'null'
+        email:
+          description: Email of the user.
+          type: string
+        first_name:
+          description: First name of the user.
+          type:
+          - string
+          - 'null'
+        id:
+          description: ID of the user.
+          type: string
+        last_name:
+          description: Last name of the user.
+          type:
+          - string
+          - 'null'
+        profile_image_url:
+          description: URL to the user profile image.
+          type:
+          - string
+          - 'null'
+      required:
+      - email
+      - id
+      type: object
+    Revision:
+      properties:
+        id:
+          description: Reference to a revision of the entity.
+          type:
+          - integer
+          - 'null'
+      type: object
+    ChangeRevision:
+      properties:
+        current:
+          $ref: '#/components/schemas/Revision'
+        previous:
+          $ref: '#/components/schemas/Revision'
+      type: object
+    Entity:
+      properties:
+        api_url:
+          description: Generated URL to access the entity by using the public API.
+          format: url
+          type: string
+        id:
+          description: ID of the entity.
+          format: int64
+          type: integer
+        name:
+          description: Name of the entity.
+          type: string
+        sub_type:
+          description: Optional field for entities that have sub_types (projects, experiments, extensions, pages, etc)
+          type: string
+        type:
+          description: Type of the entity as defined by the public API.
+          type: string
+        ui_url:
+          description: Generated URL to access the entity using Optimizely UI.
+          format: url
+          type: string
+      type: object
   parameters:
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
     page:
       description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
 
@@ -270,15 +279,6 @@ components:
       required: false
       schema:
         default: 1
-        type: integer
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
         type: integer
   securitySchemes:
     OAuth2:
