@@ -174,38 +174,6 @@ paths:
           $ref: '#/components/responses/UnprocessableEntity'
 components:
   responses:
-    Unauthorized:
-      description: Authorization error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Unauthorized
-    UnprocessableEntity:
-      description: Unprocessable entity error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Resource cannot be processed
-    Forbidden:
-      description: Permission error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: You do not have the permission to perform this operation
-    ClientError:
-      description: Client error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: 'Unsupported arguments: a,b,c'
     NotFound:
       description: Not found error
       content:
@@ -214,6 +182,38 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: Resource not found
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    UnprocessableEntity:
+      description: Unprocessable entity error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource cannot be processed
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
   schemas:
     Error:
       type: object
@@ -231,51 +231,6 @@ components:
           properties: {}
       required:
       - message
-    MilestoneUpdateRequest:
-      type: object
-      additionalProperties: false
-      properties:
-        title:
-          type: string
-          description: Title of the milestone. This should be between 1 and 80 characters.
-          example: Q1 Product Launch
-          minLength: 1
-          maxLength: 80
-        description:
-          type:
-          - string
-          - 'null'
-          description: Description of the milestone. If provided, this should be between 1 and 250 characters.
-          example: Complete all tasks for the Q1 product launch
-          minLength: 1
-          maxLength: 250
-        campaign_id:
-          type: string
-          description: Id of the campaign to be associated with the milestone
-          example: 63f1c2b675be4132854d2741
-        due_date:
-          type: string
-          format: date-time
-          description: Date and time on which the milestone will expire, in ISO 8601 UTC format
-          example: '2023-10-07T13:15:30Z'
-        hex_color:
-          type: string
-          description: Hex color code for the milestone label
-          example: '#4ECFD5'
-        tasks:
-          type: array
-          description: List of tasks to be associated with the milestone. This can be an empty array, but in that case it will remove all task associations for that milestone.
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                description: Task ID
-            required:
-            - id
-          example:
-          - id: 63f1c2b675be4132854d2741
-          - id: 63f1c2b675be4132854d2742
     MilestoneResponse:
       type: object
       additionalProperties: false
@@ -335,6 +290,71 @@ components:
       - due_date
       - campaign
       - links
+    MilestoneUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the milestone. This should be between 1 and 80 characters.
+          example: Q1 Product Launch
+          minLength: 1
+          maxLength: 80
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the milestone. If provided, this should be between 1 and 250 characters.
+          example: Complete all tasks for the Q1 product launch
+          minLength: 1
+          maxLength: 250
+        campaign_id:
+          type: string
+          description: Id of the campaign to be associated with the milestone
+          example: 63f1c2b675be4132854d2741
+        due_date:
+          type: string
+          format: date-time
+          description: Date and time on which the milestone will expire, in ISO 8601 UTC format
+          example: '2023-10-07T13:15:30Z'
+        hex_color:
+          type: string
+          description: Hex color code for the milestone label
+          example: '#4ECFD5'
+        tasks:
+          type: array
+          description: List of tasks to be associated with the milestone. This can be an empty array, but in that case it will remove all task associations for that milestone.
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Task ID
+            required:
+            - id
+          example:
+          - id: 63f1c2b675be4132854d2741
+          - id: 63f1c2b675be4132854d2742
+    Pagination:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
     MilestoneCreateRequest:
       type: object
       additionalProperties: false
@@ -384,27 +404,16 @@ components:
       - title
       - due_date
       - hex_color
-    Pagination:
-      type: object
-      additionalProperties: false
-      description: Pagination related information
-      properties:
-        next:
-          type:
-          - string
-          - 'null'
-          description: URL to the next page
-          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
-        previous:
-          type:
-          - string
-          - 'null'
-          description: URL to the previous page
-          example: null
-      required:
-      - next
-      - previous
   parameters:
+    offset:
+      name: offset
+      in: query
+      description: Starting index of results (zero indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 5
     page_size:
       name: page_size
       in: query
@@ -415,15 +424,6 @@ components:
         maximum: 100
         default: 10
       example: 15
-    offset:
-      name: offset
-      in: query
-      description: Starting index of results (zero indexed)
-      schema:
-        type: integer
-        minimum: 0
-        default: 0
-      example: 5
   securitySchemes:
     OAuth2:
       type: oauth2

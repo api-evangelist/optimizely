@@ -503,27 +503,6 @@ components:
           type: string
           format: date-time
           description: Timestamp when the asset was created
-    RestImageStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestImage'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
     RestMultiPartRequestSchema:
       required:
       - file
@@ -536,6 +515,13 @@ components:
         name:
           type: string
           description: name of the attachment
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
     RestImage:
       type: object
       properties:
@@ -584,13 +570,6 @@ components:
               uri:
                 type: string
                 format: uri
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
     RestCount:
       type: object
       properties:
@@ -622,6 +601,55 @@ components:
           type: integer
           description: Total number
           format: int64
+    RestImageStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestImage'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    AssetInput:
+      type: object
+      description: Input for updating an asset
+      properties:
+        title:
+          type: string
+          description: Title of the asset
+        description:
+          type: string
+          description: Description of the asset
+        labels:
+          type: array
+          description: Labels to associate with the asset
+          items:
+            type: string
+    Pagination:
+      type: object
+      description: Pagination metadata
+      properties:
+        total:
+          type: integer
+          description: Total number of items
+        limit:
+          type: integer
+          description: Maximum items per page
+        offset:
+          type: integer
+          description: Current offset
     Asset_2:
       type: object
       description: A digital asset in the CMP library
@@ -672,34 +700,6 @@ components:
           type: string
           format: date-time
           description: Timestamp when the asset was last updated
-    AssetInput:
-      type: object
-      description: Input for updating an asset
-      properties:
-        title:
-          type: string
-          description: Title of the asset
-        description:
-          type: string
-          description: Description of the asset
-        labels:
-          type: array
-          description: Labels to associate with the asset
-          items:
-            type: string
-    Pagination:
-      type: object
-      description: Pagination metadata
-      properties:
-        total:
-          type: integer
-          description: Total number of items
-        limit:
-          type: integer
-          description: Maximum items per page
-        offset:
-          type: integer
-          description: Current offset
     Error:
       type: object
       additionalProperties: true
@@ -724,13 +724,15 @@ components:
       description: The unique identifier for the Optimizely Campaign client
       schema:
         type: string
-    assetId:
-      name: assetId
-      in: path
-      required: true
-      description: The unique identifier for the asset
+    offset:
+      name: offset
+      in: query
+      required: false
+      description: Number of items to skip for pagination
       schema:
-        type: string
+        type: integer
+        default: 0
+        minimum: 0
     limit:
       name: limit
       in: query
@@ -741,24 +743,22 @@ components:
         default: 25
         minimum: 1
         maximum: 100
-    offset:
-      name: offset
-      in: query
-      required: false
-      description: Number of items to skip for pagination
+    assetId:
+      name: assetId
+      in: path
+      required: true
+      description: The unique identifier for the asset
       schema:
-        type: integer
-        default: 0
-        minimum: 0
+        type: string
   responses:
-    Unauthorized:
-      description: Authorization error
+    NotFound:
+      description: Not found error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            message: Unauthorized
+            message: Resource not found
     Forbidden:
       description: Permission error
       content:
@@ -775,14 +775,14 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: 'Unsupported arguments: a,b,c'
-    NotFound:
-      description: Not found error
+    Unauthorized:
+      description: Authorization error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            message: Resource not found
+            message: Unauthorized
   securitySchemes:
     basicAuth:
       type: http

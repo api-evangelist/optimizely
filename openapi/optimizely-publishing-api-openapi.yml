@@ -224,15 +224,40 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
+  responses:
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
   schemas:
-    PublishingEventMetadataListResponse:
-      type: object
-      properties:
-        data:
-          description: List of successfully posted publishing metadata
-          type: array
-          items:
-            $ref: '#/components/schemas/PublishingEventMetadataResponse'
     PublishingEventMetadataBulkCreateRequest:
       type: object
       properties:
@@ -243,55 +268,6 @@ components:
             $ref: '#/components/schemas/PublishingEventMetadataCreateRequest'
       required:
       - data
-    PublishingEventResponse:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: Unique identifier of the publishing event
-          example: 5d7f910551b00a722e0418830cee5534
-        assets:
-          type: array
-          description: List of assets associated with the publishing event.
-          items:
-            $ref: '#/components/schemas/PublishingEventAssets'
-        links:
-          type: object
-          description: Meta links
-          additionalProperties: false
-          properties:
-            self:
-              type: string
-              description: URL of the publishing event
-              example: https://api.cmp.optimizely.com/v3/publishing-events/5d7f910551b00a722e0418830cee2212
-            publishing_metadata:
-              type: string
-              description: URL of list of publishing metadata
-              example: https://api.cmp.optimizely.com/v3/publishing-events/5d7f910551b00a722e0418830cee5534/publishing-metadata
-          required:
-          - self
-          - publishing_metadata
-      required:
-      - id
-      - assets
-      - links
-    Error:
-      type: object
-      additionalProperties: true
-      description: Error payload
-      properties:
-        message:
-          type: string
-          description: Message describing the error
-          example: Not found
-        errors:
-          type: object
-          description: Additional information
-          additionalProperties: true
-          properties: {}
-      required:
-      - message
     PublishingEventMetadataCreateRequest:
       type: object
       properties:
@@ -328,7 +304,7 @@ components:
       required:
       - asset_id
       - status
-    PublishingEventMetadataBulkCreateResponse:
+    PublishingEventMetadataListResponse:
       type: object
       properties:
         data:
@@ -336,104 +312,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PublishingEventMetadataResponse'
-        errors:
-          type: array
-          description: List of errors of assets for which publishing metadata failed to post
-          items:
-            type: object
-            properties:
-              error_code:
-                type: string
-                description: Custom error code
-                enum:
-                - canonical-link-error
-                - unknown-asset
-                - metadata-exists
-                - duplicate-metadata
-                - invalid-status
-                - missing-public-url
-                - public-url-not-allowed
-                - domain-not-whitelisted
-                - missing-publishing-destination-updated-at
-                - publishing-destination-updated-at-not-allowed
-                - missing-locale
-                - locale-not-allowed
-                example: canonical-link-error
-              asset_id:
-                type: string
-                description: Unique identifier of the asset that failed to update its publishing metadata
-                example: 4567m474974987479856456457
-              locale:
-                type:
-                - string
-                - 'null'
-                description: locale of the asset
-                example: en
-              message:
-                type: string
-                description: Description of the error
-                example: A canonical URL already exists for the task article '5e46456144645674564456'
-            required:
-            - error_code
-            - status message
-            - asset_id
-            - locale
-            - type
-            - message
-      required:
-      - data
-      - errors
-    PublishingEventAssets:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: Unique identifier of the asset
-          example: 5d7f910551b00a722e0418830cee2212
-        type:
-          type: string
-          description: 'Type of the asset: `article`, `image`, `video`, `raw_file`, `structured_content`'
-          example: article
-        publishing_metadata:
-          type: array
-          description: List of information related to publishing metadata for the asset
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                description: Unique identifier of the publishing metadata
-                example: 5e46745616s564s4564964
-              links:
-                type: object
-                description: Meta links
-                properties:
-                  self:
-                    type: string
-                    description: URL of the publishing metadata of the asset
-                    example: https://api.cmp.optimizely.com/v3/publishing-events/5d7f910551b00a722e0418830cee5534/assets/5d7f910551b00a722e0418830cee2212/publishing-metadata/5e46745616s564s4564964
-                required:
-                - self
-            required:
-            - id
-            - links
-        links:
-          type: object
-          description: Meta links
-          additionalProperties: false
-          properties:
-            self:
-              type: string
-              description: URL of asset
-              example: https://api.cmp.optimizely.com/v3/articles/5d7f910551b00a722e0418830cee2212
-          required:
-          - self
-      required:
-      - id
-      - publishing_metadata
-      - type
-      - links
     PublishingEventMetadataResponse:
       type: object
       additionalProperties: false
@@ -524,6 +402,61 @@ components:
       - public_url
       - publishing_destination_updated_at
       - links
+    PublishingEventMetadataBulkCreateResponse:
+      type: object
+      properties:
+        data:
+          description: List of successfully posted publishing metadata
+          type: array
+          items:
+            $ref: '#/components/schemas/PublishingEventMetadataResponse'
+        errors:
+          type: array
+          description: List of errors of assets for which publishing metadata failed to post
+          items:
+            type: object
+            properties:
+              error_code:
+                type: string
+                description: Custom error code
+                enum:
+                - canonical-link-error
+                - unknown-asset
+                - metadata-exists
+                - duplicate-metadata
+                - invalid-status
+                - missing-public-url
+                - public-url-not-allowed
+                - domain-not-whitelisted
+                - missing-publishing-destination-updated-at
+                - publishing-destination-updated-at-not-allowed
+                - missing-locale
+                - locale-not-allowed
+                example: canonical-link-error
+              asset_id:
+                type: string
+                description: Unique identifier of the asset that failed to update its publishing metadata
+                example: 4567m474974987479856456457
+              locale:
+                type:
+                - string
+                - 'null'
+                description: locale of the asset
+                example: en
+              message:
+                type: string
+                description: Description of the error
+                example: A canonical URL already exists for the task article '5e46456144645674564456'
+            required:
+            - error_code
+            - status message
+            - asset_id
+            - locale
+            - type
+            - message
+      required:
+      - data
+      - errors
     PublishingChannelResponse:
       type: object
       additionalProperties: false
@@ -548,6 +481,22 @@ components:
       - id
       - name
       - disabled
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
     Pagination:
       type: object
       additionalProperties: false
@@ -568,6 +517,57 @@ components:
       required:
       - next
       - previous
+    PublishingEventAssets:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the asset
+          example: 5d7f910551b00a722e0418830cee2212
+        type:
+          type: string
+          description: 'Type of the asset: `article`, `image`, `video`, `raw_file`, `structured_content`'
+          example: article
+        publishing_metadata:
+          type: array
+          description: List of information related to publishing metadata for the asset
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the publishing metadata
+                example: 5e46745616s564s4564964
+              links:
+                type: object
+                description: Meta links
+                properties:
+                  self:
+                    type: string
+                    description: URL of the publishing metadata of the asset
+                    example: https://api.cmp.optimizely.com/v3/publishing-events/5d7f910551b00a722e0418830cee5534/assets/5d7f910551b00a722e0418830cee2212/publishing-metadata/5e46745616s564s4564964
+                required:
+                - self
+            required:
+            - id
+            - links
+        links:
+          type: object
+          description: Meta links
+          additionalProperties: false
+          properties:
+            self:
+              type: string
+              description: URL of asset
+              example: https://api.cmp.optimizely.com/v3/articles/5d7f910551b00a722e0418830cee2212
+          required:
+          - self
+      required:
+      - id
+      - publishing_metadata
+      - type
+      - links
     PublishingChannelListResponse:
       type: object
       additionalProperties: false
@@ -590,39 +590,39 @@ components:
       required:
       - data
       - pagination
-  responses:
-    Unauthorized:
-      description: Authorization error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Unauthorized
-    Forbidden:
-      description: Permission error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: You do not have the permission to perform this operation
-    ClientError:
-      description: Client error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: 'Unsupported arguments: a,b,c'
-    NotFound:
-      description: Not found error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Resource not found
+    PublishingEventResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the publishing event
+          example: 5d7f910551b00a722e0418830cee5534
+        assets:
+          type: array
+          description: List of assets associated with the publishing event.
+          items:
+            $ref: '#/components/schemas/PublishingEventAssets'
+        links:
+          type: object
+          description: Meta links
+          additionalProperties: false
+          properties:
+            self:
+              type: string
+              description: URL of the publishing event
+              example: https://api.cmp.optimizely.com/v3/publishing-events/5d7f910551b00a722e0418830cee2212
+            publishing_metadata:
+              type: string
+              description: URL of list of publishing metadata
+              example: https://api.cmp.optimizely.com/v3/publishing-events/5d7f910551b00a722e0418830cee5534/publishing-metadata
+          required:
+          - self
+          - publishing_metadata
+      required:
+      - id
+      - assets
+      - links
   parameters:
     offset:
       name: offset

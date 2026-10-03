@@ -68,62 +68,25 @@ paths:
       - Decide
 components:
   schemas:
-    OptimizelyDecision:
-      title: OptimizelyDecision
+    ForcedDecision:
+      title: ForcedDecision
       required:
-      - ruleKey
       - flagKey
-      - userContext
+      - variationKey
       type: object
       properties:
-        variables:
-          type: object
-        variationKey:
-          type: string
-        enabled:
-          type: boolean
-        ruleKey:
-          type: string
         flagKey:
           type: string
-        userContext:
-          $ref: '#/components/schemas/UserContext'
-        reasons:
-          type: array
-          items:
-            type: string
-          description: ''
-    DecideOption:
-      title: DecideOption
-      enum:
-      - DISABLE_DECISION_EVENT
-      - ENABLED_FLAGS_ONLY
-      - IGNORE_USER_PROFILE_SERVICE
-      - EXCLUDE_VARIABLES
-      - INCLUDE_REASONS
-      type: string
+        ruleKey:
+          type: string
+        variationKey:
+          type: string
     FetchSegmentsOption:
       title: FetchSegmentsOption
       enum:
       - IGNORE_CACHE
       - RESET_CACHE
       type: string
-    Error:
-      title: Error
-      type: object
-      properties:
-        error:
-          type: string
-    UserContext:
-      title: UserContext
-      required:
-      - userId
-      type: object
-      properties:
-        userId:
-          type: string
-        attributes:
-          type: object
     DecideContext:
       title: DecideContext
       required:
@@ -151,19 +114,56 @@ components:
           items:
             $ref: '#/components/schemas/FetchSegmentsOption'
           description: ''
-    ForcedDecision:
-      title: ForcedDecision
+    UserContext:
+      title: UserContext
       required:
-      - flagKey
-      - variationKey
+      - userId
       type: object
       properties:
-        flagKey:
+        userId:
           type: string
-        ruleKey:
+        attributes:
+          type: object
+    DecideOption:
+      title: DecideOption
+      enum:
+      - DISABLE_DECISION_EVENT
+      - ENABLED_FLAGS_ONLY
+      - IGNORE_USER_PROFILE_SERVICE
+      - EXCLUDE_VARIABLES
+      - INCLUDE_REASONS
+      type: string
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
           type: string
+    OptimizelyDecision:
+      title: OptimizelyDecision
+      required:
+      - ruleKey
+      - flagKey
+      - userContext
+      type: object
+      properties:
+        variables:
+          type: object
         variationKey:
           type: string
+        enabled:
+          type: boolean
+        ruleKey:
+          type: string
+        flagKey:
+          type: string
+        userContext:
+          $ref: '#/components/schemas/UserContext'
+        reasons:
+          type: array
+          items:
+            type: string
+          description: ''
   securitySchemes:
     SdkKeyAuth:
       type: apiKey

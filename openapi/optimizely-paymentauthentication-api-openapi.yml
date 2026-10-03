@@ -329,7 +329,28 @@ paths:
       summary: Payment authentication V1 bnpl callback async
       x-summary-source: derived
 components:
+  requestBodies:
+    PaymentAuthenticationV1_Post2Parameter:
+      content:
+        application/json:
+          schema:
+            type: object
+        text/json:
+          schema:
+            type: object
+        application/x-www-form-urlencoded:
+          schema:
+            type: object
+        text/html:
+          schema:
+            type: object
+      required: true
   schemas:
+    Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.NotificationItemModel:
+      type: object
+      properties:
+        notificationRequestItem:
+          $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.NotificationRequestItemModel'
     Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.AmountModel:
       type: object
       properties:
@@ -338,51 +359,6 @@ components:
         value:
           format: int32
           type: integer
-    Insite.Payments.WebApi.V1.ApiModels.AdyenPaymentDetails.Details:
-      type: object
-      properties:
-        redirectResult:
-          type: string
-    Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.WebhookModel:
-      type: object
-      properties:
-        notificationItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.NotificationItemModel'
-        live:
-          type: boolean
-    Insite.Payments.WebApi.V1.ApiModels.ThreeDSChallengeRreq:
-      type: object
-      properties:
-        messageType:
-          type: string
-        messageVersion:
-          type: string
-        threeDSServerTransID:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        dsTransID:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        acsTransID:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        authenticationType:
-          type: string
-        authenticationValue:
-          type: string
-        eci:
-          type: string
-        interactionCounter:
-          type: string
-        messageCategory:
-          type: string
-        transStatus:
-          type: string
     Insite.Payments.WebApi.V1.ApiModels.AdyenRefundParameter:
       type: object
       properties:
@@ -392,19 +368,21 @@ components:
           type: string
         amount:
           $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.AmountModel'
-    Insite.Payments.WebApi.V1.ApiModels.ThreeDsChallengeResult:
+    Insite.Payments.WebApi.V1.ApiModels.PaymentAuthenticationModel:
       type: object
       properties:
-        messageId:
+        transactionId:
           type: string
-        threeDSServerTransID:
-          format: uuid
+        webOrderNumber:
           type: string
-          example: 00000000-0000-0000-0000-000000000000
-        valid:
-          type: boolean
-        rReq:
-          $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.ThreeDSChallengeRreq'
+        threeDs:
+          $ref: '#/components/schemas/Insite.Core.Plugins.PaymentGateway.Dtos.ThreeDsDto'
+        sessionData:
+          type: string
+        action:
+          type: string
+        region:
+          type: string
     Insite.Payments.WebApi.V1.ApiModels.PaymentAuthenticationParameter:
       type: object
       properties:
@@ -436,55 +414,54 @@ components:
           type: string
         resume3Ds:
           type: boolean
-    Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.NotificationItemModel:
+    Insite.Payments.WebApi.V1.ApiModels.AdyenPaymentDetails.Details:
       type: object
       properties:
-        notificationRequestItem:
-          $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.NotificationRequestItemModel'
-    Insite.Payments.WebApi.V1.ApiModels.AdyenPaymentDetails.PaymentDetailsRequest:
+        redirectResult:
+          type: string
+    Insite.Payments.WebApi.V1.ApiModels.ThreeDsChallengeResult:
       type: object
       properties:
-        details:
-          $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.AdyenPaymentDetails.Details'
-    Insite.Core.Plugins.PaymentGateway.Dtos.ThreeDsDto:
-      type: object
-      properties:
-        dsTransId:
+        messageId:
+          type: string
+        threeDSServerTransID:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        iframeIsChallenge:
+        valid:
           type: boolean
-        iframeIsHidden:
-          type: boolean
-        rejected:
-          type: boolean
-        acsEci:
-          type: string
-        authenticationToken:
-          type: string
-        authenticationVersion:
-          type: string
-        iframe:
-          type: string
-        messageId:
-          type: string
-        transStatus:
-          type: string
-    Insite.Payments.WebApi.V1.ApiModels.PaymentAuthenticationModel:
+        rReq:
+          $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.ThreeDSChallengeRreq'
+    Insite.Payments.WebApi.V1.ApiModels.ThreeDSChallengeRreq:
       type: object
       properties:
-        transactionId:
+        messageType:
           type: string
-        webOrderNumber:
+        messageVersion:
           type: string
-        threeDs:
-          $ref: '#/components/schemas/Insite.Core.Plugins.PaymentGateway.Dtos.ThreeDsDto'
-        sessionData:
+        threeDSServerTransID:
+          format: uuid
           type: string
-        action:
+          example: 00000000-0000-0000-0000-000000000000
+        dsTransID:
+          format: uuid
           type: string
-        region:
+          example: 00000000-0000-0000-0000-000000000000
+        acsTransID:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        authenticationType:
+          type: string
+        authenticationValue:
+          type: string
+        eci:
+          type: string
+        interactionCounter:
+          type: string
+        messageCategory:
+          type: string
+        transStatus:
           type: string
     Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.AdditionalDataModel:
       type: object
@@ -530,22 +507,45 @@ components:
           type: string
         success:
           type: boolean
-  requestBodies:
-    PaymentAuthenticationV1_Post2Parameter:
-      content:
-        application/json:
-          schema:
-            type: object
-        text/json:
-          schema:
-            type: object
-        application/x-www-form-urlencoded:
-          schema:
-            type: object
-        text/html:
-          schema:
-            type: object
-      required: true
+    Insite.Payments.WebApi.V1.ApiModels.AdyenPaymentDetails.PaymentDetailsRequest:
+      type: object
+      properties:
+        details:
+          $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.AdyenPaymentDetails.Details'
+    Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.WebhookModel:
+      type: object
+      properties:
+        notificationItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Payments.WebApi.V1.ApiModels.AdyenWebhook.NotificationItemModel'
+        live:
+          type: boolean
+    Insite.Core.Plugins.PaymentGateway.Dtos.ThreeDsDto:
+      type: object
+      properties:
+        dsTransId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        iframeIsChallenge:
+          type: boolean
+        iframeIsHidden:
+          type: boolean
+        rejected:
+          type: boolean
+        acsEci:
+          type: string
+        authenticationToken:
+          type: string
+        authenticationVersion:
+          type: string
+        iframe:
+          type: string
+        messageId:
+          type: string
+        transStatus:
+          type: string
   securitySchemes:
     access_token:
       type: apiKey

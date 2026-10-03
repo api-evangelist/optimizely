@@ -54,20 +54,7 @@ paths:
       tags:
       - Override
 components:
-  responses:
-    Forbidden:
-      description: You do not have necessary permissions for the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
-    Error:
-      title: Error
-      type: object
-      properties:
-        error:
-          type: string
     OverrideContext:
       title: OverrideContext
       type: object
@@ -77,6 +64,12 @@ components:
         experimentKey:
           type: string
         variationKey:
+          type: string
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
           type: string
     Override:
       title: Override
@@ -95,6 +88,13 @@ components:
           items:
             type: string
           description: ''
+  responses:
+    Forbidden:
+      description: You do not have necessary permissions for the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     SdkKeyAuth:
       type: apiKey

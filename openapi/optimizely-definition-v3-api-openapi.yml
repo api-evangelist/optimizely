@@ -235,6 +235,127 @@ paths:
               description: Content type definitions
 components:
   schemas:
+    SourceInfoMap:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/SourceInfo'
+      type: object
+      example:
+        default:
+          id: default
+          label: default
+          description: ''
+          languages:
+          - en
+    PropertyTypeMap_V3:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/PropertyType_V3'
+      type: object
+    Preset:
+      type: string
+      enum:
+      - legacy
+      - next
+    SourceInfo:
+      properties:
+        languages:
+          items:
+            type: string
+          type: array
+        description:
+          type: string
+        label:
+          type: string
+        id:
+          type: string
+      required:
+      - languages
+      - description
+      - label
+      - id
+      type: object
+    LinkMap:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/LinkConfig'
+      type: object
+    FieldRef:
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+      type: object
+    LinkConfig:
+      properties:
+        to:
+          type: string
+        from:
+          type: string
+      required:
+      - to
+      - from
+      type: object
+    DeleteMode:
+      enum:
+      - types
+      - data
+      - reset
+      type: string
+    SourceMetadata:
+      properties:
+        label:
+          type: string
+        description:
+          type: string
+      required:
+      - label
+      - description
+      type: object
+      additionalProperties: false
+    ContentTypeProperty_V3:
+      properties:
+        type:
+          type: string
+        searchable:
+          type: boolean
+        index:
+          type: boolean
+        ref:
+          $ref: '#/components/schemas/FieldRef'
+        helpText:
+          $ref: '#/components/schemas/Optional_string_'
+      required:
+      - type
+      type: object
+      additionalProperties: false
+    ContentType_V3:
+      properties:
+        contentType:
+          items:
+            type: string
+          type: array
+        properties:
+          properties: {}
+          additionalProperties:
+            $ref: '#/components/schemas/ContentTypeProperty_V3'
+          type: object
+        displayName:
+          $ref: '#/components/schemas/Optional_string_'
+        sortOrder:
+          type: number
+          format: double
+        description:
+          $ref: '#/components/schemas/Optional_string_'
+        base:
+          type: string
+        abstract:
+          type: boolean
+      required:
+      - contentType
+      type: object
+      additionalProperties: false
     ContentSource_V3:
       properties:
         preset:
@@ -281,40 +402,12 @@ components:
                 type: Float
               Longitude:
                 type: Float
-    SourceInfo:
-      properties:
-        languages:
-          items:
-            type: string
-          type: array
-        description:
-          type: string
-        label:
-          type: string
-        id:
-          type: string
-      required:
-      - languages
-      - description
-      - label
-      - id
-      type: object
-    LinkMap:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/LinkConfig'
-      type: object
-    PropertyTypeMap_V3:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/PropertyType_V3'
-      type: object
-    ContentTypeMap_V3:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/ContentType_V3'
-      type: object
-    ContentTypeProperty_V3:
+    Slot:
+      enum:
+      - new
+      - old
+      type: string
+    Property_V3:
       properties:
         type:
           type: string
@@ -324,8 +417,6 @@ components:
           type: boolean
         ref:
           $ref: '#/components/schemas/FieldRef'
-        helpText:
-          $ref: '#/components/schemas/Optional_string_'
       required:
       - type
       type: object
@@ -343,106 +434,15 @@ components:
           type: object
       type: object
       additionalProperties: false
-    Property_V3:
-      properties:
-        type:
-          type: string
-        searchable:
-          type: boolean
-        index:
-          type: boolean
-        ref:
-          $ref: '#/components/schemas/FieldRef'
-      required:
-      - type
-      type: object
-      additionalProperties: false
-    Preset:
-      type: string
-      enum:
-      - legacy
-      - next
-    FieldRef:
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-      type: object
-    Slot:
-      enum:
-      - new
-      - old
-      type: string
     Optional_string_:
       type:
       - string
       - 'null'
-    LinkConfig:
-      properties:
-        to:
-          type: string
-        from:
-          type: string
-      required:
-      - to
-      - from
-      type: object
-    ContentType_V3:
-      properties:
-        contentType:
-          items:
-            type: string
-          type: array
-        properties:
-          properties: {}
-          additionalProperties:
-            $ref: '#/components/schemas/ContentTypeProperty_V3'
-          type: object
-        displayName:
-          $ref: '#/components/schemas/Optional_string_'
-        sortOrder:
-          type: number
-          format: double
-        description:
-          $ref: '#/components/schemas/Optional_string_'
-        base:
-          type: string
-        abstract:
-          type: boolean
-      required:
-      - contentType
-      type: object
-      additionalProperties: false
-    SourceMetadata:
-      properties:
-        label:
-          type: string
-        description:
-          type: string
-      required:
-      - label
-      - description
-      type: object
-      additionalProperties: false
-    SourceInfoMap:
+    ContentTypeMap_V3:
       properties: {}
       additionalProperties:
-        $ref: '#/components/schemas/SourceInfo'
+        $ref: '#/components/schemas/ContentType_V3'
       type: object
-      example:
-        default:
-          id: default
-          label: default
-          description: ''
-          languages:
-          - en
-    DeleteMode:
-      enum:
-      - types
-      - data
-      - reset
-      type: string
   securitySchemes:
     epi-single:
       type: apiKey

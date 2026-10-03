@@ -197,14 +197,22 @@ paths:
       - Authorization: []
 components:
   schemas:
-    RestChunk:
+    Recipient:
       type: object
       properties:
-        chunk:
+        data:
+          type: object
+          additionalProperties:
+            type: object
+        id:
           type: string
-        count:
-          type: integer
-          format: int32
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
     RecipientsChunkRequestData:
       type: object
       properties:
@@ -214,6 +222,27 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Recipient'
+    RestSendingBatchStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestSendingBatch'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     PrepareSendingBatchRequest:
       required:
       - campaign
@@ -288,41 +317,12 @@ components:
               uri:
                 type: string
                 format: uri
-    RestApiLink:
+    RestChunk:
       type: object
       properties:
-        href:
+        chunk:
           type: string
-        rel:
-          type: string
-    Recipient:
-      type: object
-      properties:
-        data:
-          type: object
-          additionalProperties:
-            type: object
-        id:
-          type: string
-    RestSendingBatchStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestSendingBatch'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
         count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
           type: integer
           format: int32
   securitySchemes:

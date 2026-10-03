@@ -2968,6 +2968,14 @@ paths:
     - url: https://api.au1.odp.optimizely.com/v3
       description: Asia-Pacific
 components:
+  requestBodies:
+    Affiliates_ArchiveParameters:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: {}
+      description: archive action parameters
   schemas:
     Insite.Data.Entities.Product:
       required:
@@ -3346,87 +3354,43 @@ components:
           type: string
         modifiedBy:
           type: string
-    Insite.Catalog.Services.Dtos.RelatedProductDto:
+    Insite.Core.WebApi.SortOptionModel:
       type: object
       properties:
-        relatedProductType:
+        displayName:
           type: string
-        productDto:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
-    Insite.Catalog.Services.Dtos.LegacyConfigurationDto:
-      type: object
-      properties:
-        sections:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionDto'
-        hasDefaults:
-          type: boolean
-        isKit:
-          type: boolean
-    Insite.Catalog.WebApi.V1.ApiModels.ProductModel:
-      type: object
-      properties:
-        uri:
+        sortType:
           type: string
-        product:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Core.Plugins.Search.Dtos.GenericFacetDto:
+    Insite.Core.Plugins.Search.Dtos.FieldScoreDto:
       type: object
       properties:
-        id:
+        name:
+          type: string
+        score:
+          format: float
+          type: number
+    Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto:
+      type: object
+      properties:
+        productUnitOfMeasureId:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        name:
+        unitOfMeasure:
           type: string
-        count:
-          format: int32
-          type: integer
-        sortOrder:
-          format: int32
-          type: integer
-        selected:
-          type: boolean
-    Insite.Catalog.Services.Dtos.SpecificationDto:
-      type: object
-      properties:
-        specificationId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        nameDisplay:
-          type: string
-        value:
+        unitOfMeasureDisplay:
           type: string
         description:
           type: string
-        sortOrder:
+        qtyPerBaseUnitOfMeasure:
           format: decimal
           type: number
-        isActive:
-          type: boolean
-        parentSpecification:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
-        htmlContent:
+        roundingRule:
           type: string
-        specifications:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
-    Insite.Catalog.WebApi.V1.ApiModels.BatchGetProductParameter:
-      type: object
-      properties:
-        extendedNames:
-          type: array
-          items:
-            type: string
+        isDefault:
+          type: boolean
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
     Insite.Core.Plugins.Search.Dtos.PriceRangeDto:
       type: object
       properties:
@@ -3443,266 +3407,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.PriceFacetDto'
-    Insite.Core.Plugins.Search.Dtos.FieldScoreDto:
-      type: object
-      properties:
-        name:
-          type: string
-        score:
-          format: float
-          type: number
-    Insite.Catalog.Services.Dtos.AvailabilityDto:
-      type: object
-      properties:
-        messageType:
-          format: int32
-          enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          type: integer
-        message:
-          type: string
-        requiresRealTimeInventory:
-          type: boolean
-    Insite.Catalog.Services.Dtos.DocumentDto:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        description:
-          type: string
-        createdOn:
-          format: date-time
-          type: string
-        filePath:
-          type: string
-        fileUrl:
-          type: string
-        documentType:
-          type: string
-        languageId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        fileTypeString:
-          type: string
-    Insite.Catalog.WebApi.V1.ApiModels.CrossSellCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        products:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.StyleValueDto:
-      type: object
-      properties:
-        styleTraitName:
-          type: string
-        styleTraitId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        styleTraitValueId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        value:
-          type: string
-        valueDisplay:
-          type: string
-        sortOrder:
-          format: int32
-          type: integer
-        isDefault:
-          type: boolean
-        swatchType:
-          type: string
-        swatchImageValue:
-          type: string
-        swatchColorValue:
-          type: string
-    Insite.Catalog.WebApi.V1.ApiModels.ProductPriceModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        productId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        isOnSale:
-          type: boolean
-        requiresRealTimePrice:
-          type: boolean
-        quoteRequired:
-          type: boolean
-        additionalResults:
-          type: object
-          additionalProperties:
-            type: string
-        unitCost:
-          format: decimal
-          type: number
-        unitCostDisplay:
-          type: string
-        unitListPrice:
-          format: decimal
-          type: number
-        unitListPriceDisplay:
-          type: string
-        extendedUnitListPrice:
-          format: decimal
-          type: number
-        extendedUnitListPriceDisplay:
-          type: string
-        unitRegularPrice:
-          format: decimal
-          type: number
-        unitRegularPriceDisplay:
-          type: string
-        extendedUnitRegularPrice:
-          format: decimal
-          type: number
-        extendedUnitRegularPriceDisplay:
-          type: string
-        unitNetPrice:
-          format: decimal
-          type: number
-        unitNetPriceDisplay:
-          type: string
-        extendedUnitNetPrice:
-          format: decimal
-          type: number
-        extendedUnitNetPriceDisplay:
-          type: string
-        unitOfMeasure:
-          type: string
-        vatRate:
-          format: decimal
-          type: number
-        vatAmount:
-          format: decimal
-          type: number
-        vatAmountDisplay:
-          type: string
-        unitListBreakPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
-        unitRegularBreakPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
-        regularPrice:
-          format: decimal
-          type: number
-          readOnly: true
-        regularPriceDisplay:
-          type: string
-          readOnly: true
-        extendedRegularPrice:
-          format: decimal
-          type: number
-          readOnly: true
-        extendedRegularPriceDisplay:
-          type: string
-          readOnly: true
-        actualPrice:
-          format: decimal
-          type: number
-          readOnly: true
-        actualPriceDisplay:
-          type: string
-          readOnly: true
-        extendedActualPrice:
-          format: decimal
-          type: number
-          readOnly: true
-        extendedActualPriceDisplay:
-          type: string
-          readOnly: true
-        regularBreakPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
-          readOnly: true
-        actualBreakPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
-          readOnly: true
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Core.WebApi.SortOptionModel:
-      type: object
-      properties:
-        displayName:
-          type: string
-        sortType:
-          type: string
-    Insite.Catalog.Services.Dtos.ConfigSectionDto:
-      type: object
-      properties:
-        sectionName:
-          type: string
-        label:
-          type: string
-        options:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionOptionDto'
-    Insite.Catalog.Services.Dtos.AttributeValueDto:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        value:
-          type: string
-        valueDisplay:
-          type: string
-        sortOrder:
-          format: int32
-          type: integer
-        isActive:
-          type: boolean
-    Insite.Core.Plugins.Search.Dtos.CategoryFacetDto:
-      type: object
-      properties:
-        categoryId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        websiteId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        shortDescription:
-          type: string
-        count:
-          format: int32
-          type: integer
-        selected:
-          type: boolean
-        subCategoryDtos:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.CategoryFacetDto'
     Insite.Catalog.Services.Dtos.ProductImageDto:
       type: object
       properties:
@@ -3725,25 +3429,161 @@ components:
           type: string
         altText:
           type: string
-    Insite.Catalog.Services.Dtos.BrandDto:
+    Insite.Core.Plugins.Pricing.BreakPriceDto:
       type: object
       properties:
-        id:
+        breakQty:
+          format: decimal
+          type: number
+        breakPrice:
+          format: decimal
+          type: number
+        breakPriceDisplay:
+          type: string
+        savingsMessage:
+          type: string
+        breakPriceWithVat:
+          format: decimal
+          type: number
+        breakPriceWithVatDisplay:
+          type: string
+    Insite.Core.Plugins.Search.Dtos.AttributeValueFacetDto:
+      type: object
+      properties:
+        attributeValueId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        value:
+          type: string
+        valueDisplay:
+          type: string
+        count:
+          format: int32
+          type: integer
+        sortOrder:
+          format: int32
+          type: integer
+        selected:
+          type: boolean
+        styleParentId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        styleChildId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+    Insite.Core.Plugins.Search.Dtos.SuggestionDto:
+      type: object
+      properties:
+        highlightedSuggestion:
+          type: string
+        score:
+          format: double
+          type: number
+        suggestion:
+          type: string
+    Insite.Core.Plugins.Search.Dtos.ScoreExplanationDto:
+      type: object
+      properties:
+        totalBoost:
+          format: float
+          type: number
+        aggregateFieldScores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDto'
+        detailedFieldScores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDetailedDto'
+    Insite.Catalog.Services.Dtos.WarehouseDto:
+      type: object
+      properties:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
+          type: string
+        requiresRealTimeInventory:
+          type: boolean
+        name:
+          type: string
+        description:
+          type: string
+        qty:
+          format: decimal
+          type: number
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.StyleTraitDto:
+      type: object
+      properties:
+        styleTraitId:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
         name:
           type: string
-        urlSegment:
+        nameDisplay:
           type: string
-        logoSmallImagePath:
+        unselectedValue:
           type: string
-        logoLargeImagePath:
+        sortOrder:
+          format: int32
+          type: integer
+        styleValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleValueDto'
+        displayType:
           type: string
-        logoImageAltText:
+        numberOfSwatchesVisible:
+          format: int32
+          type: integer
+        displayTextWithSwatch:
+          type: boolean
+    Insite.Catalog.WebApi.V1.ApiModels.ProductModel:
+      type: object
+      properties:
+        uri:
           type: string
-        detailPagePath:
+        product:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.Plugins.Search.Dtos.CategoryFacetDto:
+      type: object
+      properties:
+        categoryId:
+          format: uuid
           type: string
+          example: 00000000-0000-0000-0000-000000000000
+        websiteId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        shortDescription:
+          type: string
+        count:
+          format: int32
+          type: integer
+        selected:
+          type: boolean
+        subCategoryDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.CategoryFacetDto'
     Insite.Catalog.Services.Dtos.ConfigSectionOptionDto:
       type: object
       properties:
@@ -3776,291 +3616,140 @@ components:
           type: number
         cantBuy:
           type: boolean
-    Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto:
+    Insite.Catalog.WebApi.V1.ApiModels.BatchGetProductParameter:
       type: object
       properties:
-        productUnitOfMeasureId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        unitOfMeasure:
-          type: string
-        unitOfMeasureDisplay:
-          type: string
-        description:
-          type: string
-        qtyPerBaseUnitOfMeasure:
-          format: decimal
-          type: number
-        roundingRule:
-          type: string
-        isDefault:
-          type: boolean
-        availability:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
-    Insite.Core.Plugins.Search.Dtos.PriceFacetDto:
-      type: object
-      properties:
-        minimumPrice:
-          format: int32
-          type: integer
-        maximumPrice:
-          format: int32
-          type: integer
-        count:
-          format: int32
-          type: integer
-        selected:
-          type: boolean
-    Insite.Catalog.Services.Dtos.WarehouseDto:
-      type: object
-      properties:
-        messageType:
-          format: int32
-          enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          type: integer
-        message:
-          type: string
-        requiresRealTimeInventory:
-          type: boolean
-        name:
-          type: string
-        description:
-          type: string
-        qty:
-          format: decimal
-          type: number
-        properties:
-          type: object
-          additionalProperties:
+        extendedNames:
+          type: array
+          items:
             type: string
-    Insite.Core.Plugins.Pricing.ProductPriceDto:
+    Insite.Catalog.Services.Dtos.StyledProductDto:
       type: object
       properties:
         productId:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        isOnSale:
-          type: boolean
-        requiresRealTimePrice:
-          type: boolean
-        additionalResults:
-          type: object
-          additionalProperties:
-            type: string
-        unitCost:
+        name:
+          type: string
+        shortDescription:
+          type: string
+        erpNumber:
+          type: string
+        customerName:
+          type: string
+        mediumImagePath:
+          type: string
+        smallImagePath:
+          type: string
+        largeImagePath:
+          type: string
+        qtyOnHand:
           format: decimal
           type: number
-        unitCostDisplay:
-          type: string
-        unitListPrice:
-          format: decimal
-          type: number
-        unitListPriceDisplay:
-          type: string
-        extendedUnitListPrice:
-          format: decimal
-          type: number
-        extendedUnitListPriceDisplay:
-          type: string
-        unitRegularPrice:
-          format: decimal
-          type: number
-        unitRegularPriceDisplay:
-          type: string
-        extendedUnitRegularPrice:
-          format: decimal
-          type: number
-        extendedUnitRegularPriceDisplay:
-          type: string
-        unitNetPrice:
-          format: decimal
-          type: number
-        unitNetPriceDisplay:
-          type: string
-        extendedUnitNetPrice:
-          format: decimal
-          type: number
-        extendedUnitNetPriceDisplay:
-          type: string
         unitOfMeasure:
           type: string
-        vatRate:
-          format: decimal
-          type: number
-        vatAmount:
-          format: decimal
-          type: number
-        vatAmountDisplay:
-          type: string
-        unitListBreakPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
-        unitRegularBreakPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
-        regularPrice:
-          format: decimal
-          type: number
-          readOnly: true
-        regularPriceDisplay:
-          type: string
-          readOnly: true
-        extendedRegularPrice:
-          format: decimal
-          type: number
-          readOnly: true
-        extendedRegularPriceDisplay:
-          type: string
-          readOnly: true
-        actualPrice:
-          format: decimal
-          type: number
-          readOnly: true
-        actualPriceDisplay:
-          type: string
-          readOnly: true
-        extendedActualPrice:
-          format: decimal
-          type: number
-          readOnly: true
-        extendedActualPriceDisplay:
-          type: string
-          readOnly: true
-        regularBreakPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
-          readOnly: true
-        actualBreakPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
-          readOnly: true
-        unitListPriceWithVat:
-          format: decimal
-          type: number
-        unitListPriceWithVatDisplay:
-          type: string
-        extendedUnitListPriceWithVat:
-          format: decimal
-          type: number
-        extendedUnitListPriceWithVatDisplay:
-          type: string
-        unitRegularPriceWithVat:
-          format: decimal
-          type: number
-        unitRegularPriceWithVatDisplay:
-          type: string
-        extendedUnitRegularPriceWithVat:
-          format: decimal
-          type: number
-        extendedUnitRegularPriceWithVatDisplay:
-          type: string
-        vatMinusExtendedUnitRegularPrice:
-          format: decimal
-          type: number
-    Insite.Catalog.Services.Dtos.ProductLineDto:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-    Insite.Catalog.Services.Dtos.BadgeDto:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        tagName:
-          type: string
-        badgeStyle:
-          type: string
-        sortOrder:
+        trackInventory:
+          type: boolean
+        minimumOrderQty:
           format: int32
           type: integer
-        badgeType:
+        productDetailUrl:
           type: string
-        displayOnProductImages:
+        pricing:
+          $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
+        quoteRequired:
           type: boolean
-        displayOnBadgeWidget:
-          type: boolean
-        displayText:
-          type: string
-        textColorHexCode:
-          type: string
-        badgeColorHexCode:
-          type: string
-        largeImageBadgePath:
-          type: string
-        largeImageTextSize:
-          type: string
-        largeImagePlacement:
-          type: string
-        otherImageBadgePath:
-          type: string
-        otherImageTextSize:
-          type: string
-        otherImagePlacement:
-          type: string
-        imageAltText:
-          type: string
-        detailWidgetBadgeSize:
-          type: string
-    Insite.Core.Plugins.Search.Dtos.ScoreExplanationDto:
-      type: object
-      properties:
-        totalBoost:
-          format: float
-          type: number
-        aggregateFieldScores:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDto'
-        detailedFieldScores:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDetailedDto'
-    Insite.Catalog.Services.Dtos.StyleTraitDto:
-      type: object
-      properties:
-        styleTraitId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        nameDisplay:
-          type: string
-        unselectedValue:
-          type: string
-        sortOrder:
-          format: int32
-          type: integer
         styleValues:
           type: array
           items:
             $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleValueDto'
-        displayType:
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+        productUnitOfMeasures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto'
+        productImages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductImageDto'
+        warehouses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.WarehouseDto'
+        manufacturerItem:
           type: string
-        numberOfSwatchesVisible:
-          format: int32
-          type: integer
-        displayTextWithSwatch:
+        upcCode:
+          type: string
+        sku:
+          type: string
+        cantBuy:
           type: boolean
+        allowZeroPricing:
+          type: boolean
+        htmlContent:
+          type: string
+        specifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.DocumentDto'
+        attributeTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeTypeDto'
+        crossSells:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+        relatedProducts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.RelatedProductDto'
+        metaDescription:
+          type: string
+        metaKeywords:
+          type: string
+        pageTitle:
+          type: string
+        openGraphTitle:
+          type: string
+        openGraphUrl:
+          type: string
+        openGraphImage:
+          type: string
+        customerProductNumber:
+          type: string
+    Insite.Catalog.Services.Dtos.DocumentDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        description:
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        filePath:
+          type: string
+        fileUrl:
+          type: string
+        documentType:
+          type: string
+        languageId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        fileTypeString:
+          type: string
     Insite.Catalog.Services.Dtos.ProductDto:
       type: object
       properties:
@@ -4344,208 +4033,27 @@ components:
           $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
         parentProductErpNumber:
           type: string
-    Insite.Catalog.Services.Dtos.StyledProductDto:
+    Insite.Core.Plugins.Search.Dtos.FieldScoreDetailedDto:
       type: object
       properties:
-        productId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
         name:
           type: string
-        shortDescription:
-          type: string
-        erpNumber:
-          type: string
-        customerName:
-          type: string
-        mediumImagePath:
-          type: string
-        smallImagePath:
-          type: string
-        largeImagePath:
-          type: string
-        qtyOnHand:
-          format: decimal
+        score:
+          format: float
           type: number
-        unitOfMeasure:
-          type: string
-        trackInventory:
-          type: boolean
-        minimumOrderQty:
-          format: int32
-          type: integer
-        productDetailUrl:
-          type: string
-        pricing:
-          $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
-        quoteRequired:
-          type: boolean
-        styleValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleValueDto'
-        availability:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
-        productUnitOfMeasures:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto'
-        productImages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductImageDto'
-        warehouses:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.WarehouseDto'
-        manufacturerItem:
-          type: string
-        upcCode:
-          type: string
-        sku:
-          type: string
-        cantBuy:
-          type: boolean
-        allowZeroPricing:
-          type: boolean
-        htmlContent:
-          type: string
-        specifications:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
-        documents:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.DocumentDto'
-        attributeTypes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeTypeDto'
-        crossSells:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
-        relatedProducts:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.RelatedProductDto'
-        metaDescription:
-          type: string
-        metaKeywords:
-          type: string
-        pageTitle:
-          type: string
-        openGraphTitle:
-          type: string
-        openGraphUrl:
-          type: string
-        openGraphImage:
-          type: string
-        customerProductNumber:
-          type: string
-    Insite.Core.Plugins.Search.Dtos.AttributeTypeFacetDto:
-      type: object
-      properties:
-        attributeTypeId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        nameDisplay:
-          type: string
-        sort:
-          format: int32
-          type: integer
-        attributeValueFacets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.AttributeValueFacetDto'
-    Insite.Core.WebApi.PaginationModel:
-      type: object
-      properties:
-        currentPage:
-          format: int32
-          type: integer
-        page:
-          format: int32
-          type: integer
-        pageSize:
-          format: int32
-          type: integer
-        defaultPageSize:
-          format: int32
-          type: integer
-        totalItemCount:
-          format: int32
-          type: integer
-        numberOfPages:
-          format: int32
-          type: integer
-        pageSizeOptions:
-          type: array
-          items:
-            format: int32
-            type: integer
-        sortOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
-        sortType:
-          type: string
-        nextPageUri:
-          type: string
-        prevPageUri:
-          type: string
-        nextPageToken:
-          type: string
-    Insite.Core.Plugins.Search.Dtos.AttributeValueFacetDto:
-      type: object
-      properties:
-        attributeValueId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        value:
-          type: string
-        valueDisplay:
-          type: string
-        count:
-          format: int32
-          type: integer
-        sortOrder:
-          format: int32
-          type: integer
-        selected:
-          type: boolean
-        styleParentId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        styleChildId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-    Insite.Core.Plugins.Pricing.BreakPriceDto:
-      type: object
-      properties:
-        breakQty:
-          format: decimal
+        boost:
+          format: float
           type: number
-        breakPrice:
-          format: decimal
+        matchText:
+          type: string
+        termFrequencyNormalized:
+          format: float
           type: number
-        breakPriceDisplay:
-          type: string
-        savingsMessage:
-          type: string
-        breakPriceWithVat:
-          format: decimal
+        inverseDocumentFrequency:
+          format: float
           type: number
-        breakPriceWithVatDisplay:
-          type: string
+        scoreUsed:
+          type: boolean
     Insite.Catalog.Services.Dtos.AttributeTypeDto:
       type: object
       properties:
@@ -4574,16 +4082,247 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeValueDto'
-    Insite.Core.Plugins.Search.Dtos.SuggestionDto:
+    Insite.Catalog.Services.Dtos.AvailabilityDto:
       type: object
       properties:
-        highlightedSuggestion:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
           type: string
-        score:
-          format: double
+        requiresRealTimeInventory:
+          type: boolean
+    Insite.Catalog.Services.Dtos.BadgeDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        tagName:
+          type: string
+        badgeStyle:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        badgeType:
+          type: string
+        displayOnProductImages:
+          type: boolean
+        displayOnBadgeWidget:
+          type: boolean
+        displayText:
+          type: string
+        textColorHexCode:
+          type: string
+        badgeColorHexCode:
+          type: string
+        largeImageBadgePath:
+          type: string
+        largeImageTextSize:
+          type: string
+        largeImagePlacement:
+          type: string
+        otherImageBadgePath:
+          type: string
+        otherImageTextSize:
+          type: string
+        otherImagePlacement:
+          type: string
+        imageAltText:
+          type: string
+        detailWidgetBadgeSize:
+          type: string
+    Insite.Core.Plugins.Search.Dtos.PriceFacetDto:
+      type: object
+      properties:
+        minimumPrice:
+          format: int32
+          type: integer
+        maximumPrice:
+          format: int32
+          type: integer
+        count:
+          format: int32
+          type: integer
+        selected:
+          type: boolean
+    Insite.Catalog.WebApi.V1.ApiModels.ProductPriceModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        isOnSale:
+          type: boolean
+        requiresRealTimePrice:
+          type: boolean
+        quoteRequired:
+          type: boolean
+        additionalResults:
+          type: object
+          additionalProperties:
+            type: string
+        unitCost:
+          format: decimal
           type: number
-        suggestion:
+        unitCostDisplay:
           type: string
+        unitListPrice:
+          format: decimal
+          type: number
+        unitListPriceDisplay:
+          type: string
+        extendedUnitListPrice:
+          format: decimal
+          type: number
+        extendedUnitListPriceDisplay:
+          type: string
+        unitRegularPrice:
+          format: decimal
+          type: number
+        unitRegularPriceDisplay:
+          type: string
+        extendedUnitRegularPrice:
+          format: decimal
+          type: number
+        extendedUnitRegularPriceDisplay:
+          type: string
+        unitNetPrice:
+          format: decimal
+          type: number
+        unitNetPriceDisplay:
+          type: string
+        extendedUnitNetPrice:
+          format: decimal
+          type: number
+        extendedUnitNetPriceDisplay:
+          type: string
+        unitOfMeasure:
+          type: string
+        vatRate:
+          format: decimal
+          type: number
+        vatAmount:
+          format: decimal
+          type: number
+        vatAmountDisplay:
+          type: string
+        unitListBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        unitRegularBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        regularPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        regularPriceDisplay:
+          type: string
+          readOnly: true
+        extendedRegularPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        extendedRegularPriceDisplay:
+          type: string
+          readOnly: true
+        actualPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        actualPriceDisplay:
+          type: string
+          readOnly: true
+        extendedActualPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        extendedActualPriceDisplay:
+          type: string
+          readOnly: true
+        regularBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+          readOnly: true
+        actualBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+          readOnly: true
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.ProductLineDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+    Insite.Core.Plugins.Search.Dtos.AttributeTypeFacetDto:
+      type: object
+      properties:
+        attributeTypeId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        nameDisplay:
+          type: string
+        sort:
+          format: int32
+          type: integer
+        attributeValueFacets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.AttributeValueFacetDto'
+    Insite.Catalog.Services.Dtos.ConfigSectionDto:
+      type: object
+      properties:
+        sectionName:
+          type: string
+        label:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionOptionDto'
+    Insite.Catalog.Services.Dtos.AttributeValueDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        value:
+          type: string
+        valueDisplay:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        isActive:
+          type: boolean
     Insite.Catalog.Services.Dtos.ProductSubscriptionDto:
       type: object
       properties:
@@ -4629,6 +4368,36 @@ components:
         subscriptionTotalCycles:
           format: int32
           type: integer
+    Insite.Catalog.Services.Dtos.BrandDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        urlSegment:
+          type: string
+        logoSmallImagePath:
+          type: string
+        logoLargeImagePath:
+          type: string
+        logoImageAltText:
+          type: string
+        detailPagePath:
+          type: string
+    Insite.Catalog.Services.Dtos.LegacyConfigurationDto:
+      type: object
+      properties:
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionDto'
+        hasDefaults:
+          type: boolean
+        isKit:
+          type: boolean
     Insite.Catalog.WebApi.V1.ApiModels.ProductCollectionModel:
       type: object
       properties:
@@ -4678,7 +4447,267 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Core.Plugins.Search.Dtos.FieldScoreDetailedDto:
+    Insite.Core.WebApi.PaginationModel:
+      type: object
+      properties:
+        currentPage:
+          format: int32
+          type: integer
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        defaultPageSize:
+          format: int32
+          type: integer
+        totalItemCount:
+          format: int32
+          type: integer
+        numberOfPages:
+          format: int32
+          type: integer
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
+        sortType:
+          type: string
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
+          type: string
+    Insite.Core.Plugins.Search.Dtos.GenericFacetDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        count:
+          format: int32
+          type: integer
+        sortOrder:
+          format: int32
+          type: integer
+        selected:
+          type: boolean
+    Insite.Catalog.WebApi.V1.ApiModels.CrossSellCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.RelatedProductDto:
+      type: object
+      properties:
+        relatedProductType:
+          type: string
+        productDto:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+    Insite.Catalog.Services.Dtos.SpecificationDto:
+      type: object
+      properties:
+        specificationId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        nameDisplay:
+          type: string
+        value:
+          type: string
+        description:
+          type: string
+        sortOrder:
+          format: decimal
+          type: number
+        isActive:
+          type: boolean
+        parentSpecification:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+        htmlContent:
+          type: string
+        specifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+    Insite.Catalog.Services.Dtos.StyleValueDto:
+      type: object
+      properties:
+        styleTraitName:
+          type: string
+        styleTraitId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        styleTraitValueId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        value:
+          type: string
+        valueDisplay:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        isDefault:
+          type: boolean
+        swatchType:
+          type: string
+        swatchImageValue:
+          type: string
+        swatchColorValue:
+          type: string
+    Insite.Core.Plugins.Pricing.ProductPriceDto:
+      type: object
+      properties:
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        isOnSale:
+          type: boolean
+        requiresRealTimePrice:
+          type: boolean
+        additionalResults:
+          type: object
+          additionalProperties:
+            type: string
+        unitCost:
+          format: decimal
+          type: number
+        unitCostDisplay:
+          type: string
+        unitListPrice:
+          format: decimal
+          type: number
+        unitListPriceDisplay:
+          type: string
+        extendedUnitListPrice:
+          format: decimal
+          type: number
+        extendedUnitListPriceDisplay:
+          type: string
+        unitRegularPrice:
+          format: decimal
+          type: number
+        unitRegularPriceDisplay:
+          type: string
+        extendedUnitRegularPrice:
+          format: decimal
+          type: number
+        extendedUnitRegularPriceDisplay:
+          type: string
+        unitNetPrice:
+          format: decimal
+          type: number
+        unitNetPriceDisplay:
+          type: string
+        extendedUnitNetPrice:
+          format: decimal
+          type: number
+        extendedUnitNetPriceDisplay:
+          type: string
+        unitOfMeasure:
+          type: string
+        vatRate:
+          format: decimal
+          type: number
+        vatAmount:
+          format: decimal
+          type: number
+        vatAmountDisplay:
+          type: string
+        unitListBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        unitRegularBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        regularPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        regularPriceDisplay:
+          type: string
+          readOnly: true
+        extendedRegularPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        extendedRegularPriceDisplay:
+          type: string
+          readOnly: true
+        actualPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        actualPriceDisplay:
+          type: string
+          readOnly: true
+        extendedActualPrice:
+          format: decimal
+          type: number
+          readOnly: true
+        extendedActualPriceDisplay:
+          type: string
+          readOnly: true
+        regularBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+          readOnly: true
+        actualBreakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+          readOnly: true
+        unitListPriceWithVat:
+          format: decimal
+          type: number
+        unitListPriceWithVatDisplay:
+          type: string
+        extendedUnitListPriceWithVat:
+          format: decimal
+          type: number
+        extendedUnitListPriceWithVatDisplay:
+          type: string
+        unitRegularPriceWithVat:
+          format: decimal
+          type: number
+        unitRegularPriceWithVatDisplay:
+          type: string
+        extendedUnitRegularPriceWithVat:
+          format: decimal
+          type: number
+        extendedUnitRegularPriceWithVatDisplay:
+          type: string
+        vatMinusExtendedUnitRegularPrice:
+          format: decimal
+          type: number
+    Insite.Catalog.WebApi.V2.ApiModels.Product.FieldScoreDetailedModel:
       type: object
       properties:
         name:
@@ -4699,102 +4728,26 @@ components:
           type: number
         scoreUsed:
           type: boolean
-    Insite.Catalog.WebApi.V2.ApiModels.Product.CategoryFacetModel:
-      type: object
-      properties:
-        categoryId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        shortDescription:
-          type: string
-        count:
-          format: int32
-          type: integer
-        selected:
-          type: boolean
-        subCategoryFacets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.CategoryFacetModel'
-    Insite.Catalog.WebApi.V2.ApiModels.Product.ProductLineModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeValueFacetModel:
-      type: object
-      properties:
-        attributeValueId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        value:
-          type: string
-        valueDisplay:
-          type: string
-        count:
-          format: int32
-          type: integer
-        sortOrder:
-          format: int32
-          type: integer
-        selected:
-          type: boolean
-    Insite.Catalog.WebApi.V2.ApiModels.Product.BadgeModel:
+    Insite.Catalog.WebApi.V2.ApiModels.Product.UnitOfMeasureModel:
       type: object
       properties:
         id:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        name:
+        unitOfMeasure:
           type: string
-        tagName:
+        unitOfMeasureDisplay:
           type: string
-        badgeStyle:
+        description:
           type: string
-        sortOrder:
-          format: int32
-          type: integer
-        badgeType:
+        qtyPerBaseUnitOfMeasure:
+          format: decimal
+          type: number
+        roundingRule:
           type: string
-        displayOnProductImages:
+        isDefault:
           type: boolean
-        displayOnBadgeWidget:
-          type: boolean
-        displayText:
-          type: string
-        textColorHexCode:
-          type: string
-        badgeColorHexCode:
-          type: string
-        largeImageBadgePath:
-          type: string
-        largeImageTextSize:
-          type: string
-        largeImagePlacement:
-          type: string
-        otherImageBadgePath:
-          type: string
-        otherImageTextSize:
-          type: string
-        otherImagePlacement:
-          type: string
-        imageAltText:
-          type: string
-        detailWidgetBadgeSize:
-          type: string
     Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeValueModel:
       type: object
       properties:
@@ -4809,185 +4762,6 @@ components:
         sortOrder:
           format: int32
           type: integer
-    Insite.Catalog.WebApi.V2.ApiModels.Product.DocumentModel:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        description:
-          type: string
-        filePath:
-          type: string
-        documentType:
-          type: string
-    Insite.Catalog.WebApi.V2.ApiModels.Product.ChildTraitValueModel:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        styleTraitId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        value:
-          type: string
-        valueDisplay:
-          type: string
-    Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeTypeModel:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        label:
-          type: string
-        isFilter:
-          type: boolean
-        isComparable:
-          type: boolean
-        isSearchable:
-          type: boolean
-        includeOnProduct:
-          type: boolean
-        sortOrder:
-          format: int32
-          type: integer
-        attributeValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeValueModel'
-    Insite.Catalog.WebApi.V2.ApiModels.Product.VariantTraitModel:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        nameDisplay:
-          type: string
-        unselectedValue:
-          type: string
-        displayType:
-          type: string
-        numberOfSwatchesVisible:
-          format: int32
-          type: integer
-        displayTextWithSwatch:
-          type: boolean
-        sortOrder:
-          format: int32
-          type: integer
-        traitValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.TraitValueModel'
-    Insite.Catalog.WebApi.V2.ApiModels.Product.ProductSubscriptionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        subscriptionCyclePeriod:
-          type: string
-        subscriptionPeriodsPerCycle:
-          format: int32
-          type: integer
-        subscriptionTotalCycles:
-          format: int32
-          type: integer
-        subscriptionAllMonths:
-          type: boolean
-        subscriptionJanuary:
-          type: boolean
-        subscriptionFebruary:
-          type: boolean
-        subscriptionMarch:
-          type: boolean
-        subscriptionApril:
-          type: boolean
-        subscriptionMay:
-          type: boolean
-        subscriptionJune:
-          type: boolean
-        subscriptionJuly:
-          type: boolean
-        subscriptionAugust:
-          type: boolean
-        subscriptionSeptember:
-          type: boolean
-        subscriptionOctober:
-          type: boolean
-        subscriptionNovember:
-          type: boolean
-        subscriptionDecember:
-          type: boolean
-        subscriptionAddToInitialOrder:
-          type: boolean
-        subscriptionFixedPrice:
-          type: boolean
-        subscriptionShipViaId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.WebApi.V2.ApiModels.Product.FacetModel:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        count:
-          format: int32
-          type: integer
-        selected:
-          type: boolean
-        sortOrder:
-          format: int32
-          type: integer
-    Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeTypeFacetModel:
-      type: object
-      properties:
-        attributeTypeId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        nameDisplay:
-          type: string
-        sortOrder:
-          format: int32
-          type: integer
-        attributeValueFacets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeValueFacetModel'
-    Insite.Catalog.WebApi.V2.ApiModels.Product.SuggestionModel:
-      type: object
-      properties:
-        highlightedSuggestion:
-          type: string
-        suggestion:
-          type: string
-        score:
-          format: double
-          type: number
     Insite.Catalog.WebApi.V2.ApiModels.Product.BrandModel:
       type: object
       properties:
@@ -5013,34 +4787,6 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Catalog.WebApi.V2.ApiModels.Product.SectionOptionModel:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        productId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        description:
-          type: string
-        price:
-          format: decimal
-          type: number
-        selected:
-          type: boolean
-        sortOrder:
-          format: int32
-          type: integer
-        quantity:
-          format: decimal
-          type: number
-        cantBuy:
-          type: boolean
     Insite.Catalog.WebApi.V2.ApiModels.Product.DetailModel:
       type: object
       properties:
@@ -5112,20 +4858,337 @@ components:
           type: number
         configuration:
           $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.ConfigurationModel'
-    Insite.Catalog.WebApi.V2.ApiModels.Product.ScoreExplanationModel:
+    Insite.Catalog.WebApi.V2.ApiModels.Product.PriceFacetModel:
       type: object
       properties:
-        totalBoost:
+        minimumPrice:
+          format: int32
+          type: integer
+        maximumPrice:
+          format: int32
+          type: integer
+        count:
+          format: int32
+          type: integer
+        selected:
+          type: boolean
+    Insite.Catalog.WebApi.V2.ApiModels.Product.BadgeModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        tagName:
+          type: string
+        badgeStyle:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        badgeType:
+          type: string
+        displayOnProductImages:
+          type: boolean
+        displayOnBadgeWidget:
+          type: boolean
+        displayText:
+          type: string
+        textColorHexCode:
+          type: string
+        badgeColorHexCode:
+          type: string
+        largeImageBadgePath:
+          type: string
+        largeImageTextSize:
+          type: string
+        largeImagePlacement:
+          type: string
+        otherImageBadgePath:
+          type: string
+        otherImageTextSize:
+          type: string
+        otherImagePlacement:
+          type: string
+        imageAltText:
+          type: string
+        detailWidgetBadgeSize:
+          type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.FacetModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        count:
+          format: int32
+          type: integer
+        selected:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ConfigSectionModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sectionName:
+          type: string
+        label:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        sectionOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.SectionOptionModel'
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ProductCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.ProductModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        categoryFacets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.CategoryFacetModel'
+        attributeTypeFacets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeTypeFacetModel'
+        brandFacets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.FacetModel'
+        productLineFacets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.FacetModel'
+        didYouMeanSuggestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.SuggestionModel'
+        priceRange:
+          $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.PriceRangeModel'
+        exactMatch:
+          type: boolean
+        notAllProductsFound:
+          type: boolean
+        notAllProductsAllowed:
+          type: boolean
+        originalQuery:
+          type: string
+        correctedQuery:
+          type: string
+        searchTermRedirectUrl:
+          type: string
+        attributionToken:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ImageModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sortOrder:
+          format: int32
+          type: integer
+        name:
+          type: string
+        imageType:
+          type: string
+        smallImagePath:
+          type: string
+        mediumImagePath:
+          type: string
+        largeImagePath:
+          type: string
+        imageAltText:
+          type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ProductSubscriptionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        subscriptionCyclePeriod:
+          type: string
+        subscriptionPeriodsPerCycle:
+          format: int32
+          type: integer
+        subscriptionTotalCycles:
+          format: int32
+          type: integer
+        subscriptionAllMonths:
+          type: boolean
+        subscriptionJanuary:
+          type: boolean
+        subscriptionFebruary:
+          type: boolean
+        subscriptionMarch:
+          type: boolean
+        subscriptionApril:
+          type: boolean
+        subscriptionMay:
+          type: boolean
+        subscriptionJune:
+          type: boolean
+        subscriptionJuly:
+          type: boolean
+        subscriptionAugust:
+          type: boolean
+        subscriptionSeptember:
+          type: boolean
+        subscriptionOctober:
+          type: boolean
+        subscriptionNovember:
+          type: boolean
+        subscriptionDecember:
+          type: boolean
+        subscriptionAddToInitialOrder:
+          type: boolean
+        subscriptionFixedPrice:
+          type: boolean
+        subscriptionShipViaId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ProductLineModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ChildTraitValueModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        styleTraitId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        value:
+          type: string
+        valueDisplay:
+          type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.PriceRangeModel:
+      type: object
+      properties:
+        minimumPrice:
+          format: decimal
+          type: number
+        maximumPrice:
+          format: decimal
+          type: number
+        count:
+          format: int32
+          type: integer
+        priceFacets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.PriceFacetModel'
+    Insite.Catalog.WebApi.V2.ApiModels.Product.WarehouseModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        description:
+          type: string
+        qtyAvailable:
+          format: decimal
+          type: number
+    Insite.Catalog.WebApi.V2.ApiModels.Product.FieldScoreModel:
+      type: object
+      properties:
+        name:
+          type: string
+        score:
           format: float
           type: number
-        aggregateFieldScores:
+    Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeValueFacetModel:
+      type: object
+      properties:
+        attributeValueId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        value:
+          type: string
+        valueDisplay:
+          type: string
+        count:
+          format: int32
+          type: integer
+        sortOrder:
+          format: int32
+          type: integer
+        selected:
+          type: boolean
+    Insite.Catalog.WebApi.V2.ApiModels.Product.VariantTraitModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        nameDisplay:
+          type: string
+        unselectedValue:
+          type: string
+        displayType:
+          type: string
+        numberOfSwatchesVisible:
+          format: int32
+          type: integer
+        displayTextWithSwatch:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        traitValues:
           type: array
           items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.FieldScoreModel'
-        detailedFieldScores:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.FieldScoreDetailedModel'
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.TraitValueModel'
     Insite.Catalog.WebApi.V2.ApiModels.Product.ProductModel:
       type: object
       properties:
@@ -5261,23 +5324,16 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Catalog.WebApi.V2.ApiModels.Product.ContentModel:
+    Insite.Catalog.WebApi.V2.ApiModels.Product.SuggestionModel:
       type: object
       properties:
-        htmlContent:
+        highlightedSuggestion:
           type: string
-        pageTitle:
+        suggestion:
           type: string
-        metaDescription:
-          type: string
-        metaKeywords:
-          type: string
-        openGraphTitle:
-          type: string
-        openGraphUrl:
-          type: string
-        openGraphImage:
-          type: string
+        score:
+          format: double
+          type: number
     Insite.Catalog.WebApi.V2.ApiModels.Product.TraitValueModel:
       type: object
       properties:
@@ -5300,78 +5356,41 @@ components:
           type: string
         swatchColorValue:
           type: string
-    Insite.Catalog.WebApi.V2.ApiModels.Product.FieldScoreDetailedModel:
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ContentModel:
       type: object
       properties:
+        htmlContent:
+          type: string
+        pageTitle:
+          type: string
+        metaDescription:
+          type: string
+        metaKeywords:
+          type: string
+        openGraphTitle:
+          type: string
+        openGraphUrl:
+          type: string
+        openGraphImage:
+          type: string
+    Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeTypeFacetModel:
+      type: object
+      properties:
+        attributeTypeId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
         name:
           type: string
-        score:
-          format: float
-          type: number
-        boost:
-          format: float
-          type: number
-        matchText:
+        nameDisplay:
           type: string
-        termFrequencyNormalized:
-          format: float
-          type: number
-        inverseDocumentFrequency:
-          format: float
-          type: number
-        scoreUsed:
-          type: boolean
-    Insite.Catalog.WebApi.V2.ApiModels.Product.ProductCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        products:
+        sortOrder:
+          format: int32
+          type: integer
+        attributeValueFacets:
           type: array
           items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.ProductModel'
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        categoryFacets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.CategoryFacetModel'
-        attributeTypeFacets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeTypeFacetModel'
-        brandFacets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.FacetModel'
-        productLineFacets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.FacetModel'
-        didYouMeanSuggestions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.SuggestionModel'
-        priceRange:
-          $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.PriceRangeModel'
-        exactMatch:
-          type: boolean
-        notAllProductsFound:
-          type: boolean
-        notAllProductsAllowed:
-          type: boolean
-        originalQuery:
-          type: string
-        correctedQuery:
-          type: string
-        searchTermRedirectUrl:
-          type: string
-        attributionToken:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeValueFacetModel'
     Insite.Catalog.WebApi.V2.ApiModels.Product.ConfigurationModel:
       type: object
       properties:
@@ -5383,30 +5402,6 @@ components:
           type: boolean
         isKit:
           type: boolean
-    Insite.Catalog.WebApi.V2.ApiModels.Product.PriceRangeModel:
-      type: object
-      properties:
-        minimumPrice:
-          format: decimal
-          type: number
-        maximumPrice:
-          format: decimal
-          type: number
-        count:
-          format: int32
-          type: integer
-        priceFacets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.PriceFacetModel'
-    Insite.Catalog.WebApi.V2.ApiModels.Product.FieldScoreModel:
-      type: object
-      properties:
-        name:
-          type: string
-        score:
-          format: float
-          type: number
     Insite.Catalog.WebApi.V2.ApiModels.Product.SpecificationModel:
       type: object
       properties:
@@ -5427,81 +5422,40 @@ components:
         sortOrder:
           format: decimal
           type: number
-    Insite.Catalog.WebApi.V2.ApiModels.Product.ImageModel:
+    Insite.Catalog.WebApi.V2.ApiModels.Product.DocumentModel:
       type: object
       properties:
         id:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        sortOrder:
-          format: int32
-          type: integer
         name:
           type: string
-        imageType:
+        description:
           type: string
-        smallImagePath:
+        filePath:
           type: string
-        mediumImagePath:
+        documentType:
           type: string
-        largeImagePath:
-          type: string
-        imageAltText:
-          type: string
-    Insite.Catalog.WebApi.V2.ApiModels.Product.PriceFacetModel:
+    Insite.Catalog.WebApi.V2.ApiModels.Product.CategoryFacetModel:
       type: object
       properties:
-        minimumPrice:
-          format: int32
-          type: integer
-        maximumPrice:
-          format: int32
-          type: integer
+        categoryId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        shortDescription:
+          type: string
         count:
           format: int32
           type: integer
         selected:
           type: boolean
-    Insite.Catalog.WebApi.V2.ApiModels.Product.ConfigSectionModel:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        sectionName:
-          type: string
-        label:
-          type: string
-        sortOrder:
-          format: int32
-          type: integer
-        sectionOptions:
+        subCategoryFacets:
           type: array
           items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.SectionOptionModel'
-    Insite.Catalog.WebApi.V2.ApiModels.Product.UnitOfMeasureModel:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        unitOfMeasure:
-          type: string
-        unitOfMeasureDisplay:
-          type: string
-        description:
-          type: string
-        qtyPerBaseUnitOfMeasure:
-          format: decimal
-          type: number
-        roundingRule:
-          type: string
-        isDefault:
-          type: boolean
-    Insite.Catalog.WebApi.V2.ApiModels.Product.WarehouseModel:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.CategoryFacetModel'
+    Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeTypeModel:
       type: object
       properties:
         id:
@@ -5510,11 +5464,65 @@ components:
           example: 00000000-0000-0000-0000-000000000000
         name:
           type: string
+        label:
+          type: string
+        isFilter:
+          type: boolean
+        isComparable:
+          type: boolean
+        isSearchable:
+          type: boolean
+        includeOnProduct:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        attributeValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.AttributeValueModel'
+    Insite.Catalog.WebApi.V2.ApiModels.Product.ScoreExplanationModel:
+      type: object
+      properties:
+        totalBoost:
+          format: float
+          type: number
+        aggregateFieldScores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.FieldScoreModel'
+        detailedFieldScores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V2.ApiModels.Product.FieldScoreDetailedModel'
+    Insite.Catalog.WebApi.V2.ApiModels.Product.SectionOptionModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
         description:
           type: string
-        qtyAvailable:
+        price:
           format: decimal
           type: number
+        selected:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        quantity:
+          format: decimal
+          type: number
+        cantBuy:
+          type: boolean
     GenericUpdateResponse:
       type: object
       properties:
@@ -5530,6 +5538,20 @@ components:
       properties:
         message:
           type: string
+    Product:
+      required:
+      - product_id
+      type: object
+      properties:
+        product_id:
+          type: string
+          description: the product_id associated with the product
+        '{product_field}':
+          type: object
+          description: Any other product field. Refer to the product reference above for the full list of available fields.
+          additionalProperties:
+            type: string
+            description: Any other product field. Refer to the product reference above for the full list of available fields.
     40xResponse:
       type: object
       properties:
@@ -5552,28 +5574,6 @@ components:
                     type: integer
                   message:
                     type: string
-    Product:
-      required:
-      - product_id
-      type: object
-      properties:
-        product_id:
-          type: string
-          description: the product_id associated with the product
-        '{product_field}':
-          type: object
-          description: Any other product field. Refer to the product reference above for the full list of available fields.
-          additionalProperties:
-            type: string
-            description: Any other product field. Refer to the product reference above for the full list of available fields.
-  requestBodies:
-    Affiliates_ArchiveParameters:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties: {}
-      description: archive action parameters
   securitySchemes:
     access_token:
       type: apiKey

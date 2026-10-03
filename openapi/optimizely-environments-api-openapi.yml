@@ -414,9 +414,6 @@ components:
       - total_pages
       - items
       type: object
-    UrlValue:
-      description: A single url.
-      type: string
     Environment_2:
       properties:
         account_id:
@@ -467,6 +464,11 @@ components:
       - priority
       - project_id
       type: object
+    UrlList:
+      description: A list of urls.
+      items:
+        type: string
+      type: array
     ProblemDetail:
       additionalProperties: true
       description: https://tools.ietf.org/html/rfc7807#section-3.1
@@ -492,11 +494,9 @@ components:
       - title
       - type
       type: object
-    UrlList:
-      description: A list of urls.
-      items:
-        type: string
-      type: array
+    UrlValue:
+      description: A single url.
+      type: string
     Datafile:
       properties:
         id:
@@ -526,18 +526,6 @@ components:
           description: URL where this Datafile is available.
           format: url
           readOnly: true
-          type: string
-      type: object
-    Error:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
           type: string
       type: object
     Environment_3:
@@ -593,6 +581,18 @@ components:
       - project_id
       - key
       type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
     EnvironmentUpdate:
       properties:
         archived:
@@ -644,10 +644,12 @@ components:
       name: page_token
       schema:
         type: string
-    pageWindow:
-      description: Number of previous and next page links to supply for the request (defaults to 1).
-      in: query
-      name: page_window
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
       schema:
         type: integer
     perPage:
@@ -657,12 +659,10 @@ components:
       schema:
         format: int64
         type: integer
-    projectId:
-      description: The project identifier
-      example: 12345
-      in: path
-      name: project_id
-      required: true
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
       schema:
         type: integer
     per_page:
@@ -685,6 +685,12 @@ components:
         default: 1
         type: integer
   responses:
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
     BadRequestResponse:
       content:
         application/problem+json:
@@ -696,12 +702,6 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Malformed requests and invalid parameter names and types
-    UnauthorizedResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Invalid credentials
     ForbiddenResponse:
       content:
         application/problem+json:

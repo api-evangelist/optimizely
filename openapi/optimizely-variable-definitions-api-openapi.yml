@@ -243,12 +243,160 @@ paths:
       - Variable Definitions
 components:
   schemas:
-    UrlValue:
-      description: A single url.
-      type: string
+    BrainstormVariablesInteraction:
+      discriminator:
+        mapping:
+          error: '#/components/schemas/BrainstormError'
+          response: '#/components/schemas/BrainstormVariablesResponse'
+          user_chat: '#/components/schemas/BrainstormUserChat'
+        propertyName: type
+      type: object
+    PatchRequestBody:
+      description: A JSONPatch document as defined by RFC 6902
+      properties:
+        from:
+          description: A JSON Pointer to the resource attribute
+          type: string
+        op:
+          description: The operation to be performed
+          enum:
+          - add
+          - remove
+          - replace
+          - move
+          - copy
+          - test
+          type: string
+        path:
+          description: A JSON-Pointer to the resource or the resource attribute
+          type: string
+        value:
+          anyOf:
+          - type: object
+          - items:
+              type: string
+            type: array
+          - $ref: '#/components/schemas/AudienceConditions'
+          - type: string
+          - type: integer
+          - type: boolean
+          - items:
+              $ref: '#/components/schemas/SubMetric'
+            type: array
+          description: The value to be used within the operations.
+      required:
+      - op
+      - path
+      type: object
+    VariableDefinition:
+      properties:
+        default_value:
+          description: The default value for the Flag Variable Definition
+          example: '0.0'
+          type: string
+        description:
+          description: Additional context of the Flag Variable Definition
+          example: This variable is used to configure the amount used for computing the discount
+          type: string
+        key:
+          description: Unique string identifier for the Flag Variable Definition within the Flag
+          example: amount
+          type: string
+        revision:
+          description: Revision number for tracking changes
+          readOnly: true
+          type: integer
+        role:
+          description: Granular permission role
+          example: admin
+          readOnly: true
+          type: string
+        type:
+          description: The datatype for the Flag Variable Definition
+          enum:
+          - boolean
+          - string
+          - double
+          - integer
+          - json
+          example: double
+          type: string
+      required:
+      - key
+      - type
+      - default_value
+      type: object
     AudienceConditionsString:
       description: A valid AudienceConditionsArray represented as a JSON string
       example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
+      type: string
+    AudienceConditionsArray:
+      example:
+      - or
+      - audience_id: 123
+      - - and
+        - audience_id: 456
+        - audience_id: 789
+      items:
+        anyOf:
+        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+          type: string
+        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
+          properties:
+            audience_id:
+              type: integer
+          required:
+          - audience_id
+          type: object
+        - $ref: '#/components/schemas/AudienceConditionsArray'
+          description: A nested AudienceConditionsArray
+          example:
+          - - and
+            - audience_id: 456
+            - audience_id: 789
+      type: array
+    AudienceConditions:
+      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
+      oneOf:
+      - $ref: '#/components/schemas/AudienceConditionsArray'
+      - $ref: '#/components/schemas/AudienceConditionsString'
+    SubMetric:
+      properties:
+        aggregator:
+          type: string
+        event_id:
+          type: integer
+        event_type:
+          type: string
+        field:
+          type:
+          - string
+          - 'null'
+        role:
+          enum:
+          - numerator
+          - denominator
+          type: string
+        scope:
+          type: string
+      type: object
+    BrainstormVariablesChat:
+      properties:
+        interactions:
+          description: A list of interactions including user chats and responses
+          items:
+            $ref: '#/components/schemas/BrainstormVariablesInteraction'
+          type: array
+      required:
+      - interactions
+      type: object
+    UrlList:
+      description: A list of urls.
+      items:
+        type: string
+      type: array
+    UrlValue:
+      description: A single url.
       type: string
     VariableDefinitions:
       properties:
@@ -297,81 +445,6 @@ components:
           example: 1
           type: integer
       type: object
-    VariableDefinition:
-      properties:
-        default_value:
-          description: The default value for the Flag Variable Definition
-          example: '0.0'
-          type: string
-        description:
-          description: Additional context of the Flag Variable Definition
-          example: This variable is used to configure the amount used for computing the discount
-          type: string
-        key:
-          description: Unique string identifier for the Flag Variable Definition within the Flag
-          example: amount
-          type: string
-        revision:
-          description: Revision number for tracking changes
-          readOnly: true
-          type: integer
-        role:
-          description: Granular permission role
-          example: admin
-          readOnly: true
-          type: string
-        type:
-          description: The datatype for the Flag Variable Definition
-          enum:
-          - boolean
-          - string
-          - double
-          - integer
-          - json
-          example: double
-          type: string
-      required:
-      - key
-      - type
-      - default_value
-      type: object
-    PatchRequestBody:
-      description: A JSONPatch document as defined by RFC 6902
-      properties:
-        from:
-          description: A JSON Pointer to the resource attribute
-          type: string
-        op:
-          description: The operation to be performed
-          enum:
-          - add
-          - remove
-          - replace
-          - move
-          - copy
-          - test
-          type: string
-        path:
-          description: A JSON-Pointer to the resource or the resource attribute
-          type: string
-        value:
-          anyOf:
-          - type: object
-          - items:
-              type: string
-            type: array
-          - $ref: '#/components/schemas/AudienceConditions'
-          - type: string
-          - type: integer
-          - type: boolean
-          - items:
-              $ref: '#/components/schemas/SubMetric'
-            type: array
-          description: The value to be used within the operations.
-      required:
-      - op
-      - path
-      type: object
     ProblemDetail:
       additionalProperties: true
       description: https://tools.ietf.org/html/rfc7807#section-3.1
@@ -397,109 +470,7 @@ components:
       - title
       - type
       type: object
-    SubMetric:
-      properties:
-        aggregator:
-          type: string
-        event_id:
-          type: integer
-        event_type:
-          type: string
-        field:
-          type:
-          - string
-          - 'null'
-        role:
-          enum:
-          - numerator
-          - denominator
-          type: string
-        scope:
-          type: string
-      type: object
-    BrainstormVariablesInteraction:
-      discriminator:
-        mapping:
-          error: '#/components/schemas/BrainstormError'
-          response: '#/components/schemas/BrainstormVariablesResponse'
-          user_chat: '#/components/schemas/BrainstormUserChat'
-        propertyName: type
-      type: object
-    AudienceConditions:
-      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
-      oneOf:
-      - $ref: '#/components/schemas/AudienceConditionsArray'
-      - $ref: '#/components/schemas/AudienceConditionsString'
-    AudienceConditionsArray:
-      example:
-      - or
-      - audience_id: 123
-      - - and
-        - audience_id: 456
-        - audience_id: 789
-      items:
-        anyOf:
-        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
-          type: string
-        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
-          properties:
-            audience_id:
-              type: integer
-          required:
-          - audience_id
-          type: object
-        - $ref: '#/components/schemas/AudienceConditionsArray'
-          description: A nested AudienceConditionsArray
-          example:
-          - - and
-            - audience_id: 456
-            - audience_id: 789
-      type: array
-    UrlList:
-      description: A list of urls.
-      items:
-        type: string
-      type: array
-    BrainstormVariablesChat:
-      properties:
-        interactions:
-          description: A list of interactions including user chats and responses
-          items:
-            $ref: '#/components/schemas/BrainstormVariablesInteraction'
-          type: array
-      required:
-      - interactions
-      type: object
   parameters:
-    variableDefinitionKey:
-      description: The Variable Definition identifier
-      example: my_str
-      in: path
-      name: variable_definition_key
-      required: true
-      schema:
-        type: string
-    pageWindow:
-      description: Number of previous and next page links to supply for the request (defaults to 1).
-      in: query
-      name: page_window
-      schema:
-        type: integer
-    flagKey:
-      description: The Flag identifier
-      example: recurring_deposit
-      in: path
-      name: flag_key
-      required: true
-      schema:
-        type: string
-    perPage:
-      description: The max number of items to include per page or results.
-      in: query
-      name: per_page
-      schema:
-        format: int64
-        type: integer
     pageNumber:
       description: Bypass page_token to jump to specific page
       in: query
@@ -507,6 +478,12 @@ components:
       schema:
         format: int64
         type: integer
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
     projectId:
       description: The project identifier
       example: 12345
@@ -515,10 +492,33 @@ components:
       required: true
       schema:
         type: integer
-    pageToken:
-      description: Pagination page token. Implements prev, next, last, first
+    perPage:
+      description: The max number of items to include per page or results.
       in: query
-      name: page_token
+      name: per_page
+      schema:
+        format: int64
+        type: integer
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
+    variableDefinitionKey:
+      description: The Variable Definition identifier
+      example: my_str
+      in: path
+      name: variable_definition_key
+      required: true
+      schema:
+        type: string
+    flagKey:
+      description: The Flag identifier
+      example: recurring_deposit
+      in: path
+      name: flag_key
+      required: true
       schema:
         type: string
   responses:
@@ -533,10 +533,10 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Malformed requests and invalid parameter names and types
-    NoContentResponse:
-      description: No content in the response
     NotFoundResponse:
       description: Not found. No content
+    NoContentResponse:
+      description: No content in the response
     UnauthorizedResponse:
       content:
         application/problem+json:

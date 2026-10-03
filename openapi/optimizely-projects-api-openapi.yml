@@ -139,20 +139,54 @@ paths:
     - url: https://api.optimizely.com/flags/v1
       description: Optimizely Flags API v1 Server
 components:
+  parameters:
+    projectId:
+      name: project_id
+      in: path
+      required: true
+      description: The unique identifier for the project
+      schema:
+        type: integer
+        format: int64
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    page:
+      name: page
+      in: query
+      required: false
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
   schemas:
-    ProjectInput:
-      type: object
-      description: Input for creating or updating a project
-      properties:
-        name:
-          type: string
-          description: Human-readable name of the project
-        status:
-          type: string
-          description: Current status of the project
-          enum:
-          - active
-          - archived
     Project:
       type: object
       description: A Feature Experimentation project
@@ -192,19 +226,13 @@ components:
           type: string
           format: date-time
           description: Timestamp when the project was last modified
-    ProjectInput_2:
+    ProjectInput:
       type: object
       description: Input for creating or updating a project
       properties:
         name:
           type: string
           description: Human-readable name of the project
-        platform:
-          type: string
-          description: The platform type for this project
-          enum:
-          - web
-          - custom
         status:
           type: string
           description: Current status of the project
@@ -262,6 +290,62 @@ components:
             js_file_size:
               type: integer
               description: Size of the JavaScript file in bytes
+    ProjectInput_2:
+      type: object
+      description: Input for creating or updating a project
+      properties:
+        name:
+          type: string
+          description: Human-readable name of the project
+        platform:
+          type: string
+          description: The platform type for this project
+          enum:
+          - web
+          - custom
+        status:
+          type: string
+          description: Current status of the project
+          enum:
+          - active
+          - archived
+    ProjectUpdate:
+      properties:
+        account_id:
+          description: The ID of the account the Project is associated with
+          example: 12345
+          format: int64
+          readOnly: true
+          type: integer
+        confidence_threshold:
+          description: The significance level at which you would like to declare winning and losing variations. A lower number minimizes the time needed to declare a winning or losing variation, but increases the risk that your results aren't true winners and losers. The precision for this number is up to 4 decimal places.
+          example: 0.9
+          format: double
+          maximum: 1
+          minimum: 0.5
+          type: number
+        dcp_service_id:
+          description: The ID of a Dynamic Customer Profile Service associated with this Project
+          example: 121234
+          format: int64
+          type: integer
+        description:
+          description: A short description of the Project
+          example: Project for user sign up flow
+          type: string
+        name:
+          description: The name of the Project
+          example: Test Project
+          type: string
+        status:
+          description: The current status of the Project
+          enum:
+          - active
+          - archived
+          type: string
+        web_snippet:
+          $ref: '#/components/schemas/WebSnippetUpdate'
+      type: object
     WebSnippetUpdate:
       properties:
         enable_force_variation:
@@ -324,133 +408,6 @@ components:
           type:
           - string
           - 'null'
-      type: object
-    Error:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
-          type: string
-      type: object
-    WebSnippet:
-      properties:
-        code_revision:
-          description: The current revision number of the Project snippet
-          readOnly: true
-          type: integer
-        enable_force_variation:
-          default: false
-          description: Enables the option to force yourself into a specific variation on any page
-          externalDocs:
-            description: force yourself into a specific variation
-            url: https://help.optimizely.com/hc/en-us/articles/202480860#force_variations
-          type: boolean
-        exclude_disabled_experiments:
-          default: false
-          description: Set to true to remove paused and draft Experiment from the snippet
-          externalDocs:
-            description: paused and draft Experiment
-            url: https://help.optimizely.com/Set_Up_Optimizely/Project_Settings%3A_Privacy#draft_pause
-          type: boolean
-        exclude_names:
-          default: true
-          description: Set to true to mask descriptive names
-          externalDocs:
-            description: mask descriptive names
-            url: https://help.optimizely.com/Set_Up_Optimizely/Project_Settings%3A_Privacy#masking_descriptive_names
-          type: boolean
-        include_jquery:
-          default: true
-          description: Set to true to include jQuery in your snippet
-          type: boolean
-        ip_anonymization:
-          default: false
-          description: Set to true to change the last octet of IP addresses to 0 prior to logging
-          type: boolean
-        ip_filter:
-          description: A regular expression (max 1500 characters) matching ip addresses for filtering out visitors. Matching visitors will still see the Experiment, but they won't be counted in results.
-          example: ^206\.23\.100\.([5-9][0-9]|1([0-4][0-9]|50))$
-          externalDocs:
-            description: filtering out visitors
-            url: https://help.optimizely.com/hc/en-us/articles/200040595-IP-Filtering
-          type: string
-        js_file_size:
-          description: The current size in bytes of the Project snippet
-          example: 63495
-          readOnly: true
-          type: integer
-        library:
-          default: jquery-1.11.3-trim
-          description: The prefered jQuery library version you would like to use with your snippet. If you do not want to include jQuery, set include_jquery to false
-          enum:
-          - jquery-1.11.3-trim
-          - jquery-1.11.3-full
-          - jquery-1.6.4-trim
-          - jquery-1.6.4-full
-          - none
-          type: string
-        project_javascript:
-          description: The javascript code which runs before Optimizely on all pages, regardless of whether or not there is a running Experiment
-          example: alert("Active Experiment")
-          type: string
-        visitor_id_locator_name:
-          description: (BETA) The name of said identifier that locates the visitor id
-          example: cookie_name
-          type:
-          - string
-          - 'null'
-        visitor_id_locator_type:
-          description: (BETA) The type of identifer where the visitor id is located (e.g. cookies, query param)
-          enum:
-          - cookie
-          - query
-          - localStorage
-          - js
-          type:
-          - string
-          - 'null'
-      type: object
-    ProjectUpdate:
-      properties:
-        account_id:
-          description: The ID of the account the Project is associated with
-          example: 12345
-          format: int64
-          readOnly: true
-          type: integer
-        confidence_threshold:
-          description: The significance level at which you would like to declare winning and losing variations. A lower number minimizes the time needed to declare a winning or losing variation, but increases the risk that your results aren't true winners and losers. The precision for this number is up to 4 decimal places.
-          example: 0.9
-          format: double
-          maximum: 1
-          minimum: 0.5
-          type: number
-        dcp_service_id:
-          description: The ID of a Dynamic Customer Profile Service associated with this Project
-          example: 121234
-          format: int64
-          type: integer
-        description:
-          description: A short description of the Project
-          example: Project for user sign up flow
-          type: string
-        name:
-          description: The name of the Project
-          example: Test Project
-          type: string
-        status:
-          description: The current status of the Project
-          enum:
-          - active
-          - archived
-          type: string
-        web_snippet:
-          $ref: '#/components/schemas/WebSnippetUpdate'
       type: object
     Project_3:
       properties:
@@ -561,53 +518,96 @@ components:
       required:
       - name
       type: object
-  parameters:
-    page:
-      name: page
-      in: query
-      required: false
-      description: Page number for pagination
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-    perPage:
-      name: per_page
-      in: query
-      required: false
-      description: Number of results per page
-      schema:
-        type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
-    projectId:
-      name: project_id
-      in: path
-      required: true
-      description: The unique identifier for the project
-      schema:
-        type: integer
-        format: int64
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
-        type: integer
-    page_2:
-      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
-
-        '
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        type: integer
+    WebSnippet:
+      properties:
+        code_revision:
+          description: The current revision number of the Project snippet
+          readOnly: true
+          type: integer
+        enable_force_variation:
+          default: false
+          description: Enables the option to force yourself into a specific variation on any page
+          externalDocs:
+            description: force yourself into a specific variation
+            url: https://help.optimizely.com/hc/en-us/articles/202480860#force_variations
+          type: boolean
+        exclude_disabled_experiments:
+          default: false
+          description: Set to true to remove paused and draft Experiment from the snippet
+          externalDocs:
+            description: paused and draft Experiment
+            url: https://help.optimizely.com/Set_Up_Optimizely/Project_Settings%3A_Privacy#draft_pause
+          type: boolean
+        exclude_names:
+          default: true
+          description: Set to true to mask descriptive names
+          externalDocs:
+            description: mask descriptive names
+            url: https://help.optimizely.com/Set_Up_Optimizely/Project_Settings%3A_Privacy#masking_descriptive_names
+          type: boolean
+        include_jquery:
+          default: true
+          description: Set to true to include jQuery in your snippet
+          type: boolean
+        ip_anonymization:
+          default: false
+          description: Set to true to change the last octet of IP addresses to 0 prior to logging
+          type: boolean
+        ip_filter:
+          description: A regular expression (max 1500 characters) matching ip addresses for filtering out visitors. Matching visitors will still see the Experiment, but they won't be counted in results.
+          example: ^206\.23\.100\.([5-9][0-9]|1([0-4][0-9]|50))$
+          externalDocs:
+            description: filtering out visitors
+            url: https://help.optimizely.com/hc/en-us/articles/200040595-IP-Filtering
+          type: string
+        js_file_size:
+          description: The current size in bytes of the Project snippet
+          example: 63495
+          readOnly: true
+          type: integer
+        library:
+          default: jquery-1.11.3-trim
+          description: The prefered jQuery library version you would like to use with your snippet. If you do not want to include jQuery, set include_jquery to false
+          enum:
+          - jquery-1.11.3-trim
+          - jquery-1.11.3-full
+          - jquery-1.6.4-trim
+          - jquery-1.6.4-full
+          - none
+          type: string
+        project_javascript:
+          description: The javascript code which runs before Optimizely on all pages, regardless of whether or not there is a running Experiment
+          example: alert("Active Experiment")
+          type: string
+        visitor_id_locator_name:
+          description: (BETA) The name of said identifier that locates the visitor id
+          example: cookie_name
+          type:
+          - string
+          - 'null'
+        visitor_id_locator_type:
+          description: (BETA) The type of identifer where the visitor id is located (e.g. cookies, query param)
+          enum:
+          - cookie
+          - query
+          - localStorage
+          - js
+          type:
+          - string
+          - 'null'
+      type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
   securitySchemes:
     bearerAuth:
       type: http

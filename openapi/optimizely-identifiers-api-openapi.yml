@@ -159,6 +159,29 @@ paths:
               example: '{"message": "Forbidden"}'
 components:
   schemas:
+    Identifier:
+      type: object
+      required:
+      - name
+      - display_name
+      - merge_confidence
+      properties:
+        name:
+          type: string
+          description: 'The field name of the identifier, ending with one of the known suffixes: id, hash, number, token, alias, address, key.'
+        display_name:
+          type: string
+          description: 'The human-readable name, ending with the title case version of the name suffix: ID, Hash, Number, Token, Alias, Address, Key.'
+        public_read:
+          type: boolean
+          description: Enable access with the API public key.
+          default: false
+        merge_confidence:
+          type: string
+          description: The level of confidence (`high` or `low`) that this identifier can be used to merge customer profiles together.
+        messaging:
+          type: boolean
+          description: Whether this identifier can be used to message customers in campaigns.
     IdentifierCreated:
       type: object
       properties:
@@ -190,33 +213,6 @@ components:
               type:
                 type: string
                 example: identifier
-    Error:
-      type: object
-      properties:
-        title:
-          type: string
-          example: Bad Request
-        status:
-          type: integer
-          example: 400
-          default: 0
-        timestamp:
-          type: string
-          example: '2018-08-07T13:44:17.659Z'
-        detail:
-          type: object
-          properties:
-            invalids:
-              type: array
-              items:
-                type: object
-                properties:
-                  field:
-                    type: string
-                    example: name
-                  reason:
-                    type: string
-                    example: already used by another object
     UpdateIdentifier:
       required:
       - identifier_value
@@ -261,29 +257,33 @@ components:
           type: integer
           example: 1556582935
           default: 0
-    Identifier:
+    Error:
       type: object
-      required:
-      - name
-      - display_name
-      - merge_confidence
       properties:
-        name:
+        title:
           type: string
-          description: 'The field name of the identifier, ending with one of the known suffixes: id, hash, number, token, alias, address, key.'
-        display_name:
+          example: Bad Request
+        status:
+          type: integer
+          example: 400
+          default: 0
+        timestamp:
           type: string
-          description: 'The human-readable name, ending with the title case version of the name suffix: ID, Hash, Number, Token, Alias, Address, Key.'
-        public_read:
-          type: boolean
-          description: Enable access with the API public key.
-          default: false
-        merge_confidence:
-          type: string
-          description: The level of confidence (`high` or `low`) that this identifier can be used to merge customer profiles together.
-        messaging:
-          type: boolean
-          description: Whether this identifier can be used to message customers in campaigns.
+          example: '2018-08-07T13:44:17.659Z'
+        detail:
+          type: object
+          properties:
+            invalids:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                    example: name
+                  reason:
+                    type: string
+                    example: already used by another object
   securitySchemes:
     x-api-key:
       type: apiKey

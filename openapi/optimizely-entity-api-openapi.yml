@@ -204,75 +204,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    EntityPermission:
-      type: string
-      enum:
-      - admin
-      - publish
-      - toggle
-      - edit
-      - view
-      - none
-      - unknown
-      title: EntityPermission
-    src__api__dtos__permissions__UserPermissionsForEntityTypeResponse__ItemInfo:
-      properties:
-        role:
-          type: string
-          title: Role
-        role_inherited:
-          type: string
-          title: Role Inherited
-        id:
-          type: integer
-          title: Id
-        key:
-          type: string
-          title: Key
-        name:
-          type: string
-          title: Name
-      type: object
-      required:
-      - role
-      - role_inherited
-      - id
-      - name
-      title: ItemInfo
-    OperationType:
-      type: string
-      enum:
-      - replace
-      - remove
-      title: OperationType
-    EntityTypeInPath:
-      type: string
-      enum:
-      - flags
-      - environments
-      - audiences
-      title: EntityTypeInPath
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     TeamPermissionsForEntityTypeResponse:
       properties:
         total:
@@ -320,6 +251,161 @@ components:
       - page
       - items
       title: TeamPermissionsForEntityTypeResponse
+    src__api__dtos__permissions__TeamPermissionsForEntityTypeResponse__ItemInfo:
+      properties:
+        role:
+          type: string
+          title: Role
+        id:
+          type: integer
+          title: Id
+        key:
+          type: string
+          title: Key
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - role
+      - id
+      - name
+      title: ItemInfo
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    TeamPermission:
+      properties:
+        team_id:
+          type: string
+          title: Team Id
+        name:
+          type: string
+          title: Name
+        role:
+          type: string
+          title: Role
+        external_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: External Ref
+      type: object
+      required:
+      - team_id
+      - name
+      - role
+      - external_ref
+      title: TeamPermission
+    EntityPermissionsResponse:
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/UserPermission'
+          type: array
+          title: Users
+        teams:
+          items:
+            $ref: '#/components/schemas/TeamPermission'
+          type: array
+          title: Teams
+      type: object
+      required:
+      - users
+      - teams
+      title: EntityPermissionsResponse
+    EntityTypeInPath:
+      type: string
+      enum:
+      - flags
+      - environments
+      - audiences
+      title: EntityTypeInPath
+    PatchOperation:
+      properties:
+        op:
+          $ref: '#/components/schemas/OperationType'
+        path:
+          type: string
+          title: Path
+        value:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Value
+      type: object
+      required:
+      - op
+      - path
+      title: PatchOperation
+      examples:
+      - op: replace
+        path: /users/user_abc/role
+        value: admin
+      - op: replace
+        path: /teams/12345/role
+        value: edit
+      - op: remove
+        path: /users/user_abc/role
+    OperationType:
+      type: string
+      enum:
+      - replace
+      - remove
+      title: OperationType
+    src__api__dtos__permissions__UserPermissionsForEntityTypeResponse__ItemInfo:
+      properties:
+        role:
+          type: string
+          title: Role
+        role_inherited:
+          type: string
+          title: Role Inherited
+        id:
+          type: integer
+          title: Id
+        key:
+          type: string
+          title: Key
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - role
+      - role_inherited
+      - id
+      - name
+      title: ItemInfo
+    EntityPermission:
+      type: string
+      enum:
+      - admin
+      - publish
+      - toggle
+      - edit
+      - view
+      - none
+      - unknown
+      title: EntityPermission
     UserPermissionsForEntityTypeResponse:
       properties:
         total:
@@ -399,69 +485,6 @@ components:
       - user_id
       - email
       title: UserPermission
-    src__api__dtos__permissions__TeamPermissionsForEntityTypeResponse__ItemInfo:
-      properties:
-        role:
-          type: string
-          title: Role
-        id:
-          type: integer
-          title: Id
-        key:
-          type: string
-          title: Key
-        name:
-          type: string
-          title: Name
-      type: object
-      required:
-      - role
-      - id
-      - name
-      title: ItemInfo
-    EntityPermissionsResponse:
-      properties:
-        users:
-          items:
-            $ref: '#/components/schemas/UserPermission'
-          type: array
-          title: Users
-        teams:
-          items:
-            $ref: '#/components/schemas/TeamPermission'
-          type: array
-          title: Teams
-      type: object
-      required:
-      - users
-      - teams
-      title: EntityPermissionsResponse
-    PatchOperation:
-      properties:
-        op:
-          $ref: '#/components/schemas/OperationType'
-        path:
-          type: string
-          title: Path
-        value:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Value
-      type: object
-      required:
-      - op
-      - path
-      title: PatchOperation
-      examples:
-      - op: replace
-        path: /users/user_abc/role
-        value: admin
-      - op: replace
-        path: /teams/12345/role
-        value: edit
-      - op: remove
-        path: /users/user_abc/role
     HTTPValidationError:
       properties:
         detail:
@@ -471,29 +494,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    TeamPermission:
-      properties:
-        team_id:
-          type: string
-          title: Team Id
-        name:
-          type: string
-          title: Name
-        role:
-          type: string
-          title: Role
-        external_ref:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: External Ref
-      type: object
-      required:
-      - team_id
-      - name
-      - role
-      - external_ref
-      title: TeamPermission
   securitySchemes:
     BearerAuth:
       description: To get an API token, see https://docs.developers.optimizely.com/web/docs/personal-token

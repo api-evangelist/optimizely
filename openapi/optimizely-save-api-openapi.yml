@@ -44,6 +44,13 @@ paths:
       tags:
       - Save
 components:
+  responses:
+    Forbidden:
+      description: You do not have necessary permissions for the resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
     ExperimentBucketMap:
       title: ExperimentBucketMap
@@ -51,17 +58,17 @@ components:
       properties:
         your_experiment_id:
           $ref: '#/components/schemas/YourExperimentId'
-    Error:
-      title: Error
-      type: object
-      properties:
-        error:
-          type: string
     YourExperimentId:
       title: YourExperimentId
       type: object
       properties:
         variation_id:
+          type: string
+    Error:
+      title: Error
+      type: object
+      properties:
+        error:
           type: string
     SaveContext:
       title: SaveContext
@@ -71,13 +78,6 @@ components:
           $ref: '#/components/schemas/ExperimentBucketMap'
         userId:
           type: string
-  responses:
-    Forbidden:
-      description: You do not have necessary permissions for the resource
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   securitySchemes:
     SdkKeyAuth:
       type: apiKey

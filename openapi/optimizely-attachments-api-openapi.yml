@@ -344,51 +344,6 @@ paths:
       - Authorization: []
 components:
   schemas:
-    AttachmentRequestData:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Attachment name
-        fileName:
-          type: string
-          description: File name of the attachment
-        mimeType:
-          type: string
-          description: Mime type of the attachment
-    RestMultiPartRequestSchema:
-      required:
-      - file
-      type: object
-      properties:
-        file:
-          type: string
-          description: file to be uploaded
-          format: binary
-        name:
-          type: string
-          description: name of the attachment
-    RestAttachmentStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestAttachment'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
     RestPersonalizedAttachment:
       type: object
       properties:
@@ -415,6 +370,37 @@ components:
           description: Creation date
           format: date-time
       description: List of uploaded attachments
+    AttachmentRequestData:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Attachment name
+        fileName:
+          type: string
+          description: File name of the attachment
+        mimeType:
+          type: string
+          description: Mime type of the attachment
+    RestMultiPartRequestSchema:
+      required:
+      - file
+      type: object
+      properties:
+        file:
+          type: string
+          description: file to be uploaded
+          format: binary
+        name:
+          type: string
+          description: name of the attachment
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
     RestAttachment:
       type: object
       properties:
@@ -477,24 +463,6 @@ components:
               uri:
                 type: string
                 format: uri
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
-    RestPersonalizedAttachmentUpload:
-      type: object
-      properties:
-        uploadedFiles:
-          type: array
-          description: List of uploaded attachments
-          items:
-            $ref: '#/components/schemas/RestPersonalizedAttachment'
-        token:
-          type: string
-          description: Personalized attachment token for all files uploaded - can be used when sending transactional mailings
     RestCount:
       type: object
       properties:
@@ -526,6 +494,38 @@ components:
           type: integer
           description: Total number
           format: int64
+    RestPersonalizedAttachmentUpload:
+      type: object
+      properties:
+        uploadedFiles:
+          type: array
+          description: List of uploaded attachments
+          items:
+            $ref: '#/components/schemas/RestPersonalizedAttachment'
+        token:
+          type: string
+          description: Personalized attachment token for all files uploaded - can be used when sending transactional mailings
+    RestAttachmentStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestAttachment'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
   securitySchemes:
     Authorization:
       type: apiKey

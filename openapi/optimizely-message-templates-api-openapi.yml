@@ -247,32 +247,6 @@ paths:
       - Authorization: []
 components:
   schemas:
-    MessageTemplateTestMailingRequestData:
-      required:
-      - recipientIds
-      - recipientListId
-      type: object
-      properties:
-        recipientIds:
-          type: array
-          description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the provided recipient list, no test mailing will be sent to this recipient.
-          items:
-            type: string
-            description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the provided recipient list, no test mailing will be sent to this recipient.
-        mimeType:
-          type: string
-          description: Mime type of the mailing during sending (use an empty string for the mailing mime type)
-          example: text/plain, text/html, text/multipart
-        subject:
-          type: string
-          description: Subject of a test message template (if message template has a subject set)
-        senderAddress:
-          type: string
-          description: Sender address for test message template (if message template has a sender address set)
-        recipientListId:
-          type: integer
-          description: ID of the recipient list for the test mailing
-          format: int64
     RestMessageTemplateStreamingCollection:
       type: object
       properties:
@@ -294,6 +268,60 @@ components:
         limit:
           type: integer
           format: int32
+    MessageTemplateRequestData:
+      required:
+      - name
+      type: object
+      properties:
+        subjectForTargetGroup:
+          type: string
+          description: Subject specific to the target group. Set 'subject.[targetGroupId]' in request data (only email).<p>Does not work with the "Try it out" feature.</p>
+        cmsContentTemplateId:
+          type: string
+          description: ID of source content template
+        messageTemplateIdForCreate:
+          type: integer
+          description: ID of source message template for creation
+          format: int64
+        messageTemplateIdForCopy:
+          type: integer
+          description: ID of source message template for copying
+          format: int64
+        replyToAddress:
+          type: string
+          description: Reply-to address (only email)
+        mailingId:
+          type: integer
+          description: ID of source mailing
+          format: int64
+        resetReplyToAddress:
+          type: boolean
+          description: Reset the local part of the reply-to address
+        resetTargetedSubjects:
+          type: boolean
+          description: If true, all target groups subjects are deleted (only email)
+        replyToName:
+          type: string
+          description: Reply-to mailing name (only email)
+        name:
+          type: string
+          description: Name of the message template
+        senderName:
+          type: string
+          description: Mailing sender name (only email)
+        subject:
+          type: string
+          description: Mailing subject (only email)
+        senderAddress:
+          type: string
+          description: Mailing sender address
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
     RestMessageTemplate:
       type: object
       properties:
@@ -379,66 +407,38 @@ components:
                 type: string
                 format: uri
             description: Restful links
+    MessageTemplateTestMailingRequestData:
+      required:
+      - recipientIds
+      - recipientListId
+      type: object
+      properties:
+        recipientIds:
+          type: array
+          description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the provided recipient list, no test mailing will be sent to this recipient.
+          items:
+            type: string
+            description: Comma-separated list of recipient IDs from the provided recipient list ("recipientListId"). If a recipient is not found in the provided recipient list, no test mailing will be sent to this recipient.
+        mimeType:
+          type: string
+          description: Mime type of the mailing during sending (use an empty string for the mailing mime type)
+          example: text/plain, text/html, text/multipart
+        subject:
+          type: string
+          description: Subject of a test message template (if message template has a subject set)
+        senderAddress:
+          type: string
+          description: Sender address for test message template (if message template has a sender address set)
+        recipientListId:
+          type: integer
+          description: ID of the recipient list for the test mailing
+          format: int64
     MessageTemplateTestResponse:
       type: object
       properties:
         mailingId:
           type: integer
           format: int64
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
-    MessageTemplateRequestData:
-      required:
-      - name
-      type: object
-      properties:
-        subjectForTargetGroup:
-          type: string
-          description: Subject specific to the target group. Set 'subject.[targetGroupId]' in request data (only email).<p>Does not work with the "Try it out" feature.</p>
-        cmsContentTemplateId:
-          type: string
-          description: ID of source content template
-        messageTemplateIdForCreate:
-          type: integer
-          description: ID of source message template for creation
-          format: int64
-        messageTemplateIdForCopy:
-          type: integer
-          description: ID of source message template for copying
-          format: int64
-        replyToAddress:
-          type: string
-          description: Reply-to address (only email)
-        mailingId:
-          type: integer
-          description: ID of source mailing
-          format: int64
-        resetReplyToAddress:
-          type: boolean
-          description: Reset the local part of the reply-to address
-        resetTargetedSubjects:
-          type: boolean
-          description: If true, all target groups subjects are deleted (only email)
-        replyToName:
-          type: string
-          description: Reply-to mailing name (only email)
-        name:
-          type: string
-          description: Name of the message template
-        senderName:
-          type: string
-          description: Mailing sender name (only email)
-        subject:
-          type: string
-          description: Mailing subject (only email)
-        senderAddress:
-          type: string
-          description: Mailing sender address
   securitySchemes:
     Authorization:
       type: apiKey

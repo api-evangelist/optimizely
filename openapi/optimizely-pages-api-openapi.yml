@@ -602,6 +602,95 @@ components:
           type: string
           format: date-time
           description: Timestamp when the page was last modified
+    PageUpdate:
+      properties:
+        activation_code:
+          description: Stringified Javascript function that determines when the Page is activated. Only required when activation_type is 'polling' or 'callback'.
+          type: string
+        activation_type:
+          description: 'Page activation type is a trigger that determines when the page is activated. Triggers tell Optimizely when to start checking whether certain conditions are true
+
+            ''Immediate'' activation mode activates the page as soon as the snippet loads.
+
+            ''Polling'' activation mode polls every 50ms until ''activation_code'' evaluates to True, then activates the page.
+
+            ''Callback'' activation mode activates the page when the event defined by ''activation_code'' is triggered.
+
+            ''Manual'' activation mode requires code within the subject app to explicitly trigger page activation.
+
+            ''DOM Changed'' sets the page to trigger when the DOM changes [Learn more](https://help.optimizely.com/Build_Campaigns_and_Experiments/Support_for_dynamic_websites%3A_Use_Optimizely_on_single_page_applications#Triggers).
+
+            ''URL Changed'' sets the page to trigger when the URL changes [Learn more](https://help.optimizely.com/Build_Campaigns_and_Experiments/Support_for_dynamic_websites%3A_Use_Optimizely_on_single_page_applications#Triggers).
+
+            '
+          enum:
+          - immediate
+          - manual
+          - polling
+          - callback
+          - dom_changed
+          - url_changed
+          externalDocs:
+            description: Activation Types
+            url: https://help.optimizely.com/Build_Campaigns_and_Experiments/Conditional_activation_for_pages_in_Optimizely_X
+          type: string
+        archived:
+          description: Whether the Page is archived
+          type: boolean
+        category:
+          description: The category this Page is grouped under
+          enum:
+          - article
+          - cart
+          - category
+          - checkout
+          - home
+          - landing_page
+          - pricing
+          - product_detail
+          - search_results
+          - other
+          type: string
+        conditions:
+          description: 'Stringified array of the conditions that activate the Page. The array contains Page Condition JSON dicts joined by "and" and "or".
+
+            Each individual Page Condition dict has format {"type": "url", "match_type": <match_type>, "value": <value>} where match_types are:
+
+            "simple" match type will match if "value" matches the hostname and path of the Page URL.
+
+            "exact" match type will match only an exact string match between "value" and the Page URL.
+
+            "substring" match type will match if "value" is a substring of the Page URL.
+
+            "regex" match type will match if "value" is a regular expression match for the Page URL.
+
+            '
+          example: '["and", {"type": "url", "match_type": "substring", "value": "optimize"}]'
+          externalDocs:
+            description: Conditions
+            url: https://help.optimizely.com/Build_Experiments/Set_up_pages%2C_events%2C_tags%2C_and_audiences#add_pages
+          type: string
+        edit_url:
+          description: URL of the Page
+          type: string
+        key:
+          description: Unique string identifier for this Page within the Project
+          example: home_page
+          maxLength: 500
+          pattern: ^[a-zA-Z0-9_]+$
+          type: string
+        name:
+          description: Page Name
+          example: Home Page
+          type: string
+        page_type:
+          description: Type of Page
+          enum:
+          - single_url
+          - url_set
+          - global
+          type: string
+      type: object
     Error:
       properties:
         code:
@@ -737,114 +826,7 @@ components:
       - project_id
       - edit_url
       type: object
-    PageUpdate:
-      properties:
-        activation_code:
-          description: Stringified Javascript function that determines when the Page is activated. Only required when activation_type is 'polling' or 'callback'.
-          type: string
-        activation_type:
-          description: 'Page activation type is a trigger that determines when the page is activated. Triggers tell Optimizely when to start checking whether certain conditions are true
-
-            ''Immediate'' activation mode activates the page as soon as the snippet loads.
-
-            ''Polling'' activation mode polls every 50ms until ''activation_code'' evaluates to True, then activates the page.
-
-            ''Callback'' activation mode activates the page when the event defined by ''activation_code'' is triggered.
-
-            ''Manual'' activation mode requires code within the subject app to explicitly trigger page activation.
-
-            ''DOM Changed'' sets the page to trigger when the DOM changes [Learn more](https://help.optimizely.com/Build_Campaigns_and_Experiments/Support_for_dynamic_websites%3A_Use_Optimizely_on_single_page_applications#Triggers).
-
-            ''URL Changed'' sets the page to trigger when the URL changes [Learn more](https://help.optimizely.com/Build_Campaigns_and_Experiments/Support_for_dynamic_websites%3A_Use_Optimizely_on_single_page_applications#Triggers).
-
-            '
-          enum:
-          - immediate
-          - manual
-          - polling
-          - callback
-          - dom_changed
-          - url_changed
-          externalDocs:
-            description: Activation Types
-            url: https://help.optimizely.com/Build_Campaigns_and_Experiments/Conditional_activation_for_pages_in_Optimizely_X
-          type: string
-        archived:
-          description: Whether the Page is archived
-          type: boolean
-        category:
-          description: The category this Page is grouped under
-          enum:
-          - article
-          - cart
-          - category
-          - checkout
-          - home
-          - landing_page
-          - pricing
-          - product_detail
-          - search_results
-          - other
-          type: string
-        conditions:
-          description: 'Stringified array of the conditions that activate the Page. The array contains Page Condition JSON dicts joined by "and" and "or".
-
-            Each individual Page Condition dict has format {"type": "url", "match_type": <match_type>, "value": <value>} where match_types are:
-
-            "simple" match type will match if "value" matches the hostname and path of the Page URL.
-
-            "exact" match type will match only an exact string match between "value" and the Page URL.
-
-            "substring" match type will match if "value" is a substring of the Page URL.
-
-            "regex" match type will match if "value" is a regular expression match for the Page URL.
-
-            '
-          example: '["and", {"type": "url", "match_type": "substring", "value": "optimize"}]'
-          externalDocs:
-            description: Conditions
-            url: https://help.optimizely.com/Build_Experiments/Set_up_pages%2C_events%2C_tags%2C_and_audiences#add_pages
-          type: string
-        edit_url:
-          description: URL of the Page
-          type: string
-        key:
-          description: Unique string identifier for this Page within the Project
-          example: home_page
-          maxLength: 500
-          pattern: ^[a-zA-Z0-9_]+$
-          type: string
-        name:
-          description: Page Name
-          example: Home Page
-          type: string
-        page_type:
-          description: Type of Page
-          enum:
-          - single_url
-          - url_set
-          - global
-          type: string
-      type: object
   parameters:
-    projectIdQuery:
-      name: project_id
-      in: query
-      required: true
-      description: The unique identifier for the project to filter by
-      schema:
-        type: integer
-        format: int64
-    perPage:
-      name: per_page
-      in: query
-      required: false
-      description: Number of results per page
-      schema:
-        type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
     page:
       name: page
       in: query
@@ -859,6 +841,24 @@ components:
       in: path
       required: true
       description: The unique identifier for the page
+      schema:
+        type: integer
+        format: int64
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    projectIdQuery:
+      name: project_id
+      in: query
+      required: true
+      description: The unique identifier for the project to filter by
       schema:
         type: integer
         format: int64

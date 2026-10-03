@@ -219,7 +219,149 @@ paths:
       tags:
       - Custom Fields
 components:
+  responses:
+    NotFoundResponse:
+      description: Not found. No content
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
+    CustomFieldSuccessResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CustomField'
+      description: 'Successful retrieval, creation or update of a Custom Field.
+
+
+        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+        link is not present in the response, it indicates a user is not authorized to access
+
+        the related resource.
+
+        '
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
+    CustomFieldsListSuccessResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CustomFieldsList'
+      description: 'Successful retrieval of a page of Custom Fields.
+
+
+        The response includes RESTful JSON (https://restfuljson.org/) styled links and pagination metadata.
+
+        Objects in this API MAY include a url property for a link to itself and MAY append _url to properties for related links.
+
+        If a link is not present in the response, it indicates a user is not authorized to access the related resource.
+
+        '
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
   schemas:
+    CustomFieldsList:
+      properties:
+        count:
+          description: Number of items on this page
+          example: 10
+          type: integer
+        first_url:
+          description: Link to the first page
+          type: string
+        items:
+          description: Array of custom fields
+          items:
+            $ref: '#/components/schemas/CustomField'
+          type: array
+        last_url:
+          description: Link to the last page
+          type: string
+        next_url:
+          description: Link to the next page
+          type: string
+        page:
+          description: Current page number
+          example: 1
+          type: integer
+        prev_url:
+          description: Link to the previous page
+          type: string
+        total_count:
+          description: Total number of custom fields
+          example: 100
+          type: integer
+        total_pages:
+          description: Total number of pages
+          example: 10
+          type: integer
+        url:
+          description: Link to self
+          type: string
+      required:
+      - url
+      - first_url
+      - last_url
+      - count
+      - page
+      - total_count
+      - total_pages
+      - items
+      type: object
+    CustomFieldRequestBody:
+      properties:
+        description:
+          description: Description of the custom field
+          type: string
+        entity_type:
+          description: Type of entity this custom field applies to
+          enum:
+          - flag
+          type: string
+        field_type:
+          description: The data type of the custom field
+          enum:
+          - text
+          - number
+          - boolean
+          - link
+          - label
+          type: string
+        key:
+          description: Unique key for the custom field
+          type: string
+        name:
+          description: Display name of the custom field
+          type: string
+        required:
+          description: Whether this custom field is required
+          type: boolean
+      required:
+      - key
+      - name
+      - field_type
+      - entity_type
+      type: object
     CustomFieldUpdateRequestBody:
       properties:
         description:
@@ -317,88 +459,6 @@ components:
       - entity_type
       - project_id
       type: object
-    CustomFieldsList:
-      properties:
-        count:
-          description: Number of items on this page
-          example: 10
-          type: integer
-        first_url:
-          description: Link to the first page
-          type: string
-        items:
-          description: Array of custom fields
-          items:
-            $ref: '#/components/schemas/CustomField'
-          type: array
-        last_url:
-          description: Link to the last page
-          type: string
-        next_url:
-          description: Link to the next page
-          type: string
-        page:
-          description: Current page number
-          example: 1
-          type: integer
-        prev_url:
-          description: Link to the previous page
-          type: string
-        total_count:
-          description: Total number of custom fields
-          example: 100
-          type: integer
-        total_pages:
-          description: Total number of pages
-          example: 10
-          type: integer
-        url:
-          description: Link to self
-          type: string
-      required:
-      - url
-      - first_url
-      - last_url
-      - count
-      - page
-      - total_count
-      - total_pages
-      - items
-      type: object
-    CustomFieldRequestBody:
-      properties:
-        description:
-          description: Description of the custom field
-          type: string
-        entity_type:
-          description: Type of entity this custom field applies to
-          enum:
-          - flag
-          type: string
-        field_type:
-          description: The data type of the custom field
-          enum:
-          - text
-          - number
-          - boolean
-          - link
-          - label
-          type: string
-        key:
-          description: Unique key for the custom field
-          type: string
-        name:
-          description: Display name of the custom field
-          type: string
-        required:
-          description: Whether this custom field is required
-          type: boolean
-      required:
-      - key
-      - name
-      - field_type
-      - entity_type
-      type: object
     ProblemDetail:
       additionalProperties: true
       description: https://tools.ietf.org/html/rfc7807#section-3.1
@@ -424,94 +484,6 @@ components:
       - title
       - type
       type: object
-  responses:
-    CustomFieldsListSuccessResponse:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/CustomFieldsList'
-      description: 'Successful retrieval of a page of Custom Fields.
-
-
-        The response includes RESTful JSON (https://restfuljson.org/) styled links and pagination metadata.
-
-        Objects in this API MAY include a url property for a link to itself and MAY append _url to properties for related links.
-
-        If a link is not present in the response, it indicates a user is not authorized to access the related resource.
-
-        '
-    BadRequestResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Another entity already exists with this same key
-            status: 400
-            title: Key example_entity already exists"
-            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Malformed requests and invalid parameter names and types
-    NotFoundResponse:
-      description: Not found. No content
-    CustomFieldSuccessResponse:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/CustomField'
-      description: 'Successful retrieval, creation or update of a Custom Field.
-
-
-        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
-
-        link is not present in the response, it indicates a user is not authorized to access
-
-        the related resource.
-
-        '
-    UnauthorizedResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Invalid credentials
-    ForbiddenResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Permission denied
-            status: 403
-            title: Forbidden
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Do not have permission to perform the operation
-  parameters:
-    pageToken:
-      description: Pagination page token. Implements prev, next, last, first
-      in: query
-      name: page_token
-      schema:
-        type: string
-    pageWindow:
-      description: Number of previous and next page links to supply for the request (defaults to 1).
-      in: query
-      name: page_window
-      schema:
-        type: integer
-    perPage:
-      description: The max number of items to include per page or results.
-      in: query
-      name: per_page
-      schema:
-        format: int64
-        type: integer
-    projectId:
-      description: The project identifier
-      example: 12345
-      in: path
-      name: project_id
-      required: true
-      schema:
-        type: integer
   requestBodies:
     CustomFieldUpdateRequest:
       content:
@@ -525,6 +497,34 @@ components:
           schema:
             $ref: '#/components/schemas/CustomFieldRequestBody'
       required: true
+  parameters:
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
   securitySchemes:
     BearerAuth:
       description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token

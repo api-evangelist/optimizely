@@ -604,25 +604,15 @@ paths:
       summary: Rule clauses get product by key and productkey
       x-summary-source: derived
 components:
-  schemas:
+  requestBodies:
     System.Threading.CancellationToken:
-      type: object
-      properties:
-        isCancellationRequested:
-          type: boolean
-          readOnly: true
-        canBeCanceled:
-          type: boolean
-          readOnly: true
-        waitHandle:
-          $ref: '#/components/schemas/System.Threading.WaitHandle'
-    System.Threading.WaitHandle:
-      type: object
-      properties:
-        handle:
-          type: object
-        safeWaitHandle:
-          $ref: '#/components/schemas/Microsoft.Win32.SafeHandles.SafeWaitHandle'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/System.Threading.CancellationToken'
+      description: import action parameters
+      required: true
+  schemas:
     Insite.Data.Entities.RuleClause:
       required:
       - condition
@@ -705,6 +695,13 @@ components:
           type: string
         modifiedBy:
           type: string
+    System.Threading.WaitHandle:
+      type: object
+      properties:
+        handle:
+          type: object
+        safeWaitHandle:
+          $ref: '#/components/schemas/Microsoft.Win32.SafeHandles.SafeWaitHandle'
     Microsoft.Win32.SafeHandles.SafeWaitHandle:
       type: object
       properties:
@@ -714,14 +711,17 @@ components:
         isClosed:
           type: boolean
           readOnly: true
-  requestBodies:
     System.Threading.CancellationToken:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/System.Threading.CancellationToken'
-      description: import action parameters
-      required: true
+      type: object
+      properties:
+        isCancellationRequested:
+          type: boolean
+          readOnly: true
+        canBeCanceled:
+          type: boolean
+          readOnly: true
+        waitHandle:
+          $ref: '#/components/schemas/System.Threading.WaitHandle'
   securitySchemes:
     access_token:
       type: apiKey

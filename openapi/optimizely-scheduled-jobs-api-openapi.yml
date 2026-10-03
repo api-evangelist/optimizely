@@ -361,54 +361,6 @@ components:
         limit:
           type: integer
           format: int32
-    RestConfiguredJobStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestConfiguredJob'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
-    RestConfiguredJob:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the scheduled job
-        description:
-          type: string
-          description: Description of the scheduled job
-        type:
-          type: string
-          description: Type of the scheduled job
-        jobData:
-          type: object
-          additionalProperties:
-            type: string
-        triggers:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestJobTrigger'
     RestRunningJob:
       type: object
       properties:
@@ -457,6 +409,34 @@ components:
                   dateBased:
                     type: boolean
           description: Elapsed running time of the scheduled job
+    RestConfiguredJobStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestConfiguredJob'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
     RestJobTrigger:
       type: object
       properties:
@@ -482,6 +462,38 @@ components:
           type: string
           description: Finish date and time of the trigger
           format: date-time
+    RestConfiguredJob:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the scheduled job
+        description:
+          type: string
+          description: Description of the scheduled job
+        type:
+          type: string
+          description: Type of the scheduled job
+        jobData:
+          type: object
+          additionalProperties:
+            type: string
+        triggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestJobTrigger'
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
     ScheduledJobUpdate:
       properties:
         archived:
@@ -516,18 +528,6 @@ components:
           description: The project that the job is associated with
           format: int64
           type: integer
-      type: object
-    Error:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
-          type: string
       type: object
     ScheduledJob:
       properties:

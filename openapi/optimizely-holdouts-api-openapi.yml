@@ -1036,6 +1036,156 @@ paths:
     - url: https://api.optimizely.com/v2
 components:
   schemas:
+    Metric:
+      properties:
+        aggregator:
+          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
+          enum:
+          - unique
+          - count
+          - sum
+          - ratio
+          type: string
+        display_title:
+          description: An optional title for the unique metric configuration. If not provided, the event name will be used.
+          type: string
+        display_unit:
+          description: An optional name for the unit of the unique metric configuration.
+          type: string
+        event_id:
+          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
+          example: 32334454244
+          format: int64
+          type: integer
+        event_properties:
+          properties:
+            filter:
+              properties:
+                combine_operator:
+                  enum:
+                  - or
+                  - and
+                  type: string
+                conditions:
+                  items:
+                    $ref: '#/components/schemas/EventPropertyCondition'
+              type: object
+          type: object
+        event_type:
+          type: string
+        field:
+          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
+          enum:
+          - revenue
+          - value
+          type:
+          - string
+          - 'null'
+        id:
+          description: A unique identifier for the metric configuration.
+          type: string
+        metrics:
+          items:
+            $ref: '#/components/schemas/SubMetric'
+            type: object
+          type: array
+        project_id:
+          description: A unique identifier for the project associated with the metric.
+          type: integer
+        scope:
+          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
+          enum:
+          - session
+          - visitor
+          - event
+          type: string
+        visibility:
+          description: The visibility of the metric.
+          enum:
+          - account
+          - experiment
+          - project
+          type: string
+        winning_direction:
+          description: The winning direction of this metric
+          enum:
+          - increasing
+          - decreasing
+          type: string
+      required:
+      - winning_direction
+      - aggregator
+      type: object
+    PatchRequestBody:
+      description: A JSONPatch document as defined by RFC 6902
+      properties:
+        from:
+          description: A JSON Pointer to the resource attribute
+          type: string
+        op:
+          description: The operation to be performed
+          enum:
+          - add
+          - remove
+          - replace
+          - move
+          - copy
+          - test
+          type: string
+        path:
+          description: A JSON-Pointer to the resource or the resource attribute
+          type: string
+        value:
+          anyOf:
+          - type: object
+          - items:
+              type: string
+            type: array
+          - $ref: '#/components/schemas/AudienceConditions'
+          - type: string
+          - type: integer
+          - type: boolean
+          - items:
+              $ref: '#/components/schemas/SubMetric'
+            type: array
+          description: The value to be used within the operations.
+      required:
+      - op
+      - path
+      type: object
+    AudienceConditionsString:
+      description: A valid AudienceConditionsArray represented as a JSON string
+      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
+      type: string
+    EventPropertyCondition:
+      properties:
+        name:
+          type: string
+        operator:
+          enum:
+          - equal_to
+          - not_equal_to
+          - greater_than
+          - greater_than_or_equal_to
+          - less_than
+          - less_than_or_equal_to
+          - contains
+          - does_not_contain
+          type: string
+        type:
+          enum:
+          - string
+          - number
+          - boolean
+          type: string
+        value:
+          type: string
+      required:
+      - name
+      - type
+      - value
+      - operator
+      type: object
     HoldoutRequestBody:
       description: "Request body schema for creating or updating a holdout. \n\nHoldouts are experiments that reserve a portion of your traffic to measure the impact of your feature flags and experiments. They help establish a control group by excluding a percentage of users from seeing any experiments, allowing you to measure the overall impact of your experimentation program.\n"
       example:
@@ -1229,6 +1379,243 @@ components:
       - key
       - name
       type: object
+    HoldoutsPaginatedList:
+      description: 'Paginated response structure for holdout collections with navigation links and metadata.
+
+
+        This response format follows the standard pagination pattern used across the API,
+
+        providing navigation URLs and counts for efficient browsing of large holdout collections.
+
+        '
+      example:
+        count: 2
+        filter_url: /projects/98765/holdouts{?archived}
+        first_url: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
+        items:
+        - archived: false
+          created_time: '2023-12-15T10:00:00.000Z'
+          description: Control group for measuring overall impact of Q4 growth experiments
+          environment_key: production
+          holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+          id: 12345
+          key: growth_experiment_holdout
+          name: Q4 Growth Experiment Control
+          project_id: 98765
+          revision: 2
+          scope: global
+          scope_type: exclude
+          start_time: '2024-01-01T00:00:00.000Z'
+          status: running
+          traffic_allocation: 1000
+          updated_time: '2024-01-01T10:00:00.000Z'
+        - archived: false
+          created_time: '2024-01-20T14:30:00.000Z'
+          description: Holdout for measuring checkout conversion experiments
+          environment_key: production
+          holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+          id: 12346
+          key: checkout_flow_holdout
+          name: Checkout Flow Holdout Group
+          project_id: 98765
+          revision: 1
+          scope: global
+          scope_type: exclude
+          start_time: '2024-02-01T00:00:00.000Z'
+          status: draft
+          traffic_allocation: 500
+          updated_time: '2024-01-20T14:30:00.000Z'
+        last_url: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#13
+        next_url:
+        - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#2
+        - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
+        page: 1
+        reset_url: /projects/98765/holdouts
+        total_count: 25
+        total_pages: 13
+        url: /projects/98765/holdouts
+      properties:
+        count:
+          description: Number of holdouts returned on the current page (length of items array).
+          example: 2
+          minimum: 0
+          type: integer
+        filter_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'URL template for applying filters to the holdouts list. Replace the placeholder
+
+            with filter parameters like ''archived=false'' to filter results.
+
+            '
+          example: /projects/98765/holdouts{?archived,status}
+        first_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'Link to the first page of holdouts in the result set. Always points to page 1
+
+            with the same query parameters as the current request.
+
+            '
+          example: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
+        items:
+          description: Array of holdout objects for the current page.
+          items:
+            $ref: '#/components/schemas/Holdout'
+          type: array
+        last_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'Link to the final page of holdouts in the result set. Points to the highest
+
+            page number that contains results.
+
+            '
+          example: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#13
+        next_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: "Array of links to subsequent pages in the result set. The first element is the \nimmediate next page, followed by additional pages in sequence. Empty if on the last page.\n"
+          example:
+          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#2
+          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
+        page:
+          description: 'Current page number (1-indexed). The first page is page 1, not page 0.
+
+            This corresponds to the requested page in the pagination sequence.
+
+            '
+          example: 1
+          minimum: 1
+          type: integer
+        prev_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: "Array of links to previous pages in the result set. The first element is the \nimmediate previous page, followed by earlier pages in reverse sequence. Empty if on the first page.\n"
+          example:
+          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#4
+          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
+        reset_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'Link to reset pagination and view the default first page without any applied filters.
+
+            Use this to return to the standard holdouts list view.
+
+            '
+          example: /projects/98765/holdouts
+        total_count:
+          description: 'Total number of holdouts matching the query criteria across all pages.
+
+            This count reflects any filters applied to the request.
+
+            '
+          example: 25
+          minimum: 0
+          type: integer
+        total_pages:
+          description: 'Total number of pages required to display all holdouts matching the criteria.
+
+            Calculated as ceil(total_count / per_page).
+
+            '
+          example: 13
+          minimum: 1
+          type: integer
+        url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: "Link to the current page (self-reference). Use this URL to refresh \nthe current page or bookmark the current view.\n"
+          example: /projects/98765/holdouts?page=1
+      required:
+      - items
+      - count
+      - page
+      - total_count
+      - total_pages
+      - url
+      - first_url
+      - last_url
+      type: object
+    HoldoutExperiment:
+      description: 'Represents a single experiment rule that is connected to a holdout configuration.
+
+
+        Contains experiment identification, timing information from the associated report,
+
+        and the deployed variation ID if one exists for the experiment.
+
+        '
+      example:
+        deployed_variation_id: 9876543210
+        experiment_end_time: '2024-03-15T23:59:59.000Z'
+        experiment_id: 1234567890
+        experiment_start_time: '2024-01-15T10:00:00.000Z'
+      properties:
+        deployed_variation_id:
+          description: 'The unique identifier of the deployed variation for this experiment.
+
+            This is the Variation.id that matches the Rule.deployed_variation_key.
+
+            May be null if no deployed variation is configured.
+
+            '
+          example: 9876543210
+          format: int64
+          type:
+          - integer
+          - 'null'
+        experiment_end_time:
+          description: "The end time of the experiment report. This timestamp indicates when the \nexperiment finished collecting data. May be null for ongoing experiments.\nSourced from Report.end_time.\n"
+          example: '2024-03-15T23:59:59.000Z'
+          format: date-time
+          type:
+          - string
+          - 'null'
+        experiment_id:
+          description: 'The layer experiment ID from the rule associated with this holdout.
+
+            This corresponds to the Rule.layer_experiment_id field in the database.
+
+            '
+          example: 1234567890
+          format: int64
+          type: integer
+        experiment_start_time:
+          description: "The start time of the experiment report. This timestamp indicates when the \nexperiment began collecting data. Sourced from Report.start_time.\n"
+          example: '2024-01-15T10:00:00.000Z'
+          format: date-time
+          type:
+          - string
+          - 'null'
+      required:
+      - experiment_id
+      type: object
+    AudienceConditionsArray:
+      example:
+      - or
+      - audience_id: 123
+      - - and
+        - audience_id: 456
+        - audience_id: 789
+      items:
+        anyOf:
+        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+          type: string
+        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
+          properties:
+            audience_id:
+              type: integer
+          required:
+          - audience_id
+          type: object
+        - $ref: '#/components/schemas/AudienceConditionsArray'
+          description: A nested AudienceConditionsArray
+          example:
+          - - and
+            - audience_id: 456
+            - audience_id: 789
+      type: array
     Holdout:
       description: 'Represents a holdout experiment that reserves a portion of traffic to measure the impact of feature flags and experiments.
 
@@ -1484,337 +1871,6 @@ components:
       - name
       - key
       type: object
-    UrlValue:
-      description: A single url.
-      type: string
-    AudienceConditionsString:
-      description: A valid AudienceConditionsArray represented as a JSON string
-      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
-      type: string
-    HoldoutExperiment:
-      description: 'Represents a single experiment rule that is connected to a holdout configuration.
-
-
-        Contains experiment identification, timing information from the associated report,
-
-        and the deployed variation ID if one exists for the experiment.
-
-        '
-      example:
-        deployed_variation_id: 9876543210
-        experiment_end_time: '2024-03-15T23:59:59.000Z'
-        experiment_id: 1234567890
-        experiment_start_time: '2024-01-15T10:00:00.000Z'
-      properties:
-        deployed_variation_id:
-          description: 'The unique identifier of the deployed variation for this experiment.
-
-            This is the Variation.id that matches the Rule.deployed_variation_key.
-
-            May be null if no deployed variation is configured.
-
-            '
-          example: 9876543210
-          format: int64
-          type:
-          - integer
-          - 'null'
-        experiment_end_time:
-          description: "The end time of the experiment report. This timestamp indicates when the \nexperiment finished collecting data. May be null for ongoing experiments.\nSourced from Report.end_time.\n"
-          example: '2024-03-15T23:59:59.000Z'
-          format: date-time
-          type:
-          - string
-          - 'null'
-        experiment_id:
-          description: 'The layer experiment ID from the rule associated with this holdout.
-
-            This corresponds to the Rule.layer_experiment_id field in the database.
-
-            '
-          example: 1234567890
-          format: int64
-          type: integer
-        experiment_start_time:
-          description: "The start time of the experiment report. This timestamp indicates when the \nexperiment began collecting data. Sourced from Report.start_time.\n"
-          example: '2024-01-15T10:00:00.000Z'
-          format: date-time
-          type:
-          - string
-          - 'null'
-      required:
-      - experiment_id
-      type: object
-    PatchRequestBody:
-      description: A JSONPatch document as defined by RFC 6902
-      properties:
-        from:
-          description: A JSON Pointer to the resource attribute
-          type: string
-        op:
-          description: The operation to be performed
-          enum:
-          - add
-          - remove
-          - replace
-          - move
-          - copy
-          - test
-          type: string
-        path:
-          description: A JSON-Pointer to the resource or the resource attribute
-          type: string
-        value:
-          anyOf:
-          - type: object
-          - items:
-              type: string
-            type: array
-          - $ref: '#/components/schemas/AudienceConditions'
-          - type: string
-          - type: integer
-          - type: boolean
-          - items:
-              $ref: '#/components/schemas/SubMetric'
-            type: array
-          description: The value to be used within the operations.
-      required:
-      - op
-      - path
-      type: object
-    HoldoutsPaginatedList:
-      description: 'Paginated response structure for holdout collections with navigation links and metadata.
-
-
-        This response format follows the standard pagination pattern used across the API,
-
-        providing navigation URLs and counts for efficient browsing of large holdout collections.
-
-        '
-      example:
-        count: 2
-        filter_url: /projects/98765/holdouts{?archived}
-        first_url: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
-        items:
-        - archived: false
-          created_time: '2023-12-15T10:00:00.000Z'
-          description: Control group for measuring overall impact of Q4 growth experiments
-          environment_key: production
-          holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-          id: 12345
-          key: growth_experiment_holdout
-          name: Q4 Growth Experiment Control
-          project_id: 98765
-          revision: 2
-          scope: global
-          scope_type: exclude
-          start_time: '2024-01-01T00:00:00.000Z'
-          status: running
-          traffic_allocation: 1000
-          updated_time: '2024-01-01T10:00:00.000Z'
-        - archived: false
-          created_time: '2024-01-20T14:30:00.000Z'
-          description: Holdout for measuring checkout conversion experiments
-          environment_key: production
-          holdout_results_api_token: SampleToken.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-          id: 12346
-          key: checkout_flow_holdout
-          name: Checkout Flow Holdout Group
-          project_id: 98765
-          revision: 1
-          scope: global
-          scope_type: exclude
-          start_time: '2024-02-01T00:00:00.000Z'
-          status: draft
-          traffic_allocation: 500
-          updated_time: '2024-01-20T14:30:00.000Z'
-        last_url: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#13
-        next_url:
-        - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#2
-        - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
-        page: 1
-        reset_url: /projects/98765/holdouts
-        total_count: 25
-        total_pages: 13
-        url: /projects/98765/holdouts
-      properties:
-        count:
-          description: Number of holdouts returned on the current page (length of items array).
-          example: 2
-          minimum: 0
-          type: integer
-        filter_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: 'URL template for applying filters to the holdouts list. Replace the placeholder
-
-            with filter parameters like ''archived=false'' to filter results.
-
-            '
-          example: /projects/98765/holdouts{?archived,status}
-        first_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: 'Link to the first page of holdouts in the result set. Always points to page 1
-
-            with the same query parameters as the current request.
-
-            '
-          example: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
-        items:
-          description: Array of holdout objects for the current page.
-          items:
-            $ref: '#/components/schemas/Holdout'
-          type: array
-        last_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: 'Link to the final page of holdouts in the result set. Points to the highest
-
-            page number that contains results.
-
-            '
-          example: /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#13
-        next_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlList'
-          description: "Array of links to subsequent pages in the result set. The first element is the \nimmediate next page, followed by additional pages in sequence. Empty if on the last page.\n"
-          example:
-          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#2
-          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
-        page:
-          description: 'Current page number (1-indexed). The first page is page 1, not page 0.
-
-            This corresponds to the requested page in the pagination sequence.
-
-            '
-          example: 1
-          minimum: 1
-          type: integer
-        prev_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlList'
-          description: "Array of links to previous pages in the result set. The first element is the \nimmediate previous page, followed by earlier pages in reverse sequence. Empty if on the first page.\n"
-          example:
-          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#4
-          - /projects/98765/holdouts?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
-        reset_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: 'Link to reset pagination and view the default first page without any applied filters.
-
-            Use this to return to the standard holdouts list view.
-
-            '
-          example: /projects/98765/holdouts
-        total_count:
-          description: 'Total number of holdouts matching the query criteria across all pages.
-
-            This count reflects any filters applied to the request.
-
-            '
-          example: 25
-          minimum: 0
-          type: integer
-        total_pages:
-          description: 'Total number of pages required to display all holdouts matching the criteria.
-
-            Calculated as ceil(total_count / per_page).
-
-            '
-          example: 13
-          minimum: 1
-          type: integer
-        url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: "Link to the current page (self-reference). Use this URL to refresh \nthe current page or bookmark the current view.\n"
-          example: /projects/98765/holdouts?page=1
-      required:
-      - items
-      - count
-      - page
-      - total_count
-      - total_pages
-      - url
-      - first_url
-      - last_url
-      type: object
-    ProblemDetail:
-      additionalProperties: true
-      description: https://tools.ietf.org/html/rfc7807#section-3.1
-      properties:
-        detail:
-          description: A human-readable explanation specific to this occurrence of the problem.
-          type: string
-        status:
-          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
-          type: integer
-        title:
-          description: A short, human-readable summary of the problem type.
-          type: string
-        type:
-          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
-          type: string
-        uuid:
-          description: Error reference for customer support
-          type: string
-      required:
-      - detail
-      - status
-      - title
-      - type
-      type: object
-    SubMetric:
-      properties:
-        aggregator:
-          type: string
-        event_id:
-          type: integer
-        event_type:
-          type: string
-        field:
-          type:
-          - string
-          - 'null'
-        role:
-          enum:
-          - numerator
-          - denominator
-          type: string
-        scope:
-          type: string
-      type: object
-    AudienceConditions:
-      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
-      oneOf:
-      - $ref: '#/components/schemas/AudienceConditionsArray'
-      - $ref: '#/components/schemas/AudienceConditionsString'
-    AudienceConditionsArray:
-      example:
-      - or
-      - audience_id: 123
-      - - and
-        - audience_id: 456
-        - audience_id: 789
-      items:
-        anyOf:
-        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
-          type: string
-        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
-          properties:
-            audience_id:
-              type: integer
-          required:
-          - audience_id
-          type: object
-        - $ref: '#/components/schemas/AudienceConditionsArray'
-          description: A nested AudienceConditionsArray
-          example:
-          - - and
-            - audience_id: 456
-            - audience_id: 789
-      type: array
     HoldoutMap:
       additionalProperties:
         $ref: '#/components/schemas/Holdout'
@@ -1850,125 +1906,69 @@ components:
           status: draft
           traffic_allocation: 500
       type: object
-    HoldoutExperiments:
-      description: "A collection of experiment rules associated with a holdout.\n\nEach item represents an experiment that is connected to the holdout through database \nrelationships between holdouts, flags, rulesets, rules, and reports. The list contains \nexperiment timing information and deployed variation details.\n"
-      items:
-        $ref: '#/components/schemas/HoldoutExperiment'
-      type: array
-    Metric:
+    AudienceConditions:
+      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
+      oneOf:
+      - $ref: '#/components/schemas/AudienceConditionsArray'
+      - $ref: '#/components/schemas/AudienceConditionsString'
+    SubMetric:
       properties:
         aggregator:
-          description: The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value
-          enum:
-          - unique
-          - count
-          - sum
-          - ratio
-          type: string
-        display_title:
-          description: An optional title for the unique metric configuration. If not provided, the event name will be used.
-          type: string
-        display_unit:
-          description: An optional name for the unit of the unique metric configuration.
           type: string
         event_id:
-          description: The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. "overall revenue"
-          example: 32334454244
-          format: int64
           type: integer
-        event_properties:
-          properties:
-            filter:
-              properties:
-                combine_operator:
-                  enum:
-                  - or
-                  - and
-                  type: string
-                conditions:
-                  items:
-                    $ref: '#/components/schemas/EventPropertyCondition'
-              type: object
-          type: object
         event_type:
           type: string
         field:
-          description: The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted
-          enum:
-          - revenue
-          - value
           type:
           - string
           - 'null'
-        id:
-          description: A unique identifier for the metric configuration.
+        role:
+          enum:
+          - numerator
+          - denominator
           type: string
-        metrics:
-          items:
-            $ref: '#/components/schemas/SubMetric'
-            type: object
-          type: array
-        project_id:
-          description: A unique identifier for the project associated with the metric.
-          type: integer
         scope:
-          description: Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. "Influenced sessions", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event
-          enum:
-          - session
-          - visitor
-          - event
           type: string
-        visibility:
-          description: The visibility of the metric.
-          enum:
-          - account
-          - experiment
-          - project
-          type: string
-        winning_direction:
-          description: The winning direction of this metric
-          enum:
-          - increasing
-          - decreasing
-          type: string
-      required:
-      - winning_direction
-      - aggregator
-      type: object
-    EventPropertyCondition:
-      properties:
-        name:
-          type: string
-        operator:
-          enum:
-          - equal_to
-          - not_equal_to
-          - greater_than
-          - greater_than_or_equal_to
-          - less_than
-          - less_than_or_equal_to
-          - contains
-          - does_not_contain
-          type: string
-        type:
-          enum:
-          - string
-          - number
-          - boolean
-          type: string
-        value:
-          type: string
-      required:
-      - name
-      - type
-      - value
-      - operator
       type: object
     UrlList:
       description: A list of urls.
       items:
         type: string
       type: array
+    UrlValue:
+      description: A single url.
+      type: string
+    HoldoutExperiments:
+      description: "A collection of experiment rules associated with a holdout.\n\nEach item represents an experiment that is connected to the holdout through database \nrelationships between holdouts, flags, rulesets, rules, and reports. The list contains \nexperiment timing information and deployed variation details.\n"
+      items:
+        $ref: '#/components/schemas/HoldoutExperiment'
+      type: array
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
+      properties:
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
+      type: object
     Error:
       properties:
         code:
@@ -1982,6 +1982,27 @@ components:
           type: string
       type: object
   parameters:
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
     holdoutId:
       description: The holdout identifier
       example: 54321
@@ -1996,21 +2017,6 @@ components:
       name: page_window
       schema:
         type: integer
-    perPage:
-      description: The max number of items to include per page or results.
-      in: query
-      name: per_page
-      schema:
-        format: int64
-        type: integer
-    projectId:
-      description: The project identifier
-      example: 12345
-      in: path
-      name: project_id
-      required: true
-      schema:
-        type: integer
     page:
       description: Page number for pagination
       in: query
@@ -2018,26 +2024,6 @@ components:
       schema:
         format: int64
         type: integer
-    pageToken:
-      description: Pagination page token. Implements prev, next, last, first
-      in: query
-      name: page_token
-      schema:
-        type: string
-    segment_conditions:
-      description: '(BETA) A string representation of a JSON Segment Conditions Expression. This parameter can be either URL-escaped stringified JSON or Base64-encoded stringified JSON using URL-safe alphabet (preferred).
-
-        Segment Conditions Expressions consist of Logical Expressions and Match Expressions.
-
-        Logical Expressions are represented as an array of the format [<operator>, <expression>...], where the supported operators are "and", "or" and "not".
-
-        Match Expressions are represented as an object of the format {"attribute_id": <attribute_id>, "attribute_value": <value>[, "match_type": <match_type>]}, where supported values for match_type are "exact" match type will match only an exact string match between "value" string and the attribute value. "substring" match type will match if "value" is a substring of the attribute value. "prefix" match type will match if "value" is a string prefix of the attribute value. "regex" match type will match if "value" is a regular expression match for the attribute value. The default match_type is "exact".
-
-        '
-      in: query
-      name: segment_conditions
-      schema:
-        type: string
     attribute_id_segment:
       description: 'ID of the attribute to segment results by. Requests containing attribute_id will return the results for all visitors that have attribute_value for the attribute represented by attribute_id. If present, the attribute_value parameter must also be present, and it cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
 
@@ -2047,6 +2033,26 @@ components:
       schema:
         format: int64
         type: integer
+    attribute_value_segment:
+      description: 'UTF-8 encoded value correlating to attribute_id. If present, the attribute_id parameter must also be present. This parameter also requires attribute_id to be set, and cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
+
+        '
+      in: query
+      name: attribute_value
+      schema:
+        type: string
+    device_segment:
+      description: Device to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, source, attribute_id, attribute_value].
+      in: query
+      name: device
+      schema:
+        enum:
+        - desktop
+        - ipad
+        - iphone
+        - mobile
+        - tablet
+        type: string
     source_segment:
       description: 'Source to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, device, attribute_id, attribute_value].
 
@@ -2066,24 +2072,18 @@ components:
         - referral
         - search
         type: string
-    device_segment:
-      description: Device to segment results by. This parameter must not be sent with any other segmentation parameters, i.e. any parameters in [browser, source, attribute_id, attribute_value].
-      in: query
-      name: device
-      schema:
-        enum:
-        - desktop
-        - ipad
-        - iphone
-        - mobile
-        - tablet
-        type: string
-    attribute_value_segment:
-      description: 'UTF-8 encoded value correlating to attribute_id. If present, the attribute_id parameter must also be present. This parameter also requires attribute_id to be set, and cannot be sent with any other segmentation parameters, i.e. any parameters in [browser, device, source].
+    segment_conditions:
+      description: '(BETA) A string representation of a JSON Segment Conditions Expression. This parameter can be either URL-escaped stringified JSON or Base64-encoded stringified JSON using URL-safe alphabet (preferred).
+
+        Segment Conditions Expressions consist of Logical Expressions and Match Expressions.
+
+        Logical Expressions are represented as an array of the format [<operator>, <expression>...], where the supported operators are "and", "or" and "not".
+
+        Match Expressions are represented as an object of the format {"attribute_id": <attribute_id>, "attribute_value": <value>[, "match_type": <match_type>]}, where supported values for match_type are "exact" match type will match only an exact string match between "value" string and the attribute value. "substring" match type will match if "value" is a substring of the attribute value. "prefix" match type will match if "value" is a string prefix of the attribute value. "regex" match type will match if "value" is a regular expression match for the attribute value. The default match_type is "exact".
 
         '
       in: query
-      name: attribute_value
+      name: segment_conditions
       schema:
         type: string
     browser_segment:
@@ -2098,48 +2098,7 @@ components:
         - opera
         - safari
         type: string
-  requestBodies:
-    HoldoutRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/HoldoutRequestBody'
-      required: true
   responses:
-    ConflictResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Conflicting resource state with requested action
-    BadRequestResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Another entity already exists with this same key
-            status: 400
-            title: Key example_entity already exists"
-            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Malformed requests and invalid parameter names and types
-    HoldoutSuccessResponse:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Holdout'
-      description: 'Successful retrieval, creation or update of a Holdout.
-
-
-        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
-
-        link is not present in the response, it indicates a user is not authorized to access
-
-        the related resource.
-
-        '
-    NotFoundResponse:
-      description: Not found. No content
     HoldoutsPaginatedListSuccessResponse:
       content:
         application/json:
@@ -2155,12 +2114,46 @@ components:
         the related resource.
 
         '
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
+    NotFoundResponse:
+      description: Not found. No content
     UnauthorizedResponse:
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Invalid credentials
+    HoldoutSuccessResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Holdout'
+      description: 'Successful retrieval, creation or update of a Holdout.
+
+
+        The response includes RESTful JSON (https://restfuljson.org/) styled links. If a
+
+        link is not present in the response, it indicates a user is not authorized to access
+
+        the related resource.
+
+        '
+    ConflictResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Conflicting resource state with requested action
     ForbiddenResponse:
       content:
         application/problem+json:
@@ -2171,6 +2164,13 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Do not have permission to perform the operation
+  requestBodies:
+    HoldoutRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HoldoutRequestBody'
+      required: true
   securitySchemes:
     BearerAuth:
       description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token

@@ -57,6 +57,15 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    Insite.Core.Plugins.Inventory.InventoryWarehousesDto:
+      type: object
+      properties:
+        unitOfMeasure:
+          type: string
+        warehouseDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.WarehouseDto'
     Insite.Catalog.Services.Dtos.AvailabilityDto:
       type: object
       properties:
@@ -72,15 +81,67 @@ components:
           type: string
         requiresRealTimeInventory:
           type: boolean
-    Insite.Core.Plugins.Inventory.InventoryWarehousesDto:
+    Insite.Catalog.Services.Dtos.WarehouseDto:
       type: object
       properties:
-        unitOfMeasure:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
           type: string
-        warehouseDtos:
+        requiresRealTimeInventory:
+          type: boolean
+        name:
+          type: string
+        description:
+          type: string
+        qty:
+          format: decimal
+          type: number
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        realTimeInventoryResults:
           type: array
           items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.WarehouseDto'
+            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.ProductInventoryDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.Plugins.Inventory.ProductInventoryDto:
+      type: object
+      properties:
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        qtyOnHand:
+          format: decimal
+          type: number
+        inventoryAvailabilityDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.InventoryAvailabilityDto'
+        inventoryWarehousesDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.InventoryWarehousesDto'
+        additionalResults:
+          type: object
+          additionalProperties:
+            type: string
     Insite.Core.Plugins.Inventory.InventoryAvailabilityDto:
       type: object
       properties:
@@ -111,67 +172,6 @@ components:
               format: uuid
               type: string
               example: 00000000-0000-0000-0000-000000000000
-    Insite.Core.Plugins.Inventory.ProductInventoryDto:
-      type: object
-      properties:
-        productId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        qtyOnHand:
-          format: decimal
-          type: number
-        inventoryAvailabilityDtos:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.InventoryAvailabilityDto'
-        inventoryWarehousesDtos:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.InventoryWarehousesDto'
-        additionalResults:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.RealTimeInventory.WebApi.V1.ApiModels.RealTimeInventoryModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        realTimeInventoryResults:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Inventory.ProductInventoryDto'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.WarehouseDto:
-      type: object
-      properties:
-        messageType:
-          format: int32
-          enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          type: integer
-        message:
-          type: string
-        requiresRealTimeInventory:
-          type: boolean
-        name:
-          type: string
-        description:
-          type: string
-        qty:
-          format: decimal
-          type: number
-        properties:
-          type: object
-          additionalProperties:
-            type: string
   securitySchemes:
     access_token:
       type: apiKey

@@ -702,37 +702,6 @@ components:
           type: string
           description: Modification date
           format: date-time
-    RestWebhookVerify:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Webhook ID
-          format: int64
-        httpStatusCode:
-          type: integer
-          description: HTTP status code
-          format: int32
-        responseBody:
-          type: string
-          description: Response body (if any)
-        numberOfEvents:
-          type: integer
-          description: Number of events sent to the target url
-          format: int32
-        targetUrl:
-          type: string
-          description: Target URL
-    WebhookAuthentication:
-      required:
-      - type
-      type: object
-      properties:
-        type:
-          type: string
-      description: Authentication method and attributes
-      discriminator:
-        propertyName: type
     WebhookRequestData:
       required:
       - format
@@ -799,35 +768,53 @@ components:
         targetUrl:
           type: string
           description: Target URL to which the event data is to be sent<p><b>Note:</b> The URL must be accessible and able to receive data via HTTP POST requests from the IP address 193.169.180.1 at any time. Use the current HTTPS version and standard port 443 for HTTPS connections.</p>
+    WebhookAuthentication:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+      description: Authentication method and attributes
+      discriminator:
+        propertyName: type
+    RestWebhookVerify:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Webhook ID
+          format: int64
+        httpStatusCode:
+          type: integer
+          description: HTTP status code
+          format: int32
+        responseBody:
+          type: string
+          description: Response body (if any)
+        numberOfEvents:
+          type: integer
+          description: Number of events sent to the target url
+          format: int32
+        targetUrl:
+          type: string
+          description: Target URL
     Preset:
       type: string
       enum:
       - legacy
       - next
-    Webhook:
-      allOf:
-      - $ref: '#/components/schemas/WebhookPayload'
-      - properties:
-          preset:
-            $ref: '#/components/schemas/Preset'
-          id:
-            type: string
-        required:
-        - preset
-        - id
-        type: object
-    Partial_Record_string.OperationMap__:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/OperationMap'
+    OperationMap:
+      properties:
+        in:
+          anyOf:
+          - type: string
+          - items:
+              type: string
+            type: array
+        eq:
+          type: string
       type: object
-      description: Make all properties in T optional
-    Record_string.string_:
-      properties: {}
-      additionalProperties:
-        type: string
-      type: object
-      description: Construct a type with a set of properties K of type T
     Request:
       properties:
         url:
@@ -840,17 +827,6 @@ components:
       - url
       type: object
       additionalProperties: false
-    OperationMap:
-      properties:
-        in:
-          anyOf:
-          - type: string
-          - items:
-              type: string
-            type: array
-        eq:
-          type: string
-      type: object
     WebhookPayload:
       description: 'The `WebhookPayload` type represents the payload of a webhook request, which includes information
 
@@ -888,6 +864,30 @@ components:
             in:
             - Published
             - Created
+    Webhook:
+      allOf:
+      - $ref: '#/components/schemas/WebhookPayload'
+      - properties:
+          preset:
+            $ref: '#/components/schemas/Preset'
+          id:
+            type: string
+        required:
+        - preset
+        - id
+        type: object
+    Partial_Record_string.OperationMap__:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/OperationMap'
+      type: object
+      description: Make all properties in T optional
+    Record_string.string_:
+      properties: {}
+      additionalProperties:
+        type: string
+      type: object
+      description: Construct a type with a set of properties K of type T
     Webhook_2:
       properties:
         active:
@@ -975,18 +975,6 @@ components:
       items:
         $ref: '#/components/schemas/Webhook_2'
       type: array
-    Error:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
-          type: string
-      type: object
     WebhookRequestBody:
       description: Webhook request body
       properties:
@@ -1052,15 +1040,19 @@ components:
       - name
       - url
       type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
+      type: object
   parameters:
-    webhook_id:
-      description: The webhook identifier
-      example: 12345
-      in: path
-      name: webhook_id
-      required: true
-      schema:
-        type: integer
     webhookId:
       description: The webhook identifier
       example: 123
@@ -1069,19 +1061,18 @@ components:
       required: true
       schema:
         type: integer
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
-        type: integer
     page_window:
       description: Number of previous and next page links to supply for the request (defaults to 1).
       in: query
       name: page_window
+      schema:
+        type: integer
+    webhook_id:
+      description: The webhook identifier
+      example: 12345
+      in: path
+      name: webhook_id
+      required: true
       schema:
         type: integer
     page_token:
@@ -1097,6 +1088,15 @@ components:
       name: project_id
       required: true
       schema:
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
         type: integer
   requestBodies:
     WebhookRequest:

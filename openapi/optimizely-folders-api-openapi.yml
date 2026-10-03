@@ -279,38 +279,6 @@ paths:
       - Authorization: []
 components:
   schemas:
-    UnAssignEntityToFolderRequestData:
-      required:
-      - entityId
-      type: object
-      properties:
-        entityId:
-          type: integer
-          description: ID of the entity to be assigned or unassigned
-          format: int64
-    FolderRequestData:
-      required:
-      - folderType
-      - name
-      type: object
-      properties:
-        folderType:
-          type: string
-          description: Folder type
-          enum:
-          - mailing
-          - messageTemplate
-          - customBlacklist
-          - image
-          - recipientList
-          - attachment
-        parentId:
-          type: integer
-          description: ID of the parent folder
-          format: int64
-        name:
-          type: string
-          description: Folder name
     RestFolder:
       type: object
       properties:
@@ -362,6 +330,22 @@ components:
                 type: string
                 format: uri
             description: Restful links
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    UnAssignEntityToFolderRequestData:
+      required:
+      - entityId
+      type: object
+      properties:
+        entityId:
+          type: integer
+          description: ID of the entity to be assigned or unassigned
+          format: int64
     RestFolderStreamingCollection:
       type: object
       properties:
@@ -383,13 +367,29 @@ components:
         limit:
           type: integer
           format: int32
-    RestApiLink:
+    FolderRequestData:
+      required:
+      - folderType
+      - name
       type: object
       properties:
-        href:
+        folderType:
           type: string
-        rel:
+          description: Folder type
+          enum:
+          - mailing
+          - messageTemplate
+          - customBlacklist
+          - image
+          - recipientList
+          - attachment
+        parentId:
+          type: integer
+          description: ID of the parent folder
+          format: int64
+        name:
           type: string
+          description: Folder name
   securitySchemes:
     Authorization:
       type: apiKey

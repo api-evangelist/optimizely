@@ -216,7 +216,81 @@ paths:
     - url: https://api.optimizely.com/flags/v1
       description: Optimizely Flags API v1 Server
 components:
+  parameters:
+    featureId:
+      name: feature_id
+      in: path
+      required: true
+      description: The unique identifier for the feature
+      schema:
+        type: integer
+        format: int64
+    perPage:
+      name: per_page
+      in: query
+      required: false
+      description: Number of results per page
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
+    projectIdQuery:
+      name: project_id
+      in: query
+      required: true
+      description: The unique identifier for the project to filter by
+      schema:
+        type: integer
+        format: int64
+    page:
+      name: page
+      in: query
+      required: false
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
   schemas:
+    Variable:
+      type: object
+      description: A variable within a feature flag
+      properties:
+        key:
+          type: string
+          description: Unique key for the variable
+        type:
+          type: string
+          description: Data type of the variable
+          enum:
+          - string
+          - integer
+          - double
+          - boolean
+          - json
+        default_value:
+          type: string
+          description: Default value of the variable
     Feature:
       type: object
       description: A feature with configurable variables
@@ -245,25 +319,89 @@ components:
           type: string
           format: date-time
           description: Timestamp when the feature was last modified
-    Variable:
-      type: object
-      description: A variable within a feature flag
+    FeatureVariable:
       properties:
-        key:
-          type: string
-          description: Unique key for the variable
-        type:
-          type: string
-          description: Data type of the variable
-          enum:
-          - string
-          - integer
-          - double
-          - boolean
-          - json
+        archived:
+          default: false
+          description: Whether or not this Feature Variable is archived
+          type: boolean
         default_value:
+          description: The stringified default value for this Feature Variable. The default value is the value Optimizely SDKs will return when this Feature Variable is accessed by getFeatureVariableValue unless the Feature Variable's value is a part of a feature test variation.
+          example: '0.05'
           type: string
-          description: Default value of the variable
+        id:
+          description: The ID of this Feature Variable
+          format: int64
+          readOnly: true
+          type: integer
+        key:
+          description: Unique string identifier for this Feature Variable within the Feature
+          type: string
+        type:
+          description: The datatype for this Feature Variable
+          enum:
+          - boolean
+          - string
+          - double
+          - integer
+          - json
+          example: double
+          type: string
+      required:
+      - key
+      - type
+      - default_value
+      type: object
+    RolloutRule:
+      properties:
+        audience_conditions:
+          description: 'The audiences that should see this feature. To target everyone, use the string "everyone". Multiple audiences can be combined with "and" or "or" using the same structure as audience conditions. <code>audience_conditions</code> sent in any environment must always match those of the primary environment.
+
+            '
+          example: '["and", {"audience_id": 7000}, {"audience_id": 7001}]'
+          externalDocs:
+            description: same structure as audience conditions
+            url: https://developers.optimizely.com/x/rest/guides/conditions/
+          type: string
+        enabled:
+          default: false
+          description: Whether or not the Rollout Rule is applied in this Environment. You can toggle this on and off by sending True or False.
+          type: boolean
+        percentage_included:
+          default: 0
+          description: The percentage of the designated audiences that should get this Feature, measured in basis points. 100 basis points = 1% traffic.
+          maximum: 10000
+          minimum: 0
+          type: integer
+        variable_values:
+          additionalProperties:
+            type: string
+          description: The configuration for this Variable's within each Feature Environment, keyed by Variable Key
+          type: object
+          x-map-key:
+            description: The Key of the variable
+            example: my_var
+            type: string
+      type: object
+    FeatureEnvironment:
+      properties:
+        id:
+          description: The ID of the Environment this set of Rollout Rules applies to
+          format: int64
+          readOnly: true
+          type: integer
+        is_primary:
+          description: Whether the Environment this set of Rollout Rules applies to is the primary Environment
+          readOnly: true
+          type: boolean
+        rollout_rules:
+          description: Rollout Rules allow you to define groups of users and a percentage of those users that will see a Feature by default. You are currently limited to a single rollout rule. Audience IDs sent in any environment must always match that of the primary environment.
+          items:
+            $ref: '#/components/schemas/RolloutRule'
+          type: array
+      required:
+      - rollout_rules
+      type: object
     FeatureUpdate:
       properties:
         archived:
@@ -296,25 +434,6 @@ components:
           items:
             $ref: '#/components/schemas/FeatureVariableUpdate'
           type: array
-      type: object
-    FeatureEnvironment:
-      properties:
-        id:
-          description: The ID of the Environment this set of Rollout Rules applies to
-          format: int64
-          readOnly: true
-          type: integer
-        is_primary:
-          description: Whether the Environment this set of Rollout Rules applies to is the primary Environment
-          readOnly: true
-          type: boolean
-        rollout_rules:
-          description: Rollout Rules allow you to define groups of users and a percentage of those users that will see a Feature by default. You are currently limited to a single rollout rule. Audience IDs sent in any environment must always match that of the primary environment.
-          items:
-            $ref: '#/components/schemas/RolloutRule'
-          type: array
-      required:
-      - rollout_rules
       type: object
     Feature_2:
       properties:
@@ -384,37 +503,6 @@ components:
           format: uuid
           type: string
       type: object
-    RolloutRule:
-      properties:
-        audience_conditions:
-          description: 'The audiences that should see this feature. To target everyone, use the string "everyone". Multiple audiences can be combined with "and" or "or" using the same structure as audience conditions. <code>audience_conditions</code> sent in any environment must always match those of the primary environment.
-
-            '
-          example: '["and", {"audience_id": 7000}, {"audience_id": 7001}]'
-          externalDocs:
-            description: same structure as audience conditions
-            url: https://developers.optimizely.com/x/rest/guides/conditions/
-          type: string
-        enabled:
-          default: false
-          description: Whether or not the Rollout Rule is applied in this Environment. You can toggle this on and off by sending True or False.
-          type: boolean
-        percentage_included:
-          default: 0
-          description: The percentage of the designated audiences that should get this Feature, measured in basis points. 100 basis points = 1% traffic.
-          maximum: 10000
-          minimum: 0
-          type: integer
-        variable_values:
-          additionalProperties:
-            type: string
-          description: The configuration for this Variable's within each Feature Environment, keyed by Variable Key
-          type: object
-          x-map-key:
-            description: The Key of the variable
-            example: my_var
-            type: string
-      type: object
     FeatureVariableUpdate:
       properties:
         archived:
@@ -445,94 +533,6 @@ components:
           - json
           type: string
       type: object
-    FeatureVariable:
-      properties:
-        archived:
-          default: false
-          description: Whether or not this Feature Variable is archived
-          type: boolean
-        default_value:
-          description: The stringified default value for this Feature Variable. The default value is the value Optimizely SDKs will return when this Feature Variable is accessed by getFeatureVariableValue unless the Feature Variable's value is a part of a feature test variation.
-          example: '0.05'
-          type: string
-        id:
-          description: The ID of this Feature Variable
-          format: int64
-          readOnly: true
-          type: integer
-        key:
-          description: Unique string identifier for this Feature Variable within the Feature
-          type: string
-        type:
-          description: The datatype for this Feature Variable
-          enum:
-          - boolean
-          - string
-          - double
-          - integer
-          - json
-          example: double
-          type: string
-      required:
-      - key
-      - type
-      - default_value
-      type: object
-  parameters:
-    projectIdQuery:
-      name: project_id
-      in: query
-      required: true
-      description: The unique identifier for the project to filter by
-      schema:
-        type: integer
-        format: int64
-    perPage:
-      name: per_page
-      in: query
-      required: false
-      description: Number of results per page
-      schema:
-        type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
-    page:
-      name: page
-      in: query
-      required: false
-      description: Page number for pagination
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-    featureId:
-      name: feature_id
-      in: path
-      required: true
-      description: The unique identifier for the feature
-      schema:
-        type: integer
-        format: int64
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
-        type: integer
-    page_2:
-      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
-
-        '
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        type: integer
   securitySchemes:
     bearerAuth:
       type: http

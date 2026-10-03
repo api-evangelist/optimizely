@@ -491,40 +491,21 @@ paths:
       - Authorization: []
 components:
   schemas:
-    RestCouponBlockCounter:
+    RestAssignedMailings:
       type: object
       properties:
-        codeCount:
-          type: integer
-          description: Number of all coupon codes
-          format: int64
-        assigned:
-          type: integer
-          description: Number of all assigned coupon codes
-          format: int64
-        unassigned:
-          type: integer
-          description: Number of all available coupon codes
-          format: int64
-      description: Counter of coupon codes
-    CouponCodeRequestData:
-      required:
-      - codes
-      type: object
-      properties:
-        codes:
+        mailingIds:
           type: array
-          description: List of coupon codes
           items:
-            type: string
-            description: List of coupon codes
-    RestCouponBlockStreamingCollection:
+            type: integer
+            format: int64
+    RestCouponCodeStreamingCollection:
       type: object
       properties:
         elements:
           type: array
           items:
-            $ref: '#/components/schemas/RestCouponBlock'
+            $ref: '#/components/schemas/RestCouponCode'
         links:
           type: array
           writeOnly: true
@@ -591,13 +572,6 @@ components:
                 type: string
                 format: uri
             description: Restful links
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
     RestCouponCode:
       type: object
       properties:
@@ -651,14 +625,34 @@ components:
                 type: string
                 format: uri
             description: Restful links
-    RestAssignedMailings:
+    RestApiLink:
       type: object
       properties:
-        mailingIds:
+        href:
+          type: string
+        rel:
+          type: string
+    RestCouponBlockStreamingCollection:
+      type: object
+      properties:
+        elements:
           type: array
           items:
-            type: integer
-            format: int64
+            $ref: '#/components/schemas/RestCouponBlock'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     CouponBlockRequestData:
       required:
       - couponSource
@@ -683,27 +677,33 @@ components:
         name:
           type: string
           description: Internal name of the coupon block
-    RestCouponCodeStreamingCollection:
+    CouponCodeRequestData:
+      required:
+      - codes
       type: object
       properties:
-        elements:
+        codes:
           type: array
+          description: List of coupon codes
           items:
-            $ref: '#/components/schemas/RestCouponCode'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
+            type: string
+            description: List of coupon codes
+    RestCouponBlockCounter:
+      type: object
+      properties:
+        codeCount:
           type: integer
-          format: int32
-        offset:
+          description: Number of all coupon codes
+          format: int64
+        assigned:
           type: integer
-          format: int32
-        limit:
+          description: Number of all assigned coupon codes
+          format: int64
+        unassigned:
           type: integer
-          format: int32
+          description: Number of all available coupon codes
+          format: int64
+      description: Counter of coupon codes
   securitySchemes:
     Authorization:
       type: apiKey

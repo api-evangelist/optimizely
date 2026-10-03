@@ -258,13 +258,29 @@ components:
         testList:
           type: boolean
           description: If true, the recipient list is a test list
-    RestRecipientListStreamingCollection:
+    CopyRecipientListRequestData:
+      required:
+      - sourceRecipientListId
+      type: object
+      properties:
+        sourceRecipientListId:
+          type: integer
+          description: ID of the recipient list to be copied
+          format: int64
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestRecipientListFieldStreamingCollection:
       type: object
       properties:
         elements:
           type: array
           items:
-            $ref: '#/components/schemas/RestRecipientList'
+            $ref: '#/components/schemas/RestRecipientListField'
         links:
           type: array
           writeOnly: true
@@ -279,15 +295,6 @@ components:
         limit:
           type: integer
           format: int32
-    CopyRecipientListRequestData:
-      required:
-      - sourceRecipientListId
-      type: object
-      properties:
-        sourceRecipientListId:
-          type: integer
-          description: ID of the recipient list to be copied
-          format: int64
     RestRecipientList:
       type: object
       properties:
@@ -380,13 +387,13 @@ components:
               uri:
                 type: string
                 format: uri
-    RestRecipientListFieldStreamingCollection:
+    RestRecipientListStreamingCollection:
       type: object
       properties:
         elements:
           type: array
           items:
-            $ref: '#/components/schemas/RestRecipientListField'
+            $ref: '#/components/schemas/RestRecipientList'
         links:
           type: array
           writeOnly: true
@@ -401,13 +408,6 @@ components:
         limit:
           type: integer
           format: int32
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
     RestRecipientListField:
       type: object
       properties:

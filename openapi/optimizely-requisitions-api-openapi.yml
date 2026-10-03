@@ -289,97 +289,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    Insite.Catalog.Services.Dtos.AvailabilityDto:
-      type: object
-      properties:
-        messageType:
-          format: int32
-          enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          type: integer
-        message:
-          type: string
-        requiresRealTimeInventory:
-          type: boolean
-    Insite.Catalog.Services.Dtos.BrandDto:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        urlSegment:
-          type: string
-        logoSmallImagePath:
-          type: string
-        logoLargeImagePath:
-          type: string
-        logoImageAltText:
-          type: string
-        detailPagePath:
-          type: string
-    Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          type: string
-        costCode:
-          type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        userName:
-          type: string
-        orderDate:
-          format: date-time
-          type: string
-        qtyOrdered:
-          format: decimal
-          type: number
-        brand:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BrandDto'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Requisition.WebApi.V1.ApiModels.RequisitionCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        requisitions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        requisitionLines:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
     Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel:
       required:
       - productId
@@ -507,6 +416,147 @@ components:
           type: boolean
         parentProductErpNumber:
           type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Cart.Services.Dtos.SectionOptionDto:
+      type: object
+      properties:
+        sectionOptionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sectionName:
+          type: string
+        optionName:
+          type: string
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        cantBuy:
+          type: boolean
+        quantity:
+          format: decimal
+          type: number
+    Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        costCode:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        userName:
+          type: string
+        orderDate:
+          format: date-time
+          type: string
+        qtyOrdered:
+          format: decimal
+          type: number
+        brand:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BrandDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.WebApi.SortOptionModel:
+      type: object
+      properties:
+        displayName:
+          type: string
+        sortType:
+          type: string
+    Insite.Catalog.Services.Dtos.BrandDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        urlSegment:
+          type: string
+        logoSmallImagePath:
+          type: string
+        logoLargeImagePath:
+          type: string
+        logoImageAltText:
+          type: string
+        detailPagePath:
+          type: string
+    Insite.Catalog.Services.Dtos.AvailabilityDto:
+      type: object
+      properties:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
+          type: string
+        requiresRealTimeInventory:
+          type: boolean
+    Insite.Core.WebApi.PaginationModel:
+      type: object
+      properties:
+        currentPage:
+          format: int32
+          type: integer
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        defaultPageSize:
+          format: int32
+          type: integer
+        totalItemCount:
+          format: int32
+          type: integer
+        numberOfPages:
+          format: int32
+          type: integer
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
+        sortType:
+          type: string
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
+          type: string
+    Insite.Requisition.WebApi.V1.ApiModels.RequisitionCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        requisitions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
         properties:
           type: object
           additionalProperties:
@@ -640,71 +690,21 @@ components:
         vatMinusExtendedUnitRegularPrice:
           format: decimal
           type: number
-    Insite.Core.WebApi.PaginationModel:
+    Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineCollectionModel:
       type: object
       properties:
-        currentPage:
-          format: int32
-          type: integer
-        page:
-          format: int32
-          type: integer
-        pageSize:
-          format: int32
-          type: integer
-        defaultPageSize:
-          format: int32
-          type: integer
-        totalItemCount:
-          format: int32
-          type: integer
-        numberOfPages:
-          format: int32
-          type: integer
-        pageSizeOptions:
+        uri:
+          type: string
+        requisitionLines:
           type: array
           items:
-            format: int32
-            type: integer
-        sortOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
-        sortType:
-          type: string
-        nextPageUri:
-          type: string
-        prevPageUri:
-          type: string
-        nextPageToken:
-          type: string
-    Insite.Core.WebApi.SortOptionModel:
-      type: object
-      properties:
-        displayName:
-          type: string
-        sortType:
-          type: string
-    Insite.Cart.Services.Dtos.SectionOptionDto:
-      type: object
-      properties:
-        sectionOptionId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        sectionName:
-          type: string
-        optionName:
-          type: string
-        productId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        cantBuy:
-          type: boolean
-        quantity:
-          format: decimal
-          type: number
+            $ref: '#/components/schemas/Insite.Requisition.WebApi.V1.ApiModels.RequisitionLineModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
     Insite.Core.Plugins.Pricing.BreakPriceDto:
       type: object
       properties:

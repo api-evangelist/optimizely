@@ -582,39 +582,90 @@ paths:
       - Variations
 components:
   schemas:
-    VariableValue:
+    BrainstormVariablesInteraction:
+      discriminator:
+        mapping:
+          error: '#/components/schemas/BrainstormError'
+          response: '#/components/schemas/BrainstormVariablesResponse'
+          user_chat: '#/components/schemas/BrainstormUserChat'
+        propertyName: type
+      type: object
+    BrainstormVariationsChat:
       properties:
-        is_default:
-          description: True if the value is currently set to the default_value for the variable definition
-          example: true
-          type: boolean
-        key:
-          description: Unique string identifier for the Variable within the Flag
-          example: amount
-          readOnly: true
+        interactions:
+          description: A list of interactions including user chats and responses
+          items:
+            $ref: '#/components/schemas/BrainstormVariablesInteraction'
+          type: array
+      required:
+      - interactions
+      type: object
+    PatchRequestBody:
+      description: A JSONPatch document as defined by RFC 6902
+      properties:
+        from:
+          description: A JSON Pointer to the resource attribute
           type: string
-        revision:
-          description: Revision number for tracking changes
-          readOnly: true
-          type: integer
-        type:
-          description: The datatype for the Variable
+        op:
+          description: The operation to be performed
           enum:
-          - boolean
-          - string
-          - double
-          - integer
-          - json
-          example: double
-          readOnly: true
+          - add
+          - remove
+          - replace
+          - move
+          - copy
+          - test
+          type: string
+        path:
+          description: A JSON-Pointer to the resource or the resource attribute
           type: string
         value:
-          description: The value for the Variable
-          example: '0.0'
-          type: string
+          anyOf:
+          - type: object
+          - items:
+              type: string
+            type: array
+          - $ref: '#/components/schemas/AudienceConditions'
+          - type: string
+          - type: integer
+          - type: boolean
+          - items:
+              $ref: '#/components/schemas/SubMetric'
+            type: array
+          description: The value to be used within the operations.
       required:
-      - value
+      - op
+      - path
       type: object
+    AudienceConditionsString:
+      description: A valid AudienceConditionsArray represented as a JSON string
+      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
+      type: string
+    AudienceConditionsArray:
+      example:
+      - or
+      - audience_id: 123
+      - - and
+        - audience_id: 456
+        - audience_id: 789
+      items:
+        anyOf:
+        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+          type: string
+        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
+          properties:
+            audience_id:
+              type: integer
+          required:
+          - audience_id
+          type: object
+        - $ref: '#/components/schemas/AudienceConditionsArray'
+          description: A nested AudienceConditionsArray
+          example:
+          - - and
+            - audience_id: 456
+            - audience_id: 789
+      type: array
     VariationRequestBody:
       properties:
         description:
@@ -644,23 +695,6 @@ components:
       required:
       - key
       - name
-      type: object
-    UrlValue:
-      description: A single url.
-      type: string
-    AudienceConditionsString:
-      description: A valid AudienceConditionsArray represented as a JSON string
-      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
-      type: string
-    BrainstormVariationsChat:
-      properties:
-        interactions:
-          description: A list of interactions including user chats and responses
-          items:
-            $ref: '#/components/schemas/BrainstormVariablesInteraction'
-          type: array
-      required:
-      - interactions
       type: object
     Variation:
       example:
@@ -802,6 +836,85 @@ components:
       - created_time
       - updated_time
       - url
+      type: object
+    AudienceConditions:
+      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
+      oneOf:
+      - $ref: '#/components/schemas/AudienceConditionsArray'
+      - $ref: '#/components/schemas/AudienceConditionsString'
+    SubMetric:
+      properties:
+        aggregator:
+          type: string
+        event_id:
+          type: integer
+        event_type:
+          type: string
+        field:
+          type:
+          - string
+          - 'null'
+        role:
+          enum:
+          - numerator
+          - denominator
+          type: string
+        scope:
+          type: string
+      type: object
+    UrlList:
+      description: A list of urls.
+      items:
+        type: string
+      type: array
+    VariableValue:
+      properties:
+        is_default:
+          description: True if the value is currently set to the default_value for the variable definition
+          example: true
+          type: boolean
+        key:
+          description: Unique string identifier for the Variable within the Flag
+          example: amount
+          readOnly: true
+          type: string
+        revision:
+          description: Revision number for tracking changes
+          readOnly: true
+          type: integer
+        type:
+          description: The datatype for the Variable
+          enum:
+          - boolean
+          - string
+          - double
+          - integer
+          - json
+          example: double
+          readOnly: true
+          type: string
+        value:
+          description: The value for the Variable
+          example: '0.0'
+          type: string
+      required:
+      - value
+      type: object
+    UrlValue:
+      description: A single url.
+      type: string
+    BulkOperationsRequestBody:
+      properties:
+        keys:
+          description: The list of resource keys to perform the desired operation
+          items:
+            type: string
+          type: array
+      type: object
+    VariationMap:
+      additionalProperties:
+        $ref: '#/components/schemas/Variation'
+      description: Map of variations that include variation key as key and variation payload as value.
       type: object
     Variations:
       properties:
@@ -957,43 +1070,6 @@ components:
       - total_pages
       - items
       type: object
-    PatchRequestBody:
-      description: A JSONPatch document as defined by RFC 6902
-      properties:
-        from:
-          description: A JSON Pointer to the resource attribute
-          type: string
-        op:
-          description: The operation to be performed
-          enum:
-          - add
-          - remove
-          - replace
-          - move
-          - copy
-          - test
-          type: string
-        path:
-          description: A JSON-Pointer to the resource or the resource attribute
-          type: string
-        value:
-          anyOf:
-          - type: object
-          - items:
-              type: string
-            type: array
-          - $ref: '#/components/schemas/AudienceConditions'
-          - type: string
-          - type: integer
-          - type: boolean
-          - items:
-              $ref: '#/components/schemas/SubMetric'
-            type: array
-          description: The value to be used within the operations.
-      required:
-      - op
-      - path
-      type: object
     ProblemDetail:
       additionalProperties: true
       description: https://tools.ietf.org/html/rfc7807#section-3.1
@@ -1019,83 +1095,36 @@ components:
       - title
       - type
       type: object
-    SubMetric:
-      properties:
-        aggregator:
-          type: string
-        event_id:
-          type: integer
-        event_type:
-          type: string
-        field:
-          type:
-          - string
-          - 'null'
-        role:
-          enum:
-          - numerator
-          - denominator
-          type: string
-        scope:
-          type: string
-      type: object
-    UrlList:
-      description: A list of urls.
-      items:
-        type: string
-      type: array
-    BrainstormVariablesInteraction:
-      discriminator:
-        mapping:
-          error: '#/components/schemas/BrainstormError'
-          response: '#/components/schemas/BrainstormVariablesResponse'
-          user_chat: '#/components/schemas/BrainstormUserChat'
-        propertyName: type
-      type: object
-    AudienceConditions:
-      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
-      oneOf:
-      - $ref: '#/components/schemas/AudienceConditionsArray'
-      - $ref: '#/components/schemas/AudienceConditionsString'
-    AudienceConditionsArray:
-      example:
-      - or
-      - audience_id: 123
-      - - and
-        - audience_id: 456
-        - audience_id: 789
-      items:
-        anyOf:
-        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
-          type: string
-        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
-          properties:
-            audience_id:
-              type: integer
-          required:
-          - audience_id
-          type: object
-        - $ref: '#/components/schemas/AudienceConditionsArray'
-          description: A nested AudienceConditionsArray
-          example:
-          - - and
-            - audience_id: 456
-            - audience_id: 789
-      type: array
-    BulkOperationsRequestBody:
-      properties:
-        keys:
-          description: The list of resource keys to perform the desired operation
-          items:
-            type: string
-          type: array
-      type: object
-    VariationMap:
-      additionalProperties:
-        $ref: '#/components/schemas/Variation'
-      description: Map of variations that include variation key as key and variation payload as value.
-      type: object
   parameters:
+    variationKey:
+      description: The Variation identifier
+      example: high_discount
+      in: path
+      name: variation_key
+      required: true
+      schema:
+        type: string
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
     pageWindow:
       description: Number of previous and next page links to supply for the request (defaults to 1).
       in: query
@@ -1107,35 +1136,6 @@ components:
       example: recurring_deposit
       in: path
       name: flag_key
-      required: true
-      schema:
-        type: string
-    perPage:
-      description: The max number of items to include per page or results.
-      in: query
-      name: per_page
-      schema:
-        format: int64
-        type: integer
-    projectId:
-      description: The project identifier
-      example: 12345
-      in: path
-      name: project_id
-      required: true
-      schema:
-        type: integer
-    pageToken:
-      description: Pagination page token. Implements prev, next, last, first
-      in: query
-      name: page_token
-      schema:
-        type: string
-    variationKey:
-      description: The Variation identifier
-      example: high_discount
-      in: path
-      name: variation_key
       required: true
       schema:
         type: string
@@ -1151,22 +1151,16 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Malformed requests and invalid parameter names and types
-    NoContentResponse:
-      description: No content in the response
     NotFoundResponse:
       description: Not found. No content
+    NoContentResponse:
+      description: No content in the response
     UnauthorizedResponse:
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Invalid credentials
-    ConflictResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Conflicting resource state with requested action
     VariationSuccessResponse:
       content:
         application/json:
@@ -1182,6 +1176,12 @@ components:
         the related resource.
 
         '
+    ConflictResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Conflicting resource state with requested action
     ForbiddenResponse:
       content:
         application/problem+json:

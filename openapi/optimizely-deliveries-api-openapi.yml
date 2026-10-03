@@ -57,40 +57,7 @@ paths:
         '404':
           description: Delivery does not exist
 components:
-  parameters:
-    deliveryKey:
-      name: key
-      in: path
-      required: true
-      description: API delivery key. Use `me` to refer to the current delivery.
-      schema:
-        type: string
-      examples:
-        me:
-          value: me
   schemas:
-    ContentSection:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - title
-      - full_details_url
-      description: Represents a section that groups related content.
-      properties:
-        id:
-          type: integer
-          description: Unique identifier of the section.
-          example: 42
-        title:
-          type: string
-          description: The display title of the section.
-          example: Technology
-        full_details_url:
-          type: string
-          format: url
-          description: API link to fetch full details of this section.
-          example: https://api.usea01.idio.episerver.net/1.0/sections/42
     DeliveryContentSelection:
       type: object
       additionalProperties: false
@@ -115,15 +82,6 @@ components:
           - all
           description: Filter content by featured status.
           example: featured
-    DeliveryMap:
-      type: object
-      description: A map of delivery identifiers to their corresponding API keys.
-      properties:
-        deliveries:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/Map'
-          description: Key-value pairs where key is the delivery ID or name and value is the API key.
     Delivery:
       type: object
       additionalProperties: false
@@ -158,10 +116,52 @@ components:
           description: List of sections included in this delivery.
           items:
             $ref: '#/components/schemas/ContentSection'
+    ContentSection:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      description: Represents a section that groups related content.
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the section.
+          example: 42
+        title:
+          type: string
+          description: The display title of the section.
+          example: Technology
+        full_details_url:
+          type: string
+          format: url
+          description: API link to fetch full details of this section.
+          example: https://api.usea01.idio.episerver.net/1.0/sections/42
+    DeliveryMap:
+      type: object
+      description: A map of delivery identifiers to their corresponding API keys.
+      properties:
+        deliveries:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Map'
+          description: Key-value pairs where key is the delivery ID or name and value is the API key.
     Map:
       type: object
       additionalProperties:
         type: string
+  parameters:
+    deliveryKey:
+      name: key
+      in: path
+      required: true
+      description: API delivery key. Use `me` to refer to the current delivery.
+      schema:
+        type: string
+      examples:
+        me:
+          value: me
   securitySchemes:
     key:
       type: apiKey

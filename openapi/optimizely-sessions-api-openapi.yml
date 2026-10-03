@@ -144,21 +144,37 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    Insite.Customers.WebApi.V1.ApiModels.ShipToModel:
+    Insite.Customers.WebApi.V1.ApiModels.BillToModel:
       type: object
       properties:
         uri:
           type: string
-        isNew:
-          type: boolean
-        oneTimeAddress:
+        shipTosUri:
+          type: string
+        isGuest:
           type: boolean
         label:
           type: string
+        budgetEnforcementLevel:
+          type: string
+        costCodeTitle:
+          type: string
+        customerCurrencySymbol:
+          type: string
+        costCodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.CostCodeModel'
+        shipTos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.ShipToModel'
         validation:
           $ref: '#/components/schemas/Insite.Customers.Services.Dtos.CustomerValidationDto'
         isDefault:
           type: boolean
+        accountsReceivable:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AccountsReceivableDto'
         id:
           type: string
         customerNumber:
@@ -226,17 +242,6 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Customers.Services.Dtos.AccountsReceivableDto:
-      type: object
-      properties:
-        agingBuckets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
-        agingBucketTotal:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
-        agingBucketFuture:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
     Insite.Websites.WebApi.V1.ApiModels.StateModel:
       type: object
       properties:
@@ -252,6 +257,44 @@ components:
           type: object
           additionalProperties:
             type: string
+    Insite.Websites.WebApi.V1.ApiModels.LanguageModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        languageCode:
+          type: string
+        cultureCode:
+          type: string
+        description:
+          type: string
+        imageFilePath:
+          type: string
+        currencyPositioning:
+          type: string
+        languageTag:
+          type: string
+        isDefault:
+          type: boolean
+        isLive:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Customers.Services.Dtos.AccountsReceivableDto:
+      type: object
+      properties:
+        agingBuckets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
+        agingBucketTotal:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
+        agingBucketFuture:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
     Insite.Customers.Services.Dtos.AgingBucketDto:
       type: object
       properties:
@@ -262,35 +305,101 @@ components:
           type: string
         label:
           type: string
-    Insite.Websites.WebApi.V1.ApiModels.CountryModel:
+    Insite.Customers.WebApi.V1.ApiModels.CostCodeModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        costCode:
+          type: string
+        description:
+          type: string
+        isActive:
+          type: boolean
+    Insite.Customers.WebApi.V1.ApiModels.ShipToModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        isNew:
+          type: boolean
+        oneTimeAddress:
+          type: boolean
+        label:
+          type: string
+        validation:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.CustomerValidationDto'
+        isDefault:
+          type: boolean
+        id:
+          type: string
+        customerNumber:
+          type: string
+        customerSequence:
+          type: string
+        customerName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        contactFullName:
+          type: string
+        companyName:
+          type: string
+        attention:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+        address3:
+          type: string
+        address4:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        state:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+        country:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.CountryModel'
+        phone:
+          type: string
+        fullAddress:
+          type: string
+        email:
+          type: string
+        fax:
+          type: string
+        isVmiLocation:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Websites.WebApi.V1.ApiModels.CurrencyModel:
       type: object
       properties:
         uri:
           type: string
         id:
           type: string
-        name:
+        currencyCode:
           type: string
-        abbreviation:
+        description:
           type: string
-        states:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+        currencySymbol:
+          type: string
+        isDefault:
+          type: boolean
         properties:
           type: object
           additionalProperties:
             type: string
-    Insite.Customers.Services.Dtos.FieldValidationDto:
-      type: object
-      properties:
-        isRequired:
-          type: boolean
-        isDisabled:
-          type: boolean
-        maxLength:
-          format: int32
-          type: integer
     Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel:
       type: object
       properties:
@@ -354,52 +463,6 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Customers.WebApi.V1.ApiModels.CostCodeModel:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        costCode:
-          type: string
-        description:
-          type: string
-        isActive:
-          type: boolean
-    Insite.Customers.Services.Dtos.CustomerValidationDto:
-      type: object
-      properties:
-        firstName:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        lastName:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        companyName:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        attention:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        address1:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        address2:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        address3:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        address4:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        country:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        state:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        city:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        postalCode:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        phone:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        email:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-        fax:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
     Insite.Account.WebApi.V1.ApiModels.SessionModel:
       type: object
       properties:
@@ -500,127 +563,64 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Websites.WebApi.V1.ApiModels.LanguageModel:
+    Insite.Customers.Services.Dtos.FieldValidationDto:
       type: object
       properties:
-        uri:
-          type: string
-        id:
-          type: string
-        languageCode:
-          type: string
-        cultureCode:
-          type: string
-        description:
-          type: string
-        imageFilePath:
-          type: string
-        currencyPositioning:
-          type: string
-        languageTag:
-          type: string
-        isDefault:
+        isRequired:
           type: boolean
-        isLive:
+        isDisabled:
           type: boolean
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Websites.WebApi.V1.ApiModels.CurrencyModel:
+        maxLength:
+          format: int32
+          type: integer
+    Insite.Customers.Services.Dtos.CustomerValidationDto:
       type: object
       properties:
-        uri:
-          type: string
-        id:
-          type: string
-        currencyCode:
-          type: string
-        description:
-          type: string
-        currencySymbol:
-          type: string
-        isDefault:
-          type: boolean
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Customers.WebApi.V1.ApiModels.BillToModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        shipTosUri:
-          type: string
-        isGuest:
-          type: boolean
-        label:
-          type: string
-        budgetEnforcementLevel:
-          type: string
-        costCodeTitle:
-          type: string
-        customerCurrencySymbol:
-          type: string
-        costCodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.CostCodeModel'
-        shipTos:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.ShipToModel'
-        validation:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.CustomerValidationDto'
-        isDefault:
-          type: boolean
-        accountsReceivable:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AccountsReceivableDto'
-        id:
-          type: string
-        customerNumber:
-          type: string
-        customerSequence:
-          type: string
-        customerName:
-          type: string
         firstName:
-          type: string
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
         lastName:
-          type: string
-        contactFullName:
-          type: string
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
         companyName:
-          type: string
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
         attention:
-          type: string
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
         address1:
-          type: string
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
         address2:
-          type: string
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
         address3:
-          type: string
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
         address4:
-          type: string
-        city:
-          type: string
-        postalCode:
-          type: string
-        state:
-          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
         country:
-          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.CountryModel'
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        state:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        city:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+        postalCode:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
         phone:
-          type: string
-        fullAddress:
-          type: string
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
         email:
-          type: string
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
         fax:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
+    Insite.Websites.WebApi.V1.ApiModels.CountryModel:
+      type: object
+      properties:
+        uri:
           type: string
-        isVmiLocation:
-          type: boolean
+        id:
+          type: string
+        name:
+          type: string
+        abbreviation:
+          type: string
+        states:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
         properties:
           type: object
           additionalProperties:

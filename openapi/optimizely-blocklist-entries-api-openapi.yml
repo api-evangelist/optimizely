@@ -261,17 +261,6 @@ paths:
       - Authorization: []
 components:
   schemas:
-    BlacklistEntryRequestData:
-      required:
-      - entry
-      type: object
-      properties:
-        reason:
-          type: string
-          description: Reason for creating a blocklist entry
-        entry:
-          type: string
-          description: Pattern of the blocklist entry. You can use * for multiple character matching or ? for single character matching. If this characters should be matched as literals they need to be escaped with a backslash (\* or \?)
     RestBlacklistedEntry:
       type: object
       properties:
@@ -333,27 +322,6 @@ components:
           type: string
         rel:
           type: string
-    RestBlacklistEntryStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestBlacklistEntry'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
     RestCount:
       type: object
       properties:
@@ -385,6 +353,38 @@ components:
           type: integer
           description: Total number
           format: int64
+    RestBlacklistEntryStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestBlacklistEntry'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    BlacklistEntryRequestData:
+      required:
+      - entry
+      type: object
+      properties:
+        reason:
+          type: string
+          description: Reason for creating a blocklist entry
+        entry:
+          type: string
+          description: Pattern of the blocklist entry. You can use * for multiple character matching or ? for single character matching. If this characters should be matched as literals they need to be escaped with a backslash (\* or \?)
   securitySchemes:
     Authorization:
       type: apiKey

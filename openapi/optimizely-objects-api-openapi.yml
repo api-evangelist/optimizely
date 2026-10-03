@@ -154,6 +154,11 @@ components:
       properties:
         message:
           type: string
+    Object:
+      type: object
+      additionalProperties:
+        type: string
+        description: any other field within the object that you wish to update associated with the primary key
     40xResponse:
       type: object
       properties:
@@ -176,11 +181,17 @@ components:
                     type: integer
                   message:
                     type: string
-    Object:
+    ObjectInput:
       type: object
-      additionalProperties:
-        type: string
-        description: any other field within the object that you wish to update associated with the primary key
+      description: Input for creating or updating an object in ODP
+      properties:
+        object_id:
+          type: string
+          description: Unique identifier for the object
+        fields:
+          type: object
+          description: Object field values
+          additionalProperties: true
     OdpObject:
       type: object
       description: An object in ODP (product, order, etc.)
@@ -203,17 +214,6 @@ components:
           type: string
           format: date-time
           description: Timestamp when the object was last updated
-    ObjectInput:
-      type: object
-      description: Input for creating or updating an object in ODP
-      properties:
-        object_id:
-          type: string
-          description: Unique identifier for the object
-        fields:
-          type: object
-          description: Object field values
-          additionalProperties: true
   parameters:
     objectId:
       name: object_id

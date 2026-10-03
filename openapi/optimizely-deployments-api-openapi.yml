@@ -551,60 +551,6 @@ paths:
                     result: null
 components:
   schemas:
-    ApiErrorResponseExample:
-      type: object
-      properties: {}
-    DeploymentApiResponseModel:
-      type: object
-      properties:
-        projectId:
-          format: uuid
-          type: string
-        status:
-          type: string
-        startTime:
-          format: date-time
-          type: string
-        endTime:
-          format: date-time
-          type: string
-        percentComplete:
-          format: int32
-          type: integer
-        validationLinks:
-          type: array
-          items:
-            type: string
-        deploymentWarnings:
-          type: array
-          items:
-            type: string
-        deploymentErrors:
-          type: array
-          items:
-            type: string
-        parameters:
-          $ref: '#/components/schemas/CodeDeploymentRequest'
-        id:
-          format: uuid
-          type: string
-    BadRequestApiErrorResponseExample:
-      type: object
-      properties: {}
-    UnauthorizedApiErrorResponseExample:
-      type: object
-      properties: {}
-    StartDeploymentResponse:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            type: string
-        result:
-          $ref: '#/components/schemas/DeploymentApiResponseModel'
-        success:
-          type: boolean
     CompleteDeploymentResponse:
       type: object
       properties:
@@ -616,6 +562,17 @@ components:
           $ref: '#/components/schemas/DeploymentApiResponseModel'
         success:
           type: boolean
+    UnauthorizedApiErrorResponseExample:
+      type: object
+      properties: {}
+    InternalServerErrorApiErrorResponseExample:
+      type: object
+      properties: {}
+    PackageLocationResultModel:
+      type: object
+      properties:
+        location:
+          type: string
     StartCodeDeploymentRequestParameters:
       type: object
       properties:
@@ -650,7 +607,41 @@ components:
         packages:
         - site.cms.app.1.0.0.nupkg
         zeroDowntimeMode: ReadOnly
-    ResetDeploymentResponse:
+    DeploymentApiResponseModel:
+      type: object
+      properties:
+        projectId:
+          format: uuid
+          type: string
+        status:
+          type: string
+        startTime:
+          format: date-time
+          type: string
+        endTime:
+          format: date-time
+          type: string
+        percentComplete:
+          format: int32
+          type: integer
+        validationLinks:
+          type: array
+          items:
+            type: string
+        deploymentWarnings:
+          type: array
+          items:
+            type: string
+        deploymentErrors:
+          type: array
+          items:
+            type: string
+        parameters:
+          $ref: '#/components/schemas/CodeDeploymentRequest'
+        id:
+          format: uuid
+          type: string
+    StartDeploymentResponse:
       type: object
       properties:
         errors:
@@ -661,9 +652,6 @@ components:
           $ref: '#/components/schemas/DeploymentApiResponseModel'
         success:
           type: boolean
-    InternalServerErrorApiErrorResponseExample:
-      type: object
-      properties: {}
     DeploymentListResponse:
       type: object
       properties:
@@ -677,6 +665,9 @@ components:
             $ref: '#/components/schemas/DeploymentApiResponseModel'
         success:
           type: boolean
+    BadRequestApiErrorResponseExample:
+      type: object
+      properties: {}
     NotFoundApiErrorResponseExample:
       type: object
       properties: {}
@@ -693,6 +684,9 @@ components:
         resetWithDbRollback: true
         validateBeforeSwap: true
         complete: false
+    ApiErrorResponseExample:
+      type: object
+      properties: {}
     DeploymentDetailsResponse:
       type: object
       properties:
@@ -704,20 +698,6 @@ components:
           $ref: '#/components/schemas/DeploymentApiResponseModel'
         success:
           type: boolean
-    CodeDeploymentRequest:
-      type: object
-      properties:
-        maintenancePage:
-          type: boolean
-        zeroDowntimeMode:
-          type: string
-        targetEnvironment:
-          type: string
-    PackageLocationResultModel:
-      type: object
-      properties:
-        location:
-          type: string
     UploadPackageLocationResponse:
       type: object
       properties:
@@ -727,6 +707,26 @@ components:
             type: string
         result:
           $ref: '#/components/schemas/PackageLocationResultModel'
+        success:
+          type: boolean
+    CodeDeploymentRequest:
+      type: object
+      properties:
+        maintenancePage:
+          type: boolean
+        zeroDowntimeMode:
+          type: string
+        targetEnvironment:
+          type: string
+    ResetDeploymentResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/DeploymentApiResponseModel'
         success:
           type: boolean
 x-readme:
