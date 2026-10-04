@@ -207,7 +207,44 @@ paths:
                     result: null
 components:
   schemas:
+    BadRequestApiErrorResponseExample:
+      type: object
+      properties: {}
+    GetBlobStorageContainersResponse:
+      type: object
+      properties:
+        environment:
+          type: string
+        storageContainers:
+          type: array
+          items:
+            type: string
+        projectId:
+          format: uuid
+          type: string
+    GenerateBlobContainerSasLinkRequestParameters:
+      type: object
+      properties:
+        retentionHours:
+          format: int32
+          type: integer
+      example:
+        retentionHours: 24
     InternalServerErrorApiErrorResponseExample:
+      type: object
+      properties: {}
+    GetBlobStorageContainersApiResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        result:
+          $ref: '#/components/schemas/GetBlobStorageContainersResponse'
+        success:
+          type: boolean
+    UnauthorizedApiErrorResponseExample:
       type: object
       properties: {}
     GenerateBlobContainerSasLinkResponse:
@@ -225,32 +262,6 @@ components:
         projectId:
           format: uuid
           type: string
-    GetBlobStorageContainersApiResponse:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            type: string
-        result:
-          $ref: '#/components/schemas/GetBlobStorageContainersResponse'
-        success:
-          type: boolean
-    GetBlobStorageContainersResponse:
-      type: object
-      properties:
-        environment:
-          type: string
-        storageContainers:
-          type: array
-          items:
-            type: string
-        projectId:
-          format: uuid
-          type: string
-    UnauthorizedApiErrorResponseExample:
-      type: object
-      properties: {}
     GenerateBlobContainerSasLinkApiResponse:
       type: object
       properties:
@@ -262,18 +273,7 @@ components:
           $ref: '#/components/schemas/GenerateBlobContainerSasLinkResponse'
         success:
           type: boolean
-    GenerateBlobContainerSasLinkRequestParameters:
-      type: object
-      properties:
-        retentionHours:
-          format: int32
-          type: integer
-      example:
-        retentionHours: 24
     NotFoundApiErrorResponseExample:
-      type: object
-      properties: {}
-    BadRequestApiErrorResponseExample:
       type: object
       properties: {}
 x-readme:

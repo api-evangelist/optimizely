@@ -174,6 +174,73 @@ paths:
               example: '{"message": "Forbidden"}'
 components:
   schemas:
+    Object:
+      required:
+      - name
+      - display_name
+      - public_read
+      - alias
+      - fields
+      type: object
+      properties:
+        name:
+          type: string
+          description: the plural name of the object (for example, tickets)
+        display_name:
+          type: string
+          description: the human-readable name of the object (for example, Tickets)
+        public_read:
+          type: boolean
+          description: enable access with the API public key
+          default: false
+        alias:
+          type: string
+          description: the singular name of the object (for example, ticket)
+        fields:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: object_id
+              display_name:
+                type: string
+                example: New Object Identifier
+              type:
+                type: string
+                example: string
+              primary:
+                type: boolean
+                example: true
+                default: true
+          description: an array of fields objects
+        relations:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: my_relation
+              display_name:
+                type: string
+                example: My Relationship
+              child_object:
+                type: string
+                example: child
+              join_fields:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    parent:
+                      type: string
+                      example: child_id
+                    child:
+                      type: string
+                      example: child_id
+          description: an array of relations objects
     Relation:
       required:
       - child_object
@@ -242,73 +309,6 @@ components:
                   reason:
                     type: string
                     example: already used by another object
-    Object:
-      required:
-      - name
-      - display_name
-      - public_read
-      - alias
-      - fields
-      type: object
-      properties:
-        name:
-          type: string
-          description: the plural name of the object (for example, tickets)
-        display_name:
-          type: string
-          description: the human-readable name of the object (for example, Tickets)
-        public_read:
-          type: boolean
-          description: enable access with the API public key
-          default: false
-        alias:
-          type: string
-          description: the singular name of the object (for example, ticket)
-        fields:
-          type: array
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-                example: object_id
-              display_name:
-                type: string
-                example: New Object Identifier
-              type:
-                type: string
-                example: string
-              primary:
-                type: boolean
-                example: true
-                default: true
-          description: an array of fields objects
-        relations:
-          type: array
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-                example: my_relation
-              display_name:
-                type: string
-                example: My Relationship
-              child_object:
-                type: string
-                example: child
-              join_fields:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    parent:
-                      type: string
-                      example: child_id
-                    child:
-                      type: string
-                      example: child_id
-          description: an array of relations objects
   securitySchemes:
     x-api-key:
       type: apiKey

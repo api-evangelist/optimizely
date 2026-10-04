@@ -183,28 +183,6 @@ paths:
         required: true
 components:
   schemas:
-    PaginatedSchedulesResponse:
-      title: PaginatedSchedulesResponse
-      required:
-      - items
-      - total
-      - has_more
-      type: object
-      properties:
-        items:
-          title: Scheduled Changes
-          type: array
-          items:
-            $ref: '#/components/schemas/ScheduledChange'
-          description: List of scheduled changes.
-        total:
-          title: Total
-          type: integer
-          description: Total number of scheduled changes.
-        has_more:
-          title: Has More
-          type: boolean
-          description: Boolean that indicates whether there are still any schedules left in the next page.
     ValidationError:
       title: ValidationError
       required:
@@ -229,22 +207,20 @@ components:
           title: Error Type
           type: string
           description: Error type
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - details
-      - status
+    HTTPValidationError:
+      title: HTTPValidationError
       type: object
       properties:
-        details:
-          title: Details
-          type: string
-          description: Details of Error.
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
         status:
           title: Status
           type: integer
           description: Status code of the response.
-          example: 400
+          example: 422
     ScheduledTime:
       title: ScheduledTime
       required:
@@ -268,53 +244,55 @@ components:
           type: string
           description: 'The schedule will run at this date. Expected format: yyyy-mm-dd.'
           example: '2023-07-30'
-    ScheduleAction:
-      title: ScheduleAction
+    PaginatedSchedulesResponse:
+      title: PaginatedSchedulesResponse
       required:
-      - subject
-      - changed_element
-      - value
+      - items
+      - total
+      - has_more
       type: object
       properties:
-        subject:
-          type: object
-          description: The entity this action will apply to
-          properties:
-            key:
-              type: string
-              description: The identifier of the subject
-            type:
-              type: string
-              description: The type of subject. Can be a flag or a rule of the flag
-              enum:
-              - flag
-              - rule
-        changed_element:
+        items:
+          title: Scheduled Changes
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduledChange'
+          description: List of scheduled changes.
+        total:
+          title: Total
+          type: integer
+          description: Total number of scheduled changes.
+        has_more:
+          title: Has More
+          type: boolean
+          description: Boolean that indicates whether there are still any schedules left in the next page.
+    ScheduledChangeCreateRequest:
+      title: ScheduledChangeCreateRequest
+      required:
+      - account_id
+      - actions
+      - schedule
+      - environment
+      type: object
+      properties:
+        account_id:
+          title: Account Id
+          type: integer
+          description: The account the Project is associated with.
+        actions:
+          title: Actions
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleAction'
+          description: Schedule action details.
+        schedule:
+          title: Schedule
+          allOf:
+          - $ref: '#/components/schemas/ScheduledTime'
+          description: Schedule details.
+        environment:
+          title: Environment
           type: string
-          enum:
-          - status
-          - percentage_included
-          - audience_conditions
-        value:
-          description: Value of the action. Can be of any type.
-          type: object
-          $ref: '#/components/schemas/ActionValue'
-    SortOrder:
-      title: SortOrder
-      type: string
-      enum:
-      - asc
-      - desc
-    ActionValue:
-      title: ActionValue
-      description: "The value of a schedule action.\n\nFor status change, value can be on/off. \n\nFor changing traffic percentage, value should be integer. For example, for 40% traffic, value should be 4000.\n"
-      anyOf:
-      - type: string
-        enum:
-        - 'on'
-        - 'off'
-      - type: integer
-        example: 5000
     ScheduledChange:
       title: ScheduledChange
       type: object
@@ -396,6 +374,38 @@ components:
           title: Created By
           type: string
           description: The user who created the schedule.
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - details
+      - status
+      type: object
+      properties:
+        details:
+          title: Details
+          type: string
+          description: Details of Error.
+        status:
+          title: Status
+          type: integer
+          description: Status code of the response.
+          example: 400
+    ActionValue:
+      title: ActionValue
+      description: "The value of a schedule action.\n\nFor status change, value can be on/off. \n\nFor changing traffic percentage, value should be integer. For example, for 40% traffic, value should be 4000.\n"
+      anyOf:
+      - type: string
+        enum:
+        - 'on'
+        - 'off'
+      - type: integer
+        example: 5000
+    SortOrder:
+      title: SortOrder
+      type: string
+      enum:
+      - asc
+      - desc
     ScheduledTimeWithUTC:
       title: ScheduledTimeWithUTC
       required:
@@ -425,47 +435,37 @@ components:
           type: string
           description: The utc timestamp when the scheduled job will be executed.
           example: 2023-07-30T07:02:00+0000
-    ScheduledChangeCreateRequest:
-      title: ScheduledChangeCreateRequest
+    ScheduleAction:
+      title: ScheduleAction
       required:
-      - account_id
-      - actions
-      - schedule
-      - environment
+      - subject
+      - changed_element
+      - value
       type: object
       properties:
-        account_id:
-          title: Account Id
-          type: integer
-          description: The account the Project is associated with.
-        actions:
-          title: Actions
-          type: array
-          items:
-            $ref: '#/components/schemas/ScheduleAction'
-          description: Schedule action details.
-        schedule:
-          title: Schedule
-          allOf:
-          - $ref: '#/components/schemas/ScheduledTime'
-          description: Schedule details.
-        environment:
-          title: Environment
+        subject:
+          type: object
+          description: The entity this action will apply to
+          properties:
+            key:
+              type: string
+              description: The identifier of the subject
+            type:
+              type: string
+              description: The type of subject. Can be a flag or a rule of the flag
+              enum:
+              - flag
+              - rule
+        changed_element:
           type: string
-    HTTPValidationError:
-      title: HTTPValidationError
-      type: object
-      properties:
-        detail:
-          title: Detail
-          type: array
-          items:
-            $ref: '#/components/schemas/ValidationError'
-        status:
-          title: Status
-          type: integer
-          description: Status code of the response.
-          example: 422
+          enum:
+          - status
+          - percentage_included
+          - audience_conditions
+        value:
+          description: Value of the action. Can be of any type.
+          type: object
+          $ref: '#/components/schemas/ActionValue'
   securitySchemes:
     BearerAuth:
       description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token

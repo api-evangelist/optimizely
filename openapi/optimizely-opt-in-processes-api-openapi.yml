@@ -160,6 +160,27 @@ paths:
       - Authorization: []
 components:
   schemas:
+    RestOptinProcessStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestOptinProcess'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     RestOptinProcess:
       type: object
       properties:
@@ -217,6 +238,13 @@ components:
                 type: string
                 format: uri
             description: Restful links
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
     OptinProcessRequestData:
       required:
       - name
@@ -243,34 +271,6 @@ components:
         description:
           type: string
           description: Internal description of the opt-in process
-    RestOptinProcessStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestOptinProcess'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
   securitySchemes:
     Authorization:
       type: apiKey

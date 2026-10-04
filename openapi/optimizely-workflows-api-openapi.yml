@@ -83,32 +83,75 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
-  responses:
-    Forbidden:
-      description: Permission error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: You do not have the permission to perform this operation
-    NotFound:
-      description: Not found error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Resource not found
-    Unauthorized:
-      description: Authorization error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Unauthorized
   schemas:
+    FieldTypeSimpleNumber:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          has_thousand_separator:
+            type: boolean
+            description: Whether the numerical field has a thousand separator
+            example: true
+          decimal_places:
+            type:
+            - integer
+            - 'null'
+            description: Decimal place of the numerical field
+            example: 2
+        required:
+        - has_thousand_separator
+        - decimal_places
+    FieldTypeCommon:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+    FieldBaseType:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Identifier of the field
+          example: 64be245ec0d79e79fdf1ad84
+        name:
+          type: string
+          description: Name of the field
+          example: Dropdown 101
+        values:
+          type: array
+          description: List of selected values or from user input
+          items:
+            type: string
+        type:
+          type: string
+          description: Type of the field
+          example: text
+      required:
+      - id
+      - name
+      - type
+      - values
+    Pagination:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
     FieldTypeLabel:
       allOf:
       - $ref: '#/components/schemas/FieldBaseType'
@@ -138,15 +181,11 @@ components:
         required:
         - is_multi_select
         - choices
-    FieldTypeSimpleNumber:
+    FieldTypePercentageNumber:
       allOf:
       - $ref: '#/components/schemas/FieldBaseType'
       - type: object
         properties:
-          has_thousand_separator:
-            type: boolean
-            description: Whether the numerical field has a thousand separator
-            example: true
           decimal_places:
             type:
             - integer
@@ -154,28 +193,7 @@ components:
             description: Decimal place of the numerical field
             example: 2
         required:
-        - has_thousand_separator
         - decimal_places
-    Pagination:
-      type: object
-      additionalProperties: false
-      description: Pagination related information
-      properties:
-        next:
-          type:
-          - string
-          - 'null'
-          description: URL to the next page
-          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
-        previous:
-          type:
-          - string
-          - 'null'
-          description: URL to the previous page
-          example: null
-      required:
-      - next
-      - previous
     FieldTypeCurrencyNumber:
       allOf:
       - $ref: '#/components/schemas/FieldBaseType'
@@ -199,71 +217,22 @@ components:
         - has_thousand_separator
         - decimal_places
         - currency_code
-    FieldTypeRadio:
-      allOf:
-      - $ref: '#/components/schemas/FieldBaseType'
-      - type: object
-        properties:
-          choices:
-            type: array
-            description: Choices of the radio button
-            items:
-              type: object
-              properties:
-                id:
-                  type: string
-                  description: Identifier of the choice
-                  example: 6ceee2f4fa3411ecb37802420ac8001b
-                name:
-                  type: string
-                  description: Name of the choice
-                  example: Radio 1 Choice 1
-              required:
-              - id
-              - name
-              - color
-        required:
-        - choices
-    FieldTypePercentageNumber:
-      allOf:
-      - $ref: '#/components/schemas/FieldBaseType'
-      - type: object
-        properties:
-          decimal_places:
-            type:
-            - integer
-            - 'null'
-            description: Decimal place of the numerical field
-            example: 2
-        required:
-        - decimal_places
-    WorkflowListResponseItem:
+    Error:
       type: object
-      additionalProperties: false
+      additionalProperties: true
+      description: Error payload
       properties:
-        id:
+        message:
           type: string
-          description: Unique identifier of the workflow
-          example: 6e7f910551b00a722e04188
-        name:
-          type: string
-          description: Name of the workflow
-          example: The awesome workflow
-        description:
-          type:
-          - string
-          - 'null'
-          description: Description of the workflow
-          example: Nice description
-        is_flexible:
-          type: boolean
-          description: Indicates whether the workflow is flexible
-          example: true
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
       required:
-      - id
-      - name
-      - description
-      - is_flexible
+      - message
     FieldTypeDropdown:
       allOf:
       - $ref: '#/components/schemas/FieldBaseType'
@@ -292,36 +261,31 @@ components:
         required:
         - is_multi_select
         - choices
-    FieldBaseType:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: Identifier of the field
-          example: 64be245ec0d79e79fdf1ad84
-        name:
-          type: string
-          description: Name of the field
-          example: Dropdown 101
-        values:
-          type: array
-          description: List of selected values or from user input
-          items:
-            type: string
-        type:
-          type: string
-          description: Type of the field
-          example: text
-      required:
-      - id
-      - name
-      - type
-      - values
-    FieldTypeCommon:
+    FieldTypeRadio:
       allOf:
       - $ref: '#/components/schemas/FieldBaseType'
       - type: object
+        properties:
+          choices:
+            type: array
+            description: Choices of the radio button
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Radio 1 Choice 1
+              required:
+              - id
+              - name
+              - color
+        required:
+        - choices
     WorkflowResponse:
       type: object
       additionalProperties: false
@@ -479,6 +443,58 @@ components:
       - is_resource_management_enabled
       - steps
       - fields
+    WorkflowListResponseItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the workflow
+          example: 6e7f910551b00a722e04188
+        name:
+          type: string
+          description: Name of the workflow
+          example: The awesome workflow
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the workflow
+          example: Nice description
+        is_flexible:
+          type: boolean
+          description: Indicates whether the workflow is flexible
+          example: true
+      required:
+      - id
+      - name
+      - description
+      - is_flexible
+    FieldTypeCheckbox:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          choices:
+            type: array
+            description: Choices of the checkbox
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Checkbox 1 Choice 1
+              required:
+              - id
+              - name
+              - color
+        required:
+        - choices
     ObjectFieldCreateResponse:
       type: object
       additionalProperties: false
@@ -507,47 +523,31 @@ components:
           text: '#/components/schemas/FieldTypeCommon'
           text_area: '#/components/schemas/FieldTypeCommon'
           video: '#/components/schemas/FieldTypeCommon'
-    Error:
-      type: object
-      additionalProperties: true
-      description: Error payload
-      properties:
-        message:
-          type: string
-          description: Message describing the error
-          example: Not found
-        errors:
-          type: object
-          description: Additional information
-          additionalProperties: true
-          properties: {}
-      required:
-      - message
-    FieldTypeCheckbox:
-      allOf:
-      - $ref: '#/components/schemas/FieldBaseType'
-      - type: object
-        properties:
-          choices:
-            type: array
-            description: Choices of the checkbox
-            items:
-              type: object
-              properties:
-                id:
-                  type: string
-                  description: Identifier of the choice
-                  example: 6ceee2f4fa3411ecb37802420ac8001b
-                name:
-                  type: string
-                  description: Name of the choice
-                  example: Checkbox 1 Choice 1
-              required:
-              - id
-              - name
-              - color
-        required:
-        - choices
+  responses:
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
   parameters:
     offset:
       name: offset

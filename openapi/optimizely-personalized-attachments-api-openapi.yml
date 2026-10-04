@@ -48,6 +48,29 @@ paths:
       - Authorization: []
 components:
   schemas:
+    RestMultiPartRequestSchema:
+      required:
+      - file
+      type: object
+      properties:
+        file:
+          type: string
+          description: file to be uploaded
+          format: binary
+        name:
+          type: string
+          description: name of the attachment
+    RestPersonalizedAttachmentUpload:
+      type: object
+      properties:
+        uploadedFiles:
+          type: array
+          description: List of uploaded attachments
+          items:
+            $ref: '#/components/schemas/RestPersonalizedAttachment'
+        token:
+          type: string
+          description: Personalized attachment token for all files uploaded - can be used when sending transactional mailings
     RestPersonalizedAttachment:
       type: object
       properties:
@@ -74,29 +97,6 @@ components:
           description: Creation date
           format: date-time
       description: List of uploaded attachments
-    RestPersonalizedAttachmentUpload:
-      type: object
-      properties:
-        uploadedFiles:
-          type: array
-          description: List of uploaded attachments
-          items:
-            $ref: '#/components/schemas/RestPersonalizedAttachment'
-        token:
-          type: string
-          description: Personalized attachment token for all files uploaded - can be used when sending transactional mailings
-    RestMultiPartRequestSchema:
-      required:
-      - file
-      type: object
-      properties:
-        file:
-          type: string
-          description: file to be uploaded
-          format: binary
-        name:
-          type: string
-          description: name of the attachment
   securitySchemes:
     Authorization:
       type: apiKey

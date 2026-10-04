@@ -760,29 +760,6 @@ paths:
     - url: https://api.optimizely.com/v2
 components:
   schemas:
-    AssetTypeObjectField:
-      allOf:
-      - $ref: '#/components/schemas/BaseObjectField'
-      - $ref: '#/components/schemas/AssetTypeObjectFieldUpdatePayload'
-    DateTypeObjectField:
-      allOf:
-      - $ref: '#/components/schemas/BaseObjectField'
-      - $ref: '#/components/schemas/DateTypeObjectFieldUpdatePayload'
-    DropdownTypeObjectFieldUpdatePayload:
-      allOf:
-      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
-      - type: object
-        properties:
-          values:
-            type: array
-            description: Array of choice ID. Multiple choice values are not acceptable for `is_multi_select=false`.
-            items:
-              type: string
-              example: 9119a313057e401189407116fcd3
-    RadioButtonTypeObjectField:
-      allOf:
-      - $ref: '#/components/schemas/BaseObjectField'
-      - $ref: '#/components/schemas/RadioButtonTypeObjectFieldUpdatePayload'
     EventResponse:
       type: object
       additionalProperties: false
@@ -860,392 +837,10 @@ components:
       - reference_id
       - created_by
       - links
-    FieldTypeLabel:
-      allOf:
-      - $ref: '#/components/schemas/FieldBaseType'
-      - type: object
-        properties:
-          is_multi_select:
-            type: boolean
-            description: Select multiple values from the label
-          choices:
-            type: array
-            description: Choices of the label
-            items:
-              type: object
-              properties:
-                id:
-                  type: string
-                  description: Identifier of the choice
-                  example: 6ceee2f4fa3411ecb37802420ac8001b
-                name:
-                  type: string
-                  description: Name of the choice
-                  example: Label 1 Choice 1
-              required:
-              - id
-              - name
-              - color
-        required:
-        - is_multi_select
-        - choices
-    MultiChoiceTypeObjectFieldUpdatePayload:
-      allOf:
-      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
-      - type: object
-        properties:
-          values:
-            type: array
-            description: Array of choice IDs
-            items:
-              type: string
-              example: 9119a313057e401189407116fcd3
-    Pagination:
-      type: object
-      additionalProperties: false
-      description: Pagination related information
-      properties:
-        next:
-          type:
-          - string
-          - 'null'
-          description: URL to the next page
-          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
-        previous:
-          type:
-          - string
-          - 'null'
-          description: URL to the previous page
-          example: null
-      required:
-      - next
-      - previous
-    FieldTypeSimpleNumber:
-      allOf:
-      - $ref: '#/components/schemas/FieldBaseType'
-      - type: object
-        properties:
-          has_thousand_separator:
-            type: boolean
-            description: Whether the numerical field has a thousand separator
-            example: true
-          decimal_places:
-            type:
-            - integer
-            - 'null'
-            description: Decimal place of the numerical field
-            example: 2
-        required:
-        - has_thousand_separator
-        - decimal_places
-    EventFieldsUpdateRequest:
-      type: array
-      items:
-        type: object
-        additionalProperties: false
-        oneOf:
-        - $ref: '#/components/schemas/MultiChoiceTypeObjectField'
-        - $ref: '#/components/schemas/StringTypeObjectField'
-        - $ref: '#/components/schemas/DropdownTypeObjectField'
-        - $ref: '#/components/schemas/RadioButtonTypeObjectField'
-        - $ref: '#/components/schemas/NumberTypeObjectField'
-        - $ref: '#/components/schemas/DateTypeObjectField'
-        - $ref: '#/components/schemas/AssetTypeObjectField'
-        discriminator:
-          propertyName: type
-          mapping:
-            checkbox: '#/components/schemas/MultiChoiceTypeObjectField'
-            currency_number: '#/components/schemas/NumberTypeObjectField'
-            date: '#/components/schemas/DateTypeObjectField'
-            dropdown: '#/components/schemas/DropdownTypeObjectField'
-            label: '#/components/schemas/MultiChoiceTypeObjectField'
-            radio_button: '#/components/schemas/RadioButtonTypeObjectField'
-            percentage_number: '#/components/schemas/NumberTypeObjectField'
-            simple_number: '#/components/schemas/NumberTypeObjectField'
-            text: '#/components/schemas/StringTypeObjectField'
-            text_area: '#/components/schemas/StringTypeObjectField'
-            rich_text: '#/components/schemas/StringTypeObjectField'
-            image: '#/components/schemas/AssetTypeObjectField'
-            video: '#/components/schemas/AssetTypeObjectField'
-    BaseObjectFieldUpdatePayload:
-      type: object
-      properties:
-        type:
-          type: string
-          description: Type of the field
-          example: checkbox
-        values:
-          type: array
-          description: Values for the campaign field
-      required:
-      - type
-      - values
-    FieldTypeCurrencyNumber:
-      allOf:
-      - $ref: '#/components/schemas/FieldBaseType'
-      - type: object
-        properties:
-          has_thousand_separator:
-            type: boolean
-            description: Whether the numerical field has a thousand separator
-            example: true
-          decimal_places:
-            type:
-            - integer
-            - 'null'
-            description: Decimal place of the numerical field
-            example: 2
-          currency_code:
-            type: string
-            description: Currency code of the numerical field
-            example: USD
-        required:
-        - has_thousand_separator
-        - decimal_places
-        - currency_code
-    FieldTypeRadio:
-      allOf:
-      - $ref: '#/components/schemas/FieldBaseType'
-      - type: object
-        properties:
-          choices:
-            type: array
-            description: Choices of the radio button
-            items:
-              type: object
-              properties:
-                id:
-                  type: string
-                  description: Identifier of the choice
-                  example: 6ceee2f4fa3411ecb37802420ac8001b
-                name:
-                  type: string
-                  description: Name of the choice
-                  example: Radio 1 Choice 1
-              required:
-              - id
-              - name
-              - color
-        required:
-        - choices
     MultiChoiceTypeObjectField:
       allOf:
       - $ref: '#/components/schemas/BaseObjectField'
       - $ref: '#/components/schemas/MultiChoiceTypeObjectFieldUpdatePayload'
-    StringTypeObjectField:
-      allOf:
-      - $ref: '#/components/schemas/BaseObjectField'
-      - $ref: '#/components/schemas/StringTypeObjectFieldUpdatePayload'
-    DateTypeObjectFieldUpdatePayload:
-      allOf:
-      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
-      - type: object
-        properties:
-          values:
-            type: array
-            description: Array of date-time values, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
-            items:
-              type: string
-              format: date-time
-              description: Date and time, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
-              example: '2020-02-10T10:40:45Z'
-            maxItems: 1
-    FieldTypePercentageNumber:
-      allOf:
-      - $ref: '#/components/schemas/FieldBaseType'
-      - type: object
-        properties:
-          decimal_places:
-            type:
-            - integer
-            - 'null'
-            description: Decimal place of the numerical field
-            example: 2
-        required:
-        - decimal_places
-    DropdownTypeObjectField:
-      allOf:
-      - $ref: '#/components/schemas/BaseObjectField'
-      - $ref: '#/components/schemas/DropdownTypeObjectFieldUpdatePayload'
-    AssetTypeObjectFieldUpdatePayload:
-      allOf:
-      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
-      - type: object
-        properties:
-          values:
-            type: array
-            description: Payload for fields with attachments
-            maxItems: 1
-            items:
-              properties:
-                title:
-                  type: string
-                  description: Title of the image or video
-                  example: Sample.jpeg
-                  minLength: 1
-                key:
-                  type: string
-                  description: Unique identifier of the file upload session. This is the `upload_meta_fields.key` field retrieved from the `/v3/upload-url` endpoint.
-                  example: ce8995aea58b11ea8cd90242ac120005
-              required:
-              - title
-              - key
-    FieldListResponseItem:
-      oneOf:
-      - $ref: '#/components/schemas/FieldTypeCommon'
-      - $ref: '#/components/schemas/FieldTypeLabel'
-      - $ref: '#/components/schemas/FieldTypeDropdown'
-      - $ref: '#/components/schemas/FieldTypeRadio'
-      - $ref: '#/components/schemas/FieldTypeCheckbox'
-      - $ref: '#/components/schemas/FieldTypeSimpleNumber'
-      - $ref: '#/components/schemas/FieldTypePercentageNumber'
-      - $ref: '#/components/schemas/FieldTypeCurrencyNumber'
-      discriminator:
-        propertyName: type
-        mapping:
-          checkbox: '#/components/schemas/FieldTypeCheckbox'
-          currency_number: '#/components/schemas/FieldTypeCurrencyNumber'
-          date: '#/components/schemas/FieldTypeCommon'
-          dropdown: '#/components/schemas/FieldTypeDropdown'
-          image: '#/components/schemas/FieldTypeCommon'
-          label: '#/components/schemas/FieldTypeLabel'
-          percentage_number: '#/components/schemas/FieldTypePercentageNumber'
-          radio_button: '#/components/schemas/FieldTypeRadio'
-          rich_text: '#/components/schemas/FieldTypeCommon'
-          simple_number: '#/components/schemas/FieldTypeSimpleNumber'
-          text: '#/components/schemas/FieldTypeCommon'
-          text_area: '#/components/schemas/FieldTypeCommon'
-          video: '#/components/schemas/FieldTypeCommon'
-    BaseObjectField:
-      allOf:
-      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
-      - type: object
-        properties:
-          id:
-            type: string
-            description: Unique identifier of the field
-            example: 41aac313bda1e40b6cde7116fc24a
-        required:
-        - id
-    EventUpdateRequest:
-      type: object
-      additionalProperties: false
-      properties:
-        title:
-          type: string
-          description: Title of the event
-          example: The awesome event
-        description:
-          type: string
-          description: Description of the event
-          example: This awesome event is created to celebrate our clients
-        is_all_day:
-          type: boolean
-          description: Indicate if the event is all day long
-          example: false
-        start_date:
-          type: string
-          format: date-time
-          description: 'Start date and time of the event in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`'
-          example: '1996-09-09T12:18:00Z'
-        end_date:
-          type: string
-          format: date-time
-          description: 'End date and time of the event in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`'
-          example: '2024-12-24T12:18:00Z'
-    NumberTypeObjectFieldUpdatePayload:
-      allOf:
-      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
-      - type: object
-        properties:
-          values:
-            type: array
-            description: Accepts a single numeric value
-            maxItems: 1
-            items:
-              type: number
-              example: 200
-    FieldTypeDropdown:
-      allOf:
-      - $ref: '#/components/schemas/FieldBaseType'
-      - type: object
-        properties:
-          is_multi_select:
-            type: boolean
-            description: Select multiple values from the dropdown
-          choices:
-            type: array
-            description: Choices of the dropdown
-            items:
-              type: object
-              properties:
-                id:
-                  type: string
-                  description: Identifier of the choice
-                  example: 6ceee2f4fa3411ecb37802420ac8001b
-                name:
-                  type: string
-                  description: Name of the choice
-                  example: Dropdown 1 Choice 1
-              required:
-              - id
-              - name
-        required:
-        - is_multi_select
-        - choices
-    StringTypeObjectFieldUpdatePayload:
-      allOf:
-      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
-      - type: object
-        properties:
-          values:
-            type: array
-            description: Any single string
-            items:
-              type: string
-              example: This is a test string
-    FieldBaseType:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-          description: Identifier of the field
-          example: 64be245ec0d79e79fdf1ad84
-        name:
-          type: string
-          description: Name of the field
-          example: Dropdown 101
-        values:
-          type: array
-          description: List of selected values or from user input
-          items:
-            type: string
-        type:
-          type: string
-          description: Type of the field
-          example: text
-      required:
-      - id
-      - name
-      - type
-      - values
-    FieldTypeCommon:
-      allOf:
-      - $ref: '#/components/schemas/FieldBaseType'
-      - type: object
-    RadioButtonTypeObjectFieldUpdatePayload:
-      allOf:
-      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
-      - type: object
-        properties:
-          values:
-            type: array
-            description: Accepts a single choice Id.
-            maxItems: 1
-            items:
-              type: string
-              example: 9119a313057e401189407116fcd3
     EventCreateRequest:
       type: object
       additionalProperties: false
@@ -1312,6 +907,310 @@ components:
       - is_all_day
       - start_date
       - end_date
+    NumberTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Accepts a single numeric value
+            maxItems: 1
+            items:
+              type: number
+              example: 200
+    RadioButtonTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Accepts a single choice Id.
+            maxItems: 1
+            items:
+              type: string
+              example: 9119a313057e401189407116fcd3
+    DropdownTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of choice ID. Multiple choice values are not acceptable for `is_multi_select=false`.
+            items:
+              type: string
+              example: 9119a313057e401189407116fcd3
+    FieldTypeSimpleNumber:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          has_thousand_separator:
+            type: boolean
+            description: Whether the numerical field has a thousand separator
+            example: true
+          decimal_places:
+            type:
+            - integer
+            - 'null'
+            description: Decimal place of the numerical field
+            example: 2
+        required:
+        - has_thousand_separator
+        - decimal_places
+    DateTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of date-time values, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+            items:
+              type: string
+              format: date-time
+              description: Date and time, in ISO 8601 UTC format (2020-02-10T10:40:45Z)
+              example: '2020-02-10T10:40:45Z'
+            maxItems: 1
+    FieldTypeCommon:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+    MultiChoiceTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Array of choice IDs
+            items:
+              type: string
+              example: 9119a313057e401189407116fcd3
+    FieldBaseType:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Identifier of the field
+          example: 64be245ec0d79e79fdf1ad84
+        name:
+          type: string
+          description: Name of the field
+          example: Dropdown 101
+        values:
+          type: array
+          description: List of selected values or from user input
+          items:
+            type: string
+        type:
+          type: string
+          description: Type of the field
+          example: text
+      required:
+      - id
+      - name
+      - type
+      - values
+    StringTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Any single string
+            items:
+              type: string
+              example: This is a test string
+    AssetTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/AssetTypeObjectFieldUpdatePayload'
+    Pagination:
+      type: object
+      additionalProperties: false
+      description: Pagination related information
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          description: URL to the next page
+          example: https://api.cmp.optimizely.com/<some-path-to-next-page>?offset=10&page_size=10
+        previous:
+          type:
+          - string
+          - 'null'
+          description: URL to the previous page
+          example: null
+      required:
+      - next
+      - previous
+    BaseObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          id:
+            type: string
+            description: Unique identifier of the field
+            example: 41aac313bda1e40b6cde7116fc24a
+        required:
+        - id
+    FieldTypeLabel:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          is_multi_select:
+            type: boolean
+            description: Select multiple values from the label
+          choices:
+            type: array
+            description: Choices of the label
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Label 1 Choice 1
+              required:
+              - id
+              - name
+              - color
+        required:
+        - is_multi_select
+        - choices
+    FieldTypePercentageNumber:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          decimal_places:
+            type:
+            - integer
+            - 'null'
+            description: Decimal place of the numerical field
+            example: 2
+        required:
+        - decimal_places
+    DropdownTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/DropdownTypeObjectFieldUpdatePayload'
+    FieldListResponseItem:
+      oneOf:
+      - $ref: '#/components/schemas/FieldTypeCommon'
+      - $ref: '#/components/schemas/FieldTypeLabel'
+      - $ref: '#/components/schemas/FieldTypeDropdown'
+      - $ref: '#/components/schemas/FieldTypeRadio'
+      - $ref: '#/components/schemas/FieldTypeCheckbox'
+      - $ref: '#/components/schemas/FieldTypeSimpleNumber'
+      - $ref: '#/components/schemas/FieldTypePercentageNumber'
+      - $ref: '#/components/schemas/FieldTypeCurrencyNumber'
+      discriminator:
+        propertyName: type
+        mapping:
+          checkbox: '#/components/schemas/FieldTypeCheckbox'
+          currency_number: '#/components/schemas/FieldTypeCurrencyNumber'
+          date: '#/components/schemas/FieldTypeCommon'
+          dropdown: '#/components/schemas/FieldTypeDropdown'
+          image: '#/components/schemas/FieldTypeCommon'
+          label: '#/components/schemas/FieldTypeLabel'
+          percentage_number: '#/components/schemas/FieldTypePercentageNumber'
+          radio_button: '#/components/schemas/FieldTypeRadio'
+          rich_text: '#/components/schemas/FieldTypeCommon'
+          simple_number: '#/components/schemas/FieldTypeSimpleNumber'
+          text: '#/components/schemas/FieldTypeCommon'
+          text_area: '#/components/schemas/FieldTypeCommon'
+          video: '#/components/schemas/FieldTypeCommon'
+    EventUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the event
+          example: The awesome event
+        description:
+          type: string
+          description: Description of the event
+          example: This awesome event is created to celebrate our clients
+        is_all_day:
+          type: boolean
+          description: Indicate if the event is all day long
+          example: false
+        start_date:
+          type: string
+          format: date-time
+          description: 'Start date and time of the event in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`'
+          example: '1996-09-09T12:18:00Z'
+        end_date:
+          type: string
+          format: date-time
+          description: 'End date and time of the event in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`'
+          example: '2024-12-24T12:18:00Z'
+    EventFieldsUpdateRequest:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        oneOf:
+        - $ref: '#/components/schemas/MultiChoiceTypeObjectField'
+        - $ref: '#/components/schemas/StringTypeObjectField'
+        - $ref: '#/components/schemas/DropdownTypeObjectField'
+        - $ref: '#/components/schemas/RadioButtonTypeObjectField'
+        - $ref: '#/components/schemas/NumberTypeObjectField'
+        - $ref: '#/components/schemas/DateTypeObjectField'
+        - $ref: '#/components/schemas/AssetTypeObjectField'
+        discriminator:
+          propertyName: type
+          mapping:
+            checkbox: '#/components/schemas/MultiChoiceTypeObjectField'
+            currency_number: '#/components/schemas/NumberTypeObjectField'
+            date: '#/components/schemas/DateTypeObjectField'
+            dropdown: '#/components/schemas/DropdownTypeObjectField'
+            label: '#/components/schemas/MultiChoiceTypeObjectField'
+            radio_button: '#/components/schemas/RadioButtonTypeObjectField'
+            percentage_number: '#/components/schemas/NumberTypeObjectField'
+            simple_number: '#/components/schemas/NumberTypeObjectField'
+            text: '#/components/schemas/StringTypeObjectField'
+            text_area: '#/components/schemas/StringTypeObjectField'
+            rich_text: '#/components/schemas/StringTypeObjectField'
+            image: '#/components/schemas/AssetTypeObjectField'
+            video: '#/components/schemas/AssetTypeObjectField'
+    FieldTypeCurrencyNumber:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          has_thousand_separator:
+            type: boolean
+            description: Whether the numerical field has a thousand separator
+            example: true
+          decimal_places:
+            type:
+            - integer
+            - 'null'
+            description: Decimal place of the numerical field
+            example: 2
+          currency_code:
+            type: string
+            description: Currency code of the numerical field
+            example: USD
+        required:
+        - has_thousand_separator
+        - decimal_places
+        - currency_code
     Error:
       type: object
       additionalProperties: true
@@ -1328,10 +1227,99 @@ components:
           properties: {}
       required:
       - message
-    NumberTypeObjectField:
+    DateTypeObjectField:
       allOf:
       - $ref: '#/components/schemas/BaseObjectField'
-      - $ref: '#/components/schemas/NumberTypeObjectFieldUpdatePayload'
+      - $ref: '#/components/schemas/DateTypeObjectFieldUpdatePayload'
+    FieldTypeDropdown:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          is_multi_select:
+            type: boolean
+            description: Select multiple values from the dropdown
+          choices:
+            type: array
+            description: Choices of the dropdown
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Dropdown 1 Choice 1
+              required:
+              - id
+              - name
+        required:
+        - is_multi_select
+        - choices
+    BaseObjectFieldUpdatePayload:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the field
+          example: checkbox
+        values:
+          type: array
+          description: Values for the campaign field
+      required:
+      - type
+      - values
+    FieldTypeRadio:
+      allOf:
+      - $ref: '#/components/schemas/FieldBaseType'
+      - type: object
+        properties:
+          choices:
+            type: array
+            description: Choices of the radio button
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Identifier of the choice
+                  example: 6ceee2f4fa3411ecb37802420ac8001b
+                name:
+                  type: string
+                  description: Name of the choice
+                  example: Radio 1 Choice 1
+              required:
+              - id
+              - name
+              - color
+        required:
+        - choices
+    AssetTypeObjectFieldUpdatePayload:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectFieldUpdatePayload'
+      - type: object
+        properties:
+          values:
+            type: array
+            description: Payload for fields with attachments
+            maxItems: 1
+            items:
+              properties:
+                title:
+                  type: string
+                  description: Title of the image or video
+                  example: Sample.jpeg
+                  minLength: 1
+                key:
+                  type: string
+                  description: Unique identifier of the file upload session. This is the `upload_meta_fields.key` field retrieved from the `/v3/upload-url` endpoint.
+                  example: ce8995aea58b11ea8cd90242ac120005
+              required:
+              - title
+              - key
     FieldTypeCheckbox:
       allOf:
       - $ref: '#/components/schemas/FieldBaseType'
@@ -1357,6 +1345,18 @@ components:
               - color
         required:
         - choices
+    RadioButtonTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/RadioButtonTypeObjectFieldUpdatePayload'
+    StringTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/StringTypeObjectFieldUpdatePayload'
+    NumberTypeObjectField:
+      allOf:
+      - $ref: '#/components/schemas/BaseObjectField'
+      - $ref: '#/components/schemas/NumberTypeObjectFieldUpdatePayload'
     EventInput:
       type: object
       description: An event to send to ODP
@@ -1470,6 +1470,50 @@ components:
           description: Whether or not this Event is variation specific.
           type: boolean
       type: object
+    InPageEventConfig:
+      properties:
+        selector:
+          description: CSS selector for the page element(s) that trigger an Event
+          example: .menu-options
+          type: string
+      required:
+      - selector
+      type: object
+    CustomEventUpdate:
+      properties:
+        archived:
+          description: Whether or not to archive this Event
+          type: boolean
+        category:
+          $ref: '#/components/schemas/EventCategories'
+        description:
+          description: A description of this Event
+          type: string
+        key:
+          description: Unique string identifier for this Event within the Project
+          example: loaded_new_app
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_\- .]+$
+          type: string
+        name:
+          description: A human readable name for this Event
+          example: Loaded New App
+          type: string
+      type: object
+    EventProperty:
+      description: A user-defined data element giving additional detail about the event.
+      properties:
+        data_type:
+          description: The type of data that can be accepted for this property.
+          enum:
+          - boolean
+          - number
+          - string
+          type: string
+        name:
+          description: The name of the property.
+          type: string
+      type: object
     EventCategories:
       enum:
       - add_to_cart
@@ -1485,27 +1529,16 @@ components:
         name:
           type: string
       type: string
-    EventProperty:
-      description: A user-defined data element giving additional detail about the event.
-      properties:
-        data_type:
-          description: The type of data that can be accepted for this property.
-          enum:
-          - boolean
-          - number
-          - string
-          type: string
-        name:
-          description: The name of the property.
-          type: string
-      type: object
-    CustomEvent:
+    InPageEvent:
+      description: An Event that can occur only within the context of a specific Page (allowed in Web Projects only)
       properties:
         archived:
-          description: Whether or not to archive this Event
+          description: Whether or not this Event is archived
           type: boolean
         category:
           $ref: '#/components/schemas/EventCategories'
+        config:
+          $ref: '#/components/schemas/InPageEventConfig'
         created:
           description: Creation date for this Event
           format: date-time
@@ -1514,15 +1547,10 @@ components:
         description:
           description: A description of this Event
           type: string
-        event_properties:
-          description: A set of user-defined data elements for the event. Metrics can filter on particular values of these properties.
-          items:
-            $ref: '#/components/schemas/EventProperty'
-          type: array
         event_type:
           description: The type of this Event
           enum:
-          - custom
+          - click
           type: string
         id:
           description: The unique identifier of the Event
@@ -1531,7 +1559,7 @@ components:
           type: integer
         is_classic:
           default: false
-          description: Whether or not this Event is a classic Event. If true, this Event is read-only
+          description: Whether or not this Event is a classic Event. If true, the Event is read-only
           readOnly: true
           type: boolean
         is_editable:
@@ -1540,14 +1568,19 @@ components:
           type: boolean
         key:
           description: Unique string identifier for this Event within the Project
-          example: loaded_new_app
+          example: add_to_cart
           maxLength: 64
-          pattern: ^[a-zA-Z0-9_\- .]+$
+          pattern: ^[a-zA-Z0-9_\-]+$
           type: string
         name:
-          description: A human readable name for this Event. If unspecified, defaults to the key
-          example: Loaded New App
+          description: A human readable name for this Event
+          example: Add to Cart
           type: string
+        page_id:
+          description: The Page ID associated with this Event
+          format: int64
+          readOnly: true
+          type: integer
         project_id:
           description: The ID of this Event's parent Project
           example: 1000
@@ -1555,7 +1588,20 @@ components:
           readOnly: true
           type: integer
       required:
-      - key
+      - name
+      - event_type
+      type: object
+    Error_2:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
       type: object
     Event_2:
       properties:
@@ -1635,37 +1681,13 @@ components:
           format: int64
           type: integer
       type: object
-    CustomEventUpdate:
+    CustomEvent:
       properties:
         archived:
           description: Whether or not to archive this Event
           type: boolean
         category:
           $ref: '#/components/schemas/EventCategories'
-        description:
-          description: A description of this Event
-          type: string
-        key:
-          description: Unique string identifier for this Event within the Project
-          example: loaded_new_app
-          maxLength: 64
-          pattern: ^[a-zA-Z0-9_\- .]+$
-          type: string
-        name:
-          description: A human readable name for this Event
-          example: Loaded New App
-          type: string
-      type: object
-    InPageEvent:
-      description: An Event that can occur only within the context of a specific Page (allowed in Web Projects only)
-      properties:
-        archived:
-          description: Whether or not this Event is archived
-          type: boolean
-        category:
-          $ref: '#/components/schemas/EventCategories'
-        config:
-          $ref: '#/components/schemas/InPageEventConfig'
         created:
           description: Creation date for this Event
           format: date-time
@@ -1674,10 +1696,15 @@ components:
         description:
           description: A description of this Event
           type: string
+        event_properties:
+          description: A set of user-defined data elements for the event. Metrics can filter on particular values of these properties.
+          items:
+            $ref: '#/components/schemas/EventProperty'
+          type: array
         event_type:
           description: The type of this Event
           enum:
-          - click
+          - custom
           type: string
         id:
           description: The unique identifier of the Event
@@ -1686,7 +1713,7 @@ components:
           type: integer
         is_classic:
           default: false
-          description: Whether or not this Event is a classic Event. If true, the Event is read-only
+          description: Whether or not this Event is a classic Event. If true, this Event is read-only
           readOnly: true
           type: boolean
         is_editable:
@@ -1695,19 +1722,14 @@ components:
           type: boolean
         key:
           description: Unique string identifier for this Event within the Project
-          example: add_to_cart
+          example: loaded_new_app
           maxLength: 64
-          pattern: ^[a-zA-Z0-9_\-]+$
+          pattern: ^[a-zA-Z0-9_\- .]+$
           type: string
         name:
-          description: A human readable name for this Event
-          example: Add to Cart
+          description: A human readable name for this Event. If unspecified, defaults to the key
+          example: Loaded New App
           type: string
-        page_id:
-          description: The Page ID associated with this Event
-          format: int64
-          readOnly: true
-          type: integer
         project_id:
           description: The ID of this Event's parent Project
           example: 1000
@@ -1715,31 +1737,33 @@ components:
           readOnly: true
           type: integer
       required:
-      - name
-      - event_type
-      type: object
-    InPageEventConfig:
-      properties:
-        selector:
-          description: CSS selector for the page element(s) that trigger an Event
-          example: .menu-options
-          type: string
-      required:
-      - selector
-      type: object
-    Error_2:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
-          type: string
+      - key
       type: object
   responses:
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
     Forbidden:
       description: Permission error
       content:
@@ -1756,30 +1780,6 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: Resource cannot be processed
-    ClientError:
-      description: Client error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: 'Unsupported arguments: a,b,c'
-    NotFound:
-      description: Not found error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Resource not found
-    Unauthorized:
-      description: Authorization error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Unauthorized
   parameters:
     offset:
       name: offset
@@ -1817,6 +1817,14 @@ components:
       schema:
         type: integer
         format: int64
+    projectIdQuery:
+      name: project_id
+      in: query
+      required: true
+      description: The unique identifier for the project to filter by
+      schema:
+        type: integer
+        format: int64
     perPage:
       name: per_page
       in: query
@@ -1827,23 +1835,6 @@ components:
         default: 25
         minimum: 1
         maximum: 100
-    projectIdQuery:
-      name: project_id
-      in: query
-      required: true
-      description: The unique identifier for the project to filter by
-      schema:
-        type: integer
-        format: int64
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
-        type: integer
     page_2:
       description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
 
@@ -1853,6 +1844,15 @@ components:
       required: false
       schema:
         default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
         type: integer
   securitySchemes:
     OAuth2:

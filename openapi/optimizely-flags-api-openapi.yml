@@ -589,16 +589,123 @@ paths:
     servers:
     - url: https://api.optimizely.com/flags/v1/
 components:
+  parameters:
+    flagKey:
+      name: flag_key
+      in: path
+      required: true
+      description: The unique key for the feature flag
+      schema:
+        type: string
+    projectId:
+      name: project_id
+      in: path
+      required: true
+      description: The unique identifier for the project
+      schema:
+        type: integer
+        format: int64
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
+    flagKey_2:
+      description: The Flag identifier
+      example: recurring_deposit
+      in: path
+      name: flag_key
+      required: true
+      schema:
+        type: string
+    projectId_2:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    pageNumber:
+      description: Bypass page_token to jump to specific page
+      in: query
+      name: page_number
+      schema:
+        format: int64
+        type: integer
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
   schemas:
-    FlagEnvironment:
+    FlagVariation:
       type: object
-      description: Flag configuration for a specific environment
+      description: A variation of a feature flag with variable values
       properties:
-        enabled:
-          type: boolean
-          description: Whether the flag is enabled in this environment
-        ruleset:
-          $ref: '#/components/schemas/Ruleset'
+        key:
+          type: string
+          description: Unique key for the variation
+        name:
+          type: string
+          description: Human-readable name of the variation
+        variables:
+          type: object
+          description: Map of variable keys to their values for this variation
+          additionalProperties:
+            type: string
+    FlagVariationInput:
+      type: object
+      description: Input for creating or updating a flag variation
+      properties:
+        key:
+          type: string
+          description: Unique key for the variation
+        name:
+          type: string
+          description: Human-readable name of the variation
+        variables:
+          type: object
+          description: Map of variable keys to their values
+          additionalProperties:
+            type: string
+    Ruleset:
+      type: object
+      description: A collection of rules that determine flag variation delivery
+      properties:
+        rules:
+          type: array
+          description: Ordered list of rules in the ruleset
+          items:
+            $ref: '#/components/schemas/Rule'
+    Variable:
+      type: object
+      description: A variable within a feature flag
+      properties:
+        key:
+          type: string
+          description: Unique key for the variable
+        type:
+          type: string
+          description: Data type of the variable
+          enum:
+          - string
+          - integer
+          - double
+          - boolean
+          - json
+        default_value:
+          type: string
+          description: Default value of the variable
     Rule:
       type: object
       description: A rule that determines which variation to deliver
@@ -638,6 +745,34 @@ components:
                 description: Traffic weight for this variation
                 minimum: 0
                 maximum: 10000
+    VariableInput:
+      type: object
+      description: Input for creating or updating a variable
+      properties:
+        key:
+          type: string
+          description: Unique key for the variable
+        type:
+          type: string
+          description: Data type of the variable
+          enum:
+          - string
+          - integer
+          - double
+          - boolean
+          - json
+        default_value:
+          type: string
+          description: Default value of the variable
+    FlagEnvironment:
+      type: object
+      description: Flag configuration for a specific environment
+      properties:
+        enabled:
+          type: boolean
+          description: Whether the flag is enabled in this environment
+        ruleset:
+          $ref: '#/components/schemas/Ruleset'
     Flag:
       type: object
       description: A feature flag with variables and variations
@@ -678,68 +813,6 @@ components:
           type: string
           format: date-time
           description: Timestamp when the flag was last modified
-    Variable:
-      type: object
-      description: A variable within a feature flag
-      properties:
-        key:
-          type: string
-          description: Unique key for the variable
-        type:
-          type: string
-          description: Data type of the variable
-          enum:
-          - string
-          - integer
-          - double
-          - boolean
-          - json
-        default_value:
-          type: string
-          description: Default value of the variable
-    VariableInput:
-      type: object
-      description: Input for creating or updating a variable
-      properties:
-        key:
-          type: string
-          description: Unique key for the variable
-        type:
-          type: string
-          description: Data type of the variable
-          enum:
-          - string
-          - integer
-          - double
-          - boolean
-          - json
-        default_value:
-          type: string
-          description: Default value of the variable
-    Ruleset:
-      type: object
-      description: A collection of rules that determine flag variation delivery
-      properties:
-        rules:
-          type: array
-          description: Ordered list of rules in the ruleset
-          items:
-            $ref: '#/components/schemas/Rule'
-    FlagVariationInput:
-      type: object
-      description: Input for creating or updating a flag variation
-      properties:
-        key:
-          type: string
-          description: Unique key for the variation
-        name:
-          type: string
-          description: Human-readable name of the variation
-        variables:
-          type: object
-          description: Map of variable keys to their values
-          additionalProperties:
-            type: string
     FlagInput:
       type: object
       description: Input for creating or updating a flag
@@ -763,57 +836,263 @@ components:
           description: List of variations for this flag
           items:
             $ref: '#/components/schemas/FlagVariationInput'
-    FlagVariation:
+    FlagMap:
+      additionalProperties:
+        $ref: '#/components/schemas/Flag_2'
+      description: Map of flags that include flag key as key and flag payload as value.
       type: object
-      description: A variation of a feature flag with variable values
+    RulesetSummary:
       properties:
-        key:
-          type: string
-          description: Unique key for the variation
-        name:
-          type: string
-          description: Human-readable name of the variation
-        variables:
-          type: object
-          description: Map of variable keys to their values for this variation
-          additionalProperties:
+        keys:
+          example:
+          - new_users
+          - paid_users
+          - trial_users
+          items:
             type: string
-    PatchRequestBody:
-      description: A JSONPatch document as defined by RFC 6902
+          type: array
+      type: object
+    Flags:
       properties:
-        from:
-          description: A JSON Pointer to the resource attribute
-          type: string
-        op:
-          description: The operation to be performed
-          enum:
-          - add
-          - remove
-          - replace
-          - move
-          - copy
-          - test
-          type: string
-        path:
-          description: A JSON-Pointer to the resource or the resource attribute
-          type: string
-        value:
-          anyOf:
-          - type: object
-          - items:
-              type: string
-            type: array
-          - $ref: '#/components/schemas/AudienceConditions'
-          - type: string
-          - type: integer
-          - type: boolean
-          - items:
-              $ref: '#/components/schemas/SubMetric'
-            type: array
-          description: The value to be used within the operations.
+        count:
+          description: Number of Flags on the current page.
+          example: 2
+          type: integer
+        create_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+        fetch_flag_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: 'A url template to be used to find a particular Flag.
+
+            '
+        filter_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Url template like '.../{?filter}'
+        first_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to first page of Flags in a series.
+          example: /projects/123/flags?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
+        items:
+          items:
+            $ref: '#/components/schemas/Flag_2'
+          type: array
+        last_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the last page of Flags in a series.
+          example: /projects/123/flags?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#10
+        next_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: "List of links to next pages of Flags in a series.\n\n The first element in the array is the exact next page after the current record, etc.\n"
+          example:
+          - /projects/123/flags?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#6
+          - /projects/123/flags?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#7
+        page:
+          description: Number of the current page. 1-index based.
+          example: 5
+          type: integer
+        prev_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: 'List of links to previous pages of Flags in a series.
+
+
+            The first element in the array is the exact previous page before the current record, etc.
+
+            '
+          example:
+          - /projects/123/flags?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#4
+          - /projects/123/flags?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
+        reset_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the default pages of Flags
+          example: '...'
+        sort_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Url template like '.../{?sort}'
+        total_count:
+          description: Total number of Flags for this series.
+          example: 20
+          type: integer
+        total_pages:
+          description: Total number of pages for this series.
+          example: 10
+          type: integer
+        url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to self
       required:
-      - op
-      - path
+      - url
+      - first_url
+      - last_url
+      - count
+      - page
+      - total_count
+      - total_pages
+      - items
+      type: object
+    SubMetric:
+      properties:
+        aggregator:
+          type: string
+        event_id:
+          type: integer
+        event_type:
+          type: string
+        field:
+          type:
+          - string
+          - 'null'
+        role:
+          enum:
+          - numerator
+          - denominator
+          type: string
+        scope:
+          type: string
+      type: object
+    AudienceConditionsString:
+      description: A valid AudienceConditionsArray represented as a JSON string
+      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
+      type: string
+    UrlList:
+      description: A list of urls.
+      items:
+        type: string
+      type: array
+    RuleDetails:
+      properties:
+        audience_ids:
+          example:
+          - 1
+          - 2
+          - 3
+          items:
+            type: integer
+          type: array
+        created_by_user_email:
+          example: testuser@optimizely.com
+          readOnly: true
+          type: string
+        created_time:
+          description: Timestamp when the Rule is created
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        days_running:
+          example: 30
+          type:
+          - integer
+          - 'null'
+        distribution_mode:
+          description: Type of rule distribution. Only a/b experiment can show distribution_mode field in the response
+          enum:
+          - manual
+          - stats_accelerator
+          type: string
+        enabled:
+          example: true
+          type: boolean
+        fetch_results_ui_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: A url to be used to find a particular Results page. This field is optional and returned only if rule has results
+          readOnly: true
+        id:
+          example: 45633994
+          readOnly: true
+          type: integer
+        key:
+          example: rule_key
+          type: string
+        layer_experiment_id:
+          example: 123
+          type:
+          - integer
+          - 'null'
+        name:
+          example: Sample Rule
+          type: string
+        primary_metric:
+          example: conversion_rate
+          type:
+          - string
+          - 'null'
+        status:
+          description: Status of the rule
+          example: draft
+          type:
+          - string
+          - 'null'
+        traffic_allocation:
+          example: 50
+          type: integer
+        type:
+          example: rule_type
+          type: string
+        updated_time:
+          description: Timestamp when the Rule is updated
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        variation_names:
+          description: A list of variation names
+          items:
+            type: string
+          type: array
+      required:
+      - name
+      - key
+      - type
+      - enabled
+      - audience_ids
+      - traffic_allocation
+      - variation_names
+      type: object
+    BulkOperationsRequestBody:
+      properties:
+        keys:
+          description: The list of resource keys to perform the desired operation
+          items:
+            type: string
+          type: array
+      type: object
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
+      properties:
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
       type: object
     VariableDefinition:
       properties:
@@ -853,10 +1132,36 @@ components:
       - type
       - default_value
       type: object
-    AudienceConditionsString:
-      description: A valid AudienceConditionsArray represented as a JSON string
-      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
-      type: string
+    AudienceConditionsArray:
+      example:
+      - or
+      - audience_id: 123
+      - - and
+        - audience_id: 456
+        - audience_id: 789
+      items:
+        anyOf:
+        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+          type: string
+        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
+          properties:
+            audience_id:
+              type: integer
+          required:
+          - audience_id
+          type: object
+        - $ref: '#/components/schemas/AudienceConditionsArray'
+          description: A nested AudienceConditionsArray
+          example:
+          - - and
+            - audience_id: 456
+            - audience_id: 789
+      type: array
+    AudienceConditions:
+      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
+      oneOf:
+      - $ref: '#/components/schemas/AudienceConditionsArray'
+      - $ref: '#/components/schemas/AudienceConditionsString'
     FlagEnvironment_2:
       properties:
         created_time:
@@ -915,31 +1220,96 @@ components:
       - key
       - priority
       type: object
-    AudienceConditionsArray:
-      example:
-      - or
-      - audience_id: 123
-      - - and
-        - audience_id: 456
-        - audience_id: 789
-      items:
-        anyOf:
-        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+    PatchRequestBody:
+      description: A JSONPatch document as defined by RFC 6902
+      properties:
+        from:
+          description: A JSON Pointer to the resource attribute
           type: string
-        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
-          properties:
-            audience_id:
-              type: integer
-          required:
-          - audience_id
-          type: object
-        - $ref: '#/components/schemas/AudienceConditionsArray'
-          description: A nested AudienceConditionsArray
+        op:
+          description: The operation to be performed
+          enum:
+          - add
+          - remove
+          - replace
+          - move
+          - copy
+          - test
+          type: string
+        path:
+          description: A JSON-Pointer to the resource or the resource attribute
+          type: string
+        value:
+          anyOf:
+          - type: object
+          - items:
+              type: string
+            type: array
+          - $ref: '#/components/schemas/AudienceConditions'
+          - type: string
+          - type: integer
+          - type: boolean
+          - items:
+              $ref: '#/components/schemas/SubMetric'
+            type: array
+          description: The value to be used within the operations.
+      required:
+      - op
+      - path
+      type: object
+    UrlValue:
+      description: A single url.
+      type: string
+    FlagRequestBody:
+      properties:
+        description:
+          example: Flag used for driving customers to use recurring deposits by showing a graph of compound interest over time
+          type: string
+        key:
+          example: recurring_deposit
+          type: string
+        name:
+          example: Recurring Deposit
+          type: string
+        owner_user_id:
+          description: Unique user ID of the flag owner. This is the user's unique identifier, not their email address. If not provided, defaults to the user making the request.
+          example: 1234-abcd-5678-efgh
+          type: string
+        team_ids:
+          description: List of team IDs associated with this flag
           example:
-          - - and
-            - audience_id: 456
-            - audience_id: 789
-      type: array
+          - '1234567890'
+          - 0987654321
+          items:
+            type: string
+          type: array
+        outlier_filtering_enabled:
+          default: false
+          example: false
+          type: boolean
+        variable_definitions:
+          additionalProperties:
+            $ref: '#/components/schemas/VariableDefinition'
+          example:
+            advanced:
+              default_value: "{\n\t\"hello\": 123\n}"
+              description: This variable is used to configure the advanced used for advanced purposes
+              key: advanced
+              type: json
+            amount:
+              default_value: '0.0'
+              description: This variable is used to configure the amount used for computing the discount
+              key: amount
+              type: double
+            message:
+              default_value: Use recurring deposits to compound interest
+              description: This variable is used to configure the message used for displaying the discount
+              key: message
+              type: string
+          type: object
+      required:
+      - key
+      type: object
     Flag_2:
       example:
         account_id: 12345
@@ -1153,405 +1523,7 @@ components:
       - environments
       - url
       type: object
-    AudienceConditions:
-      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
-      oneOf:
-      - $ref: '#/components/schemas/AudienceConditionsArray'
-      - $ref: '#/components/schemas/AudienceConditionsString'
-    SubMetric:
-      properties:
-        aggregator:
-          type: string
-        event_id:
-          type: integer
-        event_type:
-          type: string
-        field:
-          type:
-          - string
-          - 'null'
-        role:
-          enum:
-          - numerator
-          - denominator
-          type: string
-        scope:
-          type: string
-      type: object
-    Flags:
-      properties:
-        count:
-          description: Number of Flags on the current page.
-          example: 2
-          type: integer
-        create_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-        fetch_flag_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: 'A url template to be used to find a particular Flag.
-
-            '
-        filter_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Url template like '.../{?filter}'
-        first_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to first page of Flags in a series.
-          example: /projects/123/flags?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
-        items:
-          items:
-            $ref: '#/components/schemas/Flag_2'
-          type: array
-        last_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to the last page of Flags in a series.
-          example: /projects/123/flags?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#10
-        next_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlList'
-          description: "List of links to next pages of Flags in a series.\n\n The first element in the array is the exact next page after the current record, etc.\n"
-          example:
-          - /projects/123/flags?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#6
-          - /projects/123/flags?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#7
-        page:
-          description: Number of the current page. 1-index based.
-          example: 5
-          type: integer
-        prev_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlList'
-          description: 'List of links to previous pages of Flags in a series.
-
-
-            The first element in the array is the exact previous page before the current record, etc.
-
-            '
-          example:
-          - /projects/123/flags?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#4
-          - /projects/123/flags?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
-        reset_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to the default pages of Flags
-          example: '...'
-        sort_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Url template like '.../{?sort}'
-        total_count:
-          description: Total number of Flags for this series.
-          example: 20
-          type: integer
-        total_pages:
-          description: Total number of pages for this series.
-          example: 10
-          type: integer
-        url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to self
-      required:
-      - url
-      - first_url
-      - last_url
-      - count
-      - page
-      - total_count
-      - total_pages
-      - items
-      type: object
-    UrlList:
-      description: A list of urls.
-      items:
-        type: string
-      type: array
-    FlagRequestBody:
-      properties:
-        description:
-          example: Flag used for driving customers to use recurring deposits by showing a graph of compound interest over time
-          type: string
-        key:
-          example: recurring_deposit
-          type: string
-        name:
-          example: Recurring Deposit
-          type: string
-        owner_user_id:
-          description: Unique user ID of the flag owner. This is the user's unique identifier, not their email address. If not provided, defaults to the user making the request.
-          example: 1234-abcd-5678-efgh
-          type: string
-        team_ids:
-          description: List of team IDs associated with this flag
-          example:
-          - '1234567890'
-          - 0987654321
-          items:
-            type: string
-          type: array
-        outlier_filtering_enabled:
-          default: false
-          example: false
-          type: boolean
-        variable_definitions:
-          additionalProperties:
-            $ref: '#/components/schemas/VariableDefinition'
-          example:
-            advanced:
-              default_value: "{\n\t\"hello\": 123\n}"
-              description: This variable is used to configure the advanced used for advanced purposes
-              key: advanced
-              type: json
-            amount:
-              default_value: '0.0'
-              description: This variable is used to configure the amount used for computing the discount
-              key: amount
-              type: double
-            message:
-              default_value: Use recurring deposits to compound interest
-              description: This variable is used to configure the message used for displaying the discount
-              key: message
-              type: string
-          type: object
-      required:
-      - key
-      type: object
-    FlagMap:
-      additionalProperties:
-        $ref: '#/components/schemas/Flag_2'
-      description: Map of flags that include flag key as key and flag payload as value.
-      type: object
-    RuleDetails:
-      properties:
-        audience_ids:
-          example:
-          - 1
-          - 2
-          - 3
-          items:
-            type: integer
-          type: array
-        created_by_user_email:
-          example: testuser@optimizely.com
-          readOnly: true
-          type: string
-        created_time:
-          description: Timestamp when the Rule is created
-          format: date-time
-          readOnly: true
-          type:
-          - string
-          - 'null'
-        days_running:
-          example: 30
-          type:
-          - integer
-          - 'null'
-        distribution_mode:
-          description: Type of rule distribution. Only a/b experiment can show distribution_mode field in the response
-          enum:
-          - manual
-          - stats_accelerator
-          type: string
-        enabled:
-          example: true
-          type: boolean
-        fetch_results_ui_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: A url to be used to find a particular Results page. This field is optional and returned only if rule has results
-          readOnly: true
-        id:
-          example: 45633994
-          readOnly: true
-          type: integer
-        key:
-          example: rule_key
-          type: string
-        layer_experiment_id:
-          example: 123
-          type:
-          - integer
-          - 'null'
-        name:
-          example: Sample Rule
-          type: string
-        primary_metric:
-          example: conversion_rate
-          type:
-          - string
-          - 'null'
-        status:
-          description: Status of the rule
-          example: draft
-          type:
-          - string
-          - 'null'
-        traffic_allocation:
-          example: 50
-          type: integer
-        type:
-          example: rule_type
-          type: string
-        updated_time:
-          description: Timestamp when the Rule is updated
-          format: date-time
-          readOnly: true
-          type:
-          - string
-          - 'null'
-        variation_names:
-          description: A list of variation names
-          items:
-            type: string
-          type: array
-      required:
-      - name
-      - key
-      - type
-      - enabled
-      - audience_ids
-      - traffic_allocation
-      - variation_names
-      type: object
-    UrlValue:
-      description: A single url.
-      type: string
-    BulkOperationsRequestBody:
-      properties:
-        keys:
-          description: The list of resource keys to perform the desired operation
-          items:
-            type: string
-          type: array
-      type: object
-    RulesetSummary:
-      properties:
-        keys:
-          example:
-          - new_users
-          - paid_users
-          - trial_users
-          items:
-            type: string
-          type: array
-      type: object
-    ProblemDetail:
-      additionalProperties: true
-      description: https://tools.ietf.org/html/rfc7807#section-3.1
-      properties:
-        detail:
-          description: A human-readable explanation specific to this occurrence of the problem.
-          type: string
-        status:
-          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
-          type: integer
-        title:
-          description: A short, human-readable summary of the problem type.
-          type: string
-        type:
-          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
-          type: string
-        uuid:
-          description: Error reference for customer support
-          type: string
-      required:
-      - detail
-      - status
-      - title
-      - type
-      type: object
-  parameters:
-    projectId:
-      name: project_id
-      in: path
-      required: true
-      description: The unique identifier for the project
-      schema:
-        type: integer
-        format: int64
-    flagKey:
-      name: flag_key
-      in: path
-      required: true
-      description: The unique key for the feature flag
-      schema:
-        type: string
-    pageNumber:
-      description: Bypass page_token to jump to specific page
-      in: query
-      name: page_number
-      schema:
-        format: int64
-        type: integer
-    pageToken:
-      description: Pagination page token. Implements prev, next, last, first
-      in: query
-      name: page_token
-      schema:
-        type: string
-    projectId_2:
-      description: The project identifier
-      example: 12345
-      in: path
-      name: project_id
-      required: true
-      schema:
-        type: integer
-    perPage:
-      description: The max number of items to include per page or results.
-      in: query
-      name: per_page
-      schema:
-        format: int64
-        type: integer
-    pageWindow:
-      description: Number of previous and next page links to supply for the request (defaults to 1).
-      in: query
-      name: page_window
-      schema:
-        type: integer
-    flagKey_2:
-      description: The Flag identifier
-      example: recurring_deposit
-      in: path
-      name: flag_key
-      required: true
-      schema:
-        type: string
-  requestBodies:
-    FlagRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/FlagRequestBody'
-      required: true
   responses:
-    BadRequestResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Another entity already exists with this same key
-            status: 400
-            title: Key example_entity already exists"
-            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Malformed requests and invalid parameter names and types
-    NotFoundResponse:
-      description: Not found. No content
-    NoContentResponse:
-      description: No content in the response
-    UnauthorizedResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Invalid credentials
     FlagSuccessResponse:
       content:
         application/json:
@@ -1567,12 +1539,8 @@ components:
         the related resource.
 
         '
-    ConflictResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Conflicting resource state with requested action
+    NoContentResponse:
+      description: No content in the response
     ForbiddenResponse:
       content:
         application/problem+json:
@@ -1583,6 +1551,38 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Do not have permission to perform the operation
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
+    NotFoundResponse:
+      description: Not found. No content
+    ConflictResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Conflicting resource state with requested action
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
+  requestBodies:
+    FlagRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FlagRequestBody'
+      required: true
   securitySchemes:
     bearerAuth:
       type: http

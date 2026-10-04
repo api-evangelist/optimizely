@@ -118,12 +118,39 @@ paths:
       - Authorization: []
 components:
   schemas:
-    RestMailId:
+    RestMailIdPlainInfo:
       type: object
       properties:
-        mailId:
-          type: string
-          description: Encoded mail ID
+        mailingId:
+          type: integer
+          description: Mailing ID
+          format: int64
+        links:
+          type: array
+          description: Restful links
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+            description: Restful links
     RestMailIdInfo:
       type: object
       properties:
@@ -164,39 +191,12 @@ components:
                 type: string
                 format: uri
             description: Restful links
-    RestMailIdPlainInfo:
+    RestMailId:
       type: object
       properties:
-        mailingId:
-          type: integer
-          description: Mailing ID
-          format: int64
-        links:
-          type: array
-          description: Restful links
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-            description: Restful links
+        mailId:
+          type: string
+          description: Encoded mail ID
   securitySchemes:
     Authorization:
       type: apiKey

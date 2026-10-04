@@ -398,6 +398,30 @@ paths:
     - url: https://api.optimizely.com/v2
 components:
   schemas:
+    ContentMainImage:
+      type: object
+      additionalProperties: false
+      required:
+      - width
+      - height
+      properties:
+        width:
+          type: integer
+          description: Image width in pixels.
+        height:
+          type: integer
+          description: Image height in pixels.
+    SectionList:
+      type: object
+      additionalProperties: false
+      required:
+      - sections
+      properties:
+        sections:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/SectionItem'
     SectionPartial:
       type: object
       additionalProperties: false
@@ -432,6 +456,65 @@ components:
           type: object
           description: Arbitrary namespaced tags associated with the content. Values may be strings or arrays of strings (for example, multiple authors).
           additionalProperties: true
+    ContentItemMinimal:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Title of the content item.
+        abstract:
+          type: string
+          description: Short summary or abstract of the content.
+        featured:
+          type: boolean
+          description: Indicates whether the content is featured.
+        approved:
+          type: string
+          enum:
+          - approved
+          - unapproved
+          - binned
+          description: Approval status of the content.
+        read:
+          type: boolean
+          description: Whether the content is marked as read.
+        published:
+          type: string
+          format: date-time
+          description: Date and time when the content was published.
+        original_url:
+          type: string
+          format: url
+          description: Original source URL of the content.
+    ContentTopic:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the topic.
+        title:
+          type: string
+          description: Topic title.
+        full_details_url:
+          type: string
+          format: url
+          description: API link to full topic details.
+    ID:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          description: Unique identifier.
+          example: '12345'
     SectionItem:
       type: object
       additionalProperties: false
@@ -450,58 +533,21 @@ components:
           type: string
           format: url
           example: https://api.usea01.idio.episerver.net/1.0/sections/42/content
-    ID:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      properties:
-        id:
-          type: string
-          description: Unique identifier.
-          example: '12345'
-    ContentAuthor:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - title
-      - full_details_url
-      properties:
-        id:
-          type: integer
-          description: Unique identifier of the author.
-        title:
-          type: string
-          description: Name of the author.
-        full_details_url:
-          type: string
-          format: url
-          description: API URL for full author details.
-    ContentMainImage:
-      type: object
-      additionalProperties: false
-      required:
-      - width
-      - height
-      properties:
-        width:
-          type: integer
-          description: Image width in pixels.
-        height:
-          type: integer
-          description: Image height in pixels.
-    SectionList:
-      type: object
-      additionalProperties: false
-      required:
-      - sections
-      properties:
-        sections:
-          type: array
-          uniqueItems: true
-          items:
-            $ref: '#/components/schemas/SectionItem'
+    ContentList:
+      description: A paginated list of content items with navigation metadata.
+      allOf:
+      - $ref: '#/components/schemas/List'
+      - type: object
+        additionalProperties: false
+        required:
+        - content
+        properties:
+          content:
+            type: array
+            description: The list of content items for the current page.
+            uniqueItems: true
+            items:
+              $ref: '#/components/schemas/ContentItem'
     ContentSource:
       type: object
       additionalProperties: false
@@ -529,21 +575,6 @@ components:
           - abstract
           - link
           description: How the source should be displayed.
-    ContentList:
-      description: A paginated list of content items with navigation metadata.
-      allOf:
-      - $ref: '#/components/schemas/List'
-      - type: object
-        additionalProperties: false
-        required:
-        - content
-        properties:
-          content:
-            type: array
-            description: The list of content items for the current page.
-            uniqueItems: true
-            items:
-              $ref: '#/components/schemas/ContentItem'
     ContentItem:
       allOf:
       - $ref: '#/components/schemas/ContentItemMinimal'
@@ -595,55 +626,6 @@ components:
             $ref: '#/components/schemas/ContentSource'
           author:
             $ref: '#/components/schemas/ContentAuthor'
-    ContentItemMinimal:
-      type: object
-      additionalProperties: false
-      properties:
-        title:
-          type: string
-          description: Title of the content item.
-        abstract:
-          type: string
-          description: Short summary or abstract of the content.
-        featured:
-          type: boolean
-          description: Indicates whether the content is featured.
-        approved:
-          type: string
-          enum:
-          - approved
-          - unapproved
-          - binned
-          description: Approval status of the content.
-        read:
-          type: boolean
-          description: Whether the content is marked as read.
-        published:
-          type: string
-          format: date-time
-          description: Date and time when the content was published.
-        original_url:
-          type: string
-          format: url
-          description: Original source URL of the content.
-    ContentTopic:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - title
-      - full_details_url
-      properties:
-        id:
-          type: integer
-          description: Unique identifier of the topic.
-        title:
-          type: string
-          description: Topic title.
-        full_details_url:
-          type: string
-          format: url
-          description: API link to full topic details.
     List:
       type: object
       description: Base pagination metadata object.
@@ -662,6 +644,53 @@ components:
           type: string
           format: url
           description: Link to the previous page of results, if available.
+    ContentAuthor:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - full_details_url
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the author.
+        title:
+          type: string
+          description: Name of the author.
+        full_details_url:
+          type: string
+          format: url
+          description: API URL for full author details.
+    Section:
+      properties:
+        archived:
+          default: false
+          description: Whether or not the Section has been archived
+          type: boolean
+        description:
+          description: A short description of this Section
+          type: string
+        experiment_id:
+          description: The ID of the Multivariate Test this Section belongs to
+          type: integer
+        id:
+          description: The ID of this Section
+          type: integer
+        name:
+          description: The name of this Section
+          example: Headline Variations
+          type: string
+        project_id:
+          description: The ID of the project that this Section belongs to
+          type: integer
+        variations:
+          items:
+            $ref: '#/components/schemas/Variation'
+          type: array
+      required:
+      - variations
+      type: object
     Variation:
       properties:
         actions:
@@ -830,34 +859,44 @@ components:
       required:
       - type
       type: object
-    Section:
+    CSSAttribute:
       properties:
-        archived:
-          default: false
-          description: Whether or not the Section has been archived
-          type: boolean
-        description:
-          description: A short description of this Section
+        background-color:
           type: string
-        experiment_id:
-          description: The ID of the Multivariate Test this Section belongs to
-          type: integer
-        id:
-          description: The ID of this Section
-          type: integer
-        name:
-          description: The name of this Section
-          example: Headline Variations
+        background-image:
           type: string
-        project_id:
-          description: The ID of the project that this Section belongs to
-          type: integer
-        variations:
-          items:
-            $ref: '#/components/schemas/Variation'
-          type: array
-      required:
-      - variations
+        border-color:
+          type: string
+        border-style:
+          type: string
+        border-width:
+          type: string
+        color:
+          type: string
+        font-family:
+          type: string
+        font-size:
+          type: string
+        font-weight:
+          type: string
+        height:
+          type: string
+        position:
+          type: string
+        width:
+          type: string
+      type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
       type: object
     ChangeAttribute:
       properties:
@@ -892,18 +931,6 @@ components:
           example: Some nice message
           type: string
       type: object
-    Error:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
-          type: string
-      type: object
     Action:
       properties:
         changes:
@@ -926,93 +953,6 @@ components:
       required:
       - page_id
       type: object
-    CSSAttribute:
-      properties:
-        background-color:
-          type: string
-        background-image:
-          type: string
-        border-color:
-          type: string
-        border-style:
-          type: string
-        border-width:
-          type: string
-        color:
-          type: string
-        font-family:
-          type: string
-        font-size:
-          type: string
-        font-weight:
-          type: string
-        height:
-          type: string
-        position:
-          type: string
-        width:
-          type: string
-      type: object
-  parameters:
-    topics:
-      name: include_topics
-      in: query
-      description: Whether to include topic information in the response.
-      allowEmptyValue: true
-      schema:
-        type: boolean
-    page:
-      name: page
-      in: query
-      description: Page number for pagination (1-based index).
-      schema:
-        type: integer
-        example: 2
-    rpp:
-      name: rpp
-      in: query
-      description: Results per page for pagination.
-      schema:
-        type: integer
-    sectionID:
-      name: id
-      in: path
-      required: true
-      description: Unique identifier of the section.
-      schema:
-        type: integer
-        example: 42
-    sectionIDList:
-      name: id
-      in: path
-      required: true
-      description: Section IDs (csv)
-      style: simple
-      explode: false
-      schema:
-        type: array
-        uniqueItems: true
-        items:
-          type: integer
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
-        type: integer
-    page_2:
-      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
-
-        '
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        type: integer
   responses:
     ContentList:
       description: A paginated list of content items, including metadata for navigation, such as total hits and page links.
@@ -1054,6 +994,66 @@ components:
               - id: 301
                 title: Personalisation
                 full_details_url: https://api.usea01.idio.episerver.net/1.0/topics/301
+  parameters:
+    topics:
+      name: include_topics
+      in: query
+      description: Whether to include topic information in the response.
+      allowEmptyValue: true
+      schema:
+        type: boolean
+    sectionID:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier of the section.
+      schema:
+        type: integer
+        example: 42
+    rpp:
+      name: rpp
+      in: query
+      description: Results per page for pagination.
+      schema:
+        type: integer
+    page:
+      name: page
+      in: query
+      description: Page number for pagination (1-based index).
+      schema:
+        type: integer
+        example: 2
+    sectionIDList:
+      name: id
+      in: path
+      required: true
+      description: Section IDs (csv)
+      style: simple
+      explode: false
+      schema:
+        type: array
+        uniqueItems: true
+        items:
+          type: integer
+    page_2:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
   securitySchemes:
     key:
       type: apiKey

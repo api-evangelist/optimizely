@@ -320,14 +320,6 @@ components:
           type: boolean
       type: object
   parameters:
-    audienceId:
-      name: audience_id
-      in: path
-      required: true
-      description: The unique identifier for the audience
-      schema:
-        type: integer
-        format: int64
     perPage:
       name: per_page
       in: query
@@ -338,14 +330,6 @@ components:
         default: 25
         minimum: 1
         maximum: 100
-    projectIdQuery:
-      name: project_id
-      in: query
-      required: true
-      description: The unique identifier for the project to filter by
-      schema:
-        type: integer
-        format: int64
     page:
       name: page
       in: query
@@ -355,15 +339,22 @@ components:
         type: integer
         default: 1
         minimum: 1
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
+    projectIdQuery:
+      name: project_id
       in: query
-      name: per_page
-      required: false
+      required: true
+      description: The unique identifier for the project to filter by
       schema:
-        default: 25
-        maximum: 100
         type: integer
+        format: int64
+    audienceId:
+      name: audience_id
+      in: path
+      required: true
+      description: The unique identifier for the audience
+      schema:
+        type: integer
+        format: int64
     page_2:
       description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
 
@@ -373,6 +364,15 @@ components:
       required: false
       schema:
         default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
         type: integer
   securitySchemes:
     bearerAuth:

@@ -331,16 +331,15 @@ paths:
       tags:
       - Subject Access Requests
 components:
+  requestBodies:
+    SubjectAccessRequestUpdate:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SubjectAccessRequestUpdate'
+      description: A JSON string containing the Subject Access Request fields to be updated.
+      required: true
   parameters:
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
-        type: integer
     page:
       description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
 
@@ -351,108 +350,16 @@ components:
       schema:
         default: 1
         type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
   schemas:
-    SubjectAccessRequest:
-      properties:
-        account_id:
-          description: The Account ID for the account the Subject Access Request will be executed.
-          example: 12345
-          format: int64
-          readOnly: true
-          type: integer
-        completed_at_time:
-          description: The time when the request was completed.
-          format: date-time
-          readOnly: true
-          type:
-          - string
-          - 'null'
-        data_type:
-          description: "<p>The type of data to be accessed or deleted. The two options are:</p>\n\n<ul>\n    <li><code>user</code> - End users (also known as <em>Collaborators</em>) that are added to the accounts of our customers. A user can be a <a href=\"https://help.optimizely.com/Set_Up_Optimizely/Manage_collaborators_in_Optimizely_X\" rel=\"internal\"><u>collaborator</u></a> on multiple accounts.</li>\n    <li><code>visitor</code> - Visitors who visit or use our customers’ websites, apps and other digital products. Optimizely stores visitor data to calculate experiment results and to tailor content.</li>\n</ul>\n"
-          enum:
-          - user
-          - visitor
-          example: user
-          type: string
-        expired_at_time:
-          description: Time when the url expires (7 days from the completed_at_time)
-          format: date-time
-          readOnly: true
-          type: string
-        export_location:
-          description: The location to which the data will be exported. The data will be made accessible in a AWS S3 bucket.
-          example: https://s3-us-west-2.amazonaws.com/optimizely-sar-prod/{account-id}-{request_id}.zip
-          readOnly: true
-          type: string
-        id:
-          description: The Subject Access Request ID.
-          example: 12345
-          format: int64
-          readOnly: true
-          type: integer
-        identifier:
-          description: The identifier value that you would like us to use when searching. If <code>user</code> was selected in the previous step, the identifier will be the email address for the User.
-          example: test@optimizely.com
-          maxLength: 355
-          type: string
-        identifier_type:
-          description: "<p>User data is identified by the email address used to create the end user account. The endpoint only accepts the <code>email</code> datatype if you selected <code>user</code> for <strong>Datatype</strong>.<br>\n<br>\nIf you selected <code>visitor</code> for <strong>data_type</strong>, you can select 5 options for personal identifier types:</p>\n\n<ul>\n    <li>\n    <p><code>dcp_id</code> - Any ID used to identify targeting records in Optimizely.</p>\n    </li>\n    <li>\n    <p><code>email</code> - The email address of a visitor.</p>\n    </li>\n    <li>\n    <p><code>fullstack_id</code> - The unique identifier used for Full Stack experiments.</p>\n    </li>\n    <li>\n    <p><code>optimizely_end_user_id</code> - An Optimizely generated user cookie.</p>\n    </li>\n    <li>\n    <p><code>other</code> -&nbsp;Any other identifier that was uploaded to Optimizely.</p>\n    </li>\n</ul>\n"
-          enum:
-          - email
-          - optimizely_end_user_id
-          - dcp_id
-          - fullstack_id
-          - other
-          example: email
-          type: string
-        processing_started_time:
-          description: The time when the processing of the Subject Access Request started.
-          format: date-time
-          readOnly: true
-          type:
-          - string
-          - 'null'
-        request_type:
-          description: '<code>delete</code> - Removes all data within an account that is associated to the identifier defined in the identifier field.
-
-            <br>
-
-            <code>access</code> - Finds all data stored in Optimizely systems associated to the identifier defined in the identifier field and exports it to an AWS S3 bucket for you to access.
-
-            '
-          enum:
-          - access
-          - delete
-          example: access
-          type: string
-        requested_at_time:
-          description: The time when the Subject Access Request was submitted.
-          format: date-time
-          readOnly: true
-          type: string
-        sla_deadline_time:
-          description: The time by which the Subject Access Request must be completed.
-          format: date-time
-          readOnly: true
-          type:
-          - string
-          - 'null'
-        status:
-          description: The status of the Subject Access Request.
-          enum:
-          - pending
-          - processing
-          - completed
-          - failure
-          example: pending
-          readOnly: true
-          type: string
-      required:
-      - data_type
-      - identifier
-      - identifier_type
-      - request_type
-      type: object
     SubjectAccessRequestUpdate:
       properties:
         completed_at_time:
@@ -482,6 +389,18 @@ components:
           type: string
       required:
       - status
+      type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
       type: object
     SubjectAccessRequestInternal:
       properties:
@@ -598,26 +517,107 @@ components:
       - identifier_type
       - request_type
       type: object
-    Error:
+    SubjectAccessRequest:
       properties:
-        code:
+        account_id:
+          description: The Account ID for the account the Subject Access Request will be executed.
+          example: 12345
+          format: int64
+          readOnly: true
+          type: integer
+        completed_at_time:
+          description: The time when the request was completed.
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        data_type:
+          description: "<p>The type of data to be accessed or deleted. The two options are:</p>\n\n<ul>\n    <li><code>user</code> - End users (also known as <em>Collaborators</em>) that are added to the accounts of our customers. A user can be a <a href=\"https://help.optimizely.com/Set_Up_Optimizely/Manage_collaborators_in_Optimizely_X\" rel=\"internal\"><u>collaborator</u></a> on multiple accounts.</li>\n    <li><code>visitor</code> - Visitors who visit or use our customers’ websites, apps and other digital products. Optimizely stores visitor data to calculate experiment results and to tailor content.</li>\n</ul>\n"
+          enum:
+          - user
+          - visitor
+          example: user
           type: string
-        message:
+        expired_at_time:
+          description: Time when the url expires (7 days from the completed_at_time)
+          format: date-time
+          readOnly: true
           type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
+        export_location:
+          description: The location to which the data will be exported. The data will be made accessible in a AWS S3 bucket.
+          example: https://s3-us-west-2.amazonaws.com/optimizely-sar-prod/{account-id}-{request_id}.zip
+          readOnly: true
           type: string
+        id:
+          description: The Subject Access Request ID.
+          example: 12345
+          format: int64
+          readOnly: true
+          type: integer
+        identifier:
+          description: The identifier value that you would like us to use when searching. If <code>user</code> was selected in the previous step, the identifier will be the email address for the User.
+          example: test@optimizely.com
+          maxLength: 355
+          type: string
+        identifier_type:
+          description: "<p>User data is identified by the email address used to create the end user account. The endpoint only accepts the <code>email</code> datatype if you selected <code>user</code> for <strong>Datatype</strong>.<br>\n<br>\nIf you selected <code>visitor</code> for <strong>data_type</strong>, you can select 5 options for personal identifier types:</p>\n\n<ul>\n    <li>\n    <p><code>dcp_id</code> - Any ID used to identify targeting records in Optimizely.</p>\n    </li>\n    <li>\n    <p><code>email</code> - The email address of a visitor.</p>\n    </li>\n    <li>\n    <p><code>fullstack_id</code> - The unique identifier used for Full Stack experiments.</p>\n    </li>\n    <li>\n    <p><code>optimizely_end_user_id</code> - An Optimizely generated user cookie.</p>\n    </li>\n    <li>\n    <p><code>other</code> -&nbsp;Any other identifier that was uploaded to Optimizely.</p>\n    </li>\n</ul>\n"
+          enum:
+          - email
+          - optimizely_end_user_id
+          - dcp_id
+          - fullstack_id
+          - other
+          example: email
+          type: string
+        processing_started_time:
+          description: The time when the processing of the Subject Access Request started.
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        request_type:
+          description: '<code>delete</code> - Removes all data within an account that is associated to the identifier defined in the identifier field.
+
+            <br>
+
+            <code>access</code> - Finds all data stored in Optimizely systems associated to the identifier defined in the identifier field and exports it to an AWS S3 bucket for you to access.
+
+            '
+          enum:
+          - access
+          - delete
+          example: access
+          type: string
+        requested_at_time:
+          description: The time when the Subject Access Request was submitted.
+          format: date-time
+          readOnly: true
+          type: string
+        sla_deadline_time:
+          description: The time by which the Subject Access Request must be completed.
+          format: date-time
+          readOnly: true
+          type:
+          - string
+          - 'null'
+        status:
+          description: The status of the Subject Access Request.
+          enum:
+          - pending
+          - processing
+          - completed
+          - failure
+          example: pending
+          readOnly: true
+          type: string
+      required:
+      - data_type
+      - identifier
+      - identifier_type
+      - request_type
       type: object
-  requestBodies:
-    SubjectAccessRequestUpdate:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SubjectAccessRequestUpdate'
-      description: A JSON string containing the Subject Access Request fields to be updated.
-      required: true
   securitySchemes:
     OAuth2:
       description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token

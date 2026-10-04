@@ -144,6 +144,53 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    Insite.Customers.WebApi.V1.ApiModels.CostCodeModel:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        costCode:
+          type: string
+        description:
+          type: string
+        isActive:
+          type: boolean
+    Insite.Websites.WebApi.V1.ApiModels.StateModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        abbreviation:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Websites.WebApi.V1.ApiModels.CountryModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        abbreviation:
+          type: string
+        states:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
     Insite.Customers.WebApi.V1.ApiModels.BillToModel:
       type: object
       properties:
@@ -223,67 +270,6 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Account.WebApi.V1.ApiModels.PersonaModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        description:
-          type: string
-        isDefault:
-          type: boolean
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Websites.WebApi.V1.ApiModels.StateModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          type: string
-        name:
-          type: string
-        abbreviation:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Websites.WebApi.V1.ApiModels.LanguageModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          type: string
-        languageCode:
-          type: string
-        cultureCode:
-          type: string
-        description:
-          type: string
-        imageFilePath:
-          type: string
-        currencyPositioning:
-          type: string
-        languageTag:
-          type: string
-        isDefault:
-          type: boolean
-        isLive:
-          type: boolean
-        properties:
-          type: object
-          additionalProperties:
-            type: string
     Insite.Customers.Services.Dtos.AccountsReceivableDto:
       type: object
       properties:
@@ -295,174 +281,6 @@ components:
           $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
         agingBucketFuture:
           $ref: '#/components/schemas/Insite.Customers.Services.Dtos.AgingBucketDto'
-    Insite.Customers.Services.Dtos.AgingBucketDto:
-      type: object
-      properties:
-        amount:
-          format: decimal
-          type: number
-        amountDisplay:
-          type: string
-        label:
-          type: string
-    Insite.Customers.WebApi.V1.ApiModels.CostCodeModel:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        costCode:
-          type: string
-        description:
-          type: string
-        isActive:
-          type: boolean
-    Insite.Customers.WebApi.V1.ApiModels.ShipToModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        isNew:
-          type: boolean
-        oneTimeAddress:
-          type: boolean
-        label:
-          type: string
-        validation:
-          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.CustomerValidationDto'
-        isDefault:
-          type: boolean
-        id:
-          type: string
-        customerNumber:
-          type: string
-        customerSequence:
-          type: string
-        customerName:
-          type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        contactFullName:
-          type: string
-        companyName:
-          type: string
-        attention:
-          type: string
-        address1:
-          type: string
-        address2:
-          type: string
-        address3:
-          type: string
-        address4:
-          type: string
-        city:
-          type: string
-        postalCode:
-          type: string
-        state:
-          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
-        country:
-          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.CountryModel'
-        phone:
-          type: string
-        fullAddress:
-          type: string
-        email:
-          type: string
-        fax:
-          type: string
-        isVmiLocation:
-          type: boolean
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Websites.WebApi.V1.ApiModels.CurrencyModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          type: string
-        currencyCode:
-          type: string
-        description:
-          type: string
-        currencySymbol:
-          type: string
-        isDefault:
-          type: boolean
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        address1:
-          type: string
-        address2:
-          type: string
-        city:
-          type: string
-        contactName:
-          type: string
-        countryId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        deactivateOn:
-          format: date-time
-          type: string
-        description:
-          type: string
-        phone:
-          type: string
-        postalCode:
-          type: string
-        shipSite:
-          type: string
-        state:
-          type: string
-        isDefault:
-          type: boolean
-        alternateWarehouses:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel'
-        latitude:
-          format: decimal
-          type: number
-        longitude:
-          format: decimal
-          type: number
-        hours:
-          type: string
-        distance:
-          format: double
-          type: number
-        allowPickup:
-          type: boolean
-        pickupShipViaId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        properties:
-          type: object
-          additionalProperties:
-            type: string
     Insite.Account.WebApi.V1.ApiModels.SessionModel:
       type: object
       properties:
@@ -563,6 +381,125 @@ components:
           type: object
           additionalProperties:
             type: string
+    Insite.Account.WebApi.V1.ApiModels.PersonaModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        description:
+          type: string
+        isDefault:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+        city:
+          type: string
+        contactName:
+          type: string
+        countryId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        deactivateOn:
+          format: date-time
+          type: string
+        description:
+          type: string
+        phone:
+          type: string
+        postalCode:
+          type: string
+        shipSite:
+          type: string
+        state:
+          type: string
+        isDefault:
+          type: boolean
+        alternateWarehouses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.WarehouseModel'
+        latitude:
+          format: decimal
+          type: number
+        longitude:
+          format: decimal
+          type: number
+        hours:
+          type: string
+        distance:
+          format: double
+          type: number
+        allowPickup:
+          type: boolean
+        pickupShipViaId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Customers.Services.Dtos.AgingBucketDto:
+      type: object
+      properties:
+        amount:
+          format: decimal
+          type: number
+        amountDisplay:
+          type: string
+        label:
+          type: string
+    Insite.Websites.WebApi.V1.ApiModels.LanguageModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        languageCode:
+          type: string
+        cultureCode:
+          type: string
+        description:
+          type: string
+        imageFilePath:
+          type: string
+        currencyPositioning:
+          type: string
+        languageTag:
+          type: string
+        isDefault:
+          type: boolean
+        isLive:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
     Insite.Customers.Services.Dtos.FieldValidationDto:
       type: object
       properties:
@@ -606,21 +543,84 @@ components:
           $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
         fax:
           $ref: '#/components/schemas/Insite.Customers.Services.Dtos.FieldValidationDto'
-    Insite.Websites.WebApi.V1.ApiModels.CountryModel:
+    Insite.Websites.WebApi.V1.ApiModels.CurrencyModel:
       type: object
       properties:
         uri:
           type: string
         id:
           type: string
-        name:
+        currencyCode:
           type: string
-        abbreviation:
+        description:
           type: string
-        states:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+        currencySymbol:
+          type: string
+        isDefault:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Customers.WebApi.V1.ApiModels.ShipToModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        isNew:
+          type: boolean
+        oneTimeAddress:
+          type: boolean
+        label:
+          type: string
+        validation:
+          $ref: '#/components/schemas/Insite.Customers.Services.Dtos.CustomerValidationDto'
+        isDefault:
+          type: boolean
+        id:
+          type: string
+        customerNumber:
+          type: string
+        customerSequence:
+          type: string
+        customerName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        contactFullName:
+          type: string
+        companyName:
+          type: string
+        attention:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+        address3:
+          type: string
+        address4:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        state:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+        country:
+          $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.CountryModel'
+        phone:
+          type: string
+        fullAddress:
+          type: string
+        email:
+          type: string
+        fax:
+          type: string
+        isVmiLocation:
+          type: boolean
         properties:
           type: object
           additionalProperties:

@@ -251,70 +251,6 @@ components:
       - page
       - items
       title: TeamPermissionsForEntityTypeResponse
-    src__api__dtos__permissions__TeamPermissionsForEntityTypeResponse__ItemInfo:
-      properties:
-        role:
-          type: string
-          title: Role
-        id:
-          type: integer
-          title: Id
-        key:
-          type: string
-          title: Key
-        name:
-          type: string
-          title: Name
-      type: object
-      required:
-      - role
-      - id
-      - name
-      title: ItemInfo
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    TeamPermission:
-      properties:
-        team_id:
-          type: string
-          title: Team Id
-        name:
-          type: string
-          title: Name
-        role:
-          type: string
-          title: Role
-        external_ref:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: External Ref
-      type: object
-      required:
-      - team_id
-      - name
-      - role
-      - external_ref
-      title: TeamPermission
     EntityPermissionsResponse:
       properties:
         users:
@@ -332,6 +268,15 @@ components:
       - users
       - teams
       title: EntityPermissionsResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     EntityTypeInPath:
       type: string
       enum:
@@ -339,6 +284,30 @@ components:
       - environments
       - audiences
       title: EntityTypeInPath
+    src__api__dtos__permissions__UserPermissionsForEntityTypeResponse__ItemInfo:
+      properties:
+        role:
+          type: string
+          title: Role
+        role_inherited:
+          type: string
+          title: Role Inherited
+        id:
+          type: integer
+          title: Id
+        key:
+          type: string
+          title: Key
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - role
+      - role_inherited
+      - id
+      - name
+      title: ItemInfo
     PatchOperation:
       properties:
         op:
@@ -365,36 +334,38 @@ components:
         value: edit
       - op: remove
         path: /users/user_abc/role
-    OperationType:
-      type: string
-      enum:
-      - replace
-      - remove
-      title: OperationType
-    src__api__dtos__permissions__UserPermissionsForEntityTypeResponse__ItemInfo:
+    UserPermission:
       properties:
         role:
-          type: string
-          title: Role
+          $ref: '#/components/schemas/EntityPermission'
         role_inherited:
+          $ref: '#/components/schemas/EntityPermission'
+        first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Name
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Name
+        user_id:
           type: string
-          title: Role Inherited
-        id:
-          type: integer
-          title: Id
-        key:
+          title: User Id
+        email:
           type: string
-          title: Key
-        name:
-          type: string
-          title: Name
+          format: email
+          title: Email
       type: object
       required:
       - role
       - role_inherited
-      - id
-      - name
-      title: ItemInfo
+      - first_name
+      - last_name
+      - user_id
+      - email
+      title: UserPermission
     EntityPermission:
       type: string
       enum:
@@ -453,47 +424,76 @@ components:
       - page
       - items
       title: UserPermissionsForEntityTypeResponse
-    UserPermission:
+    src__api__dtos__permissions__TeamPermissionsForEntityTypeResponse__ItemInfo:
       properties:
         role:
-          $ref: '#/components/schemas/EntityPermission'
-        role_inherited:
-          $ref: '#/components/schemas/EntityPermission'
-        first_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: First Name
-        last_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Name
-        user_id:
           type: string
-          title: User Id
-        email:
+          title: Role
+        id:
+          type: integer
+          title: Id
+        key:
           type: string
-          format: email
-          title: Email
+          title: Key
+        name:
+          type: string
+          title: Name
       type: object
       required:
       - role
-      - role_inherited
-      - first_name
-      - last_name
-      - user_id
-      - email
-      title: UserPermission
-    HTTPValidationError:
+      - id
+      - name
+      title: ItemInfo
+    TeamPermission:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        team_id:
+          type: string
+          title: Team Id
+        name:
+          type: string
+          title: Name
+        role:
+          type: string
+          title: Role
+        external_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: External Ref
       type: object
-      title: HTTPValidationError
+      required:
+      - team_id
+      - name
+      - role
+      - external_ref
+      title: TeamPermission
+    OperationType:
+      type: string
+      enum:
+      - replace
+      - remove
+      title: OperationType
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     BearerAuth:
       description: To get an API token, see https://docs.developers.optimizely.com/web/docs/personal-token

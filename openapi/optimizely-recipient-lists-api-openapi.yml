@@ -246,55 +246,6 @@ paths:
       - Authorization: []
 components:
   schemas:
-    RecipientListRequestData:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the recipient list
-        description:
-          type: string
-          description: Description of the recipient list
-        testList:
-          type: boolean
-          description: If true, the recipient list is a test list
-    CopyRecipientListRequestData:
-      required:
-      - sourceRecipientListId
-      type: object
-      properties:
-        sourceRecipientListId:
-          type: integer
-          description: ID of the recipient list to be copied
-          format: int64
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
-    RestRecipientListFieldStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestRecipientListField'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
     RestRecipientList:
       type: object
       properties:
@@ -356,6 +307,90 @@ components:
               uri:
                 type: string
                 format: uri
+    RestRecipientListStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestRecipientList'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestRecipientListField:
+      type: object
+      properties:
+        internalName:
+          type: string
+          description: Internal name
+        displayName:
+          type: string
+          description: Display name
+        type:
+          type: string
+          description: Field's type
+          enum:
+          - LONG
+          - INTEGER
+          - SHORT
+          - STRING
+          - TEXT
+          - FLOAT
+          - DECIMAL
+          - DATE
+          - TIMESTAMP
+          - BOOLEAN
+        required:
+          type: boolean
+          description: If true, the field is required
+    CopyRecipientListRequestData:
+      required:
+      - sourceRecipientListId
+      type: object
+      properties:
+        sourceRecipientListId:
+          type: integer
+          description: ID of the recipient list to be copied
+          format: int64
+    RestRecipientListFieldStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestRecipientListField'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     RestRecipientListAttributeNames:
       type: object
       properties:
@@ -387,53 +422,18 @@ components:
               uri:
                 type: string
                 format: uri
-    RestRecipientListStreamingCollection:
+    RecipientListRequestData:
       type: object
       properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestRecipientList'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    RestRecipientListField:
-      type: object
-      properties:
-        internalName:
+        name:
           type: string
-          description: Internal name
-        displayName:
+          description: Name of the recipient list
+        description:
           type: string
-          description: Display name
-        type:
-          type: string
-          description: Field's type
-          enum:
-          - LONG
-          - INTEGER
-          - SHORT
-          - STRING
-          - TEXT
-          - FLOAT
-          - DECIMAL
-          - DATE
-          - TIMESTAMP
-          - BOOLEAN
-        required:
+          description: Description of the recipient list
+        testList:
           type: boolean
-          description: If true, the field is required
+          description: If true, the recipient list is a test list
   securitySchemes:
     Authorization:
       type: apiKey

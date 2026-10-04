@@ -157,40 +157,116 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 components:
-  responses:
-    NotFound:
-      description: Not found error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Resource not found
-    Forbidden:
-      description: Permission error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: You do not have the permission to perform this operation
-    Unauthorized:
-      description: Authorization error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: Unauthorized
-    ClientError:
-      description: Client error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: 'Unsupported arguments: a,b,c'
   schemas:
+    TaskAssetDraftBrandComplianceRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          description: Brand compliance status of the draft
+          example: approved
+          enum:
+          - approved
+          - declined
+          - not_reviewed
+        categories:
+          type: array
+          description: List of compliance categories
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the category
+                example: 66dd74f41a335b59cd98915b
+              status:
+                type:
+                - string
+                - 'null'
+                description: Brand compliance status of the category
+                example: compliant
+                enum:
+                - compliant
+                - not compliant
+                - not applicable
+                - null
+              notes:
+                type:
+                - string
+                - 'null'
+                description: Notes left by the reviewer for the category
+                example: Look's good
+              criteria:
+                type: array
+                description: List of criteria
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      description: Unique identifier of the criterion
+                      example: 66dd74f41a335b59cd98915c
+                    description:
+                      type:
+                      - string
+                      - 'null'
+                      description: Description of the criterion
+                      example: For all CMYK, RGB and HTML breakdowns, please refer to the full Colour Policy guideline
+                    selected:
+                      type:
+                      - boolean
+                      - 'null'
+                      description: Whether the criterion is selected or not
+                      example: true
+                  required:
+                  - id
+                  - description
+                  - selected
+            required:
+            - id
+            - status
+            - notes
+            - criteria
+      required:
+      - status
+      - categories
+    BrandComplianceCategoriesResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the category
+          example: 66cebe190bc97e0151eecdda
+        name:
+          type: string
+          description: Name of the category
+          example: Category-1
+        criteria:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique identifier of the criteria
+                example: 66cebe190bc97e0151eecddb
+              name:
+                type: string
+                description: Name of the criteria
+                example: Sub-category-1A
+              description:
+                type: string
+                description: Details about the criteria
+                example: Description-1A
+            required:
+            - id
+      required:
+      - id
+      - criteria
     TaskAssetDraftBrandComplianceResponse:
       type: object
       additionalProperties: false
@@ -291,97 +367,6 @@ components:
       - reviewed_at
       - reviewed_by
       - categories
-    TaskAssetDraftBrandComplianceRequest:
-      type: object
-      additionalProperties: false
-      properties:
-        status:
-          type: string
-          description: Brand compliance status of the draft
-          example: approved
-          enum:
-          - approved
-          - declined
-          - not_reviewed
-        categories:
-          type: array
-          description: List of compliance categories
-          items:
-            type: object
-            additionalProperties: false
-            properties:
-              id:
-                type: string
-                description: Unique identifier of the category
-                example: 66dd74f41a335b59cd98915b
-              status:
-                type:
-                - string
-                - 'null'
-                description: Brand compliance status of the category
-                example: compliant
-                enum:
-                - compliant
-                - not compliant
-                - not applicable
-                - null
-              notes:
-                type:
-                - string
-                - 'null'
-                description: Notes left by the reviewer for the category
-                example: Look's good
-              criteria:
-                type: array
-                description: List of criteria
-                items:
-                  type: object
-                  additionalProperties: false
-                  properties:
-                    id:
-                      type: string
-                      description: Unique identifier of the criterion
-                      example: 66dd74f41a335b59cd98915c
-                    description:
-                      type:
-                      - string
-                      - 'null'
-                      description: Description of the criterion
-                      example: For all CMYK, RGB and HTML breakdowns, please refer to the full Colour Policy guideline
-                    selected:
-                      type:
-                      - boolean
-                      - 'null'
-                      description: Whether the criterion is selected or not
-                      example: true
-                  required:
-                  - id
-                  - description
-                  - selected
-            required:
-            - id
-            - status
-            - notes
-            - criteria
-      required:
-      - status
-      - categories
-    Error:
-      type: object
-      additionalProperties: true
-      description: Error payload
-      properties:
-        message:
-          type: string
-          description: Message describing the error
-          example: Not found
-        errors:
-          type: object
-          description: Additional information
-          additionalProperties: true
-          properties: {}
-      required:
-      - message
     Pagination:
       type: object
       additionalProperties: false
@@ -402,40 +387,55 @@ components:
       required:
       - next
       - previous
-    BrandComplianceCategoriesResponse:
+    Error:
       type: object
-      additionalProperties: false
+      additionalProperties: true
+      description: Error payload
       properties:
-        id:
+        message:
           type: string
-          description: Unique identifier of the category
-          example: 66cebe190bc97e0151eecdda
-        name:
-          type: string
-          description: Name of the category
-          example: Category-1
-        criteria:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                description: Unique identifier of the criteria
-                example: 66cebe190bc97e0151eecddb
-              name:
-                type: string
-                description: Name of the criteria
-                example: Sub-category-1A
-              description:
-                type: string
-                description: Details about the criteria
-                example: Description-1A
-            required:
-            - id
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
       required:
-      - id
-      - criteria
+      - message
+  responses:
+    NotFound:
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Resource not found
+    ClientError:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: 'Unsupported arguments: a,b,c'
+    Unauthorized:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unauthorized
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
   parameters:
     offset:
       name: offset

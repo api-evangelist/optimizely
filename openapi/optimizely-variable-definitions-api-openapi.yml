@@ -242,51 +242,149 @@ paths:
       tags:
       - Variable Definitions
 components:
+  responses:
+    NoContentResponse:
+      description: No content in the response
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
+    BadRequestResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Another entity already exists with this same key
+            status: 400
+            title: Key example_entity already exists"
+            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Malformed requests and invalid parameter names and types
+    NotFoundResponse:
+      description: Not found. No content
+    ConflictResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Conflicting resource state with requested action
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
+  parameters:
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
+    flagKey:
+      description: The Flag identifier
+      example: recurring_deposit
+      in: path
+      name: flag_key
+      required: true
+      schema:
+        type: string
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    pageNumber:
+      description: Bypass page_token to jump to specific page
+      in: query
+      name: page_number
+      schema:
+        format: int64
+        type: integer
+    variableDefinitionKey:
+      description: The Variable Definition identifier
+      example: my_str
+      in: path
+      name: variable_definition_key
+      required: true
+      schema:
+        type: string
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
   schemas:
-    BrainstormVariablesInteraction:
-      discriminator:
-        mapping:
-          error: '#/components/schemas/BrainstormError'
-          response: '#/components/schemas/BrainstormVariablesResponse'
-          user_chat: '#/components/schemas/BrainstormUserChat'
-        propertyName: type
-      type: object
-    PatchRequestBody:
-      description: A JSONPatch document as defined by RFC 6902
+    SubMetric:
       properties:
-        from:
-          description: A JSON Pointer to the resource attribute
+        aggregator:
           type: string
-        op:
-          description: The operation to be performed
+        event_id:
+          type: integer
+        event_type:
+          type: string
+        field:
+          type:
+          - string
+          - 'null'
+        role:
           enum:
-          - add
-          - remove
-          - replace
-          - move
-          - copy
-          - test
+          - numerator
+          - denominator
           type: string
-        path:
-          description: A JSON-Pointer to the resource or the resource attribute
+        scope:
           type: string
-        value:
-          anyOf:
-          - type: object
-          - items:
-              type: string
-            type: array
-          - $ref: '#/components/schemas/AudienceConditions'
-          - type: string
-          - type: integer
-          - type: boolean
-          - items:
-              $ref: '#/components/schemas/SubMetric'
-            type: array
-          description: The value to be used within the operations.
+      type: object
+    AudienceConditionsString:
+      description: A valid AudienceConditionsArray represented as a JSON string
+      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
+      type: string
+    UrlList:
+      description: A list of urls.
+      items:
+        type: string
+      type: array
+    ProblemDetail:
+      additionalProperties: true
+      description: https://tools.ietf.org/html/rfc7807#section-3.1
+      properties:
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        status:
+          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type.
+          type: string
+        type:
+          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+          type: string
+        uuid:
+          description: Error reference for customer support
+          type: string
       required:
-      - op
-      - path
+      - detail
+      - status
+      - title
+      - type
       type: object
     VariableDefinition:
       properties:
@@ -326,10 +424,6 @@ components:
       - type
       - default_value
       type: object
-    AudienceConditionsString:
-      description: A valid AudienceConditionsArray represented as a JSON string
-      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
-      type: string
     AudienceConditionsArray:
       example:
       - or
@@ -360,26 +454,6 @@ components:
       oneOf:
       - $ref: '#/components/schemas/AudienceConditionsArray'
       - $ref: '#/components/schemas/AudienceConditionsString'
-    SubMetric:
-      properties:
-        aggregator:
-          type: string
-        event_id:
-          type: integer
-        event_type:
-          type: string
-        field:
-          type:
-          - string
-          - 'null'
-        role:
-          enum:
-          - numerator
-          - denominator
-          type: string
-        scope:
-          type: string
-      type: object
     BrainstormVariablesChat:
       properties:
         interactions:
@@ -390,14 +464,6 @@ components:
       required:
       - interactions
       type: object
-    UrlList:
-      description: A list of urls.
-      items:
-        type: string
-      type: array
-    UrlValue:
-      description: A single url.
-      type: string
     VariableDefinitions:
       properties:
         count:
@@ -445,120 +511,54 @@ components:
           example: 1
           type: integer
       type: object
-    ProblemDetail:
-      additionalProperties: true
-      description: https://tools.ietf.org/html/rfc7807#section-3.1
+    PatchRequestBody:
+      description: A JSONPatch document as defined by RFC 6902
       properties:
-        detail:
-          description: A human-readable explanation specific to this occurrence of the problem.
+        from:
+          description: A JSON Pointer to the resource attribute
           type: string
-        status:
-          description: The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.
-          type: integer
-        title:
-          description: A short, human-readable summary of the problem type.
+        op:
+          description: The operation to be performed
+          enum:
+          - add
+          - remove
+          - replace
+          - move
+          - copy
+          - test
           type: string
-        type:
-          description: A URI reference [RFC3986] that identifies the problem type. Contains 'about:blank' if unspecified.
+        path:
+          description: A JSON-Pointer to the resource or the resource attribute
           type: string
-        uuid:
-          description: Error reference for customer support
-          type: string
+        value:
+          anyOf:
+          - type: object
+          - items:
+              type: string
+            type: array
+          - $ref: '#/components/schemas/AudienceConditions'
+          - type: string
+          - type: integer
+          - type: boolean
+          - items:
+              $ref: '#/components/schemas/SubMetric'
+            type: array
+          description: The value to be used within the operations.
       required:
-      - detail
-      - status
-      - title
-      - type
+      - op
+      - path
       type: object
-  parameters:
-    pageNumber:
-      description: Bypass page_token to jump to specific page
-      in: query
-      name: page_number
-      schema:
-        format: int64
-        type: integer
-    pageToken:
-      description: Pagination page token. Implements prev, next, last, first
-      in: query
-      name: page_token
-      schema:
-        type: string
-    projectId:
-      description: The project identifier
-      example: 12345
-      in: path
-      name: project_id
-      required: true
-      schema:
-        type: integer
-    perPage:
-      description: The max number of items to include per page or results.
-      in: query
-      name: per_page
-      schema:
-        format: int64
-        type: integer
-    pageWindow:
-      description: Number of previous and next page links to supply for the request (defaults to 1).
-      in: query
-      name: page_window
-      schema:
-        type: integer
-    variableDefinitionKey:
-      description: The Variable Definition identifier
-      example: my_str
-      in: path
-      name: variable_definition_key
-      required: true
-      schema:
-        type: string
-    flagKey:
-      description: The Flag identifier
-      example: recurring_deposit
-      in: path
-      name: flag_key
-      required: true
-      schema:
-        type: string
-  responses:
-    BadRequestResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Another entity already exists with this same key
-            status: 400
-            title: Key example_entity already exists"
-            uuid: 42c4c855-42f2-4c9a-8544-37b3dff706d2
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Malformed requests and invalid parameter names and types
-    NotFoundResponse:
-      description: Not found. No content
-    NoContentResponse:
-      description: No content in the response
-    UnauthorizedResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Invalid credentials
-    ConflictResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Conflicting resource state with requested action
-    ForbiddenResponse:
-      content:
-        application/problem+json:
-          example:
-            detail: Permission denied
-            status: 403
-            title: Forbidden
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Do not have permission to perform the operation
+    UrlValue:
+      description: A single url.
+      type: string
+    BrainstormVariablesInteraction:
+      discriminator:
+        mapping:
+          error: '#/components/schemas/BrainstormError'
+          response: '#/components/schemas/BrainstormVariablesResponse'
+          user_chat: '#/components/schemas/BrainstormUserChat'
+        propertyName: type
+      type: object
   securitySchemes:
     BearerAuth:
       description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token

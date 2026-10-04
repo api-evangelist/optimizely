@@ -149,22 +149,20 @@ components:
           title: Error Type
           type: string
           description: Error type
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - details
-      - status
+    HTTPValidationError:
+      title: HTTPValidationError
       type: object
       properties:
-        details:
-          title: Details
-          type: string
-          description: Details of Error.
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
         status:
           title: Status
           type: integer
           description: Status code of the response.
-          example: 400
+          example: 422
     ScheduledTime:
       title: ScheduledTime
       required:
@@ -269,6 +267,40 @@ components:
           title: Created By
           type: string
           description: The user who created the schedule.
+    ScheduledChangeUpdateRequest:
+      title: ScheduledChangeUpdateRequest
+      type: object
+      properties:
+        actions:
+          title: Actions
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleAction'
+          description: Schedule action details.
+        schedule:
+          title: ScheduledTime
+          allOf:
+          - $ref: '#/components/schemas/ScheduledTime'
+          description: Schedule details.
+        environment:
+          title: Environment
+          type: string
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - details
+      - status
+      type: object
+      properties:
+        details:
+          title: Details
+          type: string
+          description: Details of Error.
+        status:
+          title: Status
+          type: integer
+          description: Status code of the response.
+          example: 400
     ActionValue:
       title: ActionValue
       description: "The value of a schedule action.\n\nFor status change, value can be on/off. \n\nFor changing traffic percentage, value should be integer. For example, for 40% traffic, value should be 4000.\n"
@@ -308,38 +340,6 @@ components:
           type: string
           description: The utc timestamp when the scheduled job will be executed.
           example: 2023-07-30T07:02:00+0000
-    HTTPValidationError:
-      title: HTTPValidationError
-      type: object
-      properties:
-        detail:
-          title: Detail
-          type: array
-          items:
-            $ref: '#/components/schemas/ValidationError'
-        status:
-          title: Status
-          type: integer
-          description: Status code of the response.
-          example: 422
-    ScheduledChangeUpdateRequest:
-      title: ScheduledChangeUpdateRequest
-      type: object
-      properties:
-        actions:
-          title: Actions
-          type: array
-          items:
-            $ref: '#/components/schemas/ScheduleAction'
-          description: Schedule action details.
-        schedule:
-          title: ScheduledTime
-          allOf:
-          - $ref: '#/components/schemas/ScheduledTime'
-          description: Schedule details.
-        environment:
-          title: Environment
-          type: string
     ScheduleAction:
       title: ScheduleAction
       required:

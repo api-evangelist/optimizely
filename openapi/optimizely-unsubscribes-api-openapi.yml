@@ -145,17 +145,15 @@ paths:
     servers:
     - url: https://api.campaign.episerver.net/rest
 components:
+  parameters:
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
   schemas:
-    UnsubscribeInput:
-      type: object
-      description: Input for adding an unsubscribe
-      required:
-      - email
-      properties:
-        email:
-          type: string
-          format: email
-          description: Email address to unsubscribe
     Unsubscribe:
       type: object
       description: An unsubscribed recipient
@@ -171,6 +169,67 @@ components:
         reason:
           type: string
           description: Reason for the unsubscription
+    UnsubscribeInput:
+      type: object
+      description: Input for adding an unsubscribe
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address to unsubscribe
+    CreateUnsubscribesRequestData:
+      type: object
+      properties:
+        recipientIds:
+          type: array
+          description: Comma-separated list of recipient IDs (only required if the "mailIds" parameter is not specified)
+          items:
+            type: string
+            description: Comma-separated list of recipient IDs (only required if the "mailIds" parameter is not specified)
+        mediaType:
+          type: string
+          description: Media type of the delivery channel
+          enum:
+          - EMAIL
+          - FAX
+          - SMS
+          - LETTER
+          - PUSH
+          - PRINT
+        mailIds:
+          type: array
+          description: Comma-separated list of mail IDs (only required if the "recipientIds" parameter is not specified)
+          items:
+            type: string
+            description: Comma-separated list of mail IDs (only required if the "recipientIds" parameter is not specified)
+        recipientListId:
+          type: integer
+          description: ID of the recipient list to which the recipients are assigned (only if recipient list based unsubscribe is set)
+          format: int64
+    RestUnsubscribesCreateResult:
+      type: object
+      properties:
+        successfulIds:
+          type: array
+          description: Successfully unsubscribed IDs
+          items:
+            type: string
+            description: Successfully unsubscribed IDs
+        unsuccessfulIds:
+          type: array
+          description: Unsuccessfully unsubscribed IDs
+          items:
+            type: string
+            description: Unsuccessfully unsubscribed IDs
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
     RestUnsubscribe:
       type: object
       properties:
@@ -219,49 +278,6 @@ components:
         mediaType:
           type: string
           description: 'Media type of the delivery channel<p><i>Default value</i> : GLOBAL</p>'
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
-    RestUnsubscribeStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestUnsubscribe'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    RestUnsubscribesCreateResult:
-      type: object
-      properties:
-        successfulIds:
-          type: array
-          description: Successfully unsubscribed IDs
-          items:
-            type: string
-            description: Successfully unsubscribed IDs
-        unsuccessfulIds:
-          type: array
-          description: Unsuccessfully unsubscribed IDs
-          items:
-            type: string
-            description: Unsuccessfully unsubscribed IDs
     RestCount:
       type: object
       properties:
@@ -293,43 +309,27 @@ components:
           type: integer
           description: Total number
           format: int64
-    CreateUnsubscribesRequestData:
+    RestUnsubscribeStreamingCollection:
       type: object
       properties:
-        recipientIds:
+        elements:
           type: array
-          description: Comma-separated list of recipient IDs (only required if the "mailIds" parameter is not specified)
           items:
-            type: string
-            description: Comma-separated list of recipient IDs (only required if the "mailIds" parameter is not specified)
-        mediaType:
-          type: string
-          description: Media type of the delivery channel
-          enum:
-          - EMAIL
-          - FAX
-          - SMS
-          - LETTER
-          - PUSH
-          - PRINT
-        mailIds:
+            $ref: '#/components/schemas/RestUnsubscribe'
+        links:
           type: array
-          description: Comma-separated list of mail IDs (only required if the "recipientIds" parameter is not specified)
+          writeOnly: true
           items:
-            type: string
-            description: Comma-separated list of mail IDs (only required if the "recipientIds" parameter is not specified)
-        recipientListId:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
           type: integer
-          description: ID of the recipient list to which the recipients are assigned (only if recipient list based unsubscribe is set)
-          format: int64
-  parameters:
-    clientId:
-      name: clientId
-      in: path
-      required: true
-      description: The unique identifier for the Optimizely Campaign client
-      schema:
-        type: string
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
   securitySchemes:
     basicAuth:
       type: http

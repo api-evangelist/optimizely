@@ -43,20 +43,15 @@ paths:
         '401':
           description: Authentication credentials are missing or invalid
 components:
+  parameters:
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
   schemas:
-    TransactionalMailResponse:
-      type: object
-      description: Response from sending a transactional mail
-      properties:
-        status:
-          type: string
-          description: Status of the send operation
-          enum:
-          - success
-          - failed
-        message_id:
-          type: string
-          description: Unique identifier for the sent message
     TransactionalMailInput:
       type: object
       description: Input for sending a transactional email
@@ -77,14 +72,19 @@ components:
           description: Key-value pairs for personalizing the email content
           additionalProperties:
             type: string
-  parameters:
-    clientId:
-      name: clientId
-      in: path
-      required: true
-      description: The unique identifier for the Optimizely Campaign client
-      schema:
-        type: string
+    TransactionalMailResponse:
+      type: object
+      description: Response from sending a transactional mail
+      properties:
+        status:
+          type: string
+          description: Status of the send operation
+          enum:
+          - success
+          - failed
+        message_id:
+          type: string
+          description: Unique identifier for the sent message
   securitySchemes:
     basicAuth:
       type: http

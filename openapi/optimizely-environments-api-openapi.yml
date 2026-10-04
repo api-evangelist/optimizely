@@ -339,81 +339,6 @@ components:
           type: string
           format: date-time
           description: Timestamp when the environment was created
-    Environments:
-      properties:
-        count:
-          description: Number of Environments on the current page.
-          example: 2
-          type: integer
-        filter_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Url template like '.../{?filter}'
-          example: /projects/123/environments?archived=false
-        first_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to first page of Environments in a series.
-          example: /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
-        items:
-          items:
-            $ref: '#/components/schemas/Environment_2'
-          type: array
-        last_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to the last page of Environments in a series.
-          example: /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#10
-        next_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlList'
-          description: "List of links to next pages of Environments in a series.\n\n The first element in the array is the exact next page after the current record, etc.\n"
-          example:
-          - /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#6
-          - /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#7
-        page:
-          description: Number of the current page. 1-index based.
-          example: 5
-          type: integer
-        prev_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlList'
-          description: 'List of links to previous pages of Environments in a series.
-
-
-            The first element in the array is the exact previous page before the current record, etc.
-
-            '
-          example:
-          - /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#4
-          - /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
-        reset_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to the default pages of Environments
-          example: '...'
-        total_count:
-          description: Total number of Environments for this series.
-          example: 20
-          type: integer
-        total_pages:
-          description: Total number of pages for this series.
-          example: 10
-          type: integer
-        url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to self
-      required:
-      - url
-      - first_url
-      - last_url
-      - count
-      - page
-      - total_count
-      - total_pages
-      - items
-      type: object
     Environment_2:
       properties:
         account_id:
@@ -493,6 +418,81 @@ components:
       - status
       - title
       - type
+      type: object
+    Environments:
+      properties:
+        count:
+          description: Number of Environments on the current page.
+          example: 2
+          type: integer
+        filter_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Url template like '.../{?filter}'
+          example: /projects/123/environments?archived=false
+        first_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to first page of Environments in a series.
+          example: /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#1
+        items:
+          items:
+            $ref: '#/components/schemas/Environment_2'
+          type: array
+        last_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the last page of Environments in a series.
+          example: /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#10
+        next_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: "List of links to next pages of Environments in a series.\n\n The first element in the array is the exact next page after the current record, etc.\n"
+          example:
+          - /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#6
+          - /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#7
+        page:
+          description: Number of the current page. 1-index based.
+          example: 5
+          type: integer
+        prev_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlList'
+          description: 'List of links to previous pages of Environments in a series.
+
+
+            The first element in the array is the exact previous page before the current record, etc.
+
+            '
+          example:
+          - /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#4
+          - /projects/123/environments?page_token=gASVCQAAAAAAAACMBTF8MnwylC4%3D#3
+        reset_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to the default pages of Environments
+          example: '...'
+        total_count:
+          description: Total number of Environments for this series.
+          example: 20
+          type: integer
+        total_pages:
+          description: Total number of pages for this series.
+          example: 10
+          type: integer
+        url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to self
+      required:
+      - url
+      - first_url
+      - last_url
+      - count
+      - page
+      - total_count
+      - total_pages
+      - items
       type: object
     UrlValue:
       description: A single url.
@@ -638,12 +638,13 @@ components:
       schema:
         type: integer
         format: int64
-    pageToken:
-      description: Pagination page token. Implements prev, next, last, first
+    perPage:
+      description: The max number of items to include per page or results.
       in: query
-      name: page_token
+      name: per_page
       schema:
-        type: string
+        format: int64
+        type: integer
     projectId:
       description: The project identifier
       example: 12345
@@ -652,27 +653,17 @@ components:
       required: true
       schema:
         type: integer
-    perPage:
-      description: The max number of items to include per page or results.
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
       in: query
-      name: per_page
+      name: page_token
       schema:
-        format: int64
-        type: integer
+        type: string
     pageWindow:
       description: Number of previous and next page links to supply for the request (defaults to 1).
       in: query
       name: page_window
       schema:
-        type: integer
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
         type: integer
     page:
       description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
@@ -684,13 +675,16 @@ components:
       schema:
         default: 1
         type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
   responses:
-    UnauthorizedResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Invalid credentials
     BadRequestResponse:
       content:
         application/problem+json:
@@ -702,6 +696,12 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Malformed requests and invalid parameter names and types
+    UnauthorizedResponse:
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Invalid credentials
     ForbiddenResponse:
       content:
         application/problem+json:

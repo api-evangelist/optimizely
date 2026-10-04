@@ -200,6 +200,108 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    Insite.Email.WebApi.V1.ApiModels.ShareEntityModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        emailTo:
+          type: string
+        emailFrom:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+        entityId:
+          type: string
+        entityName:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.BrandDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        urlSegment:
+          type: string
+        logoSmallImagePath:
+          type: string
+        logoLargeImagePath:
+          type: string
+        logoImageAltText:
+          type: string
+        detailPagePath:
+          type: string
+    Insite.Core.WebApi.SortOptionModel:
+      type: object
+      properties:
+        displayName:
+          type: string
+        sortType:
+          type: string
+    Insite.Invoice.WebApi.V1.ApiModels.InvoiceCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        showErpOrderNumber:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.WebApi.PaginationModel:
+      type: object
+      properties:
+        currentPage:
+          format: int32
+          type: integer
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        defaultPageSize:
+          format: int32
+          type: integer
+        totalItemCount:
+          format: int32
+          type: integer
+        numberOfPages:
+          format: int32
+          type: integer
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
+        sortType:
+          type: string
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
+          type: string
     Insite.Invoice.WebApi.V1.ApiModels.InvoiceLineModel:
       type: object
       properties:
@@ -289,109 +391,6 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Invoice.Services.Dtos.InvoiceHistoryTaxDto:
-      type: object
-      properties:
-        taxCode:
-          type: string
-        taxDescription:
-          type: string
-        taxRate:
-          format: decimal
-          type: number
-        taxAmount:
-          format: decimal
-          type: number
-        taxAmountDisplay:
-          type: string
-        sortOrder:
-          format: int32
-          type: integer
-    Insite.Core.WebApi.SortOptionModel:
-      type: object
-      properties:
-        displayName:
-          type: string
-        sortType:
-          type: string
-    Insite.Catalog.Services.Dtos.BrandDto:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        urlSegment:
-          type: string
-        logoSmallImagePath:
-          type: string
-        logoLargeImagePath:
-          type: string
-        logoImageAltText:
-          type: string
-        detailPagePath:
-          type: string
-    Insite.Email.WebApi.V1.ApiModels.ShareEntityModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        emailTo:
-          type: string
-        emailFrom:
-          type: string
-        subject:
-          type: string
-        message:
-          type: string
-        entityId:
-          type: string
-        entityName:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Core.WebApi.PaginationModel:
-      type: object
-      properties:
-        currentPage:
-          format: int32
-          type: integer
-        page:
-          format: int32
-          type: integer
-        pageSize:
-          format: int32
-          type: integer
-        defaultPageSize:
-          format: int32
-          type: integer
-        totalItemCount:
-          format: int32
-          type: integer
-        numberOfPages:
-          format: int32
-          type: integer
-        pageSizeOptions:
-          type: array
-          items:
-            format: int32
-            type: integer
-        sortOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
-        sortType:
-          type: string
-        nextPageUri:
-          type: string
-        prevPageUri:
-          type: string
-        nextPageToken:
-          type: string
     Insite.Invoice.WebApi.V1.ApiModels.InvoiceModel:
       type: object
       properties:
@@ -510,23 +509,24 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Invoice.WebApi.V1.ApiModels.InvoiceCollectionModel:
+    Insite.Invoice.Services.Dtos.InvoiceHistoryTaxDto:
       type: object
       properties:
-        uri:
+        taxCode:
           type: string
-        invoices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Invoice.WebApi.V1.ApiModels.InvoiceModel'
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        showErpOrderNumber:
-          type: boolean
-        properties:
-          type: object
-          additionalProperties:
-            type: string
+        taxDescription:
+          type: string
+        taxRate:
+          format: decimal
+          type: number
+        taxAmount:
+          format: decimal
+          type: number
+        taxAmountDisplay:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
   securitySchemes:
     access_token:
       type: apiKey

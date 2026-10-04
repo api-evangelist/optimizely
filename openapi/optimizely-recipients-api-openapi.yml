@@ -863,53 +863,6 @@ components:
           description: Custom fields associated with the recipient
           additionalProperties:
             type: string
-    Recipient_2:
-      type: object
-      properties:
-        data:
-          type: object
-          additionalProperties:
-            type: object
-        id:
-          type: string
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
-    CreateRecipientsRequestData:
-      type: object
-      properties:
-        recipients:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExtendedRecipient'
-        optinProcessId:
-          type: integer
-          format: int64
-    ModifyRecipientAttributesRequestData:
-      type: object
-      properties:
-        data:
-          type: string
-          description: Recipient data. Configure "data.[attribute]" according to the corresponding recipient list field.<p>Does not work with the "Try it out" feature.</p>
-        mode:
-          type: string
-          description: Mode for adding parameters to fields of type "String"<p><i>Available values:</i> set (to overwrite existing), prepend (to place before existing), append (to place after existing)</p>
-          enum:
-          - set
-          - prepend
-          - append
-    RecipientBasedRequestData:
-      required:
-      - recipientId
-      type: object
-      properties:
-        recipientId:
-          type: string
-          description: Recipient ID (usually the email address)
     CreateRecipientRequestData:
       required:
       - recipientId
@@ -932,60 +885,53 @@ components:
         recipientId:
           type: string
           description: Recipient ID (usually the email address)
-    UpdateRecipientsRequestData:
+    RestApiLink:
       type: object
       properties:
-        updateMode:
+        href:
           type: string
+        rel:
+          type: string
+    Recipient_2:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties:
+            type: object
+        id:
+          type: string
+    ModifyRecipientsAttributesRequestData:
+      required:
+      - targetGroup
+      type: object
+      properties:
+        targetGroup:
+          type: integer
+          description: ID of the matching target group
+          format: int64
+        data:
+          type: string
+          description: Recipient data. Configure "data.[attribute]" according to the corresponding recipient list field.<p>Does not work with the "Try it out" feature.</p>
+        mode:
+          type: string
+          description: Mode for adding parameters to fields of type "String"<p><i>Available values:</i> set (to overwrite existing), prepend (to place before existing), append (to place after existing)</p>
           enum:
           - set
           - prepend
           - append
-        recipients:
-          type: array
-          items:
-            $ref: '#/components/schemas/Recipient_2'
-    RestCount:
+    UpdateRecipientIdRequestData:
+      required:
+      - newRecipientId
+      - recipientId
       type: object
       properties:
-        links:
-          type: array
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-        count:
-          type: integer
-          description: Total number
-          format: int64
-    RestRecipientsCreationModify:
-      type: object
-      properties:
-        count:
-          type: integer
-          format: int32
-        failedIds:
-          type: array
-          items:
-            type: string
+        newRecipientId:
+          type: string
+          description: New recipient ID
+        recipientId:
+          type: string
+          description: Recipient ID (usually the email address)
     RestRecipientStreamingCollection:
       type: object
       properties:
@@ -1007,6 +953,17 @@ components:
         limit:
           type: integer
           format: int32
+    ExtendedRecipient:
+      type: object
+      properties:
+        address:
+          type: string
+        data:
+          type: object
+          additionalProperties:
+            type: object
+        id:
+          type: string
     RestRecipientValid:
       type: object
       properties:
@@ -1051,15 +1008,50 @@ components:
           - bounced
           - unsubscribed
           - not_found
-    ModifyRecipientsAttributesRequestData:
-      required:
-      - targetGroup
+    RestCount:
       type: object
       properties:
-        targetGroup:
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+        count:
           type: integer
-          description: ID of the matching target group
+          description: Total number
           format: int64
+    RestRecipientsCreationModify:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        failedIds:
+          type: array
+          items:
+            type: string
+    ModifyRecipientAttributesRequestData:
+      type: object
+      properties:
         data:
           type: string
           description: Recipient data. Configure "data.[attribute]" according to the corresponding recipient list field.<p>Does not work with the "Try it out" feature.</p>
@@ -1070,18 +1062,16 @@ components:
           - set
           - prepend
           - append
-    UpdateRecipientIdRequestData:
-      required:
-      - newRecipientId
-      - recipientId
+    CreateRecipientsRequestData:
       type: object
       properties:
-        newRecipientId:
-          type: string
-          description: New recipient ID
-        recipientId:
-          type: string
-          description: Recipient ID (usually the email address)
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtendedRecipient'
+        optinProcessId:
+          type: integer
+          format: int64
     RestRecipient:
       type: object
       properties:
@@ -1125,44 +1115,6 @@ components:
                 type: string
                 format: uri
             description: Restful links
-    ExtendedRecipient:
-      type: object
-      properties:
-        address:
-          type: string
-        data:
-          type: object
-          additionalProperties:
-            type: object
-        id:
-          type: string
-    RestAttributeValuesWithCount:
-      type: object
-      properties:
-        links:
-          type: array
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
     RestAttributeValues:
       type: object
       properties:
@@ -1194,7 +1146,62 @@ components:
               uri:
                 type: string
                 format: uri
+    RestAttributeValuesWithCount:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+    UpdateRecipientsRequestData:
+      type: object
+      properties:
+        updateMode:
+          type: string
+          enum:
+          - set
+          - prepend
+          - append
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient_2'
+    RecipientBasedRequestData:
+      required:
+      - recipientId
+      type: object
+      properties:
+        recipientId:
+          type: string
+          description: Recipient ID (usually the email address)
   parameters:
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
     recipientListId:
       name: recipientListId
       in: path
@@ -1211,13 +1218,6 @@ components:
       schema:
         type: integer
         format: int64
-    clientId:
-      name: clientId
-      in: path
-      required: true
-      description: The unique identifier for the Optimizely Campaign client
-      schema:
-        type: string
   securitySchemes:
     basicAuth:
       type: http

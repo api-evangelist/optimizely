@@ -477,6 +477,40 @@ paths:
     - url: https://api.cmp.optimizely.com/v3
       description: v3 version of Optimizely CMP Open API
 components:
+  parameters:
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: The unique identifier for the Optimizely Campaign client
+      schema:
+        type: string
+    offset:
+      name: offset
+      in: query
+      required: false
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+    assetId:
+      name: assetId
+      in: path
+      required: true
+      description: The unique identifier for the asset
+      schema:
+        type: string
+    limit:
+      name: limit
+      in: query
+      required: false
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        default: 25
+        minimum: 1
+        maximum: 100
   schemas:
     Asset:
       type: object
@@ -522,54 +556,6 @@ components:
           type: string
         rel:
           type: string
-    RestImage:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Image ID
-          format: int64
-        owner:
-          type: string
-          description: Client ID
-        name:
-          type: string
-          description: Image name
-        url:
-          type: string
-          description: Image url
-        height:
-          type: integer
-          description: Image height
-          format: int32
-        width:
-          type: integer
-          description: Image width
-          format: int32
-        links:
-          type: array
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
     RestCount:
       type: object
       properties:
@@ -622,6 +608,54 @@ components:
         limit:
           type: integer
           format: int32
+    RestImage:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Image ID
+          format: int64
+        owner:
+          type: string
+          description: Client ID
+        name:
+          type: string
+          description: Image name
+        url:
+          type: string
+          description: Image url
+        height:
+          type: integer
+          description: Image height
+          format: int32
+        width:
+          type: integer
+          description: Image width
+          format: int32
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
     AssetInput:
       type: object
       description: Input for updating an asset
@@ -716,40 +750,6 @@ components:
           properties: {}
       required:
       - message
-  parameters:
-    clientId:
-      name: clientId
-      in: path
-      required: true
-      description: The unique identifier for the Optimizely Campaign client
-      schema:
-        type: string
-    offset:
-      name: offset
-      in: query
-      required: false
-      description: Number of items to skip for pagination
-      schema:
-        type: integer
-        default: 0
-        minimum: 0
-    limit:
-      name: limit
-      in: query
-      required: false
-      description: Maximum number of items to return
-      schema:
-        type: integer
-        default: 25
-        minimum: 1
-        maximum: 100
-    assetId:
-      name: assetId
-      in: path
-      required: true
-      description: The unique identifier for the asset
-      schema:
-        type: string
   responses:
     NotFound:
       description: Not found error
@@ -759,14 +759,6 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: Resource not found
-    Forbidden:
-      description: Permission error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: You do not have the permission to perform this operation
     ClientError:
       description: Client error
       content:
@@ -783,6 +775,14 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: Unauthorized
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
   securitySchemes:
     basicAuth:
       type: http

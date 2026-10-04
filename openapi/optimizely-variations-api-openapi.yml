@@ -582,14 +582,6 @@ paths:
       - Variations
 components:
   schemas:
-    BrainstormVariablesInteraction:
-      discriminator:
-        mapping:
-          error: '#/components/schemas/BrainstormError'
-          response: '#/components/schemas/BrainstormVariablesResponse'
-          user_chat: '#/components/schemas/BrainstormUserChat'
-        propertyName: type
-      type: object
     BrainstormVariationsChat:
       properties:
         interactions:
@@ -600,72 +592,6 @@ components:
       required:
       - interactions
       type: object
-    PatchRequestBody:
-      description: A JSONPatch document as defined by RFC 6902
-      properties:
-        from:
-          description: A JSON Pointer to the resource attribute
-          type: string
-        op:
-          description: The operation to be performed
-          enum:
-          - add
-          - remove
-          - replace
-          - move
-          - copy
-          - test
-          type: string
-        path:
-          description: A JSON-Pointer to the resource or the resource attribute
-          type: string
-        value:
-          anyOf:
-          - type: object
-          - items:
-              type: string
-            type: array
-          - $ref: '#/components/schemas/AudienceConditions'
-          - type: string
-          - type: integer
-          - type: boolean
-          - items:
-              $ref: '#/components/schemas/SubMetric'
-            type: array
-          description: The value to be used within the operations.
-      required:
-      - op
-      - path
-      type: object
-    AudienceConditionsString:
-      description: A valid AudienceConditionsArray represented as a JSON string
-      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
-      type: string
-    AudienceConditionsArray:
-      example:
-      - or
-      - audience_id: 123
-      - - and
-        - audience_id: 456
-        - audience_id: 789
-      items:
-        anyOf:
-        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
-          type: string
-        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
-          properties:
-            audience_id:
-              type: integer
-          required:
-          - audience_id
-          type: object
-        - $ref: '#/components/schemas/AudienceConditionsArray'
-          description: A nested AudienceConditionsArray
-          example:
-          - - and
-            - audience_id: 456
-            - audience_id: 789
-      type: array
     VariationRequestBody:
       properties:
         description:
@@ -695,226 +621,6 @@ components:
       required:
       - key
       - name
-      type: object
-    Variation:
-      example:
-        archive_url: '...'
-        archived: false
-        created_time: '2019-05-08T00:00:00.000Z'
-        delete_url: '...'
-        description: Use this to provide high discounts
-        enabled: true
-        environment_usage_count:
-          development: 2
-          production: 3
-        fetch_flag_url: '...'
-        flag_key: recurring_deposit
-        id: 45633995
-        key: high_discount
-        name: High Discount
-        revision: 1
-        unarchive_url: '...'
-        update_url: '...'
-        updated_time: '2019-05-08T00:00:00.000Z'
-        url: '...'
-        urn: variations.flag.optimizely.com::45633995
-        variables:
-          advanced:
-            key: advanced
-            type: json
-            value: "{\n\t\"hello\": 123\n}"
-          amount:
-            key: amount
-            type: double
-            value: '10.0'
-          message:
-            key: message
-            type: string
-            value: Enjoy!!
-      properties:
-        archive_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to archive this Variation
-          readOnly: true
-        archived:
-          description: Indicates if the Variation is archived or not
-          type: boolean
-        created_time:
-          description: Timestamp when the Variation is created
-          format: date-time
-          readOnly: true
-          type: string
-        delete_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to delete this Variation
-          readOnly: true
-        description:
-          description: Additional context of the Variation
-          type: string
-        enabled:
-          description: Indicates if the Variation is enabled or not
-          readOnly: true
-          type: boolean
-        environment_usage_count:
-          additionalProperties:
-            format: int32
-            type: integer
-          description: Map of rule/ruleset count associated with the variation in each environment that includes environment key as key and count as value
-          example:
-            development: 15
-            production: 20
-          readOnly: true
-          type: object
-        fetch_flag_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to flag url of this variation
-          readOnly: true
-        flag_key:
-          description: The Key of the Flag this Variation belongs to
-          type: string
-        id:
-          description: System generated Unique ID of the Variation
-          readOnly: true
-          type: integer
-        in_use:
-          description: Indicates if the Variation is in use by a rule or a ruleset
-          readOnly: true
-          type: boolean
-        key:
-          description: User-facing Unique identifier of the Variation
-          type: string
-        name:
-          description: User-facing name of the Variation
-          type: string
-        revision:
-          description: Revision number for tracking changes
-          readOnly: true
-          type: integer
-        role:
-          description: Granular permission role
-          example: admin
-          readOnly: true
-          type: string
-        unarchive_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to unarchive this Variation
-          readOnly: true
-        update_url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to update this Variation
-          readOnly: true
-        updated_time:
-          description: Timestamp when the Variation is updated
-          format: date-time
-          readOnly: true
-          type: string
-        url:
-          allOf:
-          - $ref: '#/components/schemas/UrlValue'
-          description: Link to self
-          readOnly: true
-        urn:
-          description: The URN for the Variation
-          readOnly: true
-          type: string
-        variables:
-          additionalProperties:
-            $ref: '#/components/schemas/VariableValue'
-          description: Map of flag variables that include variable key and value
-          type: object
-      required:
-      - id
-      - urn
-      - key
-      - name
-      - flag_key
-      - created_time
-      - updated_time
-      - url
-      type: object
-    AudienceConditions:
-      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
-      oneOf:
-      - $ref: '#/components/schemas/AudienceConditionsArray'
-      - $ref: '#/components/schemas/AudienceConditionsString'
-    SubMetric:
-      properties:
-        aggregator:
-          type: string
-        event_id:
-          type: integer
-        event_type:
-          type: string
-        field:
-          type:
-          - string
-          - 'null'
-        role:
-          enum:
-          - numerator
-          - denominator
-          type: string
-        scope:
-          type: string
-      type: object
-    UrlList:
-      description: A list of urls.
-      items:
-        type: string
-      type: array
-    VariableValue:
-      properties:
-        is_default:
-          description: True if the value is currently set to the default_value for the variable definition
-          example: true
-          type: boolean
-        key:
-          description: Unique string identifier for the Variable within the Flag
-          example: amount
-          readOnly: true
-          type: string
-        revision:
-          description: Revision number for tracking changes
-          readOnly: true
-          type: integer
-        type:
-          description: The datatype for the Variable
-          enum:
-          - boolean
-          - string
-          - double
-          - integer
-          - json
-          example: double
-          readOnly: true
-          type: string
-        value:
-          description: The value for the Variable
-          example: '0.0'
-          type: string
-      required:
-      - value
-      type: object
-    UrlValue:
-      description: A single url.
-      type: string
-    BulkOperationsRequestBody:
-      properties:
-        keys:
-          description: The list of resource keys to perform the desired operation
-          items:
-            type: string
-          type: array
-      type: object
-    VariationMap:
-      additionalProperties:
-        $ref: '#/components/schemas/Variation'
-      description: Map of variations that include variation key as key and variation payload as value.
       type: object
     Variations:
       properties:
@@ -1070,6 +776,48 @@ components:
       - total_pages
       - items
       type: object
+    VariationMap:
+      additionalProperties:
+        $ref: '#/components/schemas/Variation'
+      description: Map of variations that include variation key as key and variation payload as value.
+      type: object
+    SubMetric:
+      properties:
+        aggregator:
+          type: string
+        event_id:
+          type: integer
+        event_type:
+          type: string
+        field:
+          type:
+          - string
+          - 'null'
+        role:
+          enum:
+          - numerator
+          - denominator
+          type: string
+        scope:
+          type: string
+      type: object
+    AudienceConditionsString:
+      description: A valid AudienceConditionsArray represented as a JSON string
+      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
+      type: string
+    UrlList:
+      description: A list of urls.
+      items:
+        type: string
+      type: array
+    BulkOperationsRequestBody:
+      properties:
+        keys:
+          description: The list of resource keys to perform the desired operation
+          items:
+            type: string
+          type: array
+      type: object
     ProblemDetail:
       additionalProperties: true
       description: https://tools.ietf.org/html/rfc7807#section-3.1
@@ -1095,51 +843,271 @@ components:
       - title
       - type
       type: object
-  parameters:
-    variationKey:
-      description: The Variation identifier
-      example: high_discount
-      in: path
-      name: variation_key
-      required: true
-      schema:
-        type: string
-    pageToken:
-      description: Pagination page token. Implements prev, next, last, first
-      in: query
-      name: page_token
-      schema:
-        type: string
-    projectId:
-      description: The project identifier
-      example: 12345
-      in: path
-      name: project_id
-      required: true
-      schema:
-        type: integer
-    perPage:
-      description: The max number of items to include per page or results.
-      in: query
-      name: per_page
-      schema:
-        format: int64
-        type: integer
-    pageWindow:
-      description: Number of previous and next page links to supply for the request (defaults to 1).
-      in: query
-      name: page_window
-      schema:
-        type: integer
-    flagKey:
-      description: The Flag identifier
-      example: recurring_deposit
-      in: path
-      name: flag_key
-      required: true
-      schema:
-        type: string
+    AudienceConditionsArray:
+      example:
+      - or
+      - audience_id: 123
+      - - and
+        - audience_id: 456
+        - audience_id: 789
+      items:
+        anyOf:
+        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+          type: string
+        - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
+          properties:
+            audience_id:
+              type: integer
+          required:
+          - audience_id
+          type: object
+        - $ref: '#/components/schemas/AudienceConditionsArray'
+          description: A nested AudienceConditionsArray
+          example:
+          - - and
+            - audience_id: 456
+            - audience_id: 789
+      type: array
+    AudienceConditions:
+      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
+      oneOf:
+      - $ref: '#/components/schemas/AudienceConditionsArray'
+      - $ref: '#/components/schemas/AudienceConditionsString'
+    PatchRequestBody:
+      description: A JSONPatch document as defined by RFC 6902
+      properties:
+        from:
+          description: A JSON Pointer to the resource attribute
+          type: string
+        op:
+          description: The operation to be performed
+          enum:
+          - add
+          - remove
+          - replace
+          - move
+          - copy
+          - test
+          type: string
+        path:
+          description: A JSON-Pointer to the resource or the resource attribute
+          type: string
+        value:
+          anyOf:
+          - type: object
+          - items:
+              type: string
+            type: array
+          - $ref: '#/components/schemas/AudienceConditions'
+          - type: string
+          - type: integer
+          - type: boolean
+          - items:
+              $ref: '#/components/schemas/SubMetric'
+            type: array
+          description: The value to be used within the operations.
+      required:
+      - op
+      - path
+      type: object
+    UrlValue:
+      description: A single url.
+      type: string
+    Variation:
+      example:
+        archive_url: '...'
+        archived: false
+        created_time: '2019-05-08T00:00:00.000Z'
+        delete_url: '...'
+        description: Use this to provide high discounts
+        enabled: true
+        environment_usage_count:
+          development: 2
+          production: 3
+        fetch_flag_url: '...'
+        flag_key: recurring_deposit
+        id: 45633995
+        key: high_discount
+        name: High Discount
+        revision: 1
+        unarchive_url: '...'
+        update_url: '...'
+        updated_time: '2019-05-08T00:00:00.000Z'
+        url: '...'
+        urn: variations.flag.optimizely.com::45633995
+        variables:
+          advanced:
+            key: advanced
+            type: json
+            value: "{\n\t\"hello\": 123\n}"
+          amount:
+            key: amount
+            type: double
+            value: '10.0'
+          message:
+            key: message
+            type: string
+            value: Enjoy!!
+      properties:
+        archive_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to archive this Variation
+          readOnly: true
+        archived:
+          description: Indicates if the Variation is archived or not
+          type: boolean
+        created_time:
+          description: Timestamp when the Variation is created
+          format: date-time
+          readOnly: true
+          type: string
+        delete_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to delete this Variation
+          readOnly: true
+        description:
+          description: Additional context of the Variation
+          type: string
+        enabled:
+          description: Indicates if the Variation is enabled or not
+          readOnly: true
+          type: boolean
+        environment_usage_count:
+          additionalProperties:
+            format: int32
+            type: integer
+          description: Map of rule/ruleset count associated with the variation in each environment that includes environment key as key and count as value
+          example:
+            development: 15
+            production: 20
+          readOnly: true
+          type: object
+        fetch_flag_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to flag url of this variation
+          readOnly: true
+        flag_key:
+          description: The Key of the Flag this Variation belongs to
+          type: string
+        id:
+          description: System generated Unique ID of the Variation
+          readOnly: true
+          type: integer
+        in_use:
+          description: Indicates if the Variation is in use by a rule or a ruleset
+          readOnly: true
+          type: boolean
+        key:
+          description: User-facing Unique identifier of the Variation
+          type: string
+        name:
+          description: User-facing name of the Variation
+          type: string
+        revision:
+          description: Revision number for tracking changes
+          readOnly: true
+          type: integer
+        role:
+          description: Granular permission role
+          example: admin
+          readOnly: true
+          type: string
+        unarchive_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to unarchive this Variation
+          readOnly: true
+        update_url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to update this Variation
+          readOnly: true
+        updated_time:
+          description: Timestamp when the Variation is updated
+          format: date-time
+          readOnly: true
+          type: string
+        url:
+          allOf:
+          - $ref: '#/components/schemas/UrlValue'
+          description: Link to self
+          readOnly: true
+        urn:
+          description: The URN for the Variation
+          readOnly: true
+          type: string
+        variables:
+          additionalProperties:
+            $ref: '#/components/schemas/VariableValue'
+          description: Map of flag variables that include variable key and value
+          type: object
+      required:
+      - id
+      - urn
+      - key
+      - name
+      - flag_key
+      - created_time
+      - updated_time
+      - url
+      type: object
+    VariableValue:
+      properties:
+        is_default:
+          description: True if the value is currently set to the default_value for the variable definition
+          example: true
+          type: boolean
+        key:
+          description: Unique string identifier for the Variable within the Flag
+          example: amount
+          readOnly: true
+          type: string
+        revision:
+          description: Revision number for tracking changes
+          readOnly: true
+          type: integer
+        type:
+          description: The datatype for the Variable
+          enum:
+          - boolean
+          - string
+          - double
+          - integer
+          - json
+          example: double
+          readOnly: true
+          type: string
+        value:
+          description: The value for the Variable
+          example: '0.0'
+          type: string
+      required:
+      - value
+      type: object
+    BrainstormVariablesInteraction:
+      discriminator:
+        mapping:
+          error: '#/components/schemas/BrainstormError'
+          response: '#/components/schemas/BrainstormVariablesResponse'
+          user_chat: '#/components/schemas/BrainstormUserChat'
+        propertyName: type
+      type: object
   responses:
+    ForbiddenResponse:
+      content:
+        application/problem+json:
+          example:
+            detail: Permission denied
+            status: 403
+            title: Forbidden
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+      description: Do not have permission to perform the operation
+    NoContentResponse:
+      description: No content in the response
     BadRequestResponse:
       content:
         application/problem+json:
@@ -1153,14 +1121,6 @@ components:
       description: Malformed requests and invalid parameter names and types
     NotFoundResponse:
       description: Not found. No content
-    NoContentResponse:
-      description: No content in the response
-    UnauthorizedResponse:
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetail'
-      description: Invalid credentials
     VariationSuccessResponse:
       content:
         application/json:
@@ -1182,16 +1142,56 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetail'
       description: Conflicting resource state with requested action
-    ForbiddenResponse:
+    UnauthorizedResponse:
       content:
         application/problem+json:
-          example:
-            detail: Permission denied
-            status: 403
-            title: Forbidden
           schema:
             $ref: '#/components/schemas/ProblemDetail'
-      description: Do not have permission to perform the operation
+      description: Invalid credentials
+  parameters:
+    perPage:
+      description: The max number of items to include per page or results.
+      in: query
+      name: per_page
+      schema:
+        format: int64
+        type: integer
+    flagKey:
+      description: The Flag identifier
+      example: recurring_deposit
+      in: path
+      name: flag_key
+      required: true
+      schema:
+        type: string
+    projectId:
+      description: The project identifier
+      example: 12345
+      in: path
+      name: project_id
+      required: true
+      schema:
+        type: integer
+    variationKey:
+      description: The Variation identifier
+      example: high_discount
+      in: path
+      name: variation_key
+      required: true
+      schema:
+        type: string
+    pageToken:
+      description: Pagination page token. Implements prev, next, last, first
+      in: query
+      name: page_token
+      schema:
+        type: string
+    pageWindow:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
   requestBodies:
     VariationRequest:
       content:

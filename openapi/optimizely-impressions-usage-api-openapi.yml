@@ -184,27 +184,50 @@ paths:
       - Impressions Usage
       x-release-state: beta
 components:
-  parameters:
-    per_page:
-      description: Optional pagination argument that specifies the maximum number of objects to return per request
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 25
-        maximum: 100
-        type: integer
-    page:
-      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
-
-        '
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        type: integer
   schemas:
+    ImpressionsUsage:
+      properties:
+        experiment_id:
+          description: The ID for the experiment.
+          example: 3239
+          format: int64
+          type: integer
+        experiment_name:
+          description: The Experiment name to display in the Optimizely app. Whitespaces and other non-alphanumeric characters allowed. Defaults to experiment key if left empty.
+          example: Renewable energy
+          type: string
+        experiment_status:
+          description: The status of the Experiment.
+          example: Running, Not started
+          type: string
+        impression_count:
+          description: The Impressions count at experiment level.
+          example: 322010712450
+          format: int64
+          type: integer
+        platform:
+          default: web
+          description: The platform of the Project
+          example: web, fullstack, edge
+          type: string
+        project_id:
+          description: The ID for the project.
+          example: 3094
+          format: int64
+          type: integer
+        project_name:
+          description: The name of the Project.
+          example: Landing Page Optimization
+          type: string
+      required:
+      - project_id
+      - project_name
+      - experiment_id
+      - experiment_name
+      - experiment_status
+      - impression_count
+      - platform
+      type: object
     ImpressionsUsageSummary:
       properties:
         allowance:
@@ -258,49 +281,26 @@ components:
           format: uuid
           type: string
       type: object
-    ImpressionsUsage:
-      properties:
-        experiment_id:
-          description: The ID for the experiment.
-          example: 3239
-          format: int64
-          type: integer
-        experiment_name:
-          description: The Experiment name to display in the Optimizely app. Whitespaces and other non-alphanumeric characters allowed. Defaults to experiment key if left empty.
-          example: Renewable energy
-          type: string
-        experiment_status:
-          description: The status of the Experiment.
-          example: Running, Not started
-          type: string
-        impression_count:
-          description: The Impressions count at experiment level.
-          example: 322010712450
-          format: int64
-          type: integer
-        platform:
-          default: web
-          description: The platform of the Project
-          example: web, fullstack, edge
-          type: string
-        project_id:
-          description: The ID for the project.
-          example: 3094
-          format: int64
-          type: integer
-        project_name:
-          description: The name of the Project.
-          example: Landing Page Optimization
-          type: string
-      required:
-      - project_id
-      - project_name
-      - experiment_id
-      - experiment_name
-      - experiment_status
-      - impression_count
-      - platform
-      type: object
+  parameters:
+    page:
+      description: 'Optional pagination argument that specifies the page to return. If you have 140 objects and you choose to return 100 objects per page you will be able to access the last 40 objects on page 2. The default value is 1.
+
+        '
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        type: integer
+    per_page:
+      description: Optional pagination argument that specifies the maximum number of objects to return per request
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 25
+        maximum: 100
+        type: integer
   securitySchemes:
     OAuth2:
       description: Write applications that authenticate with the REST API via OAuth 2.0. Or, to authenticate using a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token

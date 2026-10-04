@@ -408,40 +408,27 @@ paths:
       - Authorization: []
 components:
   schemas:
-    AssignLinksToClickProfileRequestData:
-      required:
-      - linkIds
+    RestLinkStreamingCollection:
       type: object
       properties:
-        linkIds:
+        elements:
           type: array
-          description: Comma-separated list of link IDs
           items:
-            type: integer
-            description: Comma-separated list of link IDs
-            format: int64
-    ClickProfileRequestData:
-      required:
-      - name
-      type: object
-      properties:
-        rulePattern:
-          type: string
-          description: Rule pattern of the click profile
-        name:
-          type: string
-          description: Name of the click profile
-        description:
-          type: string
-          description: Description of the click profile
-        ruleType:
-          type: string
-          description: Rule type of the click profile
-          default: NONE
-          enum:
-          - REGEXP
-          - WILDCARDS
-          - NONE
+            $ref: '#/components/schemas/RestLink'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     RestApiLink:
       type: object
       properties:
@@ -494,27 +481,40 @@ components:
           type: string
           description: Modification date
           format: date-time
-    RestLinkStreamingCollection:
+    AssignLinksToClickProfileRequestData:
+      required:
+      - linkIds
       type: object
       properties:
-        elements:
+        linkIds:
           type: array
+          description: Comma-separated list of link IDs
           items:
-            $ref: '#/components/schemas/RestLink'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
+            type: integer
+            description: Comma-separated list of link IDs
+            format: int64
+    ClickProfileRequestData:
+      required:
+      - name
+      type: object
+      properties:
+        rulePattern:
+          type: string
+          description: Rule pattern of the click profile
+        name:
+          type: string
+          description: Name of the click profile
+        description:
+          type: string
+          description: Description of the click profile
+        ruleType:
+          type: string
+          description: Rule type of the click profile
+          default: NONE
+          enum:
+          - REGEXP
+          - WILDCARDS
+          - NONE
     RestClickProfile:
       type: object
       properties:

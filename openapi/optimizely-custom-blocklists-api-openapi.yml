@@ -424,6 +424,50 @@ paths:
       - Authorization: []
 components:
   schemas:
+    RestCustomBlacklistEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        pattern:
+          type: string
+          description: Pattern for all mailing addresses that push into a custom blocklist
+        reason:
+          type: string
+          description: Reason for adding a pattern into a custom blocklist
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
     CustomBlacklistEntryRequestData:
       type: object
       properties:
@@ -437,6 +481,38 @@ components:
           type: string
         rel:
           type: string
+    CustomBlacklistRequestData:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the custom blocklist
+        hashAlgorithm:
+          type: string
+          description: Hash algorithm to be used. NONE by default.
+          enum:
+          - NONE
+          - MD5
+          - SHA1
+          - SHA2_256
+          - SHA2_512
+          - SHA2_256_OF_MD5_AND_DATA
+    CreateCustomBlacklistEntriesRequestData:
+      required:
+      - patterns
+      type: object
+      properties:
+        patterns:
+          type: array
+          description: Patterns of the custom blocklist entries
+          items:
+            type: string
+            description: Patterns of the custom blocklist entries
+        reason:
+          type: string
+          description: Reason for creating a custom blocklist entry
     RestCustomBlacklistStreamingCollection:
       type: object
       properties:
@@ -533,82 +609,6 @@ components:
                 type: string
                 format: uri
             description: Restful links
-    CreateCustomBlacklistEntriesRequestData:
-      required:
-      - patterns
-      type: object
-      properties:
-        patterns:
-          type: array
-          description: Patterns of the custom blocklist entries
-          items:
-            type: string
-            description: Patterns of the custom blocklist entries
-        reason:
-          type: string
-          description: Reason for creating a custom blocklist entry
-    RestCustomBlacklistEntry:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        pattern:
-          type: string
-          description: Pattern for all mailing addresses that push into a custom blocklist
-        reason:
-          type: string
-          description: Reason for adding a pattern into a custom blocklist
-        created:
-          type: string
-          description: Creation date
-          format: date-time
-        modified:
-          type: string
-          description: Modification date
-          format: date-time
-        links:
-          type: array
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-    CustomBlacklistRequestData:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the custom blocklist
-        hashAlgorithm:
-          type: string
-          description: Hash algorithm to be used. NONE by default.
-          enum:
-          - NONE
-          - MD5
-          - SHA1
-          - SHA2_256
-          - SHA2_512
-          - SHA2_256_OF_MD5_AND_DATA
   securitySchemes:
     Authorization:
       type: apiKey

@@ -197,6 +197,13 @@ paths:
       - Authorization: []
 components:
   schemas:
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
     Recipient:
       type: object
       properties:
@@ -206,22 +213,32 @@ components:
             type: object
         id:
           type: string
-    RestApiLink:
+    PrepareSendingBatchRequest:
+      required:
+      - campaign
+      - campaignAction
       type: object
       properties:
-        href:
+        campaign:
           type: string
-        rel:
+          description: Campaign definition based on the value of campaignAction
+        campaignAction:
           type: string
-    RecipientsChunkRequestData:
+          description: Campaign action
+          enum:
+          - use
+          - copy
+        tag:
+          type: string
+          description: Tag reference
+    RestChunk:
       type: object
       properties:
         chunk:
           type: string
-        recipients:
-          type: array
-          items:
-            $ref: '#/components/schemas/Recipient'
+        count:
+          type: integer
+          format: int32
     RestSendingBatchStreamingCollection:
       type: object
       properties:
@@ -243,24 +260,6 @@ components:
         limit:
           type: integer
           format: int32
-    PrepareSendingBatchRequest:
-      required:
-      - campaign
-      - campaignAction
-      type: object
-      properties:
-        campaign:
-          type: string
-          description: Campaign definition based on the value of campaignAction
-        campaignAction:
-          type: string
-          description: Campaign action
-          enum:
-          - use
-          - copy
-        tag:
-          type: string
-          description: Tag reference
     RestSendingBatch:
       type: object
       properties:
@@ -317,14 +316,15 @@ components:
               uri:
                 type: string
                 format: uri
-    RestChunk:
+    RecipientsChunkRequestData:
       type: object
       properties:
         chunk:
           type: string
-        count:
-          type: integer
-          format: int32
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
   securitySchemes:
     Authorization:
       type: apiKey

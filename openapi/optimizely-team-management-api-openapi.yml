@@ -178,12 +178,62 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    TeamUpdateRequest:
+    AccountRole:
+      type: string
+      enum:
+      - Administrator
+      - Project Creator
+      - User
+      title: AccountRole
+    TeamUser:
       properties:
-        name:
+        id:
+          type: string
+          title: Id
+        first_name:
           anyOf:
           - type: string
           - type: 'null'
+          title: First Name
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Name
+        email:
+          anyOf:
+          - type: string
+            format: email
+          - type: 'null'
+          title: Email
+        org_role:
+          $ref: '#/components/schemas/AccountRole'
+        created:
+          type: string
+          format: date-time
+          title: Created
+      type: object
+      required:
+      - id
+      - first_name
+      - last_name
+      - email
+      - org_role
+      - created
+      title: TeamUser
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    TeamCreateRequest:
+      properties:
+        name:
+          type: string
           title: Name
         description:
           anyOf:
@@ -196,24 +246,17 @@ components:
             maxLength: 4096
           - type: 'null'
           title: External Ref
-        members_added:
+        members:
           anyOf:
           - items:
               type: string
             type: array
           - type: 'null'
-          title: Members Added
-        members_removed:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Members Removed
+          title: Members
       type: object
       required:
       - name
-      title: TeamUpdateRequest
+      title: TeamCreateRequest
     TeamInfo:
       properties:
         id:
@@ -257,27 +300,28 @@ components:
       - last_modified
       - members_count
       title: TeamInfo
-    ValidationError:
+    TeamUpdateResponse:
       properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
+        message:
           type: string
           title: Message
-        type:
-          type: string
-          title: Error Type
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - message
+      title: TeamUpdateResponse
+    TeamCreateResponse:
+      properties:
+        message:
+          type: string
+          title: Message
+        team_id:
+          type: string
+          title: Team Id
+      type: object
+      required:
+      - message
+      - team_id
+      title: TeamCreateResponse
     TeamInfoResponse:
       properties:
         id:
@@ -327,10 +371,12 @@ components:
       - members_count
       - members
       title: TeamInfoResponse
-    TeamCreateRequest:
+    TeamUpdateRequest:
       properties:
         name:
-          type: string
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Name
         description:
           anyOf:
@@ -343,91 +389,45 @@ components:
             maxLength: 4096
           - type: 'null'
           title: External Ref
-        members:
+        members_added:
           anyOf:
           - items:
               type: string
             type: array
           - type: 'null'
-          title: Members
+          title: Members Added
+        members_removed:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Members Removed
       type: object
       required:
       - name
-      title: TeamCreateRequest
-    TeamCreateResponse:
+      title: TeamUpdateRequest
+    ValidationError:
       properties:
-        message:
-          type: string
-          title: Message
-        team_id:
-          type: string
-          title: Team Id
-      type: object
-      required:
-      - message
-      - team_id
-      title: TeamCreateResponse
-    TeamUser:
-      properties:
-        id:
-          type: string
-          title: Id
-        first_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: First Name
-        last_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Name
-        email:
-          anyOf:
-          - type: string
-            format: email
-          - type: 'null'
-          title: Email
-        org_role:
-          $ref: '#/components/schemas/AccountRole'
-        created:
-          type: string
-          format: date-time
-          title: Created
-      type: object
-      required:
-      - id
-      - first_name
-      - last_name
-      - email
-      - org_role
-      - created
-      title: TeamUser
-    HTTPValidationError:
-      properties:
-        detail:
+        loc:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    AccountRole:
-      type: string
-      enum:
-      - Administrator
-      - Project Creator
-      - User
-      title: AccountRole
-    TeamUpdateResponse:
-      properties:
-        message:
+          title: Location
+        msg:
           type: string
           title: Message
+        type:
+          type: string
+          title: Error Type
       type: object
       required:
-      - message
-      title: TeamUpdateResponse
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     BearerAuth:
       description: To get an API token, see https://docs.developers.optimizely.com/web/docs/personal-token

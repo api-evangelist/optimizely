@@ -1710,56 +1710,6 @@ paths:
       summary: Wish lists V1 send wish list pdf async
       x-summary-source: derived
 components:
-  requestBodies:
-    Affiliates_ArchiveParameters:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties: {}
-      description: archive action parameters
-    Insite.WishLists.WebApi.V1.ApiModels.WishListModel:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
-        text/json:
-          schema:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
-        text/xml:
-          schema:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
-        application/x-www-form-urlencoded:
-          schema:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
-        text/html:
-          schema:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
-      required: true
-    Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
-        text/json:
-          schema:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
-        text/xml:
-          schema:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
-        application/x-www-form-urlencoded:
-          schema:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
-        text/html:
-          schema:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
-      required: true
   schemas:
     Insite.Data.Entities.WishList:
       required:
@@ -1833,125 +1783,112 @@ components:
           type: string
         modifiedBy:
           type: string
-    Insite.Core.WebApi.SortOptionModel:
+    Insite.Catalog.Services.Dtos.StyledProductDto:
       type: object
       properties:
-        displayName:
-          type: string
-        sortType:
-          type: string
-    Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto:
-      type: object
-      properties:
-        productUnitOfMeasureId:
+        productId:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        unitOfMeasure:
-          type: string
-        unitOfMeasureDisplay:
-          type: string
-        description:
-          type: string
-        qtyPerBaseUnitOfMeasure:
-          format: decimal
-          type: number
-        roundingRule:
-          type: string
-        isDefault:
-          type: boolean
-        availability:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
-    Insite.Core.Plugins.Search.Dtos.FieldScoreDto:
-      type: object
-      properties:
         name:
           type: string
-        score:
-          format: float
+        shortDescription:
+          type: string
+        erpNumber:
+          type: string
+        customerName:
+          type: string
+        mediumImagePath:
+          type: string
+        smallImagePath:
+          type: string
+        largeImagePath:
+          type: string
+        qtyOnHand:
+          format: decimal
           type: number
-    Insite.WishLists.WebApi.V1.ApiModels.WishListModel:
+        unitOfMeasure:
+          type: string
+        trackInventory:
+          type: boolean
+        minimumOrderQty:
+          format: int32
+          type: integer
+        productDetailUrl:
+          type: string
+        pricing:
+          $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
+        quoteRequired:
+          type: boolean
+        styleValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleValueDto'
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+        productUnitOfMeasures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto'
+        productImages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductImageDto'
+        warehouses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.WarehouseDto'
+        manufacturerItem:
+          type: string
+        upcCode:
+          type: string
+        sku:
+          type: string
+        cantBuy:
+          type: boolean
+        allowZeroPricing:
+          type: boolean
+        htmlContent:
+          type: string
+        specifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.DocumentDto'
+        attributeTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeTypeDto'
+        crossSells:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+        relatedProducts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.RelatedProductDto'
+        metaDescription:
+          type: string
+        metaKeywords:
+          type: string
+        pageTitle:
+          type: string
+        openGraphTitle:
+          type: string
+        openGraphUrl:
+          type: string
+        openGraphImage:
+          type: string
+        customerProductNumber:
+          type: string
+    Insite.WishLists.WebApi.V1.ApiModels.WishListPdfModel:
       type: object
       properties:
         uri:
           type: string
-        wishListLinesUri:
-          type: string
-        id:
-          type: string
-        name:
-          type: string
-        canAddAllToCart:
-          type: boolean
-        canAddToCart:
-          type: boolean
-        hasAnyLines:
-          type: boolean
-        description:
-          type: string
-        updatedOn:
-          format: date-time
-          type: string
-        updatedByDisplayName:
-          type: string
-        wishListLinesCount:
-          format: int32
-          type: integer
-        wishListSharesCount:
-          format: int32
-          type: integer
-        isSharedList:
-          type: boolean
-        sharedByDisplayName:
-          type: string
-        sharedByUserName:
-          type: string
-        sharedUsers:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListShareModel'
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        wishListLineCollection:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
-        allowEdit:
-          type: boolean
-        shareOption:
-          type: string
-        recipientEmailAddress:
-          type: string
-        sendEmail:
-          type: boolean
-        message:
-          type: string
-        senderName:
-          type: string
-        schedule:
-          $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListEmailScheduleModel'
-        sendDayOfWeekPossibleValues:
-          type: array
-          items:
-            type: string
-        sendDayOfMonthPossibleValues:
-          type: array
-          items:
-            type: string
-        isGlobal:
-          type: boolean
-        isAutogenerated:
-          type: boolean
-        isFavorite:
-          type: boolean
-        isHidden:
-          type: boolean
-        wishListTags:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListTagModel'
-        isDynamic:
-          type: boolean
         properties:
           type: object
           additionalProperties:
@@ -2085,6 +2022,301 @@ components:
         vatMinusExtendedUnitRegularPrice:
           format: decimal
           type: number
+    Insite.Core.WebApi.SortOptionModel:
+      type: object
+      properties:
+        displayName:
+          type: string
+        sortType:
+          type: string
+    Insite.WishLists.WebApi.V1.ApiModels.WishListLineCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        wishListLines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
+        changedListLineQuantities:
+          type: object
+          additionalProperties:
+            format: int32
+            type: integer
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.WishLists.WebApi.V1.ApiModels.UpdateWishListLineCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        wishListId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        changedSharedListLinesQuantities:
+          type: object
+          additionalProperties:
+            format: decimal
+            type: number
+        includeListLines:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.WebApi.PaginationModel:
+      type: object
+      properties:
+        currentPage:
+          format: int32
+          type: integer
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        defaultPageSize:
+          format: int32
+          type: integer
+        totalItemCount:
+          format: int32
+          type: integer
+        numberOfPages:
+          format: int32
+          type: integer
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
+        sortType:
+          type: string
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
+          type: string
+    Insite.WishLists.WebApi.V1.ApiModels.WishListShareModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        displayName:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.WishLists.WebApi.V1.ApiModels.WishListTagModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        tag:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.AvailabilityDto:
+      type: object
+      properties:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
+          type: string
+        requiresRealTimeInventory:
+          type: boolean
+    Insite.WishLists.WebApi.V1.ApiModels.WishListModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        wishListLinesUri:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        canAddAllToCart:
+          type: boolean
+        canAddToCart:
+          type: boolean
+        hasAnyLines:
+          type: boolean
+        description:
+          type: string
+        updatedOn:
+          format: date-time
+          type: string
+        updatedByDisplayName:
+          type: string
+        wishListLinesCount:
+          format: int32
+          type: integer
+        wishListSharesCount:
+          format: int32
+          type: integer
+        isSharedList:
+          type: boolean
+        sharedByDisplayName:
+          type: string
+        sharedByUserName:
+          type: string
+        sharedUsers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListShareModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        wishListLineCollection:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
+        allowEdit:
+          type: boolean
+        shareOption:
+          type: string
+        recipientEmailAddress:
+          type: string
+        sendEmail:
+          type: boolean
+        message:
+          type: string
+        senderName:
+          type: string
+        schedule:
+          $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListEmailScheduleModel'
+        sendDayOfWeekPossibleValues:
+          type: array
+          items:
+            type: string
+        sendDayOfMonthPossibleValues:
+          type: array
+          items:
+            type: string
+        isGlobal:
+          type: boolean
+        isAutogenerated:
+          type: boolean
+        isFavorite:
+          type: boolean
+        isHidden:
+          type: boolean
+        wishListTags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListTagModel'
+        isDynamic:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.BrandDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        urlSegment:
+          type: string
+        logoSmallImagePath:
+          type: string
+        logoLargeImagePath:
+          type: string
+        logoImageAltText:
+          type: string
+        detailPagePath:
+          type: string
+    Insite.Catalog.Services.Dtos.SpecificationDto:
+      type: object
+      properties:
+        specificationId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        nameDisplay:
+          type: string
+        value:
+          type: string
+        description:
+          type: string
+        sortOrder:
+          format: decimal
+          type: number
+        isActive:
+          type: boolean
+        parentSpecification:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+        htmlContent:
+          type: string
+        specifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+    Insite.Catalog.Services.Dtos.DocumentDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        description:
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        filePath:
+          type: string
+        fileUrl:
+          type: string
+        documentType:
+          type: string
+        languageId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        fileTypeString:
+          type: string
+    Insite.Core.Plugins.Search.Dtos.FieldScoreDto:
+      type: object
+      properties:
+        name:
+          type: string
+        score:
+          format: float
+          type: number
     Insite.WishLists.WebApi.V1.ApiModels.WishListPdfParameter:
       type: object
       properties:
@@ -2125,118 +2357,73 @@ components:
           type: string
         changedSharedListLinesQuantities:
           type: string
-    Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel:
+    Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto:
       type: object
       properties:
-        uri:
-          type: string
-        id:
+        productUnitOfMeasureId:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        productUri:
-          type: string
-        productId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        smallImagePath:
-          type: string
-        altText:
-          type: string
-        productName:
-          type: string
-        manufacturerItem:
-          type: string
-        customerName:
-          type: string
-        shortDescription:
-          type: string
-        qtyOnHand:
-          format: decimal
-          type: number
-        qtyOrdered:
-          format: decimal
-          type: number
-        erpNumber:
-          type: string
-        pricing:
-          $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
-        quoteRequired:
-          type: boolean
-        isActive:
-          type: boolean
-        canEnterQuantity:
-          type: boolean
-        canShowPrice:
-          type: boolean
-        canAddToCart:
-          type: boolean
-        canShowUnitOfMeasure:
-          type: boolean
-        canBackOrder:
-          type: boolean
-        trackInventory:
-          type: boolean
-        availability:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
-        breakPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
         unitOfMeasure:
           type: string
         unitOfMeasureDisplay:
           type: string
-        unitOfMeasureDescription:
-          type: string
-        baseUnitOfMeasure:
-          type: string
-        baseUnitOfMeasureDisplay:
+        description:
           type: string
         qtyPerBaseUnitOfMeasure:
           format: decimal
           type: number
-        selectedUnitOfMeasure:
+        roundingRule:
           type: string
-        productUnitOfMeasures:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto'
-        packDescription:
-          type: string
-        createdOn:
-          format: date-time
-          type: string
-        notes:
-          type: string
-        createdByDisplayName:
-          type: string
-        isSharedLine:
+        isDefault:
           type: boolean
-        isVisible:
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+    Insite.Catalog.Services.Dtos.ProductSubscriptionDto:
+      type: object
+      properties:
+        subscriptionAddToInitialOrder:
           type: boolean
-        isDiscontinued:
+        subscriptionAllMonths:
           type: boolean
-        sortOrder:
+        subscriptionApril:
+          type: boolean
+        subscriptionAugust:
+          type: boolean
+        subscriptionCyclePeriod:
+          type: string
+        subscriptionDecember:
+          type: boolean
+        subscriptionFebruary:
+          type: boolean
+        subscriptionFixedPrice:
+          type: boolean
+        subscriptionJanuary:
+          type: boolean
+        subscriptionJuly:
+          type: boolean
+        subscriptionJune:
+          type: boolean
+        subscriptionMarch:
+          type: boolean
+        subscriptionMay:
+          type: boolean
+        subscriptionNovember:
+          type: boolean
+        subscriptionOctober:
+          type: boolean
+        subscriptionPeriodsPerCycle:
           format: int32
           type: integer
-        brand:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BrandDto'
-        isQtyAdjusted:
+        subscriptionSeptember:
           type: boolean
-        allowZeroPricing:
-          type: boolean
-        badges:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BadgeDto'
-        replacementProduct:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
+        subscriptionShipViaId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        subscriptionTotalCycles:
+          format: int32
+          type: integer
     Insite.Catalog.Services.Dtos.ProductImageDto:
       type: object
       properties:
@@ -2258,285 +2445,6 @@ components:
         largeImagePath:
           type: string
         altText:
-          type: string
-    Insite.Core.Plugins.Pricing.BreakPriceDto:
-      type: object
-      properties:
-        breakQty:
-          format: decimal
-          type: number
-        breakPrice:
-          format: decimal
-          type: number
-        breakPriceDisplay:
-          type: string
-        savingsMessage:
-          type: string
-        breakPriceWithVat:
-          format: decimal
-          type: number
-        breakPriceWithVatDisplay:
-          type: string
-    Insite.Catalog.Services.Dtos.WarehouseDto:
-      type: object
-      properties:
-        messageType:
-          format: int32
-          enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          type: integer
-        message:
-          type: string
-        requiresRealTimeInventory:
-          type: boolean
-        name:
-          type: string
-        description:
-          type: string
-        qty:
-          format: decimal
-          type: number
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.StyleTraitDto:
-      type: object
-      properties:
-        styleTraitId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        nameDisplay:
-          type: string
-        unselectedValue:
-          type: string
-        sortOrder:
-          format: int32
-          type: integer
-        styleValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleValueDto'
-        displayType:
-          type: string
-        numberOfSwatchesVisible:
-          format: int32
-          type: integer
-        displayTextWithSwatch:
-          type: boolean
-    Insite.WishLists.WebApi.V1.ApiModels.WishListInviteParameter:
-      type: object
-      properties:
-        invite:
-          type: string
-    Insite.WishLists.WebApi.V1.ApiModels.UpdateWishListLineCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        wishListId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        changedSharedListLinesQuantities:
-          type: object
-          additionalProperties:
-            format: decimal
-            type: number
-        includeListLines:
-          type: boolean
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.ConfigSectionOptionDto:
-      type: object
-      properties:
-        sectionOptionId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        sectionName:
-          type: string
-        productName:
-          type: string
-        productId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        description:
-          type: string
-        price:
-          format: decimal
-          type: number
-        userProductPrice:
-          type: boolean
-        selected:
-          type: boolean
-        sortOrder:
-          format: int32
-          type: integer
-        quantity:
-          format: decimal
-          type: number
-        cantBuy:
-          type: boolean
-    Insite.WishLists.WebApi.V1.ApiModels.WishListTagCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        wishListTags:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListTagModel'
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.StyledProductDto:
-      type: object
-      properties:
-        productId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        shortDescription:
-          type: string
-        erpNumber:
-          type: string
-        customerName:
-          type: string
-        mediumImagePath:
-          type: string
-        smallImagePath:
-          type: string
-        largeImagePath:
-          type: string
-        qtyOnHand:
-          format: decimal
-          type: number
-        unitOfMeasure:
-          type: string
-        trackInventory:
-          type: boolean
-        minimumOrderQty:
-          format: int32
-          type: integer
-        productDetailUrl:
-          type: string
-        pricing:
-          $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
-        quoteRequired:
-          type: boolean
-        styleValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleValueDto'
-        availability:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
-        productUnitOfMeasures:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto'
-        productImages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductImageDto'
-        warehouses:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.WarehouseDto'
-        manufacturerItem:
-          type: string
-        upcCode:
-          type: string
-        sku:
-          type: string
-        cantBuy:
-          type: boolean
-        allowZeroPricing:
-          type: boolean
-        htmlContent:
-          type: string
-        specifications:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
-        documents:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.DocumentDto'
-        attributeTypes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeTypeDto'
-        crossSells:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
-        relatedProducts:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.RelatedProductDto'
-        metaDescription:
-          type: string
-        metaKeywords:
-          type: string
-        pageTitle:
-          type: string
-        openGraphTitle:
-          type: string
-        openGraphUrl:
-          type: string
-        openGraphImage:
-          type: string
-        customerProductNumber:
-          type: string
-    Insite.WishLists.WebApi.V1.ApiModels.WishListPdfModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.DocumentDto:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        description:
-          type: string
-        createdOn:
-          format: date-time
-          type: string
-        filePath:
-          type: string
-        fileUrl:
-          type: string
-        documentType:
-          type: string
-        languageId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        fileTypeString:
           type: string
     Insite.Catalog.Services.Dtos.ProductDto:
       type: object
@@ -2821,6 +2729,241 @@ components:
           $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
         parentProductErpNumber:
           type: string
+    Insite.Catalog.Services.Dtos.ConfigSectionDto:
+      type: object
+      properties:
+        sectionName:
+          type: string
+        label:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionOptionDto'
+    Insite.Catalog.Services.Dtos.StyleTraitDto:
+      type: object
+      properties:
+        styleTraitId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        nameDisplay:
+          type: string
+        unselectedValue:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        styleValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleValueDto'
+        displayType:
+          type: string
+        numberOfSwatchesVisible:
+          format: int32
+          type: integer
+        displayTextWithSwatch:
+          type: boolean
+    Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        productUri:
+          type: string
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        smallImagePath:
+          type: string
+        altText:
+          type: string
+        productName:
+          type: string
+        manufacturerItem:
+          type: string
+        customerName:
+          type: string
+        shortDescription:
+          type: string
+        qtyOnHand:
+          format: decimal
+          type: number
+        qtyOrdered:
+          format: decimal
+          type: number
+        erpNumber:
+          type: string
+        pricing:
+          $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
+        quoteRequired:
+          type: boolean
+        isActive:
+          type: boolean
+        canEnterQuantity:
+          type: boolean
+        canShowPrice:
+          type: boolean
+        canAddToCart:
+          type: boolean
+        canShowUnitOfMeasure:
+          type: boolean
+        canBackOrder:
+          type: boolean
+        trackInventory:
+          type: boolean
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+        breakPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.BreakPriceDto'
+        unitOfMeasure:
+          type: string
+        unitOfMeasureDisplay:
+          type: string
+        unitOfMeasureDescription:
+          type: string
+        baseUnitOfMeasure:
+          type: string
+        baseUnitOfMeasureDisplay:
+          type: string
+        qtyPerBaseUnitOfMeasure:
+          format: decimal
+          type: number
+        selectedUnitOfMeasure:
+          type: string
+        productUnitOfMeasures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto'
+        packDescription:
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        notes:
+          type: string
+        createdByDisplayName:
+          type: string
+        isSharedLine:
+          type: boolean
+        isVisible:
+          type: boolean
+        isDiscontinued:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        brand:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BrandDto'
+        isQtyAdjusted:
+          type: boolean
+        allowZeroPricing:
+          type: boolean
+        badges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.BadgeDto'
+        replacementProduct:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.WishLists.WebApi.V1.ApiModels.WishListInviteParameter:
+      type: object
+      properties:
+        invite:
+          type: string
+    Insite.WishLists.WebApi.V1.ApiModels.WishListTagCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        wishListTags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListTagModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.WishLists.WebApi.V1.ApiModels.WishListCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        wishListCollection:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.ProductLineDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+    Insite.Catalog.Services.Dtos.LegacyConfigurationDto:
+      type: object
+      properties:
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionDto'
+        hasDefaults:
+          type: boolean
+        isKit:
+          type: boolean
+    Insite.WishLists.WebApi.V1.ApiModels.WishListEmailScheduleModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        repeatPeriod:
+          type: string
+        repeatInterval:
+          format: int32
+          type: integer
+        sendDayOfWeek:
+          type: string
+        sendDayOfMonth:
+          format: int32
+          type: integer
+        startDate:
+          format: date-time
+          type: string
+        endDate:
+          format: date-time
+          type: string
+        message:
+          type: string
+        lastDateSent:
+          format: date-time
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
     Insite.Core.Plugins.Search.Dtos.FieldScoreDetailedDto:
       type: object
       properties:
@@ -2842,48 +2985,92 @@ components:
           type: number
         scoreUsed:
           type: boolean
-    Insite.Catalog.Services.Dtos.AttributeTypeDto:
+    Insite.Catalog.Services.Dtos.RelatedProductDto:
+      type: object
+      properties:
+        relatedProductType:
+          type: string
+        productDto:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+    Insite.Core.Plugins.Search.Dtos.ScoreExplanationDto:
+      type: object
+      properties:
+        totalBoost:
+          format: float
+          type: number
+        aggregateFieldScores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDto'
+        detailedFieldScores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDetailedDto'
+    Insite.Catalog.Services.Dtos.ConfigSectionOptionDto:
+      type: object
+      properties:
+        sectionOptionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sectionName:
+          type: string
+        productName:
+          type: string
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        description:
+          type: string
+        price:
+          format: decimal
+          type: number
+        userProductPrice:
+          type: boolean
+        selected:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        quantity:
+          format: decimal
+          type: number
+        cantBuy:
+          type: boolean
+    Insite.Core.Plugins.Pricing.BreakPriceDto:
+      type: object
+      properties:
+        breakQty:
+          format: decimal
+          type: number
+        breakPrice:
+          format: decimal
+          type: number
+        breakPriceDisplay:
+          type: string
+        savingsMessage:
+          type: string
+        breakPriceWithVat:
+          format: decimal
+          type: number
+        breakPriceWithVatDisplay:
+          type: string
+    Insite.Catalog.Services.Dtos.AttributeValueDto:
       type: object
       properties:
         id:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        name:
+        value:
           type: string
-        label:
+        valueDisplay:
           type: string
-        isFilter:
-          type: boolean
-        isComparable:
-          type: boolean
-        isSearchable:
-          type: boolean
-        includeOnProduct:
-          type: boolean
-        isActive:
-          type: boolean
         sortOrder:
           format: int32
           type: integer
-        attributeValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeValueDto'
-    Insite.Catalog.Services.Dtos.AvailabilityDto:
-      type: object
-      properties:
-        messageType:
-          format: int32
-          enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          type: integer
-        message:
-          type: string
-        requiresRealTimeInventory:
+        isActive:
           type: boolean
     Insite.Catalog.Services.Dtos.BadgeDto:
       type: object
@@ -2929,283 +3116,32 @@ components:
           type: string
         detailWidgetBadgeSize:
           type: string
-    Insite.WishLists.WebApi.V1.ApiModels.WishListCollectionModel:
+    Insite.Catalog.Services.Dtos.WarehouseDto:
       type: object
       properties:
-        uri:
-          type: string
-        wishListCollection:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.ProductLineDto:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-    Insite.Catalog.Services.Dtos.ConfigSectionDto:
-      type: object
-      properties:
-        sectionName:
-          type: string
-        label:
-          type: string
-        options:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionOptionDto'
-    Insite.Catalog.Services.Dtos.AttributeValueDto:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        value:
-          type: string
-        valueDisplay:
-          type: string
-        sortOrder:
+        messageType:
           format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
           type: integer
-        isActive:
-          type: boolean
-    Insite.WishLists.WebApi.V1.ApiModels.WishListEmailScheduleModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        repeatPeriod:
-          type: string
-        repeatInterval:
-          format: int32
-          type: integer
-        sendDayOfWeek:
-          type: string
-        sendDayOfMonth:
-          format: int32
-          type: integer
-        startDate:
-          format: date-time
-          type: string
-        endDate:
-          format: date-time
-          type: string
         message:
           type: string
-        lastDateSent:
-          format: date-time
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.WishLists.WebApi.V1.ApiModels.WishListTagModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        tag:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.ProductSubscriptionDto:
-      type: object
-      properties:
-        subscriptionAddToInitialOrder:
+        requiresRealTimeInventory:
           type: boolean
-        subscriptionAllMonths:
-          type: boolean
-        subscriptionApril:
-          type: boolean
-        subscriptionAugust:
-          type: boolean
-        subscriptionCyclePeriod:
-          type: string
-        subscriptionDecember:
-          type: boolean
-        subscriptionFebruary:
-          type: boolean
-        subscriptionFixedPrice:
-          type: boolean
-        subscriptionJanuary:
-          type: boolean
-        subscriptionJuly:
-          type: boolean
-        subscriptionJune:
-          type: boolean
-        subscriptionMarch:
-          type: boolean
-        subscriptionMay:
-          type: boolean
-        subscriptionNovember:
-          type: boolean
-        subscriptionOctober:
-          type: boolean
-        subscriptionPeriodsPerCycle:
-          format: int32
-          type: integer
-        subscriptionSeptember:
-          type: boolean
-        subscriptionShipViaId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        subscriptionTotalCycles:
-          format: int32
-          type: integer
-    Insite.Catalog.Services.Dtos.BrandDto:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
         name:
-          type: string
-        urlSegment:
-          type: string
-        logoSmallImagePath:
-          type: string
-        logoLargeImagePath:
-          type: string
-        logoImageAltText:
-          type: string
-        detailPagePath:
-          type: string
-    Insite.Catalog.Services.Dtos.LegacyConfigurationDto:
-      type: object
-      properties:
-        sections:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionDto'
-        hasDefaults:
-          type: boolean
-        isKit:
-          type: boolean
-    Insite.Core.WebApi.PaginationModel:
-      type: object
-      properties:
-        currentPage:
-          format: int32
-          type: integer
-        page:
-          format: int32
-          type: integer
-        pageSize:
-          format: int32
-          type: integer
-        defaultPageSize:
-          format: int32
-          type: integer
-        totalItemCount:
-          format: int32
-          type: integer
-        numberOfPages:
-          format: int32
-          type: integer
-        pageSizeOptions:
-          type: array
-          items:
-            format: int32
-            type: integer
-        sortOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
-        sortType:
-          type: string
-        nextPageUri:
-          type: string
-        prevPageUri:
-          type: string
-        nextPageToken:
-          type: string
-    Insite.WishLists.WebApi.V1.ApiModels.WishListShareModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          type: string
-        displayName:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.WishLists.WebApi.V1.ApiModels.WishListLineCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        wishListLines:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
-        changedListLineQuantities:
-          type: object
-          additionalProperties:
-            format: int32
-            type: integer
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.RelatedProductDto:
-      type: object
-      properties:
-        relatedProductType:
-          type: string
-        productDto:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
-    Insite.Catalog.Services.Dtos.SpecificationDto:
-      type: object
-      properties:
-        specificationId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        nameDisplay:
-          type: string
-        value:
           type: string
         description:
           type: string
-        sortOrder:
+        qty:
           format: decimal
           type: number
-        isActive:
-          type: boolean
-        parentSpecification:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
-        htmlContent:
-          type: string
-        specifications:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
     Insite.Catalog.Services.Dtos.StyleValueDto:
       type: object
       properties:
@@ -3234,20 +3170,84 @@ components:
           type: string
         swatchColorValue:
           type: string
-    Insite.Core.Plugins.Search.Dtos.ScoreExplanationDto:
+    Insite.Catalog.Services.Dtos.AttributeTypeDto:
       type: object
       properties:
-        totalBoost:
-          format: float
-          type: number
-        aggregateFieldScores:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        label:
+          type: string
+        isFilter:
+          type: boolean
+        isComparable:
+          type: boolean
+        isSearchable:
+          type: boolean
+        includeOnProduct:
+          type: boolean
+        isActive:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        attributeValues:
           type: array
           items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDto'
-        detailedFieldScores:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDetailedDto'
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeValueDto'
+  requestBodies:
+    Affiliates_ArchiveParameters:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: {}
+      description: archive action parameters
+    Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
+        text/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
+        application/x-www-form-urlencoded:
+          schema:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
+        text/html:
+          schema:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListLineModel'
+      required: true
+    Insite.WishLists.WebApi.V1.ApiModels.WishListModel:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
+        text/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
+        application/x-www-form-urlencoded:
+          schema:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
+        text/html:
+          schema:
+            $ref: '#/components/schemas/Insite.WishLists.WebApi.V1.ApiModels.WishListModel'
+      required: true
   securitySchemes:
     access_token:
       type: apiKey

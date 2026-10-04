@@ -1543,98 +1543,6 @@ paths:
       summary: Vmi counts V1 post batch async
       x-summary-source: derived
 components:
-  requestBodies:
-    Affiliates_ArchiveParameters:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties: {}
-      description: archive action parameters
-    Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
-        text/json:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
-        text/xml:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
-        application/x-www-form-urlencoded:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
-        text/html:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
-      required: true
-    Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel'
-        text/json:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel'
-        text/xml:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel'
-        application/x-www-form-urlencoded:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel'
-        text/html:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel'
-      required: true
-    Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
-        text/json:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
-        text/xml:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
-        application/x-www-form-urlencoded:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
-        text/html:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
-      required: true
-    Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
-        text/json:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
-        text/xml:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
-        application/x-www-form-urlencoded:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
-        text/html:
-          schema:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
-      required: true
   schemas:
     Insite.Data.Entities.VmiLocation:
       required:
@@ -1673,6 +1581,122 @@ components:
           type: string
         modifiedBy:
           type: string
+    Insite.Catalog.Services.Dtos.StyledProductDto:
+      type: object
+      properties:
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        shortDescription:
+          type: string
+        erpNumber:
+          type: string
+        customerName:
+          type: string
+        mediumImagePath:
+          type: string
+        smallImagePath:
+          type: string
+        largeImagePath:
+          type: string
+        qtyOnHand:
+          format: decimal
+          type: number
+        unitOfMeasure:
+          type: string
+        trackInventory:
+          type: boolean
+        minimumOrderQty:
+          format: int32
+          type: integer
+        productDetailUrl:
+          type: string
+        pricing:
+          $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
+        quoteRequired:
+          type: boolean
+        styleValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleValueDto'
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+        productUnitOfMeasures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto'
+        productImages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductImageDto'
+        warehouses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.WarehouseDto'
+        manufacturerItem:
+          type: string
+        upcCode:
+          type: string
+        sku:
+          type: string
+        cantBuy:
+          type: boolean
+        allowZeroPricing:
+          type: boolean
+        htmlContent:
+          type: string
+        specifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.DocumentDto'
+        attributeTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeTypeDto'
+        crossSells:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+        relatedProducts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.RelatedProductDto'
+        metaDescription:
+          type: string
+        metaKeywords:
+          type: string
+        pageTitle:
+          type: string
+        openGraphTitle:
+          type: string
+        openGraphUrl:
+          type: string
+        openGraphImage:
+          type: string
+        customerProductNumber:
+          type: string
+    Insite.Websites.WebApi.V1.ApiModels.StateModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        abbreviation:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
     Insite.Core.WebApi.SortOptionModel:
       type: object
       properties:
@@ -1680,51 +1704,6 @@ components:
           type: string
         sortType:
           type: string
-    Insite.Core.Plugins.Search.Dtos.FieldScoreDto:
-      type: object
-      properties:
-        name:
-          type: string
-        score:
-          format: float
-          type: number
-    Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto:
-      type: object
-      properties:
-        productUnitOfMeasureId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        unitOfMeasure:
-          type: string
-        unitOfMeasureDisplay:
-          type: string
-        description:
-          type: string
-        qtyPerBaseUnitOfMeasure:
-          format: decimal
-          type: number
-        roundingRule:
-          type: string
-        isDefault:
-          type: boolean
-        availability:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
-    Insite.Catalog.WebApi.V1.ApiModels.VmiLocationCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        vmiLocations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
     Insite.Core.Plugins.Pricing.ProductPriceDto:
       type: object
       properties:
@@ -1854,127 +1833,353 @@ components:
         vatMinusExtendedUnitRegularPrice:
           format: decimal
           type: number
-    Insite.Catalog.WebApi.V1.ApiModels.VmiBinPdfParameter:
+    Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel:
       type: object
       properties:
-        lineIds:
-          type: array
-          items:
-            format: uuid
-            type: string
-            example: 00000000-0000-0000-0000-000000000000
-        layout:
+        uri:
           type: string
-        barcodeFormat:
+        id:
+          format: uuid
           type: string
-        barcodeField:
+          example: 00000000-0000-0000-0000-000000000000
+        vmiBinId:
+          format: uuid
           type: string
-        displayFields:
-          type: array
-          items:
-            type: string
-        addOverlay:
+          example: 00000000-0000-0000-0000-000000000000
+        note:
+          type: string
+        includeOnOrder:
           type: boolean
-        vmiBinDetailsPageUrl:
+        createdOn:
+          format: date-time
           type: string
+        vmiBinProductId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
         vmiLocationId:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        filter:
+        binNumber:
           type: string
-        sort:
+        productId:
+          format: uuid
           type: string
+          example: 00000000-0000-0000-0000-000000000000
+        minimumQty:
+          format: decimal
+          type: number
+        maximumQty:
+          format: decimal
+          type: number
+        lastCountDate:
+          format: date-time
+          type: string
+        lastCountQty:
+          format: decimal
+          type: number
+        lastCountUserName:
+          type: string
+        previousCountDate:
+          format: date-time
+          type: string
+        previousCountQty:
+          format: decimal
+          type: number
+        previousCountUserName:
+          type: string
+        lastOrderDate:
+          format: date-time
+          type: string
+        product:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+        lastOrderErpOrderNumber:
+          type: string
+        lastOrderWebOrderNumber:
+          type: string
+        unitOfMeasure:
+          type: string
+        unitOfMeasureDisplay:
+          type: string
+        unitOfMeasureDescription:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Core.WebApi.PaginationModel:
+      type: object
+      properties:
+        currentPage:
+          format: int32
+          type: integer
         page:
           format: int32
           type: integer
         pageSize:
           format: int32
           type: integer
-        searchCriteria:
-          type: string
-        binNumberFrom:
-          type: string
-        binNumberTo:
-          type: string
-        previousCountFromDate:
-          format: date-time
-          type: string
-        previousCountToDate:
-          format: date-time
-          type: string
-        isBelowMinimum:
-          type: boolean
-        isBelowMaximum:
-          type: boolean
-        numberOfTimesMinQtyReached:
+        defaultPageSize:
           format: int32
           type: integer
-        numberOfPreviousOrders:
+        totalItemCount:
           format: int32
           type: integer
-        numberOfVisits:
+        numberOfPages:
           format: int32
           type: integer
-    Insite.Websites.WebApi.V1.ApiModels.CountryModel:
+        pageSizeOptions:
+          type: array
+          items:
+            format: int32
+            type: integer
+        sortOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
+        sortType:
+          type: string
+        nextPageUri:
+          type: string
+        prevPageUri:
+          type: string
+        nextPageToken:
+          type: string
+    Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel:
       type: object
       properties:
         uri:
           type: string
         id:
+          format: uuid
           type: string
-        name:
+          example: 00000000-0000-0000-0000-000000000000
+        vmiBinId:
+          format: uuid
           type: string
-        abbreviation:
+          example: 00000000-0000-0000-0000-000000000000
+        productId:
+          format: uuid
           type: string
-        states:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+          example: 00000000-0000-0000-0000-000000000000
+        count:
+          format: decimal
+          type: number
+        createdOn:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
         properties:
           type: object
           additionalProperties:
             type: string
-    Insite.Catalog.Services.Dtos.ProductImageDto:
+    Insite.Catalog.Services.Dtos.AvailabilityDto:
+      type: object
+      properties:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
+          type: string
+        requiresRealTimeInventory:
+          type: boolean
+    Insite.Catalog.WebApi.V1.ApiModels.VmiLocationCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        vmiLocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.BrandDto:
       type: object
       properties:
         id:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        sortOrder:
-          format: int32
-          type: integer
         name:
           type: string
-        imageType:
+        urlSegment:
           type: string
-        smallImagePath:
+        logoSmallImagePath:
           type: string
-        mediumImagePath:
+        logoLargeImagePath:
           type: string
-        largeImagePath:
+        logoImageAltText:
           type: string
-        altText:
+        detailPagePath:
           type: string
-    Insite.Core.Plugins.Pricing.BreakPriceDto:
+    Insite.Catalog.Services.Dtos.SpecificationDto:
       type: object
       properties:
-        breakQty:
+        specificationId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        nameDisplay:
+          type: string
+        value:
+          type: string
+        description:
+          type: string
+        sortOrder:
           format: decimal
           type: number
-        breakPrice:
+        isActive:
+          type: boolean
+        parentSpecification:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+        htmlContent:
+          type: string
+        specifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
+    Insite.Catalog.Services.Dtos.DocumentDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        description:
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+        filePath:
+          type: string
+        fileUrl:
+          type: string
+        documentType:
+          type: string
+        languageId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        fileTypeString:
+          type: string
+    Insite.Core.Plugins.Search.Dtos.FieldScoreDto:
+      type: object
+      properties:
+        name:
+          type: string
+        score:
+          format: float
+          type: number
+    Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto:
+      type: object
+      properties:
+        productUnitOfMeasureId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        unitOfMeasure:
+          type: string
+        unitOfMeasureDisplay:
+          type: string
+        description:
+          type: string
+        qtyPerBaseUnitOfMeasure:
           format: decimal
           type: number
-        breakPriceDisplay:
+        roundingRule:
           type: string
-        savingsMessage:
+        isDefault:
+          type: boolean
+        availability:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
+    Insite.Catalog.WebApi.V1.ApiModels.VmiNoteCollectionModel:
+      type: object
+      properties:
+        uri:
           type: string
-        breakPriceWithVat:
-          format: decimal
-          type: number
-        breakPriceWithVatDisplay:
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        vmiNotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel:
+      type: object
+      properties:
+        uri:
           type: string
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        billToId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        useBins:
+          type: boolean
+        isPrimaryLocation:
+          type: boolean
+        enforceMaxQuantityInOrders:
+          type: boolean
+        shipToId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        customer:
+          $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.BaseAddressModel'
+        customerLabel:
+          type: string
+        note:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.VmiLocationBatchCollectionParameter:
+      type: object
+      properties:
+        vmiLocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
+        validationOnly:
+          type: boolean
     Insite.Customers.WebApi.V1.ApiModels.BaseAddressModel:
       type: object
       properties:
@@ -2028,270 +2233,28 @@ components:
           type: object
           additionalProperties:
             type: string
-    Insite.Catalog.WebApi.V1.ApiModels.VmiBinCollectionModel:
+    Insite.Catalog.Services.Dtos.ProductImageDto:
       type: object
       properties:
-        uri:
-          type: string
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        vmiBins:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.WarehouseDto:
-      type: object
-      properties:
-        messageType:
-          format: int32
-          enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          type: integer
-        message:
-          type: string
-        requiresRealTimeInventory:
-          type: boolean
-        name:
-          type: string
-        description:
-          type: string
-        qty:
-          format: decimal
-          type: number
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.StyleTraitDto:
-      type: object
-      properties:
-        styleTraitId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        nameDisplay:
-          type: string
-        unselectedValue:
-          type: string
-        sortOrder:
-          format: int32
-          type: integer
-        styleValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleValueDto'
-        displayType:
-          type: string
-        numberOfSwatchesVisible:
-          format: int32
-          type: integer
-        displayTextWithSwatch:
-          type: boolean
-    Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel:
-      type: object
-      properties:
-        uri:
-          type: string
         id:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        vmiBinId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        note:
-          type: string
-        includeOnOrder:
-          type: boolean
-        createdOn:
-          format: date-time
-          type: string
-        vmiBinProductId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.ConfigSectionOptionDto:
-      type: object
-      properties:
-        sectionOptionId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        sectionName:
-          type: string
-        productName:
-          type: string
-        productId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        description:
-          type: string
-        price:
-          format: decimal
-          type: number
-        userProductPrice:
-          type: boolean
-        selected:
-          type: boolean
         sortOrder:
           format: int32
           type: integer
-        quantity:
-          format: decimal
-          type: number
-        cantBuy:
-          type: boolean
-    Insite.Catalog.Services.Dtos.StyledProductDto:
-      type: object
-      properties:
-        productId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
         name:
           type: string
-        shortDescription:
-          type: string
-        erpNumber:
-          type: string
-        customerName:
-          type: string
-        mediumImagePath:
+        imageType:
           type: string
         smallImagePath:
           type: string
+        mediumImagePath:
+          type: string
         largeImagePath:
           type: string
-        qtyOnHand:
-          format: decimal
-          type: number
-        unitOfMeasure:
+        altText:
           type: string
-        trackInventory:
-          type: boolean
-        minimumOrderQty:
-          format: int32
-          type: integer
-        productDetailUrl:
-          type: string
-        pricing:
-          $ref: '#/components/schemas/Insite.Core.Plugins.Pricing.ProductPriceDto'
-        quoteRequired:
-          type: boolean
-        styleValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleValueDto'
-        availability:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AvailabilityDto'
-        productUnitOfMeasures:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductUnitOfMeasureDto'
-        productImages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductImageDto'
-        warehouses:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.WarehouseDto'
-        manufacturerItem:
-          type: string
-        upcCode:
-          type: string
-        sku:
-          type: string
-        cantBuy:
-          type: boolean
-        allowZeroPricing:
-          type: boolean
-        htmlContent:
-          type: string
-        specifications:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
-        documents:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.DocumentDto'
-        attributeTypes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeTypeDto'
-        crossSells:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
-        relatedProducts:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.RelatedProductDto'
-        metaDescription:
-          type: string
-        metaKeywords:
-          type: string
-        pageTitle:
-          type: string
-        openGraphTitle:
-          type: string
-        openGraphUrl:
-          type: string
-        openGraphImage:
-          type: string
-        customerProductNumber:
-          type: string
-    Insite.Catalog.Services.Dtos.DocumentDto:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        description:
-          type: string
-        createdOn:
-          format: date-time
-          type: string
-        filePath:
-          type: string
-        fileUrl:
-          type: string
-        documentType:
-          type: string
-        languageId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        fileTypeString:
-          type: string
-    Insite.Catalog.WebApi.V1.ApiModels.VmiLocationBatchCollectionParameter:
-      type: object
-      properties:
-        vmiLocations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
-        validationOnly:
-          type: boolean
     Insite.Catalog.Services.Dtos.ProductDto:
       type: object
       properties:
@@ -2575,6 +2538,141 @@ components:
           $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
         parentProductErpNumber:
           type: string
+    Insite.Catalog.Services.Dtos.ConfigSectionDto:
+      type: object
+      properties:
+        sectionName:
+          type: string
+        label:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionOptionDto'
+    Insite.Catalog.Services.Dtos.StyleTraitDto:
+      type: object
+      properties:
+        styleTraitId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+        nameDisplay:
+          type: string
+        unselectedValue:
+          type: string
+        sortOrder:
+          format: int32
+          type: integer
+        styleValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.StyleValueDto'
+        displayType:
+          type: string
+        numberOfSwatchesVisible:
+          format: int32
+          type: integer
+        displayTextWithSwatch:
+          type: boolean
+    Insite.Catalog.Services.Dtos.ProductLineDto:
+      type: object
+      properties:
+        id:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        name:
+          type: string
+    Insite.Catalog.Services.Dtos.LegacyConfigurationDto:
+      type: object
+      properties:
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionDto'
+        hasDefaults:
+          type: boolean
+        isKit:
+          type: boolean
+    Insite.Catalog.WebApi.V1.ApiModels.VmiBinCollectionModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        pagination:
+          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
+        vmiBins:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.WebApi.V1.ApiModels.VmiBinPdfParameter:
+      type: object
+      properties:
+        lineIds:
+          type: array
+          items:
+            format: uuid
+            type: string
+            example: 00000000-0000-0000-0000-000000000000
+        layout:
+          type: string
+        barcodeFormat:
+          type: string
+        barcodeField:
+          type: string
+        displayFields:
+          type: array
+          items:
+            type: string
+        addOverlay:
+          type: boolean
+        vmiBinDetailsPageUrl:
+          type: string
+        vmiLocationId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        filter:
+          type: string
+        sort:
+          type: string
+        page:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        searchCriteria:
+          type: string
+        binNumberFrom:
+          type: string
+        binNumberTo:
+          type: string
+        previousCountFromDate:
+          format: date-time
+          type: string
+        previousCountToDate:
+          format: date-time
+          type: string
+        isBelowMinimum:
+          type: boolean
+        isBelowMaximum:
+          type: boolean
+        numberOfTimesMinQtyReached:
+          format: int32
+          type: integer
+        numberOfPreviousOrders:
+          format: int32
+          type: integer
+        numberOfVisits:
+          format: int32
+          type: integer
     Insite.Core.Plugins.Search.Dtos.FieldScoreDetailedDto:
       type: object
       properties:
@@ -2596,48 +2694,111 @@ components:
           type: number
         scoreUsed:
           type: boolean
-    Insite.Catalog.Services.Dtos.AttributeTypeDto:
+    Insite.Catalog.Services.Dtos.RelatedProductDto:
+      type: object
+      properties:
+        relatedProductType:
+          type: string
+        productDto:
+          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
+    Insite.Websites.WebApi.V1.ApiModels.CountryModel:
+      type: object
+      properties:
+        uri:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        abbreviation:
+          type: string
+        states:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Websites.WebApi.V1.ApiModels.StateModel'
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.ConfigSectionOptionDto:
+      type: object
+      properties:
+        sectionOptionId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        sectionName:
+          type: string
+        productName:
+          type: string
+        productId:
+          format: uuid
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        description:
+          type: string
+        price:
+          format: decimal
+          type: number
+        userProductPrice:
+          type: boolean
+        selected:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        quantity:
+          format: decimal
+          type: number
+        cantBuy:
+          type: boolean
+    Insite.Core.Plugins.Search.Dtos.ScoreExplanationDto:
+      type: object
+      properties:
+        totalBoost:
+          format: float
+          type: number
+        aggregateFieldScores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDto'
+        detailedFieldScores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDetailedDto'
+    Insite.Core.Plugins.Pricing.BreakPriceDto:
+      type: object
+      properties:
+        breakQty:
+          format: decimal
+          type: number
+        breakPrice:
+          format: decimal
+          type: number
+        breakPriceDisplay:
+          type: string
+        savingsMessage:
+          type: string
+        breakPriceWithVat:
+          format: decimal
+          type: number
+        breakPriceWithVatDisplay:
+          type: string
+    Insite.Catalog.Services.Dtos.AttributeValueDto:
       type: object
       properties:
         id:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        name:
+        value:
           type: string
-        label:
+        valueDisplay:
           type: string
-        isFilter:
-          type: boolean
-        isComparable:
-          type: boolean
-        isSearchable:
-          type: boolean
-        includeOnProduct:
-          type: boolean
-        isActive:
-          type: boolean
         sortOrder:
           format: int32
           type: integer
-        attributeValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeValueDto'
-    Insite.Catalog.Services.Dtos.AvailabilityDto:
-      type: object
-      properties:
-        messageType:
-          format: int32
-          enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          type: integer
-        message:
-          type: string
-        requiresRealTimeInventory:
+        isActive:
           type: boolean
     Insite.Catalog.Services.Dtos.BadgeDto:
       type: object
@@ -2683,30 +2844,42 @@ components:
           type: string
         detailWidgetBadgeSize:
           type: string
-    Insite.Catalog.Services.Dtos.ProductLineDto:
+    Insite.Catalog.Services.Dtos.WarehouseDto:
       type: object
       properties:
-        id:
+        messageType:
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          type: integer
+        message:
+          type: string
+        requiresRealTimeInventory:
+          type: boolean
+        name:
+          type: string
+        description:
+          type: string
+        qty:
+          format: decimal
+          type: number
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+    Insite.Catalog.Services.Dtos.StyleValueDto:
+      type: object
+      properties:
+        styleTraitName:
+          type: string
+        styleTraitId:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-    Insite.Catalog.Services.Dtos.ConfigSectionDto:
-      type: object
-      properties:
-        sectionName:
-          type: string
-        label:
-          type: string
-        options:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionOptionDto'
-    Insite.Catalog.Services.Dtos.AttributeValueDto:
-      type: object
-      properties:
-        id:
+        styleTraitValueId:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
@@ -2717,68 +2890,42 @@ components:
         sortOrder:
           format: int32
           type: integer
-        isActive:
+        isDefault:
           type: boolean
-    Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel:
+        swatchType:
+          type: string
+        swatchImageValue:
+          type: string
+        swatchColorValue:
+          type: string
+    Insite.Catalog.Services.Dtos.AttributeTypeDto:
       type: object
       properties:
-        uri:
-          type: string
         id:
           format: uuid
           type: string
           example: 00000000-0000-0000-0000-000000000000
-        vmiLocationId:
-          format: uuid
+        name:
           type: string
-          example: 00000000-0000-0000-0000-000000000000
-        binNumber:
+        label:
           type: string
-        productId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        minimumQty:
-          format: decimal
-          type: number
-        maximumQty:
-          format: decimal
-          type: number
-        lastCountDate:
-          format: date-time
-          type: string
-        lastCountQty:
-          format: decimal
-          type: number
-        lastCountUserName:
-          type: string
-        previousCountDate:
-          format: date-time
-          type: string
-        previousCountQty:
-          format: decimal
-          type: number
-        previousCountUserName:
-          type: string
-        lastOrderDate:
-          format: date-time
-          type: string
-        product:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
-        lastOrderErpOrderNumber:
-          type: string
-        lastOrderWebOrderNumber:
-          type: string
-        unitOfMeasure:
-          type: string
-        unitOfMeasureDisplay:
-          type: string
-        unitOfMeasureDescription:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
+        isFilter:
+          type: boolean
+        isComparable:
+          type: boolean
+        isSearchable:
+          type: boolean
+        includeOnProduct:
+          type: boolean
+        isActive:
+          type: boolean
+        sortOrder:
+          format: int32
+          type: integer
+        attributeValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.AttributeValueDto'
     Insite.Catalog.Services.Dtos.ProductSubscriptionDto:
       type: object
       properties:
@@ -2824,245 +2971,98 @@ components:
         subscriptionTotalCycles:
           format: int32
           type: integer
-    Insite.Catalog.Services.Dtos.BrandDto:
-      type: object
-      properties:
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        urlSegment:
-          type: string
-        logoSmallImagePath:
-          type: string
-        logoLargeImagePath:
-          type: string
-        logoImageAltText:
-          type: string
-        detailPagePath:
-          type: string
-    Insite.Websites.WebApi.V1.ApiModels.StateModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          type: string
-        name:
-          type: string
-        abbreviation:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        vmiBinId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        productId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        count:
-          format: decimal
-          type: number
-        createdOn:
-          format: date-time
-          type: string
-        createdBy:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Catalog.Services.Dtos.LegacyConfigurationDto:
-      type: object
-      properties:
-        sections:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ConfigSectionDto'
-        hasDefaults:
-          type: boolean
-        isKit:
-          type: boolean
-    Insite.Catalog.WebApi.V1.ApiModels.VmiNoteCollectionModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        pagination:
-          $ref: '#/components/schemas/Insite.Core.WebApi.PaginationModel'
-        vmiNotes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
-        properties:
-          type: object
-          additionalProperties:
-            type: string
+  requestBodies:
+    Affiliates_ArchiveParameters:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: {}
+      description: archive action parameters
     Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel:
-      type: object
-      properties:
-        uri:
-          type: string
-        id:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        billToId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        useBins:
-          type: boolean
-        isPrimaryLocation:
-          type: boolean
-        enforceMaxQuantityInOrders:
-          type: boolean
-        shipToId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        customer:
-          $ref: '#/components/schemas/Insite.Customers.WebApi.V1.ApiModels.BaseAddressModel'
-        customerLabel:
-          type: string
-        note:
-          type: string
-        properties:
-          type: object
-          additionalProperties:
-            type: string
-    Insite.Core.WebApi.PaginationModel:
-      type: object
-      properties:
-        currentPage:
-          format: int32
-          type: integer
-        page:
-          format: int32
-          type: integer
-        pageSize:
-          format: int32
-          type: integer
-        defaultPageSize:
-          format: int32
-          type: integer
-        totalItemCount:
-          format: int32
-          type: integer
-        numberOfPages:
-          format: int32
-          type: integer
-        pageSizeOptions:
-          type: array
-          items:
-            format: int32
-            type: integer
-        sortOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.WebApi.SortOptionModel'
-        sortType:
-          type: string
-        nextPageUri:
-          type: string
-        prevPageUri:
-          type: string
-        nextPageToken:
-          type: string
-    Insite.Catalog.Services.Dtos.RelatedProductDto:
-      type: object
-      properties:
-        relatedProductType:
-          type: string
-        productDto:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.ProductDto'
-    Insite.Catalog.Services.Dtos.SpecificationDto:
-      type: object
-      properties:
-        specificationId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        name:
-          type: string
-        nameDisplay:
-          type: string
-        value:
-          type: string
-        description:
-          type: string
-        sortOrder:
-          format: decimal
-          type: number
-        isActive:
-          type: boolean
-        parentSpecification:
-          $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
-        htmlContent:
-          type: string
-        specifications:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Catalog.Services.Dtos.SpecificationDto'
-    Insite.Catalog.Services.Dtos.StyleValueDto:
-      type: object
-      properties:
-        styleTraitName:
-          type: string
-        styleTraitId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        styleTraitValueId:
-          format: uuid
-          type: string
-          example: 00000000-0000-0000-0000-000000000000
-        value:
-          type: string
-        valueDisplay:
-          type: string
-        sortOrder:
-          format: int32
-          type: integer
-        isDefault:
-          type: boolean
-        swatchType:
-          type: string
-        swatchImageValue:
-          type: string
-        swatchColorValue:
-          type: string
-    Insite.Core.Plugins.Search.Dtos.ScoreExplanationDto:
-      type: object
-      properties:
-        totalBoost:
-          format: float
-          type: number
-        aggregateFieldScores:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDto'
-        detailedFieldScores:
-          type: array
-          items:
-            $ref: '#/components/schemas/Insite.Core.Plugins.Search.Dtos.FieldScoreDetailedDto'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
+        text/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
+        application/x-www-form-urlencoded:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
+        text/html:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiLocationModel'
+      required: true
+    Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel'
+        text/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel'
+        application/x-www-form-urlencoded:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel'
+        text/html:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiCountModel'
+      required: true
+    Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
+        text/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
+        application/x-www-form-urlencoded:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
+        text/html:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiNoteModel'
+      required: true
+    Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
+        text/xml:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
+        application/x-www-form-urlencoded:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
+        text/html:
+          schema:
+            $ref: '#/components/schemas/Insite.Catalog.WebApi.V1.ApiModels.VmiBinModel'
+      required: true
   securitySchemes:
     access_token:
       type: apiKey

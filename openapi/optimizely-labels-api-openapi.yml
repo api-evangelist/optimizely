@@ -144,38 +144,6 @@ components:
       - name
       - source_org_type
       - values
-    LabelGroupValue:
-      type: object
-      additionalProperties: false
-      description: Values of a label group
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the label group value
-          example: 1693bd22eac001bae8f33eab29ee5bc2
-        name:
-          type: string
-          description: Name of the label group value
-          example: Pillar 1
-      required:
-      - id
-      - name
-    Error:
-      type: object
-      additionalProperties: true
-      description: Error payload
-      properties:
-        message:
-          type: string
-          description: Message describing the error
-          example: Not found
-        errors:
-          type: object
-          description: Additional information
-          additionalProperties: true
-          properties: {}
-      required:
-      - message
     Pagination:
       type: object
       additionalProperties: false
@@ -196,6 +164,38 @@ components:
       required:
       - next
       - previous
+    Error:
+      type: object
+      additionalProperties: true
+      description: Error payload
+      properties:
+        message:
+          type: string
+          description: Message describing the error
+          example: Not found
+        errors:
+          type: object
+          description: Additional information
+          additionalProperties: true
+          properties: {}
+      required:
+      - message
+    LabelGroupValue:
+      type: object
+      additionalProperties: false
+      description: Values of a label group
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the label group value
+          example: 1693bd22eac001bae8f33eab29ee5bc2
+        name:
+          type: string
+          description: Name of the label group value
+          example: Pillar 1
+      required:
+      - id
+      - name
   responses:
     ClientError:
       description: Client error
@@ -205,14 +205,6 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: 'Unsupported arguments: a,b,c'
-    Forbidden:
-      description: Permission error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            message: You do not have the permission to perform this operation
     Unauthorized:
       description: Authorization error
       content:
@@ -221,6 +213,14 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             message: Unauthorized
+    Forbidden:
+      description: Permission error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: You do not have the permission to perform this operation
   parameters:
     offset:
       name: offset

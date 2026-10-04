@@ -261,6 +261,44 @@ paths:
       - Authorization: []
 components:
   schemas:
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestCount:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              uriBuilder:
+                type: object
+              rels:
+                type: array
+                items:
+                  type: string
+              rel:
+                type: string
+              type:
+                type: string
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+              title:
+                type: string
+              uri:
+                type: string
+                format: uri
+        count:
+          type: integer
+          description: Total number
+          format: int64
     RestBlacklistedEntry:
       type: object
       properties:
@@ -270,6 +308,38 @@ components:
         pattern:
           type: string
           description: Address pattern
+    BlacklistEntryRequestData:
+      required:
+      - entry
+      type: object
+      properties:
+        reason:
+          type: string
+          description: Reason for creating a blocklist entry
+        entry:
+          type: string
+          description: Pattern of the blocklist entry. You can use * for multiple character matching or ? for single character matching. If this characters should be matched as literals they need to be escaped with a backslash (\* or \?)
+    RestBlacklistEntryStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestBlacklistEntry'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
     RestBlacklistEntry:
       type: object
       properties:
@@ -315,76 +385,6 @@ components:
               uri:
                 type: string
                 format: uri
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
-    RestCount:
-      type: object
-      properties:
-        links:
-          type: array
-          items:
-            type: object
-            properties:
-              uriBuilder:
-                type: object
-              rels:
-                type: array
-                items:
-                  type: string
-              rel:
-                type: string
-              type:
-                type: string
-              params:
-                type: object
-                additionalProperties:
-                  type: string
-              title:
-                type: string
-              uri:
-                type: string
-                format: uri
-        count:
-          type: integer
-          description: Total number
-          format: int64
-    RestBlacklistEntryStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestBlacklistEntry'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    BlacklistEntryRequestData:
-      required:
-      - entry
-      type: object
-      properties:
-        reason:
-          type: string
-          description: Reason for creating a blocklist entry
-        entry:
-          type: string
-          description: Pattern of the blocklist entry. You can use * for multiple character matching or ? for single character matching. If this characters should be matched as literals they need to be escaped with a backslash (\* or \?)
   securitySchemes:
     Authorization:
       type: apiKey

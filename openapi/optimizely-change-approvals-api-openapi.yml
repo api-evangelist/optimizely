@@ -64,30 +64,32 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    ValidationError:
-      title: ValidationError
-      required:
-      - loc
-      - msg
-      - type
+    HTTPValidationError:
+      title: HTTPValidationError
       type: object
       properties:
-        loc:
-          title: Location
+        detail:
+          title: Detail
           type: array
           items:
-            anyOf:
-            - type: string
-            - type: integer
-          description: Path to the invalid value
-        msg:
-          title: Message
+            $ref: '#/components/schemas/ValidationError'
+        status:
+          title: Status
+          type: integer
+          description: Status code of the response.
+          example: 422
+    ApproversResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          description: The user id of the approver user
+        email:
           type: string
-          description: Error message
-        type:
-          title: Error Type
-          type: string
-          description: Error type
+          description: The email of the approver user
+      required:
+      - user_id
+      - email
     ErrorResponse:
       title: ErrorResponse
       required:
@@ -104,18 +106,6 @@ components:
           type: integer
           description: Status code of the response.
           example: 400
-    ApproversResponse:
-      type: object
-      properties:
-        user_id:
-          type: integer
-          description: The user id of the approver user
-        email:
-          type: string
-          description: The email of the approver user
-      required:
-      - user_id
-      - email
     EnvironmentApprovalSettingsResponse:
       type: object
       properties:
@@ -173,20 +163,30 @@ components:
       - entities
       - created_at
       - updated_at
-    HTTPValidationError:
-      title: HTTPValidationError
+    ValidationError:
+      title: ValidationError
+      required:
+      - loc
+      - msg
+      - type
       type: object
       properties:
-        detail:
-          title: Detail
+        loc:
+          title: Location
           type: array
           items:
-            $ref: '#/components/schemas/ValidationError'
-        status:
-          title: Status
-          type: integer
-          description: Status code of the response.
-          example: 422
+            anyOf:
+            - type: string
+            - type: integer
+          description: Path to the invalid value
+        msg:
+          title: Message
+          type: string
+          description: Error message
+        type:
+          title: Error Type
+          type: string
+          description: Error type
   securitySchemes:
     BearerAuth:
       description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token

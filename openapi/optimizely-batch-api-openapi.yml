@@ -49,6 +49,54 @@ paths:
       - Batch
 components:
   schemas:
+    Method:
+      title: Method
+      enum:
+      - GET
+      - POST
+      type: string
+      description: The REST request method
+    Status:
+      title: Status
+      enum:
+      - 200
+      - 400
+      type: integer
+    BatchOperation:
+      title: BatchOperation
+      type: object
+      properties:
+        method:
+          allOf:
+          - $ref: '#/components/schemas/Method'
+          - description: The REST request method
+        url:
+          type: string
+          description: The base and endpoint components of the API request's path
+        operationID:
+          type: string
+          description: Index of the request in the batch
+        body:
+          type: object
+          description: The body for the request as JSON
+        parameters:
+          type: object
+          description: The parameters for the request as JSON
+        headers:
+          type: object
+          description: The headers for the request as JSON
+      examples:
+      - method: POST
+        url: /v1/activate
+        operationID: '1'
+        body:
+          userId: user1
+        parameters:
+          type: feature
+          experimentKey: ab_test_experiment
+        headers:
+          X-Optimizely-SDK-Key: <sdk_key>
+          Content-Type: application/json
     BatchResponseItem:
       title: BatchResponseItem
       type: object
@@ -101,6 +149,22 @@ components:
           variationKey: ''
         startedAt: '2020-09-10T10:50:37.466121-07:00'
         endedAt: '2020-09-10T10:50:37.466192-07:00'
+    BatchResponse:
+      title: BatchResponse
+      type: object
+      properties:
+        startedAt:
+          type: string
+        endedAt:
+          type: string
+        errorCount:
+          type: integer
+          contentEncoding: int32
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchResponseItem'
+          description: ''
     BatchContext:
       title: BatchContext
       required:
@@ -118,70 +182,6 @@ components:
       - GET
       - POST
       type: string
-    BatchOperation:
-      title: BatchOperation
-      type: object
-      properties:
-        method:
-          allOf:
-          - $ref: '#/components/schemas/Method'
-          - description: The REST request method
-        url:
-          type: string
-          description: The base and endpoint components of the API request's path
-        operationID:
-          type: string
-          description: Index of the request in the batch
-        body:
-          type: object
-          description: The body for the request as JSON
-        parameters:
-          type: object
-          description: The parameters for the request as JSON
-        headers:
-          type: object
-          description: The headers for the request as JSON
-      examples:
-      - method: POST
-        url: /v1/activate
-        operationID: '1'
-        body:
-          userId: user1
-        parameters:
-          type: feature
-          experimentKey: ab_test_experiment
-        headers:
-          X-Optimizely-SDK-Key: <sdk_key>
-          Content-Type: application/json
-    Method:
-      title: Method
-      enum:
-      - GET
-      - POST
-      type: string
-      description: The REST request method
-    BatchResponse:
-      title: BatchResponse
-      type: object
-      properties:
-        startedAt:
-          type: string
-        endedAt:
-          type: string
-        errorCount:
-          type: integer
-          contentEncoding: int32
-        response:
-          type: array
-          items:
-            $ref: '#/components/schemas/BatchResponseItem'
-          description: ''
-    Status:
-      title: Status
-      enum:
-      - 200
-      - 400
-      type: integer
   securitySchemes:
     SdkKeyAuth:
       type: apiKey

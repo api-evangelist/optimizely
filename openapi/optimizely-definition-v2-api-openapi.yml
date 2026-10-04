@@ -104,11 +104,6 @@ components:
       required:
       - name
       type: object
-    LinkMap:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/LinkConfig'
-      type: object
     Property_V2:
       properties:
         index:
@@ -122,6 +117,32 @@ components:
       required:
       - type
       - name
+      type: object
+    LinkMap:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/LinkConfig'
+      type: object
+    Optional_string_:
+      type:
+      - string
+      - 'null'
+    ContentTypeProperty_V2:
+      allOf:
+      - $ref: '#/components/schemas/Property_V2'
+      - properties:
+          helpText:
+            $ref: '#/components/schemas/Optional_string_'
+        type: object
+    LinkConfig:
+      properties:
+        to:
+          type: string
+        from:
+          type: string
+      required:
+      - to
+      - from
       type: object
     ContentSource_V2:
       properties:
@@ -167,23 +188,6 @@ components:
           - name: MainContentArea
             type: string
         propertyTypes: []
-    LinkConfig:
-      properties:
-        to:
-          type: string
-        from:
-          type: string
-      required:
-      - to
-      - from
-      type: object
-    ContentTypeProperty_V2:
-      allOf:
-      - $ref: '#/components/schemas/Property_V2'
-      - properties:
-          helpText:
-            $ref: '#/components/schemas/Optional_string_'
-        type: object
     ContentType_V2:
       properties:
         properties:
@@ -212,10 +216,6 @@ components:
       - contentType
       - name
       type: object
-    Optional_string_:
-      type:
-      - string
-      - 'null'
   securitySchemes:
     epi-single:
       type: apiKey

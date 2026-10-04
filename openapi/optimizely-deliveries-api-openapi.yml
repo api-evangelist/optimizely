@@ -58,30 +58,6 @@ paths:
           description: Delivery does not exist
 components:
   schemas:
-    DeliveryContentSelection:
-      type: object
-      additionalProperties: false
-      required:
-      - approved
-      - featured
-      description: Criteria used to select which content is delivered.
-      properties:
-        approved:
-          type: string
-          enum:
-          - approved
-          - unapproved
-          - all
-          description: Filter content by approval status.
-          example: approved
-        featured:
-          type: string
-          enum:
-          - featured
-          - unfeatured
-          - all
-          description: Filter content by featured status.
-          example: featured
     Delivery:
       type: object
       additionalProperties: false
@@ -116,6 +92,19 @@ components:
           description: List of sections included in this delivery.
           items:
             $ref: '#/components/schemas/ContentSection'
+    DeliveryMap:
+      type: object
+      description: A map of delivery identifiers to their corresponding API keys.
+      properties:
+        deliveries:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Map'
+          description: Key-value pairs where key is the delivery ID or name and value is the API key.
+    Map:
+      type: object
+      additionalProperties:
+        type: string
     ContentSection:
       type: object
       additionalProperties: false
@@ -138,19 +127,30 @@ components:
           format: url
           description: API link to fetch full details of this section.
           example: https://api.usea01.idio.episerver.net/1.0/sections/42
-    DeliveryMap:
+    DeliveryContentSelection:
       type: object
-      description: A map of delivery identifiers to their corresponding API keys.
+      additionalProperties: false
+      required:
+      - approved
+      - featured
+      description: Criteria used to select which content is delivered.
       properties:
-        deliveries:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/Map'
-          description: Key-value pairs where key is the delivery ID or name and value is the API key.
-    Map:
-      type: object
-      additionalProperties:
-        type: string
+        approved:
+          type: string
+          enum:
+          - approved
+          - unapproved
+          - all
+          description: Filter content by approval status.
+          example: approved
+        featured:
+          type: string
+          enum:
+          - featured
+          - unfeatured
+          - all
+          description: Filter content by featured status.
+          example: featured
   parameters:
     deliveryKey:
       name: key

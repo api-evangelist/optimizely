@@ -651,57 +651,6 @@ paths:
     - url: https://api.optimizely.com/v2
 components:
   schemas:
-    RestWebhook:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Webhook ID
-          format: int64
-        type:
-          type: string
-          description: Type of the event data
-          enum:
-          - open
-          - click
-          - sent
-          - bounce
-          - unsubscribe
-          - spamcomplaint
-          - webhooknode
-          - singleoptin
-          - confirmedoptin
-          - doubleoptin
-          - blocklist
-          - archived
-          - filteredbyblocklist
-        status:
-          type: string
-          description: Webhook status
-          enum:
-          - created
-          - activated
-          - deactivated
-          - deleted
-          - suspended
-        format:
-          type: string
-          description: Data format of the event data
-          enum:
-          - json
-        targetUrl:
-          type: string
-          description: Target URL
-        authentication:
-          $ref: '#/components/schemas/WebhookAuthentication'
-        created:
-          type: string
-          description: Creation date
-          format: date-time
-        modified:
-          type: string
-          description: Modification date
-          format: date-time
     WebhookRequestData:
       required:
       - format
@@ -799,22 +748,57 @@ components:
         targetUrl:
           type: string
           description: Target URL
-    Preset:
-      type: string
-      enum:
-      - legacy
-      - next
-    OperationMap:
-      properties:
-        in:
-          anyOf:
-          - type: string
-          - items:
-              type: string
-            type: array
-        eq:
-          type: string
+    RestWebhook:
       type: object
+      properties:
+        id:
+          type: integer
+          description: Webhook ID
+          format: int64
+        type:
+          type: string
+          description: Type of the event data
+          enum:
+          - open
+          - click
+          - sent
+          - bounce
+          - unsubscribe
+          - spamcomplaint
+          - webhooknode
+          - singleoptin
+          - confirmedoptin
+          - doubleoptin
+          - blocklist
+          - archived
+          - filteredbyblocklist
+        status:
+          type: string
+          description: Webhook status
+          enum:
+          - created
+          - activated
+          - deactivated
+          - deleted
+          - suspended
+        format:
+          type: string
+          description: Data format of the event data
+          enum:
+          - json
+        targetUrl:
+          type: string
+          description: Target URL
+        authentication:
+          $ref: '#/components/schemas/WebhookAuthentication'
+        created:
+          type: string
+          description: Creation date
+          format: date-time
+        modified:
+          type: string
+          description: Modification date
+          format: date-time
     Request:
       properties:
         url:
@@ -827,6 +811,35 @@ components:
       - url
       type: object
       additionalProperties: false
+    Record_string.string_:
+      properties: {}
+      additionalProperties:
+        type: string
+      type: object
+      description: Construct a type with a set of properties K of type T
+    Webhook:
+      allOf:
+      - $ref: '#/components/schemas/WebhookPayload'
+      - properties:
+          preset:
+            $ref: '#/components/schemas/Preset'
+          id:
+            type: string
+        required:
+        - preset
+        - id
+        type: object
+    Preset:
+      type: string
+      enum:
+      - legacy
+      - next
+    Partial_Record_string.OperationMap__:
+      properties: {}
+      additionalProperties:
+        $ref: '#/components/schemas/OperationMap'
+      type: object
+      description: Make all properties in T optional
     WebhookPayload:
       description: 'The `WebhookPayload` type represents the payload of a webhook request, which includes information
 
@@ -864,30 +877,82 @@ components:
             in:
             - Published
             - Created
-    Webhook:
-      allOf:
-      - $ref: '#/components/schemas/WebhookPayload'
-      - properties:
-          preset:
-            $ref: '#/components/schemas/Preset'
-          id:
+    OperationMap:
+      properties:
+        in:
+          anyOf:
+          - type: string
+          - items:
+              type: string
+            type: array
+        eq:
+          type: string
+      type: object
+    WebhookRequestBody:
+      description: Webhook request body
+      properties:
+        description:
+          description: A short description of the Webhook.
+          example: Webhook description
+          type: string
+        events:
+          description: List of events subscribed to the webhook.
+          items:
+            enum:
+            - project.datafile_updated
+            - project.snippet_updated
+            - project.attribute_created
+            - project.attribute_updated
+            - project.attribute_deleted
+            - project.attribute_archived
+            - project.audience_created
+            - project.audience_updated
+            - project.audience_archived
+            - project.environment_created
+            - project.environment_updated
+            - project.environment_archived
+            - project.event_created
+            - project.event_updated
+            - project.event_deleted
+            - project.event_archived
+            - project.flag_created
+            - project.flag_updated
+            - project.flag_deleted
+            - project.flag_archived
+            - project.project_setting_created
+            - project.project_setting_updated
+            - project.project_setting_deleted
+            - project.ruleset_created
+            - project.ruleset_updated
+            - project.ruleset_deleted
+            - project.rule_created
+            - project.rule_updated
+            - project.rule_deleted
+            - project.variation_created
+            - project.variation_updated
+            - project.variation_deleted
+            - project.variation_archived
+            - project.variable_created
+            - project.variable_updated
+            - project.variable_deleted
+            - project.group_created
+            - project.group_updated
+            - project.group_deleted
+            - project.group_archived
             type: string
-        required:
-        - preset
-        - id
-        type: object
-    Partial_Record_string.OperationMap__:
-      properties: {}
-      additionalProperties:
-        $ref: '#/components/schemas/OperationMap'
+          type: array
+        name:
+          description: Name of the Webhook.
+          type: string
+        url:
+          description: Webhook URL
+          type: string
+      required:
+      - description
+      - events
+      - name
+      - url
       type: object
-      description: Make all properties in T optional
-    Record_string.string_:
-      properties: {}
-      additionalProperties:
-        type: string
-      type: object
-      description: Construct a type with a set of properties K of type T
     Webhook_2:
       properties:
         active:
@@ -975,71 +1040,6 @@ components:
       items:
         $ref: '#/components/schemas/Webhook_2'
       type: array
-    WebhookRequestBody:
-      description: Webhook request body
-      properties:
-        description:
-          description: A short description of the Webhook.
-          example: Webhook description
-          type: string
-        events:
-          description: List of events subscribed to the webhook.
-          items:
-            enum:
-            - project.datafile_updated
-            - project.snippet_updated
-            - project.attribute_created
-            - project.attribute_updated
-            - project.attribute_deleted
-            - project.attribute_archived
-            - project.audience_created
-            - project.audience_updated
-            - project.audience_archived
-            - project.environment_created
-            - project.environment_updated
-            - project.environment_archived
-            - project.event_created
-            - project.event_updated
-            - project.event_deleted
-            - project.event_archived
-            - project.flag_created
-            - project.flag_updated
-            - project.flag_deleted
-            - project.flag_archived
-            - project.project_setting_created
-            - project.project_setting_updated
-            - project.project_setting_deleted
-            - project.ruleset_created
-            - project.ruleset_updated
-            - project.ruleset_deleted
-            - project.rule_created
-            - project.rule_updated
-            - project.rule_deleted
-            - project.variation_created
-            - project.variation_updated
-            - project.variation_deleted
-            - project.variation_archived
-            - project.variable_created
-            - project.variable_updated
-            - project.variable_deleted
-            - project.group_created
-            - project.group_updated
-            - project.group_deleted
-            - project.group_archived
-            type: string
-          type: array
-        name:
-          description: Name of the Webhook.
-          type: string
-        url:
-          description: Webhook URL
-          type: string
-      required:
-      - description
-      - events
-      - name
-      - url
-      type: object
     Error:
       properties:
         code:
@@ -1061,12 +1061,6 @@ components:
       required: true
       schema:
         type: integer
-    page_window:
-      description: Number of previous and next page links to supply for the request (defaults to 1).
-      in: query
-      name: page_window
-      schema:
-        type: integer
     webhook_id:
       description: The webhook identifier
       example: 12345
@@ -1081,6 +1075,12 @@ components:
       name: page_token
       schema:
         type: string
+    page_window:
+      description: Number of previous and next page links to supply for the request (defaults to 1).
+      in: query
+      name: page_window
+      schema:
+        type: integer
     project_id:
       description: The project identifier
       example: 12345

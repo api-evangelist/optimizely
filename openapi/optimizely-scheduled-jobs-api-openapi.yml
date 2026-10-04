@@ -340,6 +340,79 @@ paths:
     - url: https://api.optimizely.com/v2
 components:
   schemas:
+    RestConfiguredJobStreamingCollection:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestConfiguredJob'
+        links:
+          type: array
+          writeOnly: true
+          items:
+            $ref: '#/components/schemas/RestApiLink'
+        count:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+    RestConfiguredJob:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the scheduled job
+        description:
+          type: string
+          description: Description of the scheduled job
+        type:
+          type: string
+          description: Type of the scheduled job
+        jobData:
+          type: object
+          additionalProperties:
+            type: string
+        triggers:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestJobTrigger'
+    RestApiLink:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+    RestJobTrigger:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Trigger name
+        state:
+          type: string
+          description: Trigger status
+        nextFireTime:
+          type: string
+          description: Date and time of the next trigger fire
+          format: date-time
+        lastFiredTime:
+          type: string
+          description: Date and time of the last trigger fire
+          format: date-time
+        started:
+          type: string
+          description: Start date and time of the trigger
+          format: date-time
+        finished:
+          type: string
+          description: Finish date and time of the trigger
+          format: date-time
     RestRunningJobStreamingCollection:
       type: object
       properties:
@@ -409,91 +482,6 @@ components:
                   dateBased:
                     type: boolean
           description: Elapsed running time of the scheduled job
-    RestConfiguredJobStreamingCollection:
-      type: object
-      properties:
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestConfiguredJob'
-        links:
-          type: array
-          writeOnly: true
-          items:
-            $ref: '#/components/schemas/RestApiLink'
-        count:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    RestApiLink:
-      type: object
-      properties:
-        href:
-          type: string
-        rel:
-          type: string
-    RestJobTrigger:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Trigger name
-        state:
-          type: string
-          description: Trigger status
-        nextFireTime:
-          type: string
-          description: Date and time of the next trigger fire
-          format: date-time
-        lastFiredTime:
-          type: string
-          description: Date and time of the last trigger fire
-          format: date-time
-        started:
-          type: string
-          description: Start date and time of the trigger
-          format: date-time
-        finished:
-          type: string
-          description: Finish date and time of the trigger
-          format: date-time
-    RestConfiguredJob:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the scheduled job
-        description:
-          type: string
-          description: Description of the scheduled job
-        type:
-          type: string
-          description: Type of the scheduled job
-        jobData:
-          type: object
-          additionalProperties:
-            type: string
-        triggers:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestJobTrigger'
-    Error:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        messages:
-          type: object
-        uuid:
-          format: uuid
-          type: string
-      type: object
     ScheduledJobUpdate:
       properties:
         archived:
@@ -597,6 +585,18 @@ components:
       - project_id
       - job_type
       - frequency
+      type: object
+    Error:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        messages:
+          type: object
+        uuid:
+          format: uuid
+          type: string
       type: object
   securitySchemes:
     Authorization:
