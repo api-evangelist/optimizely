@@ -11,7 +11,7 @@ capability_model:
   attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
     CC BY 4.0
   notice: NOTICE
-edge_count: 7
+edge_count: 50
 edges:
 - tag: Flags
   spec_file: optimizely-flags-api-openapi.yml
@@ -24,6 +24,16 @@ edges:
   reason: Operations create, read, update and delete feature flags per project with per-environment variations
     and rulesets — this is feature flag lifecycle management, matching BC-4210.50 despite the misleading
     'Campaign' title.
+- tag: Deployments
+  spec_file: optimizely-deployments-api-openapi.yml
+  capability_id: BC-4210.40
+  capability_id_l1: BC-4210
+  capability_name: Deployment Orchestration
+  confidence: 0.9
+  evidence: POST /api/v1.0/projects/{projectId}/deployments 'Starts deployment to target environment';
+    'Complete specified deployment'; 'Reset or Complete reset a specified deployment'
+  reason: Operations start, complete and reset code deployments to target environments with package upload
+    — deployment orchestration of software changes to production.
 - tag: Experiments
   spec_file: optimizely-experiments-api-openapi.yml
   capability_id: BC-4280.50
@@ -34,6 +44,102 @@ edges:
     getExperimentResults Get experiment results
   reason: Vendor is an A/B testing platform and the operations create, target, and read results of experiments
     — configuration and monitoring of running A/B tests.
+- tag: Webhooks
+  spec_file: optimizely-webhooks-api-openapi.yml
+  capability_id: BC-4270.80
+  capability_id_l1: BC-4270
+  capability_name: Webhook & Event Subscription Management
+  confidence: 0.9
+  evidence: POST /{clientId}/webhooks  createWebhook  Create a webhook; GET /{clientId}/webhooks/{webhookId}/verify  verifyWebhook
+  reason: Operations create, update, activate/deactivate, verify and delete outbound webhook subscriptions
+    with schemas RestWebhook and WebhookPayload — the lifecycle of outbound event subscriptions exposed
+    to integrators.
+- tag: Holdouts
+  spec_file: optimizely-holdouts-api-openapi.yml
+  capability_id: BC-4280
+  capability_id_l1: BC-4280
+  capability_name: Product Telemetry & Experimentation Management
+  confidence: 0.88
+  evidence: fetch_holdout_experiments  Fetch experiments associated with a holdout; get_holdout_results_csv  Get
+    Holdout results as a CSV
+  reason: Holdout groups and their results/associated experiments are a core experimentation construct
+    for measuring feature impact. Maps to Product Telemetry & Experimentation Management; the split between
+    programme management and A/B test execution is ambiguous, so L1 only.
+- tag: Scheduled Changes
+  spec_file: optimizely-scheduled-changes-api-openapi.yml
+  capability_id: BC-4210.50
+  capability_id_l1: BC-4210
+  capability_name: Feature Flag Management
+  confidence: 0.88
+  evidence: '"These APIs allow you to turn a flag on/off, turn a rule on/off, change the traffic allocation
+    of a rule"; POST /projects/{project_id}/flags/{flag_key}/schedules "Create a Schedule Change for a
+    flag in an environment"'
+  reason: Operations schedule runtime changes to feature flags and their targeting rules per environment
+    — squarely feature flag lifecycle/runtime control, not generic scheduling.
+- tag: Variable Definitions
+  spec_file: optimizely-variable-definitions-api-openapi.yml
+  capability_id: BC-4210.50
+  capability_id_l1: BC-4210
+  capability_name: Feature Flag Management
+  confidence: 0.88
+  evidence: 'GET /projects/{project_id}/flags/{flag_key}/variable_definitions  "Fetch all variable definitions
+    for flag"; description: "view and manage Feature Flags and all of their related entities including
+    Variables, Variations, Rules"'
+  reason: These operations define the typed variables attached to feature flags in Optimizely Feature
+    Experimentation, which is directly feature flag lifecycle and runtime control.
+- tag: Compliance
+  spec_file: optimizely-compliance-api-openapi.yml
+  capability_id: BC-130.50
+  capability_id_l1: BC-130
+  capability_name: Privacy & Data Protection Management
+  confidence: 0.85
+  evidence: POST /compliance/gdpr/delete GDPR delete request; POST /compliance/ccpa/optout CCPA opt-out
+    request; GET /compliance/lgpd/status/{requestId}
+  reason: The surface executes and tracks data-subject deletion and opt-out requests under GDPR/CCPA/LGPD,
+    which is squarely privacy & data protection (data subject rights) rather than any generic compliance
+    workflow.
+- tag: Groups
+  spec_file: optimizely-groups-api-openapi.yml
+  capability_id: BC-4280
+  capability_id_l1: BC-4280
+  capability_name: Product Telemetry & Experimentation Management
+  confidence: 0.85
+  evidence: GET /projects/{project_id}/groups  list_groups  List Exclusion Groups
+  reason: '''Groups'' here are experimentation Exclusion Groups within Optimizely projects (schemas Group,
+    GroupRule, AudienceConditions), i.e. governance of how experiments share traffic. That is product
+    experimentation management; evidence does not clearly separate programme methodology from test execution,
+    so L1 only.'
+- tag: Promotions
+  spec_file: optimizely-promotions-api-openapi.yml
+  capability_id: BC-440.30
+  capability_id_l1: BC-440
+  capability_name: Discount & Promotion Management
+  confidence: 0.85
+  evidence: POST /api/v1/admin/Promotions — Post a new entity to EntitySet Promotions; POST /api/v1/admin/Promotions({id})/Default.results
+    — Call operation results; schema Insite.Data.Entities.Promotion
+  reason: Full lifecycle administration of commerce promotions — create, update, set results, archive,
+    delete — which is squarely Discount & Promotion Management.
+- tag: Quotes
+  spec_file: optimizely-quotes-api-openapi.yml
+  capability_id: BC-410.40
+  capability_id_l1: BC-410
+  capability_name: Quote & Configuration Management
+  confidence: 0.85
+  evidence: GET /api/v1/quotes/{quoteId}/quotelines/{quoteLineId}; schemas Insite.Rfq.WebApi.V1.ApiModels.QuoteModel,
+    PricingRfqModel, BreakPriceRfqModel
+  reason: Operations create, retrieve, amend and delete quotes and quote lines with RFQ pricing models
+    and buyer messaging — the configure/price/quote motion of B2B selling, i.e. Quote & Configuration
+    Management.
+- tag: RealtimeSegments
+  spec_file: optimizely-realtimesegments-api-openapi.yml
+  capability_id: BC-420.20
+  capability_id_l1: BC-420
+  capability_name: Customer Segmentation Management
+  confidence: 0.85
+  evidence: GET /segments  RealtimeSegments_ListSegments; POST /segments/{segment_id}:validate; schemas
+    CustomerCondition, Condition.Combination, Expression
+  reason: The API defines, validates and installs customer segments built from customer conditions and
+    expressions — directly Customer Segmentation Management.
 - tag: Rulesets
   spec_file: optimizely-rulesets-api-openapi.yml
   capability_id: BC-4210.50
@@ -44,6 +150,48 @@ edges:
     POST .../ruleset/enabled enableRuleset
   reason: Rulesets are the per-environment targeting/enable rules attached to feature flags, i.e. runtime
     control of feature flags (BC-4210.50).
+- tag: Entity
+  spec_file: optimizely-entity-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.8
+  evidence: GET /users/{user_id}/projects/{project_id}/{entity_type}  Get User Permissions For Project
+    Entity Type
+  reason: 'This is a Permission Service: it reads and patches user and team permissions on project entities
+    (EntityPermissionsResponse, UserPermission, TeamPermission), which is authorisation/access management
+    rather than any product-domain capability.'
+- tag: Subject Access Requests
+  spec_file: optimizely-subject-access-requests-api-openapi.yml
+  capability_id: BC-130.50
+  capability_id_l1: BC-130
+  capability_name: Privacy & Data Protection Management
+  confidence: 0.8
+  evidence: Manage information about Subject Access Requests (includes GDPR) — create_sar_request  Create
+    a Subject Access Request
+  reason: The operations create, list and update data-subject access requests explicitly tied to GDPR,
+    which is privacy and data-protection rights handling. Residual ambiguity only over whether it is better
+    framed as the SaaS trust-portal privacy commitment sub-capability.
+- tag: Telemetry
+  spec_file: optimizely-telemetry-api-openapi.yml
+  capability_id: BC-4280.10
+  capability_id_l1: BC-4280
+  capability_name: Product Telemetry Instrumentation
+  confidence: 0.8
+  evidence: POST /api/v1/admin/telemetry/track-event TelemetryV1_TrackEvent; TrackEventRequest, ScreenEventRequest
+  reason: Capture of product usage events (track and screen events) from the admin application runtime
+    — product telemetry instrumentation.
+- tag: Override
+  spec_file: optimizely-override-api-openapi.yml
+  capability_id: BC-4280.50
+  capability_id_l1: BC-4280
+  capability_name: A/B Test Execution
+  confidence: 0.78
+  evidence: POST /v1/override  'Override an experiment decision for a user'; 'Use this API the control
+    experiments (such as a feature tests)'
+  reason: Operation forces a specific variation decision for a user in a running experiment — runtime
+    configuration/targeting of an A/B test. Slight ambiguity with feature-flag management (BC-4210.50),
+    but the surface is explicitly about experiment decisions.
 - tag: Profiles
   spec_file: optimizely-profiles-api-openapi.yml
   capability_id: BC-420.10
@@ -53,6 +201,146 @@ edges:
   evidence: POST /profiles upsertProfile 'Create or update a profile'; GET /profiles/{identifier_field}/{identifier_value}
   reason: Upsert and identifier-based lookup of customer profiles in the customer data platform — customer
     master/identity resolution (Customer Data Management).
+- tag: Attribution
+  spec_file: optimizely-attribution-api-openapi.yml
+  capability_id: BC-4280.50
+  capability_id_l1: BC-4280
+  capability_name: A/B Test Execution
+  confidence: 0.75
+  evidence: Get a list of bucketing decisions for a visitor ... BucketingInformationItem, BucketingInformation
+  reason: Returns which experiment variations a visitor was bucketed into — runtime A/B test assignment
+    history, squarely experimentation execution. Slightly below 0.8 because bucketing also underpins feature-flag
+    targeting (BC-4210.50), so the sub-capability choice carries some risk.
+- tag: Batch sending
+  spec_file: optimizely-batch-sending-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.75
+  evidence: POST /{clientId}/sending/batches/{sendingBatchId}  importRecipientsAndSendBatch  Send campaign
+    to the chunked recipients
+  reason: Operations prepare recipient batches and dispatch an email campaign to them — this is marketing
+    campaign execution via marketing automation, i.e. Digital Marketing Management. Some ambiguity with
+    Demand Generation, hence 0.75.
+- tag: Brand Compliance
+  spec_file: optimizely-brand-compliance-api-openapi.yml
+  capability_id: BC-400.20
+  capability_id_l1: BC-400
+  capability_name: Brand Management
+  confidence: 0.75
+  evidence: PUT /tasks/{task_id}/assets/{asset_id}/drafts/{draft_id}/brand-compliance  updateTaskAssetDraftBrandCompliance
+    ... GET /brand-compliance/categories  listBrandComplianceCategories
+  reason: CMP endpoints score and record brand-compliance of creative asset drafts against brand compliance
+    categories — brand governance over marketing content. Could also be read as content marketing production
+    QA, so 0.75.
+- tag: Price Matrices
+  spec_file: optimizely-price-matrices-api-openapi.yml
+  capability_id: BC-440.20
+  capability_id_l1: BC-440
+  capability_name: Price List Management
+  confidence: 0.75
+  evidence: 'GET /api/v1/admin/PriceMatrices Returns the EntitySet PriceMatrices; schemas: Insite.Data.Entities.PriceMatrix'
+  reason: Admin CRUD over price matrix entities — maintenance of commerce price structures/price books,
+    i.e. price list management within pricing management. Operations are generic CRUD, hence moderate-high
+    rather than full confidence.
+- tag: Promotion Results
+  spec_file: optimizely-promotion-results-api-openapi.yml
+  capability_id: BC-440.30
+  capability_id_l1: BC-440
+  capability_name: Discount & Promotion Management
+  confidence: 0.75
+  evidence: POST /api/v1/admin/PromotionResults({id})/Default.import — PromotionResults_ImportProductsAsyncById;
+    schema Insite.Data.Entities.PromotionResult
+  reason: Manages the result/outcome definitions of commerce promotions, including importing the products
+    they apply to and staging via temporary copies. This is promotion configuration work under Discount
+    & Promotion Management.
+- tag: Scheduled Change
+  spec_file: optimizely-scheduled-change-api-openapi.yml
+  capability_id: BC-4210.50
+  capability_id_l1: BC-4210
+  capability_name: Feature Flag Management
+  confidence: 0.75
+  evidence: '''These APIs allow you to turn a flag on/off, turn a rule on/off, change the traffic allocation
+    of a rule''; PATCH .../flags/{flag_key}/schedules/{schedule_id} update_scheduled_change'
+  reason: Operations schedule and update changes to feature flag state and rule traffic/audience conditions,
+    which is runtime lifecycle control of feature flags. Overlap with experiment execution keeps confidence
+    below 0.8.
+- tag: Shipments
+  spec_file: optimizely-shipments-api-openapi.yml
+  capability_id: BC-520.50
+  capability_id_l1: BC-520
+  capability_name: Logistics Operations Management
+  confidence: 0.75
+  evidence: GET /api/v1/admin/shipments({key})/shipmentpackages({shipmentpackageKey}) — "Shipments get
+    shipment package by key and shipmentpackagekey"; schema "Insite.Data.Entities.Shipment"
+  reason: CRUD over shipment records composed of shipment packages — outbound delivery execution against
+    customer orders, which is logistics operations management (with adjacency to order fulfilment).
+- tag: Coupon blocks
+  spec_file: optimizely-coupon-blocks-api-openapi.yml
+  capability_id: BC-440.30
+  capability_id_l1: BC-440
+  capability_name: Discount & Promotion Management
+  confidence: 0.72
+  evidence: POST /{clientId}/couponblocks/{couponBlockId}/codes createCouponCodes — Create a list of coupon
+    codes; markAsUsed — Invalidate a coupon code
+  reason: Operations create, distribute and invalidate coupon codes tied to campaign mailings, which is
+    promotional discount management. Some ambiguity as it sits inside a campaign/email marketing product,
+    but the object managed is coupons/promotions.
+- tag: Invoices
+  spec_file: optimizely-invoices-api-openapi.yml
+  capability_id: BC-200.30
+  capability_id_l1: BC-200
+  capability_name: Accounts Receivable Management
+  confidence: 0.72
+  evidence: GET /api/v1/invoices, "Invoices V1 get collection async"; Insite.Invoice.WebApi.V1.ApiModels.InvoiceModel,
+    Insite.Invoice.Services.Dtos.InvoiceHistoryTaxDto
+  reason: 'Storefront API exposing customer invoices with line and tax detail plus an invoice-sharing
+    action — customer invoice presentment, which realises Accounts Receivable Management (customer invoicing).
+    Not subscription billing: these are commerce order invoices.'
+- tag: Jobquotes
+  spec_file: optimizely-jobquotes-api-openapi.yml
+  capability_id: BC-410.40
+  capability_id_l1: BC-410
+  capability_name: Quote & Configuration Management
+  confidence: 0.72
+  evidence: GET /api/v1/jobquotes, "Job quotes V1 get collection async"; Insite.Rfq.WebApi.V1.ApiModels.PricingRfqModel,
+    Insite.Rfq.WebApi.V1.ApiModels.BreakPriceRfqModel
+  reason: Storefront API for job quotes built on the RFQ (request-for-quote) domain with pricing and break-price
+    quote models, bill-to customer and cart lines — i.e. quoting and pricing of customer requests, which
+    maps to Quote & Configuration Management. Some ambiguity as it could also be read as opportunity/pipeline,
+    but the RFQ pricing schemas point to quoting.
+- tag: Paymentauthentication
+  spec_file: optimizely-paymentauthentication-api-openapi.yml
+  capability_id: BC-4250.40
+  capability_id_l1: BC-4250
+  capability_name: Payment Collection & Dunning
+  confidence: 0.72
+  evidence: POST /api/v1/paymentauthentication/adyenpayment  'Payment authentication V1 adyen payment';
+    POST /api/v1/paymentauthentication/adyenrefund  'Payment authentication V1 refund'
+  reason: Operations perform payment authorisation via a gateway (Adyen), 3DS challenge/callback handling
+    and refunds — payment authorisation and collection mechanics. Capability list's closest fit is Payment
+    Collection, though this is e-commerce rather than recurring billing.
+- tag: Reports
+  spec_file: optimizely-reports-api-openapi.yml
+  capability_id: BC-4280
+  capability_id_l1: BC-4280
+  capability_name: Product Telemetry & Experimentation Management
+  confidence: 0.72
+  evidence: GET /experiments/{experiment_id}/report  get_experiment_report  Get Experiment Result's Report;
+    schema ExperimentResultsReport
+  reason: Reports here are experiment/feature-experimentation result reports scoped to projects and environments,
+    so the surface realises product experimentation analysis. Ambiguous between A/B test execution monitoring
+    and experimentation programme analysis, so no L2 asserted.
+- tag: VAT Codes
+  spec_file: optimizely-vat-codes-api-openapi.yml
+  capability_id: BC-220.20
+  capability_id_l1: BC-220
+  capability_name: Indirect Tax Management
+  confidence: 0.72
+  evidence: GET /api/v1/admin/vatcodes({key})/countryvatrates({countryvatrateKey})  "Vat codes get country
+    vat rate by key and countryvatratekey"
+  reason: Maintains VAT codes and their per-country VAT rates, which is indirect tax configuration. It
+    is a configuration entity set rather than a tax filing process, so confidence is moderate.
 - tag: Audiences
   spec_file: optimizely-audiences-api-openapi.yml
   capability_id: BC-420.20
@@ -63,6 +351,47 @@ edges:
     API managing ''recipients, mailing lists, smart campaigns'''
   reason: Audience definition and maintenance for marketing campaigns corresponds to customer segmentation/targeting;
     could alternatively be read as demand-generation targeting, hence 0.7.
+- tag: Carriers
+  spec_file: optimizely-carriers-api-openapi.yml
+  capability_id: BC-520.50
+  capability_id_l1: BC-520
+  capability_name: Logistics Operations Management
+  confidence: 0.7
+  evidence: GET /api/v1/admin/carriers({key})/carrierpackages({carrierpackageKey}); schema Insite.Data.Entities.Carrier
+  reason: Manages shipping carriers together with their packages and zones — the transport/shipping side
+    of logistics operations in the commerce platform. Clear logistics reading; sub-capability choice is
+    the main residual uncertainty.
+- tag: Confirmations
+  spec_file: optimizely-confirmations-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.7
+  evidence: POST /{clientId}/confirmations createConfirmationMailing Create a confirmation mail; GET .../message/tracking/links
+    getTrackingLinks; schemas RestOpens, RestClicks, RestRecipients
+  reason: Creation, content authoring, recipient handling and open/click tracking of campaign confirmation
+    mailings — email marketing automation, i.e. digital marketing execution.
+- tag: Customer Orders
+  spec_file: optimizely-customer-orders-api-openapi.yml
+  capability_id: BC-520.40
+  capability_id_l1: BC-520
+  capability_name: Order Fulfilment Management
+  confidence: 0.7
+  evidence: Insite.Data.Entities.CustomerOrder; "Customer orders totals by key"; "Customer orders get
+    credit card transaction by key"
+  reason: Core commerce sales order entity with totals and payment transactions, i.e. customer order capture
+    and fulfilment management.
+- tag: Decide
+  spec_file: optimizely-decide-api-openapi.yml
+  capability_id: BC-4210.50
+  capability_id_l1: BC-4210
+  capability_name: Feature Flag Management
+  confidence: 0.7
+  evidence: POST /v1/decide 'Decide makes feature decisions for the selected query parameters' — schemas
+    OptimizelyDecision, ForcedDecision, UserContext
+  reason: Runtime evaluation of feature flag decisions for a given user context, including forced decisions
+    — runtime control/targeting of feature flags. Overlaps with experiment assignment (A/B test execution),
+    hence 0.7.
 - tag: Features
   spec_file: optimizely-features-api-openapi.yml
   capability_id: BC-4210.50
@@ -74,6 +403,72 @@ edges:
   reason: Vendor description names 'feature flagging' as a core product, and the schemas Feature/Variable
     are the classic feature-flag-with-variables model, so these operations expose feature flag definitions.
     Read-only surface tempers confidence.
+- tag: Impressions Usage
+  spec_file: optimizely-impressions-usage-api-openapi.yml
+  capability_id: BC-4250.10
+  capability_id_l1: BC-4250
+  capability_name: Usage Metering
+  confidence: 0.7
+  evidence: GET /billing/usage/{account_id}  get_impressions_usage_request  Get Impressions Usage
+  reason: Exposes aggregated metered consumption (impressions) per account under a /billing/usage path,
+    i.e. the usage-metering feed behind the SaaS commercial model. Could alternatively be read as API
+    consumption analytics, so confidence is moderate.
+- tag: Invoice Histories
+  spec_file: optimizely-invoice-histories-api-openapi.yml
+  capability_id: BC-200.30
+  capability_id_l1: BC-200
+  capability_name: Accounts Receivable Management
+  confidence: 0.7
+  evidence: '"Invoice histories get invoice history line by key and invoicehistorylinekey"; Insite.Data.Entities.InvoiceHistory'
+  reason: Admin entity set for customer invoice records with invoice lines and invoice taxes — customer
+    invoicing records in a B2B commerce platform, which maps to Accounts Receivable Management (customer
+    invoicing). Confidence moderated because the surface is generic entity CRUD rather than an invoicing
+    process.
+- tag: Local Tax Rates
+  spec_file: optimizely-local-tax-rates-api-openapi.yml
+  capability_id: BC-220.20
+  capability_id_l1: BC-220
+  capability_name: Indirect Tax Management
+  confidence: 0.7
+  evidence: GET /api/v1/admin/LocalTaxRates; 'Local tax rates get tax exemption by key and taxexemptionkey'
+    — schema 'Insite.Data.Entities.LocalTaxRate'
+  reason: The surface manages local sales/use tax rate records and their linked tax exemptions for commerce
+    transactions, which realises Indirect Tax Management (sales tax determination data). Not subscription
+    tax, as this is the commerce admin entity model, and confidence is tempered by the generic CRUD-only
+    operation set.
+- tag: Message Templates
+  spec_file: optimizely-message-templates-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.7
+  evidence: '''Optimizely Campaign REST Message templates API'' — ''Create or copy a message template'',
+    ''Test a message template'', schema ''MessageTemplateTestMailingRequestData'''
+  reason: These operations manage reusable email/message templates inside Optimizely Campaign, the vendor's
+    campaign-execution product (mailing test request schema confirms email send). That is marketing automation
+    / digital campaign tooling, so Digital Marketing Management is the best fit; some chance the intended
+    sub-capability is Content Marketing or Demand Generation, hence moderate confidence.
+- tag: Recipient Lists
+  spec_file: optimizely-recipient-lists-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.7
+  evidence: GET /{clientId}/recipientlists  Get information about all recipient lists; Optimizely Campaign
+    REST API
+  reason: Recipient list management within the Campaign (email marketing automation) product — maintaining
+    audience lists and their attribute fields for outbound campaigns, which sits in digital/automated
+    marketing. Sub-capability choice carries some ambiguity versus demand generation.
+- tag: Shipment Packages
+  spec_file: optimizely-shipment-packages-api-openapi.yml
+  capability_id: BC-520.50
+  capability_id_l1: BC-520
+  capability_name: Logistics Operations Management
+  confidence: 0.7
+  evidence: GET /api/v1/admin/shipmentpackages({key})/shipmentpackagelines({shipmentpackagelineKey}) —
+    "Shipment packages get shipment package line by key"
+  reason: Packages belonging to shipments with their package lines — packing and outbound transport records,
+    i.e. logistics operations execution in the commerce platform.
 - tag: Smart Campaigns
   spec_file: optimizely-smart-campaigns-api-openapi.yml
   capability_id: BC-400.60
@@ -85,3 +480,65 @@ edges:
   reason: Operations run and control automated marketing (email) campaigns, i.e. marketing automation
     within digital marketing. Sub-capability choice between demand generation and digital/marketing-automation
     is somewhat ambiguous.
+- tag: Sso Clients
+  spec_file: optimizely-sso-clients-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.7
+  evidence: Insite.Core.Security.SsoClientDto — SsoClients_Post  Post a new entity to EntitySet SsoClients
+  reason: CRUD over registered single-sign-on client registrations, with a security-namespaced DTO. That
+    is identity federation / access credential administration, i.e. Identity & Access Management. Some
+    ambiguity over whether it is better read as tenant identity federation or developer credential issuance,
+    hence moderate confidence.
+- tag: Tax Exemptions
+  spec_file: optimizely-tax-exemptions-api-openapi.yml
+  capability_id: BC-220.20
+  capability_id_l1: BC-220
+  capability_name: Indirect Tax Management
+  confidence: 0.7
+  evidence: Insite.Data.Entities.TaxExemption; POST /api/v1/admin/TaxExemptions
+  reason: Admin management of customer tax exemption records in a commerce platform supports indirect
+    (sales) tax determination and exemption handling.
+- tag: Team Management
+  spec_file: optimizely-team-management-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.7
+  evidence: 'openapi title: Permission Service Team Management API; schemas TeamUser, AccountRole; POST
+    /accounts/{account_id}/teams Create Team'
+  reason: Permission service managing teams, team users and account roles within tenant accounts — access-group
+    administration, closest to Identity & Access Management.
+- tag: Transactional mails
+  spec_file: optimizely-transactional-mails-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.7
+  evidence: POST /{clientId}/transactionalmail  createTransactionalMailing  'Create a transactional mail';
+    'Update the tracking link configuration of a mailing'; schemas RestOpens, RestClicks, RestRecipients
+  reason: Email campaign authoring, recipient lists, attachments, send status and open/click tracking
+    in Optimizely Campaign — email marketing automation, i.e. digital marketing execution. Slight ambiguity
+    as transactional mail is partly operational notification rather than demand generation.
+- tag: Variations
+  spec_file: optimizely-variations-api-openapi.yml
+  capability_id: BC-4210.50
+  capability_id_l1: BC-4210
+  capability_name: Feature Flag Management
+  confidence: 0.7
+  evidence: 'POST /projects/{project_id}/flags/{flag_key}/variations  "Create a New Variation"; description:
+    "manage Feature Flags and all of their related entities including Variables, Variations, Rules"'
+  reason: Variations are child entities of feature flags in the FX flags API, so feature flag management
+    is the best fit; some chance the intended capability is A/B test execution since variations also serve
+    experiments, hence moderate confidence.
+- tag: Vmi Bins
+  spec_file: optimizely-vmi-bins-api-openapi.yml
+  capability_id: BC-530
+  capability_id_l1: BC-530
+  capability_name: Inventory Management
+  confidence: 0.7
+  evidence: Insite.Data.Entities.VmiBin, Insite.Catalog.WebApi.V1.ApiModels.VmiBinCountModel; GET /api/v1/admin/vmibins({key})/vmicounts({vmicountKey})
+  reason: VMI (vendor-managed inventory) bins are stock-holding bin records linked to inventory counts,
+    so the surface realises inventory stock management rather than a web/content capability. Kept at L1
+    because the operations are generic CRUD and do not name a narrower sub-capability.
