@@ -1,0 +1,64 @@
+arazzo: 1.0.1
+info:
+  title: Optimizely BlueConic audience sync
+  summary: Look up BlueConic profiles matching a property value and create a corresponding Optimizely Web Experimentation audience.
+  description: >-
+    Searches BlueConic profiles on a property/value pair, then creates an Optimizely audience whose conditions target the
+    same attribute, so experiments can be run against the segment BlueConic defines.
+  version: 1.0.0
+sourceDescriptions:
+  - name: optimizelyAudiences
+    url: https://raw.githubusercontent.com/api-evangelist/optimizely/refs/heads/main/openapi/optimizely-audiences-api-openapi.yml
+    type: openapi
+  - name: blueconicProfiles
+    url: https://raw.githubusercontent.com/api-evangelist/blueconic/refs/heads/main/openapi/blueconic-profiles-api-openapi.yml
+    type: openapi
+workflows:
+  - workflowId: blueconic-segment-to-optimizely-audience
+    summary: Search BlueConic profiles, then create an Optimizely audience.
+    description: >-
+      Confirms the BlueConic segment has profiles, then creates the Optimizely audience in the given project with caller-supplied conditions.
+    inputs:
+      type: object
+      properties:
+        property: {type: string}
+        value: {type: string}
+        project_id: {type: integer}
+        audience_name: {type: string}
+        conditions: {type: string, description: JSON-encoded Optimizely audience conditions targeting the BlueConic attribute.}
+    steps:
+      - stepId: search-blueconic-profiles
+        description: Find profiles with the property value.
+        operationId: $sourceDescriptions.blueconicProfiles.searchProfiles
+        parameters:
+          - {name: property, in: query, value: $inputs.property}
+          - {name: value, in: query, value: $inputs.value}
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          profiles: $response.body
+      - stepId: create-optimizely-audience
+        description: Create the Optimizely audience.
+        operationId: $sourceDescriptions.optimizelyAudiences.createAudience
+        requestBody:
+          contentType: application/json
+          payload:
+            project_id: $inputs.project_id
+            name: $inputs.audience_name
+            description: Segment synced from BlueConic
+            conditions: $inputs.conditions
+        successCriteria:
+          - condition: $statusCode == 201
+        outputs:
+          audienceId: $response.body#/id
+    outputs:
+      audienceId: $steps.create-optimizely-audience.outputs.audienceId
+x-integration:
+  partner: blueconic
+  edge_evidence: https://www.optimizely.com/connectors/blueconic
+  edge_type: claimed
+  method: generated
+  generated: '2026-10-12'
+  generator: claude-opus-5-5 (local-v5 enrichment)
+  guessed_steps:
+    - {step: create-optimizely-audience, cause: provider-contract, why: 'AudienceInput.conditions is an untyped JSON-encoded string; the condition grammar for a third-party attribute is not in the contract, so the caller supplies it.'}

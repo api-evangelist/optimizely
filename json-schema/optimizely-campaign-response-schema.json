@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-campaign-response-schema.json",
+  "title": "CampaignResponse",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-campaigns-api-openapi.yml#/components/schemas/CampaignResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier of the campaign"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the campaign"
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Description of the campaign"
+    },
+    "start_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Start date of the campaign in ISO 8601 format: `YYYY-MM-DD`"
+    },
+    "end_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "End date of the campaign in ISO 8601 format: `YYYY-MM-DD`"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation date and time of the campaign,  in ISO 8601 UTC format (`2035-02-10T10:40:45Z`)"
+    },
+    "is_hidden": {
+      "type": "boolean",
+      "description": "Whether the campaign is hidden or not"
+    },
+    "status": {
+      "type": "string",
+      "description": "Status of the campaign",
+      "enum": [
+        "Not Started",
+        "Off Track",
+        "On Track",
+        "Complete",
+        "At Risk"
+      ]
+    },
+    "reference_id": {
+      "type": "string",
+      "description": "Reference identifier of the campaign"
+    },
+    "budget": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/BudgetResponse"
+        }
+      ]
+    },
+    "labels": {
+      "type": "array",
+      "description": "Labels associated to the campaign",
+      "items": {
+        "$ref": "#/$defs/ResourceLabelResponse"
+      }
+    },
+    "links": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Meta links",
+      "properties": {
+        "self": {
+          "type": "string",
+          "description": "URL of the campaign"
+        },
+        "brief": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "URL of the campaign brief"
+        },
+        "owner": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "URL of the campaign owner"
+        },
+        "parent_campaign": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "URL of the parent campaign"
+        },
+        "child_campaigns": {
+          "type": "array",
+          "description": "URLs of the child campaigns",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "self",
+        "brief",
+        "owner",
+        "parent_campaign",
+        "child_campaigns"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "description",
+    "start_date",
+    "end_date",
+    "created_at",
+    "is_hidden",
+    "status",
+    "reference_id",
+    "budget",
+    "labels",
+    "links"
+  ],
+  "$defs": {
+    "BudgetResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Budget of the campaign",
+      "properties": {
+        "currency_code": {
+          "type": "string",
+          "description": "Currency code of the budget"
+        },
+        "budgeted_amount": {
+          "type": "string",
+          "description": "Planned amount for the campaign"
+        }
+      },
+      "required": [
+        "currency_code",
+        "budgeted_amount"
+      ]
+    },
+    "ResourceLabelResponse": {
+      "description": "Label associated to a fetched resource",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "group": {
+          "description": "Label group",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Identifier of the label group"
+            },
+            "name": {
+              "type": "string",
+              "description": "Name of the label group"
+            }
+          },
+          "required": [
+            "id",
+            "name"
+          ]
+        },
+        "values": {
+          "type": "array",
+          "description": "List of values of the label",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Identifier of the label value"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the label value"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          }
+        }
+      },
+      "required": [
+        "group",
+        "values"
+      ]
+    }
+  }
+}

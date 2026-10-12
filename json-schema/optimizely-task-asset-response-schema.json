@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-task-asset-response-schema.json",
+  "title": "TaskAssetResponse",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-tasks-api-openapi.yml#/components/schemas/TaskAssetResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the asset"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the asset"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "article",
+        "image",
+        "video",
+        "raw_file",
+        "structured_content"
+      ],
+      "description": "Type of the asset"
+    },
+    "mime_type": {
+      "type": "string",
+      "description": "MIME type of the asset"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time on which the asset was created, in ISO 8601 UTC format (2020-02-10T10:40:45Z)"
+    },
+    "modified_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time of the most recent modification of the asset, in ISO 8601 UTC format (2020-02-10T10:40:45Z)"
+    },
+    "content": {
+      "$ref": "#/$defs/AssetContent"
+    },
+    "labels": {
+      "type": "array",
+      "description": "Labels associated with the asset",
+      "items": {
+        "$ref": "#/$defs/ResourceLabelResponse"
+      }
+    },
+    "links": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Meta links",
+      "properties": {
+        "self": {
+          "type": "string",
+          "description": "URL of the asset"
+        },
+        "task": {
+          "type": "string",
+          "description": "URL of the task that the asset is associated with"
+        },
+        "drafts": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "URL to POST draft to the asset - null for `article` - non-null for `image`, `video`, and `raw file`."
+        },
+        "web_urls": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Web URLs",
+          "properties": {
+            "self": {
+              "type": "string",
+              "description": "Web URL of the asset"
+            },
+            "task": {
+              "type": "string",
+              "description": "Web URL of the task that the asset is associated with"
+            },
+            "drafts": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Web URL of the drafts of the asset - null for `article` - non-null for `image`, `video`, and `raw file`."
+            }
+          },
+          "required": [
+            "self",
+            "task",
+            "drafts"
+          ]
+        }
+      },
+      "required": [
+        "self",
+        "task",
+        "drafts",
+        "web_urls"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "type",
+    "mime_type",
+    "created_at",
+    "modified_at",
+    "content",
+    "labels",
+    "links"
+  ],
+  "$defs": {
+    "AssetContent": {
+      "description": "Content of the asset",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of the content. \n - article  – `html_body`\n - image, raw_file, video  – `url`\n - structured_content  – `api_url`",
+          "enum": [
+            "url",
+            "api_url",
+            "html_body"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Content of the asset.  - article – the html body - image, raw_file, video – the download URL - structured_content – api url"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "ResourceLabelResponse": {
+      "description": "Label associated to a fetched resource",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "group": {
+          "description": "Label group",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Identifier of the label group"
+            },
+            "name": {
+              "type": "string",
+              "description": "Name of the label group"
+            }
+          },
+          "required": [
+            "id",
+            "name"
+          ]
+        },
+        "values": {
+          "type": "array",
+          "description": "List of values of the label",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Identifier of the label value"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the label value"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          }
+        }
+      },
+      "required": [
+        "group",
+        "values"
+      ]
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-ruleset-input-schema.json",
+  "title": "RulesetInput",
+  "description": "Input for updating a ruleset",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-rulesets-api-openapi.yml#/components/schemas/RulesetInput",
+  "type": "object",
+  "properties": {
+    "rules": {
+      "type": "array",
+      "description": "Ordered list of rules in the ruleset",
+      "items": {
+        "$ref": "#/$defs/RuleInput"
+      }
+    }
+  },
+  "$defs": {
+    "RuleInput": {
+      "type": "object",
+      "description": "Input for creating or updating a rule",
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Unique key for the rule"
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of rule",
+          "enum": [
+            "a/b_test",
+            "targeted_delivery",
+            "personalization"
+          ]
+        },
+        "audience_conditions": {
+          "type": "string",
+          "description": "JSON-encoded audience conditions"
+        },
+        "percentage_included": {
+          "type": "integer",
+          "description": "Percentage of traffic included",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "variations": {
+          "type": "array",
+          "description": "Variations and their traffic allocation",
+          "items": {
+            "type": "object",
+            "properties": {
+              "variation_key": {
+                "type": "string",
+                "description": "Key of the variation"
+              },
+              "weight": {
+                "type": "integer",
+                "description": "Traffic weight",
+                "minimum": 0,
+                "maximum": 10000
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

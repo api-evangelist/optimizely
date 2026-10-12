@@ -1,0 +1,384 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-task-response-schema.json",
+  "title": "TaskResponse",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-tasks-api-openapi.yml#/components/schemas/TaskResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier of the task"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the task"
+    },
+    "start_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "Start date and time of the task, in ISO 8601 UTC format (2020-02-10T10:40:45Z)"
+    },
+    "due_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "Due date and time of the task, in ISO 8601 UTC format (2020-02-10T10:40:45Z)"
+    },
+    "is_completed": {
+      "type": "boolean",
+      "description": "Determines whether the task is completed"
+    },
+    "is_archived": {
+      "type": "boolean",
+      "description": "Determines whether the task is archived"
+    },
+    "status": {
+      "type": "string",
+      "description": "Current status of the task",
+      "enum": [
+        "Archived",
+        "Completed",
+        "Overdue",
+        "Not Started",
+        "In Progress",
+        "On Hold"
+      ]
+    },
+    "reference_id": {
+      "type": "string",
+      "description": "Reference ID of the task"
+    },
+    "workflow_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Unique identifier of workflow"
+    },
+    "campaign_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Unique identifier of the campaign"
+    },
+    "milestone_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Unique identifier of the milestone"
+    },
+    "modified_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Modified date of the task in ISO 8601 UTC format"
+    },
+    "labels": {
+      "type": "array",
+      "description": "Labels associated with the task",
+      "items": {
+        "$ref": "#/$defs/ResourceLabelResponse"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "description": "Steps of the task",
+      "items": {
+        "$ref": "#/$defs/TaskStep"
+      }
+    },
+    "links": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Meta links",
+      "properties": {
+        "self": {
+          "type": "string",
+          "description": "URL of the task"
+        },
+        "assets": {
+          "type": "string",
+          "description": "URL for getting the list of the task assets or adding a new asset to the task"
+        },
+        "attachments": {
+          "type": "string",
+          "description": "URL for getting the list of the task attachments"
+        },
+        "brief": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "URL of the task brief"
+        },
+        "campaign": {
+          "type": "string",
+          "description": "URL of the campaign that the task is associated with"
+        },
+        "custom_fields": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "URL of the list of custom fields added to the task"
+        },
+        "milestone": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "URL of the milestone that the task is associated with"
+        },
+        "web_urls": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Web URLs",
+          "properties": {
+            "self": {
+              "type": "string",
+              "description": "Web URL of the task"
+            },
+            "brief": {
+              "type": "string",
+              "description": "Web URL of the task brief"
+            }
+          },
+          "required": [
+            "self",
+            "brief"
+          ]
+        }
+      },
+      "required": [
+        "self",
+        "assets",
+        "attachments",
+        "brief",
+        "campaign",
+        "custom_fields",
+        "milestone",
+        "web_urls"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "start_at",
+    "due_at",
+    "is_completed",
+    "is_archived",
+    "reference_id",
+    "status",
+    "campaign_id",
+    "milestone_id",
+    "modified_at",
+    "labels",
+    "steps",
+    "links"
+  ],
+  "$defs": {
+    "ResourceLabelResponse": {
+      "description": "Label associated to a fetched resource",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "group": {
+          "description": "Label group",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Identifier of the label group"
+            },
+            "name": {
+              "type": "string",
+              "description": "Name of the label group"
+            }
+          },
+          "required": [
+            "id",
+            "name"
+          ]
+        },
+        "values": {
+          "type": "array",
+          "description": "List of values of the label",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Identifier of the label value"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the label value"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          }
+        }
+      },
+      "required": [
+        "group",
+        "values"
+      ]
+    },
+    "TaskStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the step"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the step"
+        },
+        "is_completed": {
+          "type": "boolean",
+          "description": "Determines whether the step is completed in Optimizely CMP"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Description of the step"
+        },
+        "due_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "Due date and time of the step containing the substep,  in ISO 8601 UTC format (2020-02-10T10:40:45Z)"
+        },
+        "sub_steps": {
+          "type": "array",
+          "description": "Substeps of the step",
+          "items": {
+            "$ref": "#/$defs/TaskSubStep"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "is_completed",
+        "description",
+        "due_at",
+        "sub_steps"
+      ]
+    },
+    "TaskSubStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the substep"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the substep"
+        },
+        "assignee_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "ID of the assignee of the step containing the substep"
+        },
+        "assignee_type": {
+          "type": "string",
+          "enum": [
+            "user",
+            "team"
+          ],
+          "description": "Type of the assignee of the step containing the substep."
+        },
+        "is_completed": {
+          "type": "boolean",
+          "description": "Determines whether the substep is completed in Optimizely CMP"
+        },
+        "is_in_progress": {
+          "type": "boolean",
+          "description": "Determines whether the substep is In Progress in Optimizely CMP"
+        },
+        "is_skipped": {
+          "type": "boolean",
+          "description": "Determines whether the substep is skipped in Optimizely CMP"
+        },
+        "is_external": {
+          "type": "boolean",
+          "description": "Determines whether the substep is external in Optimizely CMP"
+        },
+        "links": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Meta links",
+          "properties": {
+            "self": {
+              "type": "string",
+              "description": "URL of the substep"
+            },
+            "task": {
+              "type": "string",
+              "description": "URL of the task"
+            },
+            "external_work": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "URL of the external work associated with substep if substep is external in _Optimizely CMP_"
+            },
+            "assignee": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Assignee of the step containing the substep"
+            }
+          },
+          "required": [
+            "self",
+            "task",
+            "external_work"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "assignee_id",
+        "assignee_type",
+        "is_completed",
+        "is_in_progress",
+        "is_skipped",
+        "is_external",
+        "links"
+      ]
+    }
+  }
+}

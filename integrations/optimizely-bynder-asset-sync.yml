@@ -1,0 +1,70 @@
+arazzo: 1.0.1
+info:
+  title: Optimizely Bynder asset sync
+  summary: Find a Bynder media item and register it in the Optimizely Content Marketing Platform library.
+  description: >-
+    Lists media from Bynder, reads one item, and creates a matching asset in Optimizely CMP. Optimizely's createAsset
+    takes a multipart upload, so the caller supplies the file bytes downloaded from Bynder.
+  version: 1.0.0
+sourceDescriptions:
+  - name: optimizelyAssets
+    url: https://raw.githubusercontent.com/api-evangelist/optimizely/refs/heads/main/openapi/optimizely-assets-api-openapi.yml
+    type: openapi
+  - name: bynderMedia
+    url: https://raw.githubusercontent.com/api-evangelist/bynder/refs/heads/main/openapi/bynder-media-api-openapi.yml
+    type: openapi
+  - name: bynderMediaId
+    url: https://raw.githubusercontent.com/api-evangelist/bynder/refs/heads/main/openapi/bynder-media-id-api-openapi.yml
+    type: openapi
+workflows:
+  - workflowId: bynder-media-to-optimizely-cmp
+    summary: List Bynder media, read one item, create it in Optimizely CMP.
+    description: >-
+      Pulls the Bynder media list, fetches the first item's detail, and creates the asset in Optimizely CMP with its name and description.
+    inputs:
+      type: object
+      properties:
+        file: {type: string, format: binary, description: The media bytes downloaded from Bynder.}
+    steps:
+      - stepId: list-bynder-media
+        description: List media in Bynder.
+        operationId: $sourceDescriptions.bynderMedia.getApiV4Media
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          mediaId: $response.body#/0/id
+      - stepId: get-bynder-media
+        description: Read the media item.
+        operationId: $sourceDescriptions.bynderMediaId.getApiV4MediaById
+        parameters:
+          - {name: id, in: path, value: $steps.list-bynder-media.outputs.mediaId}
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          name: $response.body#/name
+          description: $response.body#/description
+      - stepId: create-cmp-asset
+        description: Create the asset in the Optimizely CMP library.
+        operationId: $sourceDescriptions.optimizelyAssets.createAsset
+        requestBody:
+          contentType: multipart/form-data
+          payload:
+            file: $inputs.file
+            title: $steps.get-bynder-media.outputs.name
+            description: $steps.get-bynder-media.outputs.description
+        successCriteria:
+          - condition: $statusCode == 201
+        outputs:
+          asset: $response.body
+    outputs:
+      asset: $steps.create-cmp-asset.outputs.asset
+x-integration:
+  partner: bynder
+  edge_evidence: https://www.optimizely.com/connectors/bynder-connector
+  edge_type: claimed
+  method: generated
+  generated: '2026-10-12'
+  generator: claude-opus-5-5 (local-v5 enrichment)
+  guessed_steps:
+    - {step: list-bynder-media, cause: partner-contract, why: 'Response body paths (array of media with id) are assumed from Bynder convention; verify against the spec schema.'}
+    - {step: create-cmp-asset, cause: provider-contract, why: 'createAsset accepts only a multipart file; the download from Bynder is left to the caller.'}

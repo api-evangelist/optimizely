@@ -1,0 +1,408 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-experiment-timeseries-schema.json",
+  "title": "ExperimentTimeseries",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-experiments-api-openapi.yml#/components/schemas/ExperimentTimeseries",
+  "properties": {
+    "confidence_threshold": {
+      "description": "The significance level at which you would like to declare winning and losing variations. A lower number minimizes the time needed to declare a winning or losing variation, but increases the risk that your results aren't true winners and losers.",
+      "format": "double",
+      "type": "number"
+    },
+    "end_time": {
+      "description": "End of the time interval (exclusive) used to calculated the results. The time is formatted in ISO 8601.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "experiment_id": {
+      "description": "The unique identifier for the Experiment",
+      "format": "int64",
+      "type": "integer"
+    },
+    "is_stale": {
+      "description": "When true, indicates the results were delivered from a cache that is out of date.",
+      "type": "boolean"
+    },
+    "metrics": {
+      "description": "The breakdown of Experiment results time series by metric",
+      "items": {
+        "$ref": "#/$defs/ExperimentMetricTimeseries"
+      },
+      "type": "array"
+    },
+    "start_time": {
+      "description": "Start of the time interval (inclusive) used to calculate the results. The time is formatted in ISO 8601.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "stats_config": {
+      "$ref": "#/$defs/StatsConfig"
+    }
+  },
+  "type": "object",
+  "$defs": {
+    "CompoundSubMetric": {
+      "description": "A metric that is used only as part of the calculation for a ratio metric.",
+      "properties": {
+        "aggregator": {
+          "default": "unique",
+          "description": "The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value.",
+          "enum": [
+            "unique",
+            "count",
+            "sum"
+          ],
+          "type": "string"
+        },
+        "event_id": {
+          "description": "The ID for the Event to select data from.",
+          "format": "int64",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "event_type": {
+          "description": "The type of this Event.",
+          "enum": [
+            "custom",
+            "click",
+            "pageview"
+          ],
+          "type": "string"
+        },
+        "field": {
+          "description": "The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted.",
+          "enum": [
+            "revenue",
+            "value"
+          ],
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "scope": {
+          "default": "visitor",
+          "description": "Specifies how Events should be grouped. Can also be thought of as the denominator of the metric. 'session' divides by the number of sessions. \"Influenced sessions\", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event.",
+          "enum": [
+            "session",
+            "visitor",
+            "event"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Datapoint": {
+      "description": "A value with statistical context",
+      "properties": {
+        "confidence_interval": {
+          "description": "The confidence interval measures the uncertainty around improvement. It starts out wide and shrinks as more data comes in. Significance means that the confidence interval is completely above or completely below 0. If the result is significant and positive, the confidence interval will be above 0. If the result is significant and negative, confidence interval will be below 0. If the result is inconclusive, confidence interval includes 0",
+          "items": {
+            "format": "double",
+            "type": "number"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "confidence_interval_scaled": {
+          "description": "The confidence interval with bounds that are scaled by the baseline conversion rate.",
+          "items": {
+            "format": "double",
+            "type": "number"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "end_of_epoch": {
+          "type": "boolean"
+        },
+        "is_most_conclusive": {
+          "description": "Indicates that this is the best performing variant for this metric. Also referred to as the 'Winner'",
+          "type": "boolean"
+        },
+        "is_significant": {
+          "description": "Indicates if significance is above your confidence threshold",
+          "type": "boolean"
+        },
+        "lift_status": {
+          "description": "Indicates whether a variation is doing better/worse than the baseline after taking the metric's winning direction into account.",
+          "enum": [
+            "equal",
+            "better",
+            "worse"
+          ],
+          "type": "string"
+        },
+        "significance": {
+          "description": "The likelihood that the observed difference in conversion rate is not due to chance",
+          "format": "double",
+          "type": "number"
+        },
+        "value": {
+          "description": "The estimated improvement for this variant compared to the baseline",
+          "format": "double",
+          "type": "number"
+        },
+        "value_scaled": {
+          "description": "The estimated improvement scaled by the baseline conversion rate.",
+          "format": "double",
+          "type": "number"
+        },
+        "visitors_remaining": {
+          "description": "The number of estimated visitors remaining before result becomes statistically significant. A value of 9223372036854775807 means the value is not available.",
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "ExperimentMetricTimeseries": {
+      "description": "Results time series specific to an Event",
+      "properties": {
+        "aggregator": {
+          "description": "The aggregation function for the numerator of the metric. 'unique' measures the number of unique visitors/sessions that include the specified Event. 'count' measures the total number of occurrences of Event for the scope (visitor/session). 'sum' is the sum of the 'field' value",
+          "enum": [
+            "unique",
+            "count",
+            "sum",
+            "bounce",
+            "exit",
+            "ratio"
+          ],
+          "type": "string"
+        },
+        "event_id": {
+          "description": "The ID for the Event to select data from. Omitted for global metrics that are not relative to a specific Event, i.e. \"overall revenue\"",
+          "format": "int64",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "event_properties": {
+          "$ref": "#/$defs/MetricEventProperties",
+          "description": "The conditions used to filter the metric on specific event property values."
+        },
+        "field": {
+          "description": "The field to aggregate for the numerator of the metric. Required when 'aggregator' = 'sum', otherwise omitted",
+          "enum": [
+            "revenue",
+            "value"
+          ],
+          "type": "string"
+        },
+        "metrics": {
+          "description": "A list of all metrics that will be used in the calculation of a ratio metric.",
+          "items": {
+            "$ref": "#/$defs/CompoundSubMetric"
+          },
+          "type": "array"
+        },
+        "name": {
+          "description": "The name of the Metric",
+          "type": "string"
+        },
+        "results": {
+          "additionalProperties": {
+            "$ref": "#/$defs/VariantTimeseries"
+          },
+          "description": "A map of results for each variation in the Experiment keyed by variation ID. For Personalization Campaigns, the special variant 'baseline' represents visitors that have been held back from any change in experience for the Experiment",
+          "type": "object",
+          "x-map-key": {
+            "description": "The ID for the variation",
+            "type": "string"
+          }
+        },
+        "scope": {
+          "description": "Specifies how Events should be grouped together. Can also be thought of as the denonimator of the metric. 'session' divides by the number of sessions. \"Influenced sessions\", or sessions that do not contain a decision Event but carry a decision from a previous session are not included in counts for numerator or denominator. 'visitor' divides by the number of visitors. 'event' divides by the total occurrences (impressions) of the specified Event",
+          "enum": [
+            "session",
+            "visitor",
+            "event"
+          ],
+          "type": "string"
+        },
+        "time_window": {
+          "description": "The maximum amount of time a numerator event can differ from a denominator event in order to be included in a ratio metric. This can be an integer, or an integer followed by a letter denoting the unit of time (d = days, h = hours, m = minutes). If no unit of time is supplied, hours is assumed. If no value is supplied, a time window of 48 hours is assumed.",
+          "type": "string"
+        },
+        "winning_direction": {
+          "description": "The winning direction of this metric",
+          "enum": [
+            "increasing",
+            "decreasing"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "MetricEventProperties": {
+      "description": "The conditions used to filter the metric on specific event property values.",
+      "properties": {
+        "filter": {
+          "$ref": "#/$defs/MetricFilter",
+          "description": "The set of event property conditions a conversion must match to be counted toward the metric."
+        }
+      },
+      "type": "object"
+    },
+    "MetricFilter": {
+      "description": "The set of event property conditions a conversion must match to be counted toward the metric.",
+      "properties": {
+        "combine_operator": {
+          "description": "Determines whether all conditions (and) or any condition (or) must be met.",
+          "enum": [
+            "and",
+            "or"
+          ],
+          "type": "string"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/$defs/MetricFilterCondition"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "MetricFilterCondition": {
+      "description": "defines the event property values and operator used to check whether the conversion meets the condition.",
+      "properties": {
+        "name": {
+          "description": "The name of the event property to match to.",
+          "type": "string"
+        },
+        "operator": {
+          "description": "The type of match to be performed. equal_to and not_equal_to are available for all property types. greater_than, greater_than_or_equal_to, less_than, and less_than_or_equal_to are only available for properties with type number. contains and does_not_contain are only available for properties with type string.",
+          "enum": [
+            "equal_to",
+            "not_equal_to",
+            "greater_than",
+            "greater_than_or_equal_to",
+            "less_than",
+            "less_than_or_equal_to",
+            "contains",
+            "does_not_contain"
+          ],
+          "type": "string"
+        },
+        "type": {
+          "description": "The data type of the event property.",
+          "enum": [
+            "boolean",
+            "number",
+            "string"
+          ],
+          "type": "string"
+        },
+        "value": {
+          "description": "The value the conversion's property should match, according to the operator.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "StatsConfig": {
+      "description": "Stats Engine configuration settings",
+      "properties": {
+        "confidence_level": {
+          "type": "number"
+        },
+        "difference_type": {
+          "description": "The type of test to compare the variant to baseline",
+          "enum": [
+            "absolute",
+            "relative"
+          ],
+          "type": "string"
+        },
+        "epoch_enabled": {
+          "description": "Indicates if epoch-based statistics were used",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "TimeseriesDatapoint": {
+      "properties": {
+        "lift": {
+          "$ref": "#/$defs/Datapoint"
+        },
+        "rate": {
+          "description": "The value of the metric after dividing the numerator value over the denominator value",
+          "format": "double",
+          "type": "number"
+        },
+        "samples": {
+          "description": "The value of the denominator",
+          "format": "int64",
+          "type": "number"
+        },
+        "time": {
+          "description": "Time of this data point formatted in ISO 8601",
+          "format": "date-time",
+          "type": "string"
+        },
+        "value": {
+          "description": "The value of the numerator",
+          "format": "int64",
+          "type": "number"
+        },
+        "variance": {
+          "description": "The variance of the metric value",
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "VariantTimeseries": {
+      "properties": {
+        "experiment_id": {
+          "description": "The unique identifier for the Experiment this entity contains results for (if applicable)",
+          "format": "int64",
+          "type": "integer"
+        },
+        "is_baseline": {
+          "description": "Indicates that this variant is the baseline that all other entities will be compared against. Also referred to as the 'Control' or 'Control Group'",
+          "type": "boolean"
+        },
+        "level": {
+          "description": "The level of entity that this variant represents",
+          "enum": [
+            "variation",
+            "experiment",
+            "campaign"
+          ],
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the variant",
+          "type": "string"
+        },
+        "timeseries": {
+          "description": "The results time series data points",
+          "items": {
+            "$ref": "#/$defs/TimeseriesDatapoint"
+          },
+          "type": "array"
+        },
+        "variation_id": {
+          "description": "The unique identifier for the variation this entity contains results for (if applicable)",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  }
+}

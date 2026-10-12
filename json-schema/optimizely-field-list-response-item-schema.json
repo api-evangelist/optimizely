@@ -1,0 +1,316 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-field-list-response-item-schema.json",
+  "title": "FieldListResponseItem",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-events-api-openapi.yml#/components/schemas/FieldListResponseItem",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/FieldTypeCommon"
+    },
+    {
+      "$ref": "#/$defs/FieldTypeLabel"
+    },
+    {
+      "$ref": "#/$defs/FieldTypeDropdown"
+    },
+    {
+      "$ref": "#/$defs/FieldTypeRadio"
+    },
+    {
+      "$ref": "#/$defs/FieldTypeCheckbox"
+    },
+    {
+      "$ref": "#/$defs/FieldTypeSimpleNumber"
+    },
+    {
+      "$ref": "#/$defs/FieldTypePercentageNumber"
+    },
+    {
+      "$ref": "#/$defs/FieldTypeCurrencyNumber"
+    }
+  ],
+  "$defs": {
+    "FieldBaseType": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identifier of the field"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the field"
+        },
+        "values": {
+          "type": "array",
+          "description": "List of selected values or from user input",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of the field"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type",
+        "values"
+      ]
+    },
+    "FieldTypeCheckbox": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/FieldBaseType"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "choices": {
+              "type": "array",
+              "description": "Choices of the checkbox",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Identifier of the choice"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the choice"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "color"
+                ]
+              }
+            }
+          },
+          "required": [
+            "choices"
+          ]
+        }
+      ]
+    },
+    "FieldTypeCommon": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/FieldBaseType"
+        },
+        {
+          "type": "object"
+        }
+      ]
+    },
+    "FieldTypeCurrencyNumber": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/FieldBaseType"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "has_thousand_separator": {
+              "type": "boolean",
+              "description": "Whether the numerical field has a thousand separator"
+            },
+            "decimal_places": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Decimal place of the numerical field"
+            },
+            "currency_code": {
+              "type": "string",
+              "description": "Currency code of the numerical field"
+            }
+          },
+          "required": [
+            "has_thousand_separator",
+            "decimal_places",
+            "currency_code"
+          ]
+        }
+      ]
+    },
+    "FieldTypeDropdown": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/FieldBaseType"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "is_multi_select": {
+              "type": "boolean",
+              "description": "Select multiple values from the dropdown"
+            },
+            "choices": {
+              "type": "array",
+              "description": "Choices of the dropdown",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Identifier of the choice"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the choice"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name"
+                ]
+              }
+            }
+          },
+          "required": [
+            "is_multi_select",
+            "choices"
+          ]
+        }
+      ]
+    },
+    "FieldTypeLabel": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/FieldBaseType"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "is_multi_select": {
+              "type": "boolean",
+              "description": "Select multiple values from the label"
+            },
+            "choices": {
+              "type": "array",
+              "description": "Choices of the label",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Identifier of the choice"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the choice"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "color"
+                ]
+              }
+            }
+          },
+          "required": [
+            "is_multi_select",
+            "choices"
+          ]
+        }
+      ]
+    },
+    "FieldTypePercentageNumber": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/FieldBaseType"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "decimal_places": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Decimal place of the numerical field"
+            }
+          },
+          "required": [
+            "decimal_places"
+          ]
+        }
+      ]
+    },
+    "FieldTypeRadio": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/FieldBaseType"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "choices": {
+              "type": "array",
+              "description": "Choices of the radio button",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Identifier of the choice"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the choice"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "color"
+                ]
+              }
+            }
+          },
+          "required": [
+            "choices"
+          ]
+        }
+      ]
+    },
+    "FieldTypeSimpleNumber": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/FieldBaseType"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "has_thousand_separator": {
+              "type": "boolean",
+              "description": "Whether the numerical field has a thousand separator"
+            },
+            "decimal_places": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Decimal place of the numerical field"
+            }
+          },
+          "required": [
+            "has_thousand_separator",
+            "decimal_places"
+          ]
+        }
+      ]
+    }
+  }
+}

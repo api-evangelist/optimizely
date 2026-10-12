@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-in-page-event-schema.json",
+  "title": "InPageEvent",
+  "description": "An Event that can occur only within the context of a specific Page (allowed in Web Projects only)",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-events-api-openapi.yml#/components/schemas/InPageEvent",
+  "properties": {
+    "archived": {
+      "description": "Whether or not this Event is archived",
+      "type": "boolean"
+    },
+    "category": {
+      "$ref": "#/$defs/EventCategories"
+    },
+    "config": {
+      "$ref": "#/$defs/InPageEventConfig"
+    },
+    "created": {
+      "description": "Creation date for this Event",
+      "format": "date-time",
+      "readOnly": true,
+      "type": "string"
+    },
+    "description": {
+      "description": "A description of this Event",
+      "type": "string"
+    },
+    "event_type": {
+      "description": "The type of this Event",
+      "enum": [
+        "click"
+      ],
+      "type": "string"
+    },
+    "id": {
+      "description": "The unique identifier of the Event",
+      "format": "int64",
+      "readOnly": true,
+      "type": "integer"
+    },
+    "is_classic": {
+      "default": false,
+      "description": "Whether or not this Event is a classic Event. If true, the Event is read-only",
+      "readOnly": true,
+      "type": "boolean"
+    },
+    "is_editable": {
+      "description": "Whether or not this Event may be edited",
+      "readOnly": true,
+      "type": "boolean"
+    },
+    "key": {
+      "description": "Unique string identifier for this Event within the Project",
+      "maxLength": 64,
+      "pattern": "^[a-zA-Z0-9_\\-]+$",
+      "type": "string"
+    },
+    "name": {
+      "description": "A human readable name for this Event",
+      "type": "string"
+    },
+    "page_id": {
+      "description": "The Page ID associated with this Event",
+      "format": "int64",
+      "readOnly": true,
+      "type": "integer"
+    },
+    "project_id": {
+      "description": "The ID of this Event's parent Project",
+      "format": "int64",
+      "readOnly": true,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "name",
+    "event_type"
+  ],
+  "type": "object",
+  "$defs": {
+    "EventCategories": {
+      "enum": [
+        "add_to_cart",
+        "save",
+        "search",
+        "share",
+        "purchase",
+        "convert",
+        "sign_up",
+        "subscribe",
+        "other"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      },
+      "type": "string"
+    },
+    "InPageEventConfig": {
+      "properties": {
+        "selector": {
+          "description": "CSS selector for the page element(s) that trigger an Event",
+          "type": "string"
+        }
+      },
+      "required": [
+        "selector"
+      ],
+      "type": "object"
+    }
+  }
+}

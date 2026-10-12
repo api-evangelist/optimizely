@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-campaign-brief-response-schema.json",
+  "title": "CampaignBriefResponse",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-campaigns-api-openapi.yml#/components/schemas/CampaignBriefResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "Type of the campaign brief",
+      "enum": [
+        "template",
+        "attachment",
+        "text"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the campaign brief"
+    },
+    "template": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/$defs/CampaignBriefTemplateValue"
+        }
+      ]
+    },
+    "fields": {
+      "description": "List of fields of the brief",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the brief field"
+          },
+          "value": {
+            "type": "array",
+            "description": "List of values set for the brief field",
+            "items": {
+              "type": "string",
+              "description": "value set in the brief field"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "value"
+        ]
+      }
+    },
+    "links": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Meta links",
+      "properties": {
+        "self": {
+          "type": "string",
+          "description": "URL of the brief"
+        },
+        "campaign": {
+          "type": "string",
+          "description": "URL of the campaign"
+        }
+      },
+      "required": [
+        "self",
+        "campaign"
+      ]
+    }
+  },
+  "required": [
+    "type",
+    "title",
+    "fields",
+    "links"
+  ],
+  "$defs": {
+    "CampaignBriefTemplateValue": {
+      "type": "object",
+      "description": "Template info of the brief if the brief is of template type",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the template"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the template"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    }
+  }
+}

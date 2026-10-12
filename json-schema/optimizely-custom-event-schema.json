@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-custom-event-schema.json",
+  "title": "CustomEvent",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-events-api-openapi.yml#/components/schemas/CustomEvent",
+  "properties": {
+    "archived": {
+      "description": "Whether or not to archive this Event",
+      "type": "boolean"
+    },
+    "category": {
+      "$ref": "#/$defs/EventCategories"
+    },
+    "created": {
+      "description": "Creation date for this Event",
+      "format": "date-time",
+      "readOnly": true,
+      "type": "string"
+    },
+    "description": {
+      "description": "A description of this Event",
+      "type": "string"
+    },
+    "event_properties": {
+      "description": "A set of user-defined data elements for the event. Metrics can filter on particular values of these properties.",
+      "items": {
+        "$ref": "#/$defs/EventProperty"
+      },
+      "type": "array"
+    },
+    "event_type": {
+      "description": "The type of this Event",
+      "enum": [
+        "custom"
+      ],
+      "type": "string"
+    },
+    "id": {
+      "description": "The unique identifier of the Event",
+      "format": "int64",
+      "readOnly": true,
+      "type": "integer"
+    },
+    "is_classic": {
+      "default": false,
+      "description": "Whether or not this Event is a classic Event. If true, this Event is read-only",
+      "readOnly": true,
+      "type": "boolean"
+    },
+    "is_editable": {
+      "description": "Whether or not this Event may be edited",
+      "readOnly": true,
+      "type": "boolean"
+    },
+    "key": {
+      "description": "Unique string identifier for this Event within the Project",
+      "maxLength": 64,
+      "pattern": "^[a-zA-Z0-9_\\- .]+$",
+      "type": "string"
+    },
+    "name": {
+      "description": "A human readable name for this Event. If unspecified, defaults to the key",
+      "type": "string"
+    },
+    "project_id": {
+      "description": "The ID of this Event's parent Project",
+      "format": "int64",
+      "readOnly": true,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "key"
+  ],
+  "type": "object",
+  "$defs": {
+    "EventCategories": {
+      "enum": [
+        "add_to_cart",
+        "save",
+        "search",
+        "share",
+        "purchase",
+        "convert",
+        "sign_up",
+        "subscribe",
+        "other"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      },
+      "type": "string"
+    },
+    "EventProperty": {
+      "description": "A user-defined data element giving additional detail about the event.",
+      "properties": {
+        "data_type": {
+          "description": "The type of data that can be accepted for this property.",
+          "enum": [
+            "boolean",
+            "number",
+            "string"
+          ],
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the property.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  }
+}

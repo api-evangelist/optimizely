@@ -1,0 +1,67 @@
+arazzo: 1.0.1
+info:
+  title: Optimizely Contentful asset sync
+  summary: Pull assets from a Contentful environment and register them in the Optimizely Content Marketing Platform library.
+  description: >-
+    Reads the asset collection from Contentful's Content Delivery API and creates a matching asset in Optimizely CMP.
+    The Optimizely createAsset operation takes a multipart file upload, so the file bytes must be fetched from the Contentful
+    asset URL by the caller between the two steps; the contract offers no import-by-URL operation.
+  version: 1.0.0
+sourceDescriptions:
+  - name: optimizelyAssets
+    url: https://raw.githubusercontent.com/api-evangelist/optimizely/refs/heads/main/openapi/optimizely-assets-api-openapi.yml
+    type: openapi
+  - name: contentfulSpaces
+    url: https://raw.githubusercontent.com/api-evangelist/contentful/refs/heads/main/openapi/contentful-spaces-api-openapi.yml
+    type: openapi
+workflows:
+  - workflowId: contentful-assets-to-optimizely-cmp
+    summary: List Contentful assets and create one in Optimizely CMP.
+    description: >-
+      Lists assets in a Contentful space environment, then uploads one asset (file supplied by the caller) with the
+      Contentful title and description into the Optimizely CMP library.
+    inputs:
+      type: object
+      properties:
+        space_id: {type: string}
+        environment_id: {type: string}
+        file: {type: string, format: binary, description: The asset bytes fetched from the Contentful asset file URL.}
+    steps:
+      - stepId: list-contentful-assets
+        description: List assets in the Contentful environment.
+        operationId: $sourceDescriptions.contentfulSpaces.getAssets
+        parameters:
+          - {name: space_id, in: path, value: $inputs.space_id}
+          - {name: environment_id, in: path, value: $inputs.environment_id}
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          title: $response.body#/items/0/fields/title
+          description: $response.body#/items/0/fields/description
+          fileUrl: $response.body#/items/0/fields/file/url
+      - stepId: create-cmp-asset
+        description: Create the asset in the Optimizely CMP library.
+        operationId: $sourceDescriptions.optimizelyAssets.createAsset
+        requestBody:
+          contentType: multipart/form-data
+          payload:
+            file: $inputs.file
+            title: $steps.list-contentful-assets.outputs.title
+            description: $steps.list-contentful-assets.outputs.description
+        successCriteria:
+          - condition: $statusCode == 201
+        outputs:
+          asset: $response.body
+    outputs:
+      sourceFileUrl: $steps.list-contentful-assets.outputs.fileUrl
+      asset: $steps.create-cmp-asset.outputs.asset
+x-integration:
+  partner: contentful
+  edge_evidence: https://www.optimizely.com/connectors/contentful
+  edge_type: claimed
+  method: generated
+  generated: '2026-10-12'
+  generator: claude-opus-5-5 (local-v5 enrichment)
+  guessed_steps:
+    - {step: list-contentful-assets, cause: partner-contract, why: 'getAssets declares only a 200 with no response schema in the catalog spec, so the items/0/fields paths follow Contentful CDA convention, not the spec.'}
+    - {step: create-cmp-asset, cause: provider-contract, why: 'createAsset accepts only a multipart file; no import-from-URL operation exists, so the file transfer is left to the caller.'}

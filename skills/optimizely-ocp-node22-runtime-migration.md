@@ -1,7 +1,7 @@
 ---
 name: ocp-node22-runtime-migration
 description: Use when migrating an OCP app from node18 to node22 runtime, upgrading SDK from 2.x to 3.x, replacing node-fetch with native fetch, migrating ESLint to v9, or migrating from Jest to Vitest in an OCP app.
-allowed-tools: Bash, Read, Edit, Write, Glob, Grep
+allowed-tools: [Bash, Read, Edit, Write, Glob, Grep]
 ---
 
 # OCP Node22 Runtime Migration

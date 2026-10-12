@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-patch-request-body-schema.json",
+  "title": "PatchRequestBody",
+  "description": "A JSONPatch document as defined by RFC 6902",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-flags-api-openapi.yml#/components/schemas/PatchRequestBody",
+  "properties": {
+    "from": {
+      "description": "A JSON Pointer to the resource attribute",
+      "type": "string"
+    },
+    "op": {
+      "description": "The operation to be performed",
+      "enum": [
+        "add",
+        "remove",
+        "replace",
+        "move",
+        "copy",
+        "test"
+      ],
+      "type": "string"
+    },
+    "path": {
+      "description": "A JSON-Pointer to the resource or the resource attribute",
+      "type": "string"
+    },
+    "value": {
+      "anyOf": [
+        {
+          "type": "object"
+        },
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "$ref": "#/$defs/AudienceConditions"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/SubMetric"
+          },
+          "type": "array"
+        }
+      ],
+      "description": "The value to be used within the operations."
+    }
+  },
+  "required": [
+    "op",
+    "path"
+  ],
+  "type": "object",
+  "$defs": {
+    "AudienceConditions": {
+      "description": "An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/AudienceConditionsArray"
+        },
+        {
+          "$ref": "#/$defs/AudienceConditionsString"
+        }
+      ]
+    },
+    "AudienceConditionsArray": {
+      "items": {
+        "anyOf": [
+          {
+            "description": "The logical operator to use (e.g. \"and\", \"or\", or \"not\"). This must be the first item in the audience_conditions array. The \"not\" operator may only be used in conjunction with a single condition or list.",
+            "type": "string"
+          },
+          {
+            "description": "An invidual conditional, consisting of a JSON object with an \"audience_id\" value.",
+            "properties": {
+              "audience_id": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "audience_id"
+            ],
+            "type": "object"
+          },
+          {
+            "$ref": "#/$defs/AudienceConditionsArray",
+            "description": "A nested AudienceConditionsArray"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "AudienceConditionsString": {
+      "description": "A valid AudienceConditionsArray represented as a JSON string",
+      "type": "string"
+    },
+    "SubMetric": {
+      "properties": {
+        "aggregator": {
+          "type": "string"
+        },
+        "event_id": {
+          "type": "integer"
+        },
+        "event_type": {
+          "type": "string"
+        },
+        "field": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "role": {
+          "enum": [
+            "numerator",
+            "denominator"
+          ],
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  }
+}

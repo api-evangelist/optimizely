@@ -1,0 +1,298 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-event-fields-update-request-schema.json",
+  "title": "EventFieldsUpdateRequest",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-events-api-openapi.yml#/components/schemas/EventFieldsUpdateRequest",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "oneOf": [
+      {
+        "$ref": "#/$defs/MultiChoiceTypeObjectField"
+      },
+      {
+        "$ref": "#/$defs/StringTypeObjectField"
+      },
+      {
+        "$ref": "#/$defs/DropdownTypeObjectField"
+      },
+      {
+        "$ref": "#/$defs/RadioButtonTypeObjectField"
+      },
+      {
+        "$ref": "#/$defs/NumberTypeObjectField"
+      },
+      {
+        "$ref": "#/$defs/DateTypeObjectField"
+      },
+      {
+        "$ref": "#/$defs/AssetTypeObjectField"
+      }
+    ]
+  },
+  "$defs": {
+    "AssetTypeObjectField": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectField"
+        },
+        {
+          "$ref": "#/$defs/AssetTypeObjectFieldUpdatePayload"
+        }
+      ]
+    },
+    "AssetTypeObjectFieldUpdatePayload": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectFieldUpdatePayload"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "description": "Payload for fields with attachments",
+              "maxItems": 1,
+              "items": {
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the image or video",
+                    "minLength": 1
+                  },
+                  "key": {
+                    "type": "string",
+                    "description": "Unique identifier of the file upload session. This is the `upload_meta_fields.key` field retrieved from the `/v3/upload-url` endpoint."
+                  }
+                },
+                "required": [
+                  "title",
+                  "key"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "BaseObjectField": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectFieldUpdatePayload"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Unique identifier of the field"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      ]
+    },
+    "BaseObjectFieldUpdatePayload": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of the field"
+        },
+        "values": {
+          "type": "array",
+          "description": "Values for the campaign field"
+        }
+      },
+      "required": [
+        "type",
+        "values"
+      ]
+    },
+    "DateTypeObjectField": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectField"
+        },
+        {
+          "$ref": "#/$defs/DateTypeObjectFieldUpdatePayload"
+        }
+      ]
+    },
+    "DateTypeObjectFieldUpdatePayload": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectFieldUpdatePayload"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "description": "Array of date-time values, in ISO 8601 UTC format (2020-02-10T10:40:45Z)",
+              "items": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Date and time, in ISO 8601 UTC format (2020-02-10T10:40:45Z)"
+              },
+              "maxItems": 1
+            }
+          }
+        }
+      ]
+    },
+    "DropdownTypeObjectField": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectField"
+        },
+        {
+          "$ref": "#/$defs/DropdownTypeObjectFieldUpdatePayload"
+        }
+      ]
+    },
+    "DropdownTypeObjectFieldUpdatePayload": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectFieldUpdatePayload"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "description": "Array of choice ID. Multiple choice values are not acceptable for `is_multi_select=false`.",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "MultiChoiceTypeObjectField": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectField"
+        },
+        {
+          "$ref": "#/$defs/MultiChoiceTypeObjectFieldUpdatePayload"
+        }
+      ]
+    },
+    "MultiChoiceTypeObjectFieldUpdatePayload": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectFieldUpdatePayload"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "description": "Array of choice IDs",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "NumberTypeObjectField": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectField"
+        },
+        {
+          "$ref": "#/$defs/NumberTypeObjectFieldUpdatePayload"
+        }
+      ]
+    },
+    "NumberTypeObjectFieldUpdatePayload": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectFieldUpdatePayload"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "description": "Accepts a single numeric value",
+              "maxItems": 1,
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "RadioButtonTypeObjectField": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectField"
+        },
+        {
+          "$ref": "#/$defs/RadioButtonTypeObjectFieldUpdatePayload"
+        }
+      ]
+    },
+    "RadioButtonTypeObjectFieldUpdatePayload": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectFieldUpdatePayload"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "description": "Accepts a single choice Id.",
+              "maxItems": 1,
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "StringTypeObjectField": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectField"
+        },
+        {
+          "$ref": "#/$defs/StringTypeObjectFieldUpdatePayload"
+        }
+      ]
+    },
+    "StringTypeObjectFieldUpdatePayload": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/BaseObjectFieldUpdatePayload"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "description": "Any single string",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

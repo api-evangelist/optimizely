@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-extension-2-schema.json",
+  "title": "Extension_2",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-extensions-api-openapi.yml#/components/schemas/Extension_2",
+  "properties": {
+    "archived": {
+      "description": "Whether the extension is archived",
+      "readOnly": true,
+      "type": "boolean"
+    },
+    "created": {
+      "description": "The time when the extension was initially created",
+      "format": "date-time",
+      "readOnly": true,
+      "type": "string"
+    },
+    "description": {
+      "description": "The description for the extension",
+      "type": "string"
+    },
+    "edit_url": {
+      "description": "The URL to load when editing the extension",
+      "type": "string"
+    },
+    "enabled": {
+      "description": "Whether the extension is enabled. A disabled extension won't appear in the editor and won't be built into the snippet",
+      "type": "boolean"
+    },
+    "experiment_count": {
+      "description": "Number of experiments that reference this extension across all statuses (running, paused, draft, archived). Computed by the upstream service.",
+      "format": "int64",
+      "readOnly": true,
+      "type": "integer"
+    },
+    "fields": {
+      "default": [],
+      "description": "Array of editable fields in the extension",
+      "items": {
+        "$ref": "#/$defs/Field"
+      },
+      "type": "array"
+    },
+    "id": {
+      "description": "The unique identifier for the extension",
+      "format": "int64",
+      "readOnly": true,
+      "type": "integer"
+    },
+    "implementation": {
+      "$ref": "#/$defs/Implementation"
+    },
+    "last_modified": {
+      "description": "The last time when the extension was modified",
+      "format": "date-time",
+      "readOnly": true,
+      "type": "string"
+    },
+    "name": {
+      "description": "Name of the extension",
+      "type": "string"
+    },
+    "project_id": {
+      "description": "The project the extension is in",
+      "format": "int64",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "project_id",
+    "name",
+    "edit_url",
+    "implementation"
+  ],
+  "type": "object",
+  "$defs": {
+    "Choices": {
+      "properties": {
+        "label": {
+          "description": "label of the choice",
+          "type": "string"
+        },
+        "value": {
+          "description": "value of the choice",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Field": {
+      "properties": {
+        "api_name": {
+          "description": "The API name of the field",
+          "type": "string"
+        },
+        "default_value": {
+          "description": "A string in JSON format that corresponds to the default_value of the field",
+          "type": "string"
+        },
+        "field_type": {
+          "description": "The type of the field",
+          "enum": [
+            "selector",
+            "text",
+            "multi_text",
+            "rich_text",
+            "number",
+            "html",
+            "css",
+            "js",
+            "toggle",
+            "dropdown",
+            "multi_select",
+            "image",
+            "color",
+            "slider"
+          ],
+          "type": "string"
+        },
+        "label": {
+          "description": "The label of the field",
+          "type": "string"
+        },
+        "options": {
+          "$ref": "#/$defs/Options"
+        }
+      },
+      "required": [
+        "api_name",
+        "label",
+        "default_value",
+        "field_type"
+      ],
+      "type": "object"
+    },
+    "Implementation": {
+      "properties": {
+        "apply_js": {
+          "default": "",
+          "description": "The Apply JS code is used to inject the extension onto the page",
+          "type": "string"
+        },
+        "css": {
+          "default": "",
+          "description": "Some extensions may not need any CSS because they inherit styles from the page itself. However, you can add additional styling here. This will be injected on the page through a <style> tag",
+          "type": "string"
+        },
+        "html": {
+          "default": "",
+          "description": "The html implementation of the field",
+          "type": "string"
+        },
+        "reset_js": {
+          "default": "",
+          "description": "Reset JS is used to \"clean up\" after a extension. It's used in the editor, when changing field values or removing an existing extension. Reset JS should remove the element and any other side-effects",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Options": {
+      "properties": {
+        "choices": {
+          "description": "The choices for a field",
+          "items": {
+            "$ref": "#/$defs/Choices"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    }
+  }
+}

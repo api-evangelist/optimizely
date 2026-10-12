@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-task-asset-draft-brand-compliance-response-schema.json",
+  "title": "TaskAssetDraftBrandComplianceResponse",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-brand-compliance-api-openapi.yml#/components/schemas/TaskAssetDraftBrandComplianceResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "status": {
+      "type": "string",
+      "description": "Brand compliance status of the draft",
+      "enum": [
+        "approved",
+        "declined",
+        "not_reviewed"
+      ]
+    },
+    "reviewed_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "Date and time of when the draft was reviewed, in ISO 8601 UTC format"
+    },
+    "reviewed_by": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Unique identifier of the user who reviewed the draft"
+    },
+    "categories": {
+      "type": "array",
+      "description": "List of compliance categories",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the category"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the category"
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Brand compliance status of the category",
+            "enum": [
+              "compliant",
+              "not compliant",
+              "not applicable",
+              null
+            ]
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Notes left by the reviewer for the category"
+          },
+          "criteria": {
+            "type": "array",
+            "description": "List of criteria",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier of the criterion"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the criterion"
+                },
+                "description": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Description of the criterion"
+                },
+                "selected": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ],
+                  "description": "Whether the criterion is selected or not"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "description",
+                "selected"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "status",
+          "notes",
+          "criteria"
+        ]
+      }
+    }
+  },
+  "required": [
+    "status",
+    "reviewed_at",
+    "reviewed_by",
+    "categories"
+  ]
+}

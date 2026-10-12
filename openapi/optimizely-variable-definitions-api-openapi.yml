@@ -354,7 +354,8 @@ components:
       type: object
     AudienceConditionsString:
       description: A valid AudienceConditionsArray represented as a JSON string
-      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n      \"audience_id\": 1120870079\n    }\n  ]\n]"
+      example: "[\n  \"or\",\n  {\n    \"audience_id\": 1038980040\n  },\n  {\n    \"audience_id\": 1033280055\n  },\n  [\n    \"not\",\n    {\n\
+        \      \"audience_id\": 1120870079\n    }\n  ]\n]"
       type: string
     UrlList:
       description: A list of urls.
@@ -433,7 +434,8 @@ components:
         - audience_id: 789
       items:
         anyOf:
-        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array. The "not" operator may only be used in conjunction with a single condition or list.
+        - description: The logical operator to use (e.g. "and", "or", or "not"). This must be the first item in the audience_conditions array.
+            The "not" operator may only be used in conjunction with a single condition or list.
           type: string
         - description: An invidual conditional, consisting of a JSON object with an "audience_id" value.
           properties:
@@ -450,7 +452,8 @@ components:
             - audience_id: 789
       type: array
     AudienceConditions:
-      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
+      description: An Audience Combination composed of other audiences. Each audience is a rule like 'User likes salads', and an Audience Combination
+        is a Boolean combination of these rules, like 'User likes pizza NOT (User likes salads AND User likes soup)'.
       oneOf:
       - $ref: '#/components/schemas/AudienceConditionsArray'
       - $ref: '#/components/schemas/AudienceConditionsString'
@@ -487,7 +490,8 @@ components:
         next_url:
           allOf:
           - $ref: '#/components/schemas/UrlList'
-          description: "List of links to next pages of Variables in a series.\n\n The first element in the array is the exact next page after the current record, etc.\n"
+          description: "List of links to next pages of Variables in a series.\n\n The first element in the array is the exact next page after\
+            \ the current record, etc.\n"
           example: '...'
         page:
           description: Number of the current page. 1-index based.
@@ -559,6 +563,21 @@ components:
           user_chat: '#/components/schemas/BrainstormUserChat'
         propertyName: type
       type: object
+    BrainstormError:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    BrainstormUserChat:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    BrainstormVariablesResponse:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
   securitySchemes:
     BearerAuth:
       description: To get a personal token, see https://docs.developers.optimizely.com/web/docs/personal-token

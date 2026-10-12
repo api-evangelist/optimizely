@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-feature-update-schema.json",
+  "title": "FeatureUpdate",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-features-api-openapi.yml#/components/schemas/FeatureUpdate",
+  "properties": {
+    "archived": {
+      "description": "Whether the Feature has been archived",
+      "type": "boolean"
+    },
+    "description": {
+      "description": "A short description of this Feature",
+      "type": "string"
+    },
+    "environments": {
+      "additionalProperties": {
+        "$ref": "#/$defs/FeatureEnvironment"
+      },
+      "description": "The configuration for this Feature's Rollout within each Environment, keyed by Environment key.",
+      "type": "object",
+      "x-map-key": {
+        "description": "The key of the Environment",
+        "type": "string"
+      }
+    },
+    "key": {
+      "description": "Unique string identifier for this Feature within the Project",
+      "maxLength": 64,
+      "pattern": "^[a-zA-Z0-9_\\-]+$",
+      "type": "string"
+    },
+    "name": {
+      "description": "Name of the Feature",
+      "type": "string"
+    },
+    "variables": {
+      "description": "Variables define the dynamic configuration of a feature, and each variable can take on a different value on a per-variation basis within a feature test.",
+      "items": {
+        "$ref": "#/$defs/FeatureVariableUpdate"
+      },
+      "type": "array"
+    }
+  },
+  "type": "object",
+  "$defs": {
+    "FeatureEnvironment": {
+      "properties": {
+        "id": {
+          "description": "The ID of the Environment this set of Rollout Rules applies to",
+          "format": "int64",
+          "readOnly": true,
+          "type": "integer"
+        },
+        "is_primary": {
+          "description": "Whether the Environment this set of Rollout Rules applies to is the primary Environment",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "rollout_rules": {
+          "description": "Rollout Rules allow you to define groups of users and a percentage of those users that will see a Feature by default. You are currently limited to a single rollout rule. Audience IDs sent in any environment must always match that of the primary environment.",
+          "items": {
+            "$ref": "#/$defs/RolloutRule"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "rollout_rules"
+      ],
+      "type": "object"
+    },
+    "FeatureVariableUpdate": {
+      "properties": {
+        "archived": {
+          "default": false,
+          "description": "Whether or not this Feature Variable is archived",
+          "type": "boolean"
+        },
+        "default_value": {
+          "description": "The stringified default value for this Feature Variable. The default value is the value Optimizely SDKs will return when this Feature Variable is accessed by getFeatureVariableValue unless the Feature Variable's value is a part of a feature test variation.",
+          "type": "string"
+        },
+        "description": {
+          "description": "A short description of this Feature Variable",
+          "type": "string"
+        },
+        "id": {
+          "description": "The ID of this Feature Variable",
+          "format": "int64",
+          "type": "integer"
+        },
+        "key": {
+          "description": "Unique string identifier for this Feature Variable within the Feature",
+          "type": "string"
+        },
+        "type": {
+          "description": "The datatype for this Feature Variable",
+          "enum": [
+            "boolean",
+            "string",
+            "double",
+            "integer",
+            "json"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "RolloutRule": {
+      "properties": {
+        "audience_conditions": {
+          "description": "The audiences that should see this feature. To target everyone, use the string \"everyone\". Multiple audiences can be combined with \"and\" or \"or\" using the same structure as audience conditions. <code>audience_conditions</code> sent in any environment must always match those of the primary environment.\n",
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Whether or not the Rollout Rule is applied in this Environment. You can toggle this on and off by sending True or False.",
+          "type": "boolean"
+        },
+        "percentage_included": {
+          "default": 0,
+          "description": "The percentage of the designated audiences that should get this Feature, measured in basis points. 100 basis points = 1% traffic.",
+          "maximum": 10000,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "variable_values": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The configuration for this Variable's within each Feature Environment, keyed by Variable Key",
+          "type": "object",
+          "x-map-key": {
+            "description": "The Key of the variable",
+            "type": "string"
+          }
+        }
+      },
+      "type": "object"
+    }
+  }
+}

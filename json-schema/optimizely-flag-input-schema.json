@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-flag-input-schema.json",
+  "title": "FlagInput",
+  "description": "Input for creating or updating a flag",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-flags-api-openapi.yml#/components/schemas/FlagInput",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Unique key for the flag"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the flag"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the flag purpose"
+    },
+    "variables": {
+      "type": "array",
+      "description": "List of variables associated with this flag",
+      "items": {
+        "$ref": "#/$defs/VariableInput"
+      }
+    },
+    "variations": {
+      "type": "array",
+      "description": "List of variations for this flag",
+      "items": {
+        "$ref": "#/$defs/FlagVariationInput"
+      }
+    }
+  },
+  "$defs": {
+    "FlagVariationInput": {
+      "type": "object",
+      "description": "Input for creating or updating a flag variation",
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Unique key for the variation"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable name of the variation"
+        },
+        "variables": {
+          "type": "object",
+          "description": "Map of variable keys to their values",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "VariableInput": {
+      "type": "object",
+      "description": "Input for creating or updating a variable",
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Unique key for the variable"
+        },
+        "type": {
+          "type": "string",
+          "description": "Data type of the variable",
+          "enum": [
+            "string",
+            "integer",
+            "double",
+            "boolean",
+            "json"
+          ]
+        },
+        "default_value": {
+          "type": "string",
+          "description": "Default value of the variable"
+        }
+      }
+    }
+  }
+}

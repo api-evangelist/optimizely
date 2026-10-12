@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-batch-context-schema.json",
+  "title": "BatchContext",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-batch-api-openapi.yml#/components/schemas/BatchContext",
+  "required": [
+    "operations"
+  ],
+  "type": "object",
+  "properties": {
+    "operations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/BatchOperation"
+      },
+      "description": "Array of requests to Agent endpoints, batched into one request"
+    }
+  },
+  "$defs": {
+    "BatchOperation": {
+      "title": "BatchOperation",
+      "type": "object",
+      "properties": {
+        "method": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Method"
+            },
+            {
+              "description": "The REST request method"
+            }
+          ]
+        },
+        "url": {
+          "type": "string",
+          "description": "The base and endpoint components of the API request's path"
+        },
+        "operationID": {
+          "type": "string",
+          "description": "Index of the request in the batch"
+        },
+        "body": {
+          "type": "object",
+          "description": "The body for the request as JSON"
+        },
+        "parameters": {
+          "type": "object",
+          "description": "The parameters for the request as JSON"
+        },
+        "headers": {
+          "type": "object",
+          "description": "The headers for the request as JSON"
+        }
+      }
+    },
+    "Method": {
+      "title": "Method",
+      "enum": [
+        "GET",
+        "POST"
+      ],
+      "type": "string",
+      "description": "The REST request method"
+    }
+  }
+}

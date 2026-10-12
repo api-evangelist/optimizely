@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-environments-schema.json",
+  "title": "Environments",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-environments-api-openapi.yml#/components/schemas/Environments",
+  "properties": {
+    "count": {
+      "description": "Number of Environments on the current page.",
+      "type": "integer"
+    },
+    "filter_url": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/UrlValue"
+        }
+      ],
+      "description": "Url template like '.../{?filter}'"
+    },
+    "first_url": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/UrlValue"
+        }
+      ],
+      "description": "Link to first page of Environments in a series."
+    },
+    "items": {
+      "items": {
+        "$ref": "#/$defs/Environment_2"
+      },
+      "type": "array"
+    },
+    "last_url": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/UrlValue"
+        }
+      ],
+      "description": "Link to the last page of Environments in a series."
+    },
+    "next_url": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/UrlList"
+        }
+      ],
+      "description": "List of links to next pages of Environments in a series.\n\n The first element in the array is the exact next page after the current record, etc.\n"
+    },
+    "page": {
+      "description": "Number of the current page. 1-index based.",
+      "type": "integer"
+    },
+    "prev_url": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/UrlList"
+        }
+      ],
+      "description": "List of links to previous pages of Environments in a series.\n\nThe first element in the array is the exact previous page before the current record, etc.\n"
+    },
+    "reset_url": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/UrlValue"
+        }
+      ],
+      "description": "Link to the default pages of Environments"
+    },
+    "total_count": {
+      "description": "Total number of Environments for this series.",
+      "type": "integer"
+    },
+    "total_pages": {
+      "description": "Total number of pages for this series.",
+      "type": "integer"
+    },
+    "url": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/UrlValue"
+        }
+      ],
+      "description": "Link to self"
+    }
+  },
+  "required": [
+    "url",
+    "first_url",
+    "last_url",
+    "count",
+    "page",
+    "total_count",
+    "total_pages",
+    "items"
+  ],
+  "type": "object",
+  "$defs": {
+    "Environment_2": {
+      "properties": {
+        "account_id": {
+          "description": "The ID of the Account",
+          "format": "int64",
+          "readOnly": true,
+          "type": "integer"
+        },
+        "archived": {
+          "type": "boolean"
+        },
+        "id": {
+          "description": "The ID of the Environment",
+          "format": "int64",
+          "readOnly": true,
+          "type": "integer"
+        },
+        "key": {
+          "description": "User-facing key to identify this Environment.",
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name of the Environment.",
+          "type": "string"
+        },
+        "priority": {
+          "description": "Integer representing the priority of the Environment. This is used for ordering in the UI.",
+          "type": "integer"
+        },
+        "project_id": {
+          "description": "The ID of the Project this Flag belongs to",
+          "format": "int64",
+          "readOnly": true,
+          "type": "integer"
+        },
+        "revision": {
+          "description": "Revision number for tracking changes",
+          "readOnly": true,
+          "type": "integer"
+        },
+        "role": {
+          "description": "Granular permission role",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "name",
+        "archived",
+        "priority",
+        "project_id"
+      ],
+      "type": "object"
+    },
+    "UrlList": {
+      "description": "A list of urls.",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "UrlValue": {
+      "description": "A single url.",
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/optimizely/main/json-schema/optimizely-rest-sending-batch-streaming-collection-schema.json",
+  "title": "RestSendingBatchStreamingCollection",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/optimizely-batch-sending-api-openapi.yml#/components/schemas/RestSendingBatchStreamingCollection",
+  "type": "object",
+  "properties": {
+    "elements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/RestSendingBatch"
+      }
+    },
+    "links": {
+      "type": "array",
+      "writeOnly": true,
+      "items": {
+        "$ref": "#/$defs/RestApiLink"
+      }
+    },
+    "count": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "offset": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "limit": {
+      "type": "integer",
+      "format": "int32"
+    }
+  },
+  "$defs": {
+    "RestApiLink": {
+      "type": "object",
+      "properties": {
+        "href": {
+          "type": "string"
+        },
+        "rel": {
+          "type": "string"
+        }
+      }
+    },
+    "RestSendingBatch": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Batch ID",
+          "format": "int64"
+        },
+        "campaignId": {
+          "type": "integer",
+          "description": "Campaign ID",
+          "format": "int64"
+        },
+        "recipientListId": {
+          "type": "integer",
+          "description": "Recipient list ID",
+          "format": "int64"
+        },
+        "tag": {
+          "type": "string",
+          "description": "Tag"
+        },
+        "chunks": {
+          "type": "array",
+          "description": "Chunks",
+          "items": {
+            "type": "string",
+            "description": "Chunks"
+          }
+        },
+        "state": {
+          "type": "string",
+          "description": "State",
+          "enum": [
+            "initiated",
+            "has_recipients",
+            "sent",
+            "invalid"
+          ]
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "uriBuilder": {
+                "type": "object"
+              },
+              "rels": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "rel": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "params": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "title": {
+                "type": "string"
+              },
+              "uri": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
