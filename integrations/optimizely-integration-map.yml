@@ -1,0 +1,145 @@
+# DERIVED by derive-integration-map.py (roadmap#949): each integration workflow, step by step,
+# resolved to spec file -> tag -> business capability (Turbo EA, CC BY 4.0) and the operation's
+# phrasing intent. Read from our own files; an unmapped link says why.
+slug: optimizely
+workflows:
+- file: optimizely-blueconic-audience-sync.yml
+  title: Optimizely BlueConic audience sync
+  partner: blueconic
+  template: null
+  repos:
+  - blueconic
+  - optimizely
+  steps:
+  - step: search-blueconic-profiles
+    repo: blueconic
+    spec_file: blueconic-profiles-api-openapi.yml
+    operationId: searchProfiles
+    tag: Profiles
+    capability_id: BC-420.10
+    capability: Customer Data Management
+    capability_l1: BC-420
+    intent: Find profiles by a unique property value
+    effect: read
+    unmapped: null
+  - step: create-optimizely-audience
+    repo: optimizely
+    spec_file: optimizely-audiences-api-openapi.yml
+    operationId: createAudience
+    tag: Audiences
+    capability_id: BC-420.20
+    capability: Customer Segmentation Management
+    capability_l1: BC-420
+    intent: Create an audience
+    effect: write
+    unmapped: null
+  connects:
+    blueconic:
+      capabilities:
+      - BC-420.10
+      tags:
+      - Profiles
+    optimizely:
+      capabilities:
+      - BC-420.20
+      tags:
+      - Audiences
+  intents:
+  - Find profiles by a unique property value
+  - Create an audience
+- file: optimizely-bynder-asset-sync.yml
+  title: Optimizely Bynder asset sync
+  partner: bynder
+  template: null
+  repos:
+  - bynder
+  - optimizely
+  steps:
+  - step: list-bynder-media
+    repo: bynder
+    spec_file: bynder-media-api-openapi.yml
+    operationId: getApiV4Media
+    tag: Media
+    capability_id: BC-3710.10
+    capability: Asset Ingest & Quality Control
+    capability_l1: BC-3710
+    intent: null
+    effect: null
+    unmapped: null
+  - step: get-bynder-media
+    repo: bynder
+    spec_file: bynder-media-id-api-openapi.yml
+    operationId: getApiV4MediaById
+    tag: Media ID
+    capability_id: BC-3710
+    capability: Media Asset Management
+    capability_l1: BC-3710
+    intent: null
+    effect: null
+    unmapped: null
+  - step: create-cmp-asset
+    repo: optimizely
+    spec_file: optimizely-assets-api-openapi.yml
+    operationId: createAsset
+    tag: Assets
+    capability_id: null
+    capability: null
+    capability_l1: null
+    intent: Add an asset to the CMP library
+    effect: write
+    unmapped: no capability edge for this spec file
+  connects:
+    bynder:
+      capabilities:
+      - BC-3710
+      - BC-3710.10
+      tags:
+      - Media
+      - Media ID
+    optimizely:
+      capabilities: []
+      tags:
+      - Assets
+  intents:
+  - Add an asset to the CMP library
+- file: optimizely-contentful-asset-sync.yml
+  title: Optimizely Contentful asset sync
+  partner: contentful
+  template: null
+  repos:
+  - contentful
+  - optimizely
+  steps:
+  - step: list-contentful-assets
+    repo: contentful
+    spec_file: contentful-spaces-api-openapi.yml
+    operationId: getAssets
+    tag: Spaces
+    capability_id: null
+    capability: null
+    capability_l1: null
+    intent: null
+    effect: null
+    unmapped: no capability edge for this spec file
+  - step: create-cmp-asset
+    repo: optimizely
+    spec_file: optimizely-assets-api-openapi.yml
+    operationId: createAsset
+    tag: Assets
+    capability_id: null
+    capability: null
+    capability_l1: null
+    intent: Add an asset to the CMP library
+    effect: write
+    unmapped: no capability edge for this spec file
+  connects:
+    contentful:
+      capabilities: []
+      tags:
+      - Spaces
+    optimizely:
+      capabilities: []
+      tags:
+      - Assets
+  intents:
+  - Add an asset to the CMP library
